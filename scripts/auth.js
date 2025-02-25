@@ -4,10 +4,8 @@ import {
   createUserWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-
+} from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+import { doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
 // Wait for DOM to load
 document.addEventListener("DOMContentLoaded", () => {
@@ -27,6 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", handleLogout);
+  }
+
+  const approveUserForm = document.getElementById("approveUserForm");
+  if (approveUserForm) {
+    approveUserForm.addEventListener("submit", handleApproveUser);
   }
 });
 
@@ -66,7 +69,6 @@ async function handleLogin(e) {
     }
   }
 }
-
 
 // Handle registration
 async function handleRegister(e) {
@@ -109,7 +111,11 @@ async function handleRegister(e) {
     window.location.href = "login.html";
   } catch (error) {
     console.error("Registration error:", error);
-    errorMsg.textContent = error.message;
+    if (error.code === 'auth/email-already-in-use') {
+      errorMsg.textContent = "The email address is already in use by another account.";
+    } else {
+      errorMsg.textContent = error.message;
+    }
   }
 }
 
@@ -165,6 +171,34 @@ function handleAuthStateChanged(user) {
           window.location.href = "login.html";
         }
       }, 1500);
+    }
+  }
+}
+
+// Handle user approval by admin
+async function handleApproveUser(e) {
+  e.preventDefault();
+
+  const userId = document.getElementById("userId").value;
+  const errorMsg = document.getElementById("errorMsg");
+
+  if (errorMsg) errorMsg.textContent = "";
+
+  try {
+    await updateDoc(doc(db, "users", userId), {
+      status: "approved",
+    });
+
+    // Show success message
+    const message = document.getElementById("message");
+    if (message) {
+      message.textContent = "User approved successfully!";
+      message.classList.remove("hidden");
+    }
+  } catch (error) {
+    console.error("Approval error:", error);
+    if (errorMsg) {
+      errorMsg.textContent = error.message;
     }
   }
 }
