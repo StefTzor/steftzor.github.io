@@ -1,187 +1,172 @@
-// Initialize Firebase auth
-let auth;
+import { auth, db } from "./firebase-config.js";
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
-// Wait for Firebase to initialize before setting up auth
-document.addEventListener('DOMContentLoaded', () => {
-  if (typeof firebase !== 'undefined' && firebase.auth) {
-    auth = firebase.auth();
-    
-    // Set up auth state listener
-    auth.onAuthStateChanged(handleAuthStateChanged);
-    
-    // Set up login form if present
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-      loginForm.addEventListener('submit', handleLogin);
-    }
-    
-    // Set up register form if present
-    const registerForm = document.getElementById('registerForm');
-    if (registerForm) {
-      registerForm.addEventListener('submit', handleRegister);
-    }
-    
-    // Set up logout button
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', handleLogout);
-    }
-  } else {
-    console.error('Firebase authentication is not available');
+import { 
+  doc, 
+  setDoc, 
+  getDoc 
+} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+// Wait for DOM to load
+document.addEventListener("DOMContentLoaded", () => {
+  onAuthStateChanged(auth, handleAuthStateChanged);
+
+  // Set up event listeners
+  const loginForm = document.getElementById("loginForm");
+  if (loginForm) {
+    loginForm.addEventListener("submit", handleLogin);
+  }
+
+  const registerForm = document.getElementById("registerForm");
+  if (registerForm) {
+    registerForm.addEventListener("submit", handleRegister);
+  }
+
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", handleLogout);
   }
 });
 
-// Handle auth state changes
-function handleAuthStateChanged(user) {
-  const loginBtn = document.getElementById('loginBtn');
-  const registerBtn = document.getElementById('registerBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  
-  if (user) {
-    // User is signed in
-    console.log('User logged in:', user.email);
-    
-    // Hide login/register, show logout
-    if (loginBtn) loginBtn.classList.add('hidden');
-    if (registerBtn) registerBtn.classList.add('hidden');
-    if (logoutBtn) logoutBtn.classList.remove('hidden');
-    
-    // Show exclusive content if we're on an exclusive page
-    const exclusiveContent = document.getElementById('exclusiveContent');
-    const authRequired = document.getElementById('authRequired');
-    
-    if (exclusiveContent && authRequired) {
-      exclusiveContent.classList.remove('hidden');
-      authRequired.classList.add('hidden');
-    }
-  } else {
-    // User is signed out
-    console.log('User logged out');
-    
-    // Show login/register, hide logout
-    if (loginBtn) loginBtn.classList.remove('hidden');
-    if (registerBtn) registerBtn.classList.remove('hidden');
-    if (logoutBtn) logoutBtn.classList.add('hidden');
-    
-    // Hide exclusive content if we're on an exclusive page
-    const exclusiveContent = document.getElementById('exclusiveContent');
-    const authRequired = document.getElementById('authRequired');
-    
-    if (exclusiveContent && authRequired) {
-      exclusiveContent.classList.add('hidden');
-      authRequired.classList.remove('hidden');
-      
-      // Use a small delay for better UX
-      setTimeout(() => {
-        if (!auth.currentUser && window.location.pathname.includes('exclusive')) {
-          // Only redirect if we're still not logged in
-          window.location.href = 'login.html';
-        }
-      }, 1500);
-    }
-  }
-}
-
-// Handle login form submission
+// Handle login
 async function handleLogin(e) {
   e.preventDefault();
-  
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  const errorMsg = document.getElementById('errorMsg');
-  
-  if (errorMsg) errorMsg.textContent = '';
-  
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const errorMsg = document.getElementById("errorMsg");
+
+  if (errorMsg) errorMsg.textContent = "";
+
   try {
-    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-    
-    // OPTIONAL: Check if user is approved in Firestore before granting access.
-    // Uncomment the following block if you want to enforce approval at login.
-    /*
-    const userDoc = await firebase.firestore().collection("users").doc(user.uid).get();
-    if (userDoc.exists) {
+
+    // Get user status from Firestore
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (userDoc.exists()) {
       const userData = userDoc.data();
       if (userData.status !== "approved") {
-        await auth.signOut();
+        await signOut(auth);
         if (errorMsg) {
-          errorMsg.textContent = "Your account is pending approval. Please wait for an administrator to approve your registration.";
+          errorMsg.textContent = "Your account is pending approval. Please wait for an administrator.";
         }
         return;
       }
     }
-    */
-    
-    // Redirect to exclusive content or home page if approved.
-    window.location.href = 'exclusive.html';
+
+    // Redirect to exclusive content or home page
+    window.location.href = "exclusive.html";
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     if (errorMsg) {
       errorMsg.textContent = error.message;
     }
   }
 }
 
-// Handle register form submission (modified)
+// Handle registration
 async function handleRegister(e) {
   e.preventDefault();
-  
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
-  const errorMsg = document.getElementById('errorMsg');
-  
-  if (errorMsg) errorMsg.textContent = '';
-  
-  // Check if passwords match
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const errorMsg = document.getElementById("errorMsg");
+
+  if (errorMsg) errorMsg.textContent = "";
+
   if (password !== confirmPassword) {
-    if (errorMsg) {
-      errorMsg.textContent = 'Passwords do not match';
-    }
+    errorMsg.textContent = "Passwords do not match";
     return;
   }
-  
+
   try {
-    // Create user with email and password
-    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-    
+
     // Store user status in Firestore as "pending"
-    await firebase.firestore().collection("users").doc(user.uid).set({
+    await setDoc(doc(db, "users", user.uid), {
       email: user.email,
       status: "pending",
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     });
-    
-    // Sign out the user immediately so they cannot log in until approved
-    await auth.signOut();
-    
-    // Optionally, display a message informing the user their registration is pending
-    const message = document.getElementById('message');
+
+    // Sign out the user immediately
+    await signOut(auth);
+
+    // Show message
+    const message = document.getElementById("message");
     if (message) {
       message.textContent = "Registration successful! Your account is pending approval.";
-      message.classList.remove('hidden');
+      message.classList.remove("hidden");
     }
-    
-    // Redirect to the login page (or you could keep them on the same page with the message)
-    window.location.href = 'login.html';
+
+    // Redirect to login
+    window.location.href = "login.html";
   } catch (error) {
-    console.error('Registration error:', error);
-    if (errorMsg) {
-      errorMsg.textContent = error.message;
-    }
+    console.error("Registration error:", error);
+    errorMsg.textContent = error.message;
   }
 }
 
 // Handle logout
 function handleLogout(e) {
   e.preventDefault();
-  
-  auth.signOut()
+
+  signOut(auth)
     .then(() => {
-      window.location.href = 'index.html';
+      window.location.href = "index.html";
     })
     .catch((error) => {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     });
+}
+
+// Handle auth state changes
+function handleAuthStateChanged(user) {
+  const loginBtn = document.getElementById("loginBtn");
+  const registerBtn = document.getElementById("registerBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (user) {
+    console.log("User logged in:", user.email);
+
+    if (loginBtn) loginBtn.classList.add("hidden");
+    if (registerBtn) registerBtn.classList.add("hidden");
+    if (logoutBtn) logoutBtn.classList.remove("hidden");
+
+    const exclusiveContent = document.getElementById("exclusiveContent");
+    const authRequired = document.getElementById("authRequired");
+
+    if (exclusiveContent && authRequired) {
+      exclusiveContent.classList.remove("hidden");
+      authRequired.classList.add("hidden");
+    }
+  } else {
+    console.log("User logged out");
+
+    if (loginBtn) loginBtn.classList.remove("hidden");
+    if (registerBtn) registerBtn.classList.remove("hidden");
+    if (logoutBtn) logoutBtn.classList.add("hidden");
+
+    const exclusiveContent = document.getElementById("exclusiveContent");
+    const authRequired = document.getElementById("authRequired");
+
+    if (exclusiveContent && authRequired) {
+      exclusiveContent.classList.add("hidden");
+      authRequired.classList.remove("hidden");
+
+      setTimeout(() => {
+        if (!auth.currentUser && window.location.pathname.includes("exclusive")) {
+          window.location.href = "login.html";
+        }
+      }, 1500);
+    }
+  }
 }
