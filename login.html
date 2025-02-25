@@ -3,130 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - StefTzor's Site</title>
-  <link href="/dist/output.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/favicon.png">
+  <title>Login - Stefanos Tzortzoglou</title>
+  <link rel="stylesheet" href="styles/modern.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-white font-inter text-gray-900 flex items-center justify-center min-h-screen">
+<body>
   <!-- Header -->
-  <header class="bg-purple-600 text-white py-4 shadow-glow w-full fixed top-0">
-    <div class="container mx-auto flex justify-between items-center px-4">
-      <h1 class="text-3xl font-bold flashy">StefTzor</h1>
-      <div id="auth-header" class="flex items-center space-x-4">
-        <a href="login.html" id="login-link" class="text-white hover:text-red-600 font-semibold hover-bounce">Log In</a>
-        <a href="register.html" id="register-link" class="text-white hover:text-red-600 font-semibold hover-bounce">Register</a>
-        <div id="user-email" class="text-lg"></div>
-        <button id="logout-btn" class="btn-secondary hidden">Log Out</button>
+  <header id="header">
+    <div class="container">
+      <div class="logo">
+        <a href="index.html">Stefanos Tzortzoglou</a>
       </div>
+      <nav>
+        <ul id="nav-menu">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="portfolio.html">Portfolio</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle">Exclusive Content <i class="fas fa-chevron-down"></i></a>
+            <ul class="dropdown-menu">
+              <li><a href="exclusive.html">All Exclusive Content</a></li>
+              <li><a href="blog.html">Blog</a></li>
+              <li><a href="resources.html">Resources</a></li>
+            </ul>
+          </li>
+        </ul>
+        <div class="auth-buttons">
+          <a href="login.html" id="loginBtn" class="btn btn-login active">Login</a>
+          <a href="register.html" id="registerBtn" class="btn btn-register">Register</a>
+          <a href="#" id="logoutBtn" class="btn btn-logout hidden">Logout</a>
+        </div>
+        <button class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
     </div>
   </header>
 
-  <!-- Navigation (pushed down due to fixed header) -->
-  <nav class="bg-gray-100 py-4 shadow-glow w-full mt-16">
-    <div class="container mx-auto flex justify-center space-x-6">
-      <a href="index.html" class="text-purple-600 hover:text-red-600 font-semibold hover-bounce">Home</a>
-      <a href="exclusive1.html" class="text-purple-600 hover:text-red-600 font-semibold hover-bounce">Exclusive 1</a>
-      <a href="exclusive2.html" class="text-purple-600 hover:text-red-600 font-semibold hover-bounce">Exclusive 2</a>
-    </div>
-  </nav>
-
-  <!-- Main Content (Centered Form) -->
-  <main class="container mx-auto py-8 px-4">
-    <div class="bg-white p-6 rounded-lg shadow-glow w-full max-w-md mx-auto">
-      <h2 class="text-2xl font-bold text-center mb-6 text-purple-600">Log In</h2>
-      <div class="space-y-4">
-        <input id="email" type="email" placeholder="Email" class="w-full p-2 border rounded shadow-glow">
-        <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded shadow-glow">
-        <button id="login-btn" class="w-full btn-primary">Log In</button>
-        <p class="text-center text-gray-600">No account? <a href="register.html" class="text-purple-600 hover:text-red-600 hover-bounce">Register</a></p>
-        <p id="error" class="text-red-600 text-center hidden">Error</p>
+  <!-- Login Section -->
+  <main>
+    <div class="auth-container">
+      <div class="auth-header">
+        <h1>Login</h1>
+        <p>Welcome back! Please log in to access exclusive content.</p>
+      </div>
+      
+      <form id="loginForm">
+        <div id="errorMsg" class="error-message"></div>
+        
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" class="form-control" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+      </form>
+      
+      <div class="auth-footer">
+        <p>Don't have an account? <a href="register.html">Register here</a></p>
       </div>
     </div>
   </main>
 
   <!-- Footer -->
-  <footer class="bg-purple-600 text-white py-4 text-center w-full">
-    <p>© <span id="year"></span> StefTzor | <a href="https://github.com/StefTzor" class="text-red-600 hover:text-white underline hover-bounce">GitHub</a></p>
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-info">
+          <h3>Stefanos Tzortzoglou</h3>
+          <p>🔧 SaaS Product Specialist | Customer Success & Technical Solutions | Problem-Solving for Growth & Product Implementation</p>
+        </div>
+        <div class="footer-social">
+          <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Stefanos Tzortzoglou. All rights reserved.</p>
+      </div>
+    </div>
   </footer>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyClGWoUvHfFAIYF5ms956GFhovlopncH8k",
-      authDomain: "mypersonalsite-79ce4.firebaseapp.com",
-      projectId: "mypersonalsite-79ce4",
-      storageBucket: "mypersonalsite-79ce4.firebasestorage.app",
-      messagingSenderId: "22661264733",
-      appId: "1:22661264733:web:706659ef5ffcdd057864b4"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // Dynamic year in footer
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    // Update header based on auth state
-    onAuthStateChanged(auth, async (user) => {
-      const userEmail = document.getElementById("user-email");
-      const loginLink = document.getElementById("login-link");
-      const registerLink = document.getElementById("register-link");
-      const logoutBtn = document.getElementById("logout-btn");
-
-      if (user) {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists() && userDoc.data().status === "approved") {
-          userEmail.textContent = user.email;
-          logoutBtn.classList.remove("hidden");
-          loginLink.classList.add("hidden");
-          registerLink.classList.add("hidden");
-        } else {
-          await auth.signOut();
-          userEmail.textContent = "";
-          logoutBtn.classList.add("hidden");
-          loginLink.classList.remove("hidden");
-          registerLink.classList.remove("hidden");
-        }
-      } else {
-        userEmail.textContent = "";
-        logoutBtn.classList.add("hidden");
-        loginLink.classList.remove("hidden");
-        registerLink.classList.remove("hidden");
-      }
-    });
-
-    document.getElementById("login-btn").onclick = async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const error = document.getElementById("error");
-
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          if (userData.status === "approved") {
-            window.location.href = "index.html";
-          } else {
-            await auth.signOut();
-            error.textContent = "Your registration is pending admin approval. You’ll be notified via email when approved.";
-            error.classList.remove("hidden");
-          }
-        } else {
-          throw new Error("User not found in database.");
-        }
-      } catch (err) {
-        error.textContent = err.message;
-        error.classList.remove("hidden");
-      }
-    };
-  </script>
+  <!-- Scripts -->
+  <script src="scripts/firebase-config.js"></script>
+  <script src="scripts/auth.js"></script>
+  <script src="scripts/main.js"></script>
 </body>
 </html>

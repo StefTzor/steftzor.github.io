@@ -1,112 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StefTzor's Personal Site</title>
-    <link href="/dist/output.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="/favicon.png">
-  </head>
-  <body class="bg-white font-inter text-gray-900">
-    <!-- Header -->
-    <header class="bg-purple-600 text-white py-4 shadow-glow">
-      <div class="container mx-auto flex justify-between items-center px-4">
-        <h1 class="text-3xl font-bold flashy">StefTzor</h1>
-        <div id="auth-header" class="flex items-center space-x-4">
-          <div id="user-email" class="text-lg"></div>
-          <button id="logout-btn" class="btn-secondary hidden">Log Out</button>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stefanos Tzortzoglou</title>
+  <link rel="stylesheet" href="styles/modern.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <header id="header">
+    <div class="container">
+      <div class="logo">
+        <a href="index.html">Stefanos Tzortzoglou</a>
+      </div>
+      <nav>
+        <ul id="nav-menu">
+          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="portfolio.html">Portfolio</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle">Exclusive Content <i class="fas fa-chevron-down"></i></a>
+            <ul class="dropdown-menu">
+              <li><a href="exclusive.html">All Exclusive Content</a></li>
+              <li><a href="blog.html">Blog</a></li>
+              <li><a href="resources.html">Resources</a></li>
+            </ul>
+          </li>
+        </ul>
+        <div class="auth-buttons">
+          <a href="login.html" id="loginBtn" class="btn btn-login">Login</a>
+          <a href="register.html" id="registerBtn" class="btn btn-register">Register</a>
+          <a href="#" id="logoutBtn" class="btn btn-logout hidden">Logout</a>
+        </div>
+        <button class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Hello, I'm <span class="highlight">Stefanos Tzortzoglou</span></h1>
+        <h2>🔧 SaaS Product Specialist | Customer Success & Technical Solutions | Problem-Solving for Growth & Product Implementation</h2>
+        <p>🚀 Passionate about solving technical challenges and helping customers succeed in the SaaS world.
+
+          With a background in Computer Science and a strong enthusiasm for technology, I work at the intersection of:
+          ✅ Customer Success
+          ✅ Technical Solutions
+          ✅ Product Adoption
+          
+          As a Product Specialist, I take ownership of the customer journey, ensuring:
+          🔹 Smooth onboarding & data integration
+          🔹 Customized solutions that bring real value
+          🔹 Optimized workflows for better efficiency
+          
+          💡 What I love doing:
+          🔧 Problem-solving & troubleshooting technical issues
+          🤝 Collaborating across teams to drive success
+          📈 Helping businesses get the most out of their tools
+          
+          I’m always eager to learn, adapt, and take on new challenges in this fast-moving industry.</p>
+        <div class="hero-buttons">
+          <a href="portfolio.html" class="btn btn-primary">View My Work</a>
+          <a href="contact.html" class="btn btn-secondary">Get In Touch</a>
         </div>
       </div>
-    </header>
-  
-    <!-- Navigation -->
-    <nav class="bg-gray-100 py-4 shadow-glow">
-      <div class="container mx-auto flex justify-center space-x-6">
-        <a href="index.html" class="text-purple-600 hover:text-red-600 font-semibold hover-bounce">Home</a>
-        <a href="exclusive1.html" class="text-purple-600 hover:text-red-600 font-semibold hover-bounce">Exclusive 1</a>
-        <a href="exclusive2.html" class="text-purple-600 hover:text-red-600 font-semibold hover-bounce">Exclusive 2</a>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main>
+    <section class="featured-projects">
+      <div class="container">
+        <h2 class="section-title">Featured Projects</h2>
+        <div class="projects-grid">
+          <!-- Project cards would go here -->
+          <div class="project-card">
+            <div class="project-image">
+              <img src="images/project1.jpg" alt="Project 1">
+            </div>
+            <div class="project-info">
+              <h3>Project Title</h3>
+              <p>Short description of the project and technologies used.</p>
+              <div class="project-tags">
+                <span>HTML</span>
+                <span>CSS</span>
+                <span>JavaScript</span>
+              </div>
+              <a href="#" class="btn btn-sm">View Project</a>
+            </div>
+          </div>
+          <!-- More project cards -->
+        </div>
+        <div class="text-center">
+          <a href="portfolio.html" class="btn btn-outline">See All Projects</a>
+        </div>
       </div>
-    </nav>
-  
-    <!-- Main Content -->
-    <main class="container mx-auto py-8 px-4">
-      <section class="py-8 px-4 text-center">
-        <h2 class="text-2xl font-semibold text-purple-600">About Me</h2>
-        <p class="mt-2 text-gray-700">Hi, I’m a CS enthusiast trying to build stuff!</p>
-      </section>
-      <section id="exclusive" class="py-8 px-4 text-center bg-gray-100 hidden">
-        <h2 class="text-2xl font-semibold text-red-600">Exclusive Content</h2>
-        <p class="mt-2 text-gray-700">This is for approved users only.</p>
-      </section>
-    </main>
-  
-    <!-- Footer -->
-    <footer class="bg-purple-600 text-white py-4 text-center">
-      <p>&copy; <span id="year"></span> StefTzor | <a href="https://github.com/StefTzor" class="text-red-600 hover:text-white underline">GitHub</a></p>
-    </footer>
+    </section>
+  </main>
 
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-      import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
-      import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
-  
-      const firebaseConfig = {
-        apiKey: "AIzaSyClGWoUvHfFAIYF5ms956GFhovlopncH8k",
-        authDomain: "mypersonalsite-79ce4.firebaseapp.com",
-        projectId: "mypersonalsite-79ce4",
-        storageBucket: "mypersonalsite-79ce4.firebasestorage.app",
-        messagingSenderId: "22661264733",
-        appId: "1:22661264733:web:706659ef5ffcdd057864b4"
-      };
-  
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      const db = getFirestore(app);
-  
-      // Dynamic year in footer
-      document.getElementById("year").textContent = new Date().getFullYear();
-  
-      // Update header and nav based on auth state
-  onAuthStateChanged(auth, async (user) => {
-  const userEmail = document.getElementById("user-email");
-  const logoutBtn = document.getElementById("logout-btn");
-  const loginLink = document.getElementById("login-link");
-  const registerLink = document.getElementById("register-link");
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-info">
+          <h3>Stefanos Tzortzoglou</h3>
+          <p>🔧 SaaS Product Specialist | Customer Success & Technical Solutions | Problem-Solving for Growth & Product Implementation</p>
+        </div>
+        <div class="footer-social">
+          <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Stefanos Tzortzoglou. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 
-  if (user) {
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    if (userDoc.exists() && userDoc.data().status === "approved") {
-      userEmail.textContent = user.email;
-      logoutBtn.classList.remove("hidden");
-      loginLink.classList.add("hidden");
-      registerLink.classList.add("hidden");
-    } else {
-      await auth.signOut();
-      userEmail.textContent = "";
-      logoutBtn.classList.add("hidden");
-      loginLink.classList.remove("hidden");
-      registerLink.classList.remove("hidden");
-      if (window.location.pathname !== "/index.html") {
-        alert("This content is restricted to approved users. Your registration is pending admin approval. You’ll be notified via email when approved.");
-        window.location.href = "index.html";
-      }
-    }
-  } else {
-    userEmail.textContent = "";
-    logoutBtn.classList.add("hidden");
-    loginLink.classList.remove("hidden");
-    registerLink.classList.remove("hidden");
-    if (window.location.pathname.includes("exclusive")) {
-      alert("Please log in or register to access exclusive content.");
-      window.location.href = "login.html";
-    }
-  }
-});
-
-document.getElementById("logout-btn").onclick = () => {
-  signOut(auth).then(() => location.reload());
-};
-    </script>
+  <!-- Scripts -->
+  <script src="scripts/firebase-config.js"></script>
+  <script src="scripts/auth.js"></script>
+  <script src="scripts/main.js"></script>
 </body>
 </html>
