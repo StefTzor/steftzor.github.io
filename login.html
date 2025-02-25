@@ -22,40 +22,50 @@
  <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
-  
-    //Firebase configuration
-    const firebaseConfig = {
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+
+  const firebaseConfig = {
     apiKey: "AIzaSyClGWoUvHfFAIYF5ms956GFhovlopncH8k",
     authDomain: "mypersonalsite-79ce4.firebaseapp.com",
     projectId: "mypersonalsite-79ce4",
     storageBucket: "mypersonalsite-79ce4.firebasestorage.app",
     messagingSenderId: "22661264733",
     appId: "1:22661264733:web:706659ef5ffcdd057864b4"
-    };
+  };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    document.getElementById("login-btn").onclick = () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const error = document.getElementById("error");
-      signInWithEmailAndPassword(auth, email, password) // Changed from auth.signInWithEmailAndPassword
-        .then(userCredential => {
-          if (userCredential.user.emailVerified) {
-            window.location.href = "index.html";
-          } else {
-            auth.signOut();
-            error.textContent = "Please verify your email first.";
-            error.classList.remove("hidden");
-          }
-        })
-        .catch(err => {
-          error.textContent = err.message;
+  document.getElementById("login-btn").onclick = async () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const error = document.getElementById("error");
+
+    try {
+      // Sign in the user
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Check user status in Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        if (userData.status === "approved") {
+          window.location.href = "index.html";
+        } else {
+          await auth.signOut();
+          error.textContent = "Your registration is pending admin approval. You’ll be notified via email when approved.";
           error.classList.remove("hidden");
-        });
-    };
-  </script>
+        }
+      } else {
+        throw new Error("User not found in database.");
+      }
+    } catch (err) {
+      error.textContent = err.message;
+      error.classList.remove("hidden");
+    }
+  };
+</script>
 </body>
 </html>

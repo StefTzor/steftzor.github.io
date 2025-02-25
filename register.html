@@ -23,8 +23,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
-    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyClGWoUvHfFAIYF5ms956GFhovlopncH8k",
       authDomain: "mypersonalsite-79ce4.firebaseapp.com",
@@ -34,28 +34,38 @@
       appId: "1:22661264733:web:706659ef5ffcdd057864b4"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    document.getElementById("register-btn").onclick = () => {
+    document.getElementById("register-btn").onclick = async () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const message = document.getElementById("message");
       const error = document.getElementById("error");
 
-      createUserWithEmailAndPassword(auth, email, password) // Added 'auth' as the first parameter
-        .then((userCredential) => {
-          userCredential.user.sendEmailVerification();
-          auth.signOut(); // Log out after registration
-          message.classList.remove("hidden");
-          error.classList.add("hidden");
-        })
-        .catch((err) => {
-          error.textContent = err.message;
-          error.classList.remove("hidden");
-          message.classList.add("hidden");
+      try {
+        // Create user with email and password
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Store user status in Firestore as "pending"
+        await setDoc(doc(db, "users", user.uid), {
+          email: user.email,
+          status: "pending",
+          createdAt: new Date().toISOString()
         });
+
+        // Sign out the user immediately (they can’t log in until approved)
+        await auth.signOut();
+
+        message.classList.remove("hidden");
+        error.classList.add("hidden");
+      } catch (err) {
+        error.textContent = err.message;
+        error.classList.remove("hidden");
+        message.classList.add("hidden");
+      }
     };
   </script>
 </body>
