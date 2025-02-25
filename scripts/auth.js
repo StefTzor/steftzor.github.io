@@ -83,7 +83,7 @@ function handleAuthStateChanged(user) {
 }
 
 // Handle login form submission
-function handleLogin(e) {
+async function handleLogin(e) {
   e.preventDefault();
   
   const email = document.getElementById('email').value;
@@ -92,21 +92,38 @@ function handleLogin(e) {
   
   if (errorMsg) errorMsg.textContent = '';
   
-  auth.signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      // Redirect to exclusive content or home page
-      window.location.href = 'exclusive.html';
-    })
-    .catch((error) => {
-      console.error('Login error:', error);
-      if (errorMsg) {
-        errorMsg.textContent = error.message;
+  try {
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    const user = userCredential.user;
+    
+    // OPTIONAL: Check if user is approved in Firestore before granting access.
+    // Uncomment the following block if you want to enforce approval at login.
+    /*
+    const userDoc = await firebase.firestore().collection("users").doc(user.uid).get();
+    if (userDoc.exists) {
+      const userData = userDoc.data();
+      if (userData.status !== "approved") {
+        await auth.signOut();
+        if (errorMsg) {
+          errorMsg.textContent = "Your account is pending approval. Please wait for an administrator to approve your registration.";
+        }
+        return;
       }
-    });
+    }
+    */
+    
+    // Redirect to exclusive content or home page if approved.
+    window.location.href = 'exclusive.html';
+  } catch (error) {
+    console.error('Login error:', error);
+    if (errorMsg) {
+      errorMsg.textContent = error.message;
+    }
+  }
 }
 
-// Handle register form submission
-function handleRegister(e) {
+// Handle register form submission (modified)
+async function handleRegister(e) {
   e.preventDefault();
   
   const email = document.getElementById('email').value;
@@ -124,17 +141,36 @@ function handleRegister(e) {
     return;
   }
   
-  auth.createUserWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      // Redirect to exclusive content or home page
-      window.location.href = 'exclusive.html';
-    })
-    .catch((error) => {
-      console.error('Registration error:', error);
-      if (errorMsg) {
-        errorMsg.textContent = error.message;
-      }
+  try {
+    // Create user with email and password
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    const user = userCredential.user;
+    
+    // Store user status in Firestore as "pending"
+    await firebase.firestore().collection("users").doc(user.uid).set({
+      email: user.email,
+      status: "pending",
+      createdAt: new Date().toISOString()
     });
+    
+    // Sign out the user immediately so they cannot log in until approved
+    await auth.signOut();
+    
+    // Optionally, display a message informing the user their registration is pending
+    const message = document.getElementById('message');
+    if (message) {
+      message.textContent = "Registration successful! Your account is pending approval.";
+      message.classList.remove('hidden');
+    }
+    
+    // Redirect to the login page (or you could keep them on the same page with the message)
+    window.location.href = 'login.html';
+  } catch (error) {
+    console.error('Registration error:', error);
+    if (errorMsg) {
+      errorMsg.textContent = error.message;
+    }
+  }
 }
 
 // Handle logout
