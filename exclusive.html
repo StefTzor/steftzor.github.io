@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register - Stefanos Tzortzoglou</title>
+  <title>Exclusive Content - Stefanos Tzortzoglou</title>
   <link rel="stylesheet" href="styles/modern.css">
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -27,9 +27,9 @@
           <li><a href="portfolio.html">Portfolio</a></li>
           <li><a href="contact.html">Contact</a></li>
           <li class="dropdown">
-            <a href="#" class="dropdown-toggle">Exclusive Content <i class="fas fa-chevron-down"></i></a>
+            <a href="#" class="dropdown-toggle active">Exclusive Content <i class="fas fa-chevron-down"></i></a>
             <ul class="dropdown-menu">
-              <li><a href="exclusive.html">All Exclusive Content</a></li>
+              <li><a href="exclusive.html" class="active">All Exclusive Content</a></li>
               <li><a href="blog.html">Blog</a></li>
               <li><a href="resources.html">Resources</a></li>
             </ul>
@@ -37,7 +37,7 @@
         </ul>
         <div class="auth-buttons">
           <a href="login.html" id="loginBtn" class="btn btn-login">Login</a>
-          <a href="register.html" id="registerBtn" class="btn btn-register active">Register</a>
+          <a href="register.html" id="registerBtn" class="btn btn-register">Register</a>
           <a href="#" id="logoutBtn" class="btn btn-logout hidden">Logout</a>
         </div>
         <button class="hamburger" id="hamburger">
@@ -49,39 +49,64 @@
     </div>
   </header>
 
-  <!-- Register Section -->
+  <!-- Main Content -->
   <main>
-    <div class="auth-container">
-      <div class="auth-header">
-        <h1>Register</h1>
-        <p>Create an account to access exclusive content.</p>
+    <!-- Auth Required Message (shown when not logged in) -->
+    <section id="authRequired" class="content-locked">
+      <div class="container">
+        <div class="lock-icon">
+          <i class="fas fa-lock"></i>
+        </div>
+        <h2>Authentication Required</h2>
+        <p>You need to be logged in to view this exclusive content.</p>
+        <div class="auth-buttons-container">
+          <a href="login.html" class="btn btn-primary">Login</a>
+          <a href="register.html" class="btn btn-secondary">Register</a>
+        </div>
       </div>
-      
-      <form id="registerForm">
-        <div id="errorMsg" class="error-message"></div>
+    </section>
+
+    <!-- Exclusive Content (shown when logged in) -->
+    <section id="exclusiveContent" class="hidden">
+      <div class="container">
+        <h1 class="section-title">Exclusive Content</h1>
         
-        <div class="form-group">
-          <label for="email">Email Address</label>
-          <input type="email" id="email" class="form-control" required>
+        <div class="content-grid">
+          <div class="content-card">
+            <div class="content-image">
+              <img src="images/content1.jpg" alt="Content 1">
+            </div>
+            <div class="content-info">
+              <h3>Premium Tutorial</h3>
+              <p>Learn advanced web development techniques that will take your skills to the next level.</p>
+              <a href="#" class="btn btn-sm btn-primary">View Tutorial</a>
+            </div>
+          </div>
+          
+          <div class="content-card">
+            <div class="content-image">
+              <img src="images/content2.jpg" alt="Content 2">
+            </div>
+            <div class="content-info">
+              <h3>Exclusive Resource</h3>
+              <p>Download ready-to-use templates and tools that will speed up your development workflow.</p>
+              <a href="#" class="btn btn-sm btn-primary">Download</a>
+            </div>
+          </div>
+          
+          <div class="content-card">
+            <div class="content-image">
+              <img src="images/content3.jpg" alt="Content 3">
+            </div>
+            <div class="content-info">
+              <h3>Premium Blog Post</h3>
+              <p>Deep dive into modern techniques and best practices in frontend development.</p>
+              <a href="#" class="btn btn-sm btn-primary">Read Blog</a>
+            </div>
+          </div>
         </div>
-        
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" class="form-control" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="confirmPassword">Confirm Password</label>
-          <input type="password" id="confirmPassword" class="form-control" required>
-        </div>
-        
-        <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
-      </form>
-      
-      <div class="auth-footer">
-        <p>Already have an account? <a href="login.html">Login here</a></p>
       </div>
-    </div>
+    </section>
   </main>
 
   <!-- Footer -->
