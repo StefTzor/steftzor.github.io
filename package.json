@@ -1,0 +1,25 @@
+{
+  "name": "steftzor.github.io",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tailwindcss -i ./src/input.css -o ./dist/output.css",
+    "watch": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StefTzor/steftzor.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/StefTzor/steftzor.github.io/issues"
+  },
+  "homepage": "https://github.com/StefTzor/steftzor.github.io#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
