@@ -6,11 +6,8 @@ import {
   onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
-import { 
-  doc, 
-  setDoc, 
-  getDoc 
-} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
 
 // Wait for DOM to load
 document.addEventListener("DOMContentLoaded", () => {
@@ -47,20 +44,20 @@ async function handleLogin(e) {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Get user status from Firestore
+    // Get user status using the modular syntax
     const userDoc = await getDoc(doc(db, "users", user.uid));
     if (userDoc.exists()) {
       const userData = userDoc.data();
       if (userData.status !== "approved") {
         await signOut(auth);
         if (errorMsg) {
-          errorMsg.textContent = "Your account is pending approval. Please wait for an administrator.";
+          errorMsg.textContent = "Your account is pending approval. Please wait for an administrator to approve your registration.";
         }
         return;
       }
     }
 
-    // Redirect to exclusive content or home page
+    // Redirect if approved.
     window.location.href = "exclusive.html";
   } catch (error) {
     console.error("Login error:", error);
@@ -69,6 +66,7 @@ async function handleLogin(e) {
     }
   }
 }
+
 
 // Handle registration
 async function handleRegister(e) {
