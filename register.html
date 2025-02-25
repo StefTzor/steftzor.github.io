@@ -1,24 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register</title>
-  <link href="/dist/output.css" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/favicon.png">
-</head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-    <h2 class="text-2xl font-bold text-center mb-6">Register</h2>
-    <div class="space-y-4">
-      <input id="email" type="email" placeholder="Email" class="w-full p-2 border rounded">
-      <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded">
-      <button id="register-btn" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">Register</button>
-      <p class="text-center text-gray-600">Already have an account? <a href="login.html" class="text-blue-600 hover:underline">Log In</a></p>
-      <p id="message" class="text-green-500 text-center hidden">Registration submitted! You’ll be notified via email when your registration is approved or rejected.</p>
-      <p id="error" class="text-red-500 text-center hidden">Error</p>
-    </div>
-  </div>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StefTzor's Personal Site</title>
+    <link href="/dist/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/favicon.png">
+  </head>
+  <body class="bg-white font-inter text-gray-900">
+    <!-- Header -->
+    <header class="bg-purple-600 text-white py-4 shadow-md">
+      <div class="container mx-auto flex justify-between items-center px-4">
+        <h1 class="text-3xl font-bold flashy">StefTzor</h1>
+        <div id="user-email" class="text-lg"></div>
+      </div>
+    </header>
+  
+    <!-- Navigation -->
+    <nav class="bg-gray-100 py-4 shadow-md">
+      <div class="container mx-auto flex justify-center space-x-6">
+        <a href="index.html" class="text-purple-600 hover:text-red-600 font-semibold">Home</a>
+        <a href="exclusive1.html" class="text-purple-600 hover:text-red-600 font-semibold">Exclusive 1</a>
+        <a href="exclusive2.html" class="text-purple-600 hover:text-red-600 font-semibold">Exclusive 2</a>
+        <div id="nav-auth" class="space-x-4">
+          <a href="login.html" id="login-link" class="text-purple-600 hover:text-red-600 font-semibold">Log In</a>
+          <a href="register.html" id="register-link" class="text-purple-600 hover:text-red-600 font-semibold">Register</a>
+          <button id="logout-btn" class="btn-secondary hidden">Log Out</button>
+        </div>
+      </div>
+    </nav>
+  
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+      <section class="py-8 px-4 text-center">
+        <h2 class="text-2xl font-semibold text-purple-600">About Me</h2>
+        <p class="mt-2 text-gray-700">Hi, I’m a CS enthusiast building cool stuff!</p>
+      </section>
+      <section id="exclusive" class="py-8 px-4 text-center bg-gray-100 hidden">
+        <h2 class="text-2xl font-semibold text-red-600">Exclusive Content</h2>
+        <p class="mt-2 text-gray-700">This is for approved users only.</p>
+      </section>
+    </main>
+  
+    <!-- Footer -->
+    <footer class="bg-purple-600 text-white py-4 text-center">
+      <p>&copy; <span id="year"></span> StefTzor | <a href="https://github.com/StefTzor" class="text-red-600 hover:text-white underline">GitHub</a></p>
+    </footer>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
@@ -37,6 +65,9 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
+    // Dynamic year in footer
+    document.getElementById("year").textContent = new Date().getFullYear();
 
     document.getElementById("register-btn").onclick = async () => {
       const email = document.getElementById("email").value;

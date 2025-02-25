@@ -1,77 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Personal Site</title>
-  <link href="/dist/output.css" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/favicon.png">
-</head>
-<body class="bg-gray-100 font-sans">
-  <header class="bg-blue-600 text-white py-6 text-center">
-    <h1 class="text-3xl font-bold">Welcome to My Site</h1>
-  </header>
-  <section class="py-8 px-4 text-center">
-    <h2 class="text-2xl font-semibold">About Me</h2>
-    <p class="mt-2 text-gray-700">Hi, I’m a CS enthusiast building cool stuff!</p>
-  </section>
-  <section id="exclusive" class="py-8 px-4 text-center bg-gray-200 hidden">
-    <h2 class="text-2xl font-semibold">Exclusive Content</h2>
-    <p class="mt-2 text-gray-700">This is for approved users only.</p>
-  </section>
-  <section id="auth-status" class="py-4 text-center">
-    <a href="login.html" id="login-link" class="text-blue-600 hover:underline">Log In</a>
-    <a href="register.html" class="ml-4 text-blue-600 hover:underline">Register</a>
-    <button id="logout-btn" class="ml-4 bg-red-500 text-white px-4 py-2 rounded hidden">Log Out</button>
-  </section>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StefTzor's Personal Site</title>
+    <link href="/dist/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/favicon.png">
+  </head>
+  <body class="bg-white font-inter text-gray-900">
+    <!-- Header -->
+    <header class="bg-purple-600 text-white py-4 shadow-md">
+      <div class="container mx-auto flex justify-between items-center px-4">
+        <h1 class="text-3xl font-bold flashy">StefTzor</h1>
+        <div id="user-email" class="text-lg"></div>
+      </div>
+    </header>
+  
+    <!-- Navigation -->
+    <nav class="bg-gray-100 py-4 shadow-md">
+      <div class="container mx-auto flex justify-center space-x-6">
+        <a href="index.html" class="text-purple-600 hover:text-red-600 font-semibold">Home</a>
+        <a href="exclusive1.html" class="text-purple-600 hover:text-red-600 font-semibold">Exclusive 1</a>
+        <a href="exclusive2.html" class="text-purple-600 hover:text-red-600 font-semibold">Exclusive 2</a>
+        <div id="nav-auth" class="space-x-4">
+          <a href="login.html" id="login-link" class="text-purple-600 hover:text-red-600 font-semibold">Log In</a>
+          <a href="register.html" id="register-link" class="text-purple-600 hover:text-red-600 font-semibold">Register</a>
+          <button id="logout-btn" class="btn-secondary hidden">Log Out</button>
+        </div>
+      </div>
+    </nav>
+  
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+      <section class="py-8 px-4 text-center">
+        <h2 class="text-2xl font-semibold text-purple-600">About Me</h2>
+        <p class="mt-2 text-gray-700">Hi, I’m a CS enthusiast trying to build stuff!</p>
+      </section>
+      <section id="exclusive" class="py-8 px-4 text-center bg-gray-100 hidden">
+        <h2 class="text-2xl font-semibold text-red-600">Exclusive Content</h2>
+        <p class="mt-2 text-gray-700">This is for approved users only.</p>
+      </section>
+    </main>
+  
+    <!-- Footer -->
+    <footer class="bg-purple-600 text-white py-4 text-center">
+      <p>&copy; <span id="year"></span> StefTzor | <a href="https://github.com/StefTzor" class="text-red-600 hover:text-white underline">GitHub</a></p>
+    </footer>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyClGWoUvHfFAIYF5ms956GFhovlopncH8k",
-      authDomain: "mypersonalsite-79ce4.firebaseapp.com",
-      projectId: "mypersonalsite-79ce4",
-      storageBucket: "mypersonalsite-79ce4.firebasestorage.app",
-      messagingSenderId: "22661264733",
-      appId: "1:22661264733:web:706659ef5ffcdd057864b4"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    onAuthStateChanged(auth, async (user) => {
-      const exclusive = document.getElementById("exclusive");
-      const loginLink = document.getElementById("login-link");
-      const logoutBtn = document.getElementById("logout-btn");
-
-      if (user) {
-        // Check user status in Firestore
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists() && userDoc.data().status === "approved") {
-          exclusive.classList.remove("hidden");
-          loginLink.classList.add("hidden");
-          logoutBtn.classList.remove("hidden");
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+      import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+      import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+  
+      const firebaseConfig = {
+        apiKey: "AIzaSyClGWoUvHfFAIYF5ms956GFhovlopncH8k",
+        authDomain: "mypersonalsite-79ce4.firebaseapp.com",
+        projectId: "mypersonalsite-79ce4",
+        storageBucket: "mypersonalsite-79ce4.firebasestorage.app",
+        messagingSenderId: "22661264733",
+        appId: "1:22661264733:web:706659ef5ffcdd057864b4"
+      };
+  
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+  
+      // Dynamic year in footer
+      document.getElementById("year").textContent = new Date().getFullYear();
+  
+      // Update header and nav based on auth state
+      onAuthStateChanged(auth, async (user) => {
+        const userEmail = document.getElementById("user-email");
+        const loginLink = document.getElementById("login-link");
+        const registerLink = document.getElementById("register-link");
+        const logoutBtn = document.getElementById("logout-btn");
+        const exclusive = document.getElementById("exclusive");
+  
+        if (user) {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists() && userDoc.data().status === "approved") {
+            userEmail.textContent = user.email;
+            loginLink.classList.add("hidden");
+            registerLink.classList.add("hidden");
+            logoutBtn.classList.remove("hidden");
+            exclusive.classList.remove("hidden");
+          } else {
+            await auth.signOut();
+            userEmail.textContent = "";
+            loginLink.classList.remove("hidden");
+            registerLink.classList.remove("hidden");
+            logoutBtn.classList.add("hidden");
+            exclusive.classList.add("hidden");
+            alert("Your registration is pending admin approval.");
+          }
         } else {
-          await auth.signOut();
-          alert("Your registration is pending admin approval. You’ll be notified via email when approved.");
+          userEmail.textContent = "";
           loginLink.classList.remove("hidden");
+          registerLink.classList.remove("hidden");
           logoutBtn.classList.add("hidden");
           exclusive.classList.add("hidden");
         }
-      } else {
-        exclusive.classList.add("hidden");
-        loginLink.classList.remove("hidden");
-        logoutBtn.classList.add("hidden");
-      }
-    });
-
-    document.getElementById("logout-btn").onclick = () => {
-      signOut(auth).then(() => location.reload());
-    };
-  </script>
+      });
+  
+      document.getElementById("logout-btn").onclick = () => {
+        signOut(auth).then(() => location.reload());
+      };
+    </script>
 </body>
 </html>

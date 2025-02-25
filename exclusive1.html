@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - StefTzor's Site</title>
+  <title>Exclusive Content 1 - StefTzor's Site</title>
   <link href="/dist/output.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
 <body class="bg-white font-inter text-gray-900">
   <!-- Header -->
@@ -31,18 +31,13 @@
     </div>
   </nav>
 
-  <!-- Main Content -->
+  <!-- Main Content (Exclusive) -->
   <main class="container mx-auto py-8 px-4">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-      <h2 class="text-2xl font-bold text-center mb-6 text-purple-600">Log In</h2>
-      <div class="space-y-4">
-        <input id="email" type="email" placeholder="Email" class="w-full p-2 border rounded">
-        <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded">
-        <button id="login-btn" class="w-full btn-primary">Log In</button>
-        <p class="text-center text-gray-600">No account? <a href="register.html" class="text-purple-600 hover:text-red-600">Register</a></p>
-        <p id="error" class="text-red-600 text-center hidden">Error</p>
-      </div>
-    </div>
+    <section class="py-8 px-4 text-center">
+      <h2 class="text-2xl font-semibold text-red-600">Exclusive Content 1</h2>
+      <p class="mt-2 text-gray-700">This is premium content for approved users only. Enjoy your access!</p>
+      <!-- Add more content here, e.g., articles, images, or videos -->
+    </section>
   </main>
 
   <!-- Footer -->
@@ -52,7 +47,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -71,32 +66,41 @@
     // Dynamic year in footer
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    document.getElementById("login-btn").onclick = async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const error = document.getElementById("error");
+    // Restrict access to approved users only
+    onAuthStateChanged(auth, async (user) => {
+      const userEmail = document.getElementById("user-email");
+      const loginLink = document.getElementById("login-link");
+      const registerLink = document.getElementById("register-link");
+      const logoutBtn = document.getElementById("logout-btn");
 
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
+      if (user) {
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          if (userData.status === "approved") {
-            window.location.href = "index.html";
-          } else {
-            await auth.signOut();
-            error.textContent = "Your registration is pending admin approval. You’ll be notified via email when approved.";
-            error.classList.remove("hidden");
-          }
+        if (userDoc.exists() && userDoc.data().status === "approved") {
+          userEmail.textContent = user.email;
+          loginLink.classList.add("hidden");
+          registerLink.classList.add("hidden");
+          logoutBtn.classList.remove("hidden");
         } else {
-          throw new Error("User not found in database.");
+          await auth.signOut();
+          userEmail.textContent = "";
+          loginLink.classList.remove("hidden");
+          registerLink.classList.remove("hidden");
+          logoutBtn.classList.add("hidden");
+          alert("This content is restricted to approved users. Your registration is pending admin approval. You’ll be notified via email when approved.");
+          window.location.href = "index.html";
         }
-      } catch (err) {
-        error.textContent = err.message;
-        error.classList.remove("hidden");
+      } else {
+        userEmail.textContent = "";
+        loginLink.classList.remove("hidden");
+        registerLink.classList.remove("hidden");
+        logoutBtn.classList.add("hidden");
+        alert("Please log in or register to access exclusive content.");
+        window.location.href = "login.html";
       }
+    });
+
+    document.getElementById("logout-btn").onclick = () => {
+      signOut(auth).then(() => location.reload());
     };
   </script>
 </body>
