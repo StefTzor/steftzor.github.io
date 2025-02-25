@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="/dist/output.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
   <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -19,9 +19,11 @@
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js"></script>
-  <script>
+  <!-- Load Firebase as modules -->
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+  
     //Firebase configuration
     const firebaseConfig = {
     apiKey: "AIzaSyClGWoUvHfFAIYF5ms956GFhovlopncH8k",
@@ -31,8 +33,10 @@
     messagingSenderId: "22661264733",
     appId: "1:22661264733:web:706659ef5ffcdd057864b4"
     };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
     document.getElementById("register-btn").onclick = () => {
       const email = document.getElementById("email").value;
