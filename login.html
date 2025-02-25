@@ -8,46 +8,46 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="/favicon.png">
 </head>
-<body class="bg-white font-inter text-gray-900">
+<body class="bg-white font-inter text-gray-900 flex items-center justify-center min-h-screen">
   <!-- Header -->
-  <header class="bg-purple-600 text-white py-4 shadow-md">
+  <header class="bg-purple-600 text-white py-4 shadow-glow w-full fixed top-0">
     <div class="container mx-auto flex justify-between items-center px-4">
       <h1 class="text-3xl font-bold flashy">StefTzor</h1>
-      <div id="user-email" class="text-lg"></div>
-    </div>
-  </header>
-
-  <!-- Navigation -->
-  <nav class="bg-gray-100 py-4 shadow-md">
-    <div class="container mx-auto flex justify-center space-x-6">
-      <a href="index.html" class="text-purple-600 hover:text-red-600 font-semibold">Home</a>
-      <a href="exclusive1.html" class="text-purple-600 hover:text-red-600 font-semibold">Exclusive 1</a>
-      <a href="exclusive2.html" class="text-purple-600 hover:text-red-600 font-semibold">Exclusive 2</a>
-      <div id="nav-auth" class="space-x-4">
-        <a href="login.html" id="login-link" class="text-purple-600 hover:text-red-600 font-semibold">Log In</a>
-        <a href="register.html" id="register-link" class="text-purple-600 hover:text-red-600 font-semibold">Register</a>
+      <div id="auth-header" class="flex items-center space-x-4">
+        <a href="login.html" id="login-link" class="text-white hover:text-red-600 font-semibold hover-bounce">Log In</a>
+        <a href="register.html" id="register-link" class="text-white hover:text-red-600 font-semibold hover-bounce">Register</a>
+        <div id="user-email" class="text-lg"></div>
         <button id="logout-btn" class="btn-secondary hidden">Log Out</button>
       </div>
     </div>
+  </header>
+
+  <!-- Navigation (pushed down due to fixed header) -->
+  <nav class="bg-gray-100 py-4 shadow-glow w-full mt-16">
+    <div class="container mx-auto flex justify-center space-x-6">
+      <a href="index.html" class="text-purple-600 hover:text-red-600 font-semibold hover-bounce">Home</a>
+      <a href="exclusive1.html" class="text-purple-600 hover:text-red-600 font-semibold hover-bounce">Exclusive 1</a>
+      <a href="exclusive2.html" class="text-purple-600 hover:text-red-600 font-semibold hover-bounce">Exclusive 2</a>
+    </div>
   </nav>
 
-  <!-- Main Content -->
+  <!-- Main Content (Centered Form) -->
   <main class="container mx-auto py-8 px-4">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+    <div class="bg-white p-6 rounded-lg shadow-glow w-full max-w-md mx-auto">
       <h2 class="text-2xl font-bold text-center mb-6 text-purple-600">Log In</h2>
       <div class="space-y-4">
-        <input id="email" type="email" placeholder="Email" class="w-full p-2 border rounded">
-        <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded">
+        <input id="email" type="email" placeholder="Email" class="w-full p-2 border rounded shadow-glow">
+        <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded shadow-glow">
         <button id="login-btn" class="w-full btn-primary">Log In</button>
-        <p class="text-center text-gray-600">No account? <a href="register.html" class="text-purple-600 hover:text-red-600">Register</a></p>
+        <p class="text-center text-gray-600">No account? <a href="register.html" class="text-purple-600 hover:text-red-600 hover-bounce">Register</a></p>
         <p id="error" class="text-red-600 text-center hidden">Error</p>
       </div>
     </div>
   </main>
 
   <!-- Footer -->
-  <footer class="bg-purple-600 text-white py-4 text-center">
-    <p>&copy; <span id="year"></span> StefTzor | <a href="https://github.com/StefTzor" class="text-red-600 hover:text-white underline">GitHub</a></p>
+  <footer class="bg-purple-600 text-white py-4 text-center w-full">
+    <p>© <span id="year"></span> StefTzor | <a href="https://github.com/StefTzor" class="text-red-600 hover:text-white underline hover-bounce">GitHub</a></p>
   </footer>
 
   <script type="module">
@@ -70,6 +70,35 @@
 
     // Dynamic year in footer
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Update header based on auth state
+    onAuthStateChanged(auth, async (user) => {
+      const userEmail = document.getElementById("user-email");
+      const loginLink = document.getElementById("login-link");
+      const registerLink = document.getElementById("register-link");
+      const logoutBtn = document.getElementById("logout-btn");
+
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists() && userDoc.data().status === "approved") {
+          userEmail.textContent = user.email;
+          logoutBtn.classList.remove("hidden");
+          loginLink.classList.add("hidden");
+          registerLink.classList.add("hidden");
+        } else {
+          await auth.signOut();
+          userEmail.textContent = "";
+          logoutBtn.classList.add("hidden");
+          loginLink.classList.remove("hidden");
+          registerLink.classList.remove("hidden");
+        }
+      } else {
+        userEmail.textContent = "";
+        logoutBtn.classList.add("hidden");
+        loginLink.classList.remove("hidden");
+        registerLink.classList.remove("hidden");
+      }
+    });
 
     document.getElementById("login-btn").onclick = async () => {
       const email = document.getElementById("email").value;
