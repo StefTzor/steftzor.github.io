@@ -7,7 +7,7 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
     header, section { padding: 20px; text-align: center; }
-    #exclusive { display: none; background: #f0f0f0; } /* Hidden by default */
+    #exclusive { display: none; background: #f0f0f0; }
   </style>
 </head>
 <body>
@@ -23,7 +23,69 @@
     <p>This is for logged-in users only.</p>
   </section>
   <section id="login-area">
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
     <button id="login-btn">Log In</button>
+    <button id="register-btn">Register</button>
+    <button id="logout-btn" style="display: none;">Log Out</button>
   </section>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js"></script>
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+    apiKey: "AIzaSyClGWoUvHfFAIYF5ms956GFhovlopncH8k",
+    authDomain: "mypersonalsite-79ce4.firebaseapp.com",
+    projectId: "mypersonalsite-79ce4",
+    storageBucket: "mypersonalsite-79ce4.firebasestorage.app",
+    messagingSenderId: "22661264733",
+    appId: "1:22661264733:web:706659ef5ffcdd057864b4"
+  };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Login
+    document.getElementById("login-btn").onclick = () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => console.log("Logged in"))
+        .catch(err => alert(err.message));
+    };
+
+    // Register
+    document.getElementById("register-btn").onclick = () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => console.log("Registered"))
+        .catch(err => alert(err.message));
+    };
+
+    // Logout
+    document.getElementById("logout-btn").onclick = () => {
+      auth.signOut();
+    };
+
+    // Auth state listener
+    auth.onAuthStateChanged(user => {
+      const exclusive = document.getElementById("exclusive");
+      const loginArea = document.getElementById("login-area");
+      const logoutBtn = document.getElementById("logout-btn");
+      if (user) {
+        exclusive.style.display = "block";
+        loginArea.style.display = "none";
+        logoutBtn.style.display = "inline";
+      } else {
+        exclusive.style.display = "none";
+        loginArea.style.display = "block";
+        logoutBtn.style.display = "none";
+      }
+    });
+  </script>
 </body>
 </html>
