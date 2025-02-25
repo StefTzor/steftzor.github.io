@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300;
+  }
+  .btn-secondary {
+    @apply bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300;
+  }
+}
+
+@layer utilities {
+  .flashy {
+    @apply animate-pulse bg-gradient-to-r from-purple-600 to-red-600 text-transparent bg-clip-text;
+  }
+}
