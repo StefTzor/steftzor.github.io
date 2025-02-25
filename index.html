@@ -10,24 +10,22 @@
   </head>
   <body class="bg-white font-inter text-gray-900">
     <!-- Header -->
-    <header class="bg-purple-600 text-white py-4 shadow-md">
+    <header class="bg-purple-600 text-white py-4 shadow-glow">
       <div class="container mx-auto flex justify-between items-center px-4">
         <h1 class="text-3xl font-bold flashy">StefTzor</h1>
-        <div id="user-email" class="text-lg"></div>
+        <div id="auth-header" class="flex items-center space-x-4">
+          <div id="user-email" class="text-lg"></div>
+          <button id="logout-btn" class="btn-secondary hidden">Log Out</button>
+        </div>
       </div>
     </header>
   
     <!-- Navigation -->
-    <nav class="bg-gray-100 py-4 shadow-md">
+    <nav class="bg-gray-100 py-4 shadow-glow">
       <div class="container mx-auto flex justify-center space-x-6">
-        <a href="index.html" class="text-purple-600 hover:text-red-600 font-semibold">Home</a>
-        <a href="exclusive1.html" class="text-purple-600 hover:text-red-600 font-semibold">Exclusive 1</a>
-        <a href="exclusive2.html" class="text-purple-600 hover:text-red-600 font-semibold">Exclusive 2</a>
-        <div id="nav-auth" class="space-x-4">
-          <a href="login.html" id="login-link" class="text-purple-600 hover:text-red-600 font-semibold">Log In</a>
-          <a href="register.html" id="register-link" class="text-purple-600 hover:text-red-600 font-semibold">Register</a>
-          <button id="logout-btn" class="btn-secondary hidden">Log Out</button>
-        </div>
+        <a href="index.html" class="text-purple-600 hover:text-red-600 font-semibold hover-bounce">Home</a>
+        <a href="exclusive1.html" class="text-purple-600 hover:text-red-600 font-semibold hover-bounce">Exclusive 1</a>
+        <a href="exclusive2.html" class="text-purple-600 hover:text-red-600 font-semibold hover-bounce">Exclusive 2</a>
       </div>
     </nav>
   
@@ -70,42 +68,45 @@
       document.getElementById("year").textContent = new Date().getFullYear();
   
       // Update header and nav based on auth state
-      onAuthStateChanged(auth, async (user) => {
-        const userEmail = document.getElementById("user-email");
-        const loginLink = document.getElementById("login-link");
-        const registerLink = document.getElementById("register-link");
-        const logoutBtn = document.getElementById("logout-btn");
-        const exclusive = document.getElementById("exclusive");
-  
-        if (user) {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          if (userDoc.exists() && userDoc.data().status === "approved") {
-            userEmail.textContent = user.email;
-            loginLink.classList.add("hidden");
-            registerLink.classList.add("hidden");
-            logoutBtn.classList.remove("hidden");
-            exclusive.classList.remove("hidden");
-          } else {
-            await auth.signOut();
-            userEmail.textContent = "";
-            loginLink.classList.remove("hidden");
-            registerLink.classList.remove("hidden");
-            logoutBtn.classList.add("hidden");
-            exclusive.classList.add("hidden");
-            alert("Your registration is pending admin approval.");
-          }
-        } else {
-          userEmail.textContent = "";
-          loginLink.classList.remove("hidden");
-          registerLink.classList.remove("hidden");
-          logoutBtn.classList.add("hidden");
-          exclusive.classList.add("hidden");
-        }
-      });
-  
-      document.getElementById("logout-btn").onclick = () => {
-        signOut(auth).then(() => location.reload());
-      };
+  onAuthStateChanged(auth, async (user) => {
+  const userEmail = document.getElementById("user-email");
+  const logoutBtn = document.getElementById("logout-btn");
+  const loginLink = document.getElementById("login-link");
+  const registerLink = document.getElementById("register-link");
+
+  if (user) {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (userDoc.exists() && userDoc.data().status === "approved") {
+      userEmail.textContent = user.email;
+      logoutBtn.classList.remove("hidden");
+      loginLink.classList.add("hidden");
+      registerLink.classList.add("hidden");
+    } else {
+      await auth.signOut();
+      userEmail.textContent = "";
+      logoutBtn.classList.add("hidden");
+      loginLink.classList.remove("hidden");
+      registerLink.classList.remove("hidden");
+      if (window.location.pathname !== "/index.html") {
+        alert("This content is restricted to approved users. Your registration is pending admin approval. You’ll be notified via email when approved.");
+        window.location.href = "index.html";
+      }
+    }
+  } else {
+    userEmail.textContent = "";
+    logoutBtn.classList.add("hidden");
+    loginLink.classList.remove("hidden");
+    registerLink.classList.remove("hidden");
+    if (window.location.pathname.includes("exclusive")) {
+      alert("Please log in or register to access exclusive content.");
+      window.location.href = "login.html";
+    }
+  }
+});
+
+document.getElementById("logout-btn").onclick = () => {
+  signOut(auth).then(() => location.reload());
+};
     </script>
 </body>
 </html>
