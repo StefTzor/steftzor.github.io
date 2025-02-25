@@ -4,37 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Personal Site</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    header, section { padding: 20px; text-align: center; }
-    #exclusive { display: none; background: #f0f0f0; }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <header>
-    <h1>Welcome to My Site</h1>
+<body class="bg-gray-100 font-sans">
+  <header class="bg-blue-600 text-white py-6 text-center">
+    <h1 class="text-3xl font-bold">Welcome to My Site</h1>
   </header>
-  <section id="about">
-    <h2>About Me</h2>
-    <p>Hi, I’m an enthusiast trying to build stuff!</p>
+  <section class="py-8 px-4 text-center">
+    <h2 class="text-2xl font-semibold">About Me</h2>
+    <p class="mt-2 text-gray-700">Hi, I’m a CS enthusiast building cool stuff!</p>
   </section>
-  <section id="exclusive">
-    <h2>Exclusive Content</h2>
-    <p>This is for logged-in users only.</p>
+  <section id="exclusive" class="py-8 px-4 text-center bg-gray-200 hidden">
+    <h2 class="text-2xl font-semibold">Exclusive Content</h2>
+    <p class="mt-2 text-gray-700">This is for approved users only.</p>
   </section>
-  <section id="login-area">
-    <input id="email" type="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
-    <button id="login-btn">Log In</button>
-    <button id="register-btn">Register</button>
-    <button id="logout-btn" style="display: none;">Log Out</button>
+  <section id="auth-status" class="py-4 text-center">
+    <a href="login.html" id="login-link" class="text-blue-600 hover:underline">Log In</a>
+    <a href="register.html" class="ml-4 text-blue-600 hover:underline">Register</a>
+    <button id="logout-btn" class="ml-4 bg-red-500 text-white px-4 py-2 rounded hidden">Log Out</button>
   </section>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js"></script>
   <script>
-    // Your web app's Firebase configuration
+    //Firebase configuration
     const firebaseConfig = {
     apiKey: "AIzaSyClGWoUvHfFAIYF5ms956GFhovlopncH8k",
     authDomain: "mypersonalsite-79ce4.firebaseapp.com",
@@ -42,50 +36,30 @@
     storageBucket: "mypersonalsite-79ce4.firebasestorage.app",
     messagingSenderId: "22661264733",
     appId: "1:22661264733:web:706659ef5ffcdd057864b4"
-  };
+    };
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // Login
-    document.getElementById("login-btn").onclick = () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => console.log("Logged in"))
-        .catch(err => alert(err.message));
-    };
-
-    // Register
-    document.getElementById("register-btn").onclick = () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => console.log("Registered"))
-        .catch(err => alert(err.message));
-    };
-
-    // Logout
-    document.getElementById("logout-btn").onclick = () => {
-      auth.signOut();
-    };
-
-    // Auth state listener
     auth.onAuthStateChanged(user => {
       const exclusive = document.getElementById("exclusive");
-      const loginArea = document.getElementById("login-area");
+      const loginLink = document.getElementById("login-link");
       const logoutBtn = document.getElementById("logout-btn");
-      if (user) {
-        exclusive.style.display = "block";
-        loginArea.style.display = "none";
-        logoutBtn.style.display = "inline";
+      if (user && user.emailVerified) { // Check if email is verified
+        exclusive.classList.remove("hidden");
+        loginLink.classList.add("hidden");
+        logoutBtn.classList.remove("hidden");
       } else {
-        exclusive.style.display = "none";
-        loginArea.style.display = "block";
-        logoutBtn.style.display = "none";
+        exclusive.classList.add("hidden");
+        loginLink.classList.remove("hidden");
+        logoutBtn.classList.add("hidden");
       }
     });
+
+    document.getElementById("logout-btn").onclick = () => {
+      auth.signOut().then(() => location.reload());
+    };
   </script>
 </body>
 </html>
