@@ -101,14 +101,12 @@ async function handleRegister(e) {
     await signOut(auth);
 
     // Show message
-    const message = document.getElementById("message");
-    if (message) {
-      message.textContent = "Registration successful! Your account is pending approval.";
-      message.classList.remove("hidden");
+    const errorMsg = document.getElementById("errorMsg");
+    if (errorMsg) {
+      errorMsg.textContent = "Registration successful! Your account is pending approval. Please wait for an administrator to approve your registration.";
+      errorMsg.classList.remove("hidden");
     }
 
-    // Redirect to login
-    window.location.href = "login.html";
   } catch (error) {
     console.error("Registration error:", error);
     if (error.code === 'auth/email-already-in-use') {
