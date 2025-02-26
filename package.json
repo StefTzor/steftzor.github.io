@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/StefTzor/steftzor.github.io#readme",
   "devDependencies": {
-    "tailwindcss": "^3.4.1"
+    "tailwindcss": "^3.4.17"
   }
 }

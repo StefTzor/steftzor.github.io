@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./*.html"], // Scans all HTML files in root
+  darkMode: 'class', // Enable dark mode with class strategy
+  content: ["./*.html", "./scripts/**/*.js"], // Include your HTML and JS files
   theme: {
     extend: {},
   },

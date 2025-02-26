@@ -1,132 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stefanos Tzortzoglou</title>
-  <link rel="stylesheet" href="styles/modern.css">
+  <link href="dist/output.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
   <!-- Header -->
-  <header id="header">
-    <div class="container">
+  <header class="bg-white dark:bg-gray-800 shadow-md">
+    <div class="container mx-auto flex justify-between items-center p-4">
       <div class="logo">
-        <a href="index.html">Stefanos Tzortzoglou</a>
+        <a href="index.html" class="text-2xl font-bold text-purple-600 dark:text-purple-400">Stefanos Tzortzoglou</a>
       </div>
-      <nav>
-        <ul id="nav-menu">
-          <li><a href="index.html" class="active">Home</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="portfolio.html">Portfolio</a></li>
-          <li><a href="contact.html">Contact</a></li>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle">Exclusive Content <i class="fas fa-chevron-down"></i></a>
-            <ul class="dropdown-menu">
-              <li><a href="exclusive.html">All Exclusive Content</a></li>
-              <li><a href="blog.html">Blog</a></li>
-              <li><a href="resources.html">Resources</a></li>
+      <nav class="flex-1 text-center">
+        <ul id="nav-menu" class="inline-flex space-x-4">
+          <li><a href="index.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Home</a></li>
+          <li><a href="about.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">About</a></li>
+          <li><a href="portfolio.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Portfolio</a></li>
+          <li><a href="contact.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Contact</a></li>
+          <li class="relative group">
+            <a href="#" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Exclusive Content <i class="fas fa-chevron-down"></i></a>
+            <ul class="absolute left-0 mt-2 bg-white dark:bg-gray-800 shadow-md hidden group-hover:block">
+              <li><a href="exclusive.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">All Exclusive Content</a></li>
+              <li><a href="blog.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">Blog</a></li>
+              <li><a href="resources.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">Resources</a></li>
             </ul>
           </li>
         </ul>
-        <div class="auth-buttons">
-          <a href="login.html" id="loginBtn" class="btn btn-login">Login</a>
-          <a href="register.html" id="registerBtn" class="btn btn-register">Register</a>
-          <a href="#" id="logoutBtn" class="btn btn-logout hidden">Logout</a>
-        </div>
-        <button class="hamburger" id="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
       </nav>
+      <div class="flex space-x-4">
+        <a href="login.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-sign-in-alt"></i></a>
+        <a href="register.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-user-plus"></i></a>
+        <button id="theme-toggle" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-adjust"></i></button>
+      </div>
     </div>
   </header>
 
   <!-- Hero Section -->
-  <section class="hero">
-    <div class="container">
-      <div class="hero-content">
-        <h1>Hello, I'm <span class="highlight">Stefanos Tzortzoglou</span></h1>
-        <h2>🔧 SaaS Product Specialist | Customer Success & Technical Solutions | Problem-Solving for Growth & Product Implementation</h2>
-        <p>🚀 Passionate about solving technical challenges and helping customers succeed in the SaaS world.
-
-          With a background in Computer Science and a strong enthusiasm for technology, I work at the intersection of:
-          ✅ Customer Success
-          ✅ Technical Solutions
-          ✅ Product Adoption
-          
-          As a Product Specialist, I take ownership of the customer journey, ensuring:
-          🔹 Smooth onboarding & data integration
-          🔹 Customized solutions that bring real value
-          🔹 Optimized workflows for better efficiency
-          
-          💡 What I love doing:
-          🔧 Problem-solving & troubleshooting technical issues
-          🤝 Collaborating across teams to drive success
-          📈 Helping businesses get the most out of their tools
-          
-          I’m always eager to learn, adapt, and take on new challenges in this fast-moving industry.</p>
-        <div class="hero-buttons">
-          <a href="portfolio.html" class="btn btn-primary">View My Work</a>
-          <a href="contact.html" class="btn btn-secondary">Get In Touch</a>
-        </div>
+  <section class="hero bg-gradient-to-r from-purple-600 to-red-600 text-white py-20 text-center">
+    <div class="container mx-auto">
+      <h1 class="text-4xl font-bold">Hello, I'm <span class="highlight">Stefanos Tzortzoglou</span></h1>
+      <h2 class="text-2xl mt-4">🔧 SaaS Product Specialist | Customer Success & Technical Solutions | Problem-Solving for Growth & Product Implementation</h2>
+      <p class="mt-6">🚀 Passionate about solving technical challenges and helping customers succeed in the SaaS world.</p>
+      <div class="mt-8">
+        <a href="portfolio.html" class="btn btn-primary">View My Work</a>
+        <a href="contact.html" class="btn btn-secondary">Get In Touch</a>
       </div>
     </div>
   </section>
 
   <!-- Main Content -->
-  <main>
+  <main class="container mx-auto py-8">
     <section class="featured-projects">
-      <div class="container">
-        <h2 class="section-title">Featured Projects</h2>
-        <div class="projects-grid">
-          <!-- Project cards would go here -->
-          <div class="project-card">
-            <div class="project-image">
-              <img src="images/project1.jpg" alt="Project 1">
-            </div>
-            <div class="project-info">
-              <h3>Project Title</h3>
-              <p>Short description of the project and technologies used.</p>
-              <div class="project-tags">
-                <span>HTML</span>
-                <span>CSS</span>
-                <span>JavaScript</span>
-              </div>
-              <a href="#" class="btn btn-sm">View Project</a>
-            </div>
+      <h2 class="text-3xl font-bold text-center mb-8">Featured Projects</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Project cards would go here -->
+        <div class="project-card bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+          <div class="project-image">
+            <img src="images/project1.jpg" alt="Project 1" class="w-full h-48 object-cover">
           </div>
-          <!-- More project cards -->
+          <div class="p-4">
+            <h3 class="text-xl font-bold">Project Title</h3>
+            <p class="mt-2 text-gray-700 dark:text-gray-300">Short description of the project and technologies used.</p>
+            <div class="mt-4">
+              <span class="inline-block bg-purple-600 text-white px-2 py-1 rounded">HTML</span>
+              <span class="inline-block bg-purple-600 text-white px-2 py-1 rounded">CSS</span>
+              <span class="inline-block bg-purple-600 text-white px-2 py-1 rounded">JavaScript</span>
+            </div>
+            <a href="#" class="btn btn-sm mt-4">View Project</a>
+          </div>
         </div>
-        <div class="text-center">
-          <a href="portfolio.html" class="btn btn-outline">See All Projects</a>
-        </div>
+        <!-- More project cards -->
+      </div>
+      <div class="text-center mt-8">
+        <a href="portfolio.html" class="btn btn-outline">See All Projects</a>
       </div>
     </section>
   </main>
 
   <!-- Footer -->
-  <footer id="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-info">
-          <h3>Stefanos Tzortzoglou</h3>
-          <p>🔧 SaaS Product Specialist | Customer Success & Technical Solutions | Problem-Solving for Growth & Product Implementation</p>
-        </div>
-        <div class="footer-social">
-          <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
-          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        </div>
+  <footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto text-center">
+      <h3 class="text-2xl font-bold">Stefanos Tzortzoglou</h3>
+      <p class="mt-2">🔧 SaaS Product Specialist | Customer Success & Technical Solutions | Problem-Solving for Growth & Product Implementation</p>
+      <div class="mt-4">
+        <a href="#" class="text-white mx-2"><i class="fab fa-github"></i></a>
+        <a href="#" class="text-white mx-2"><i class="fab fa-linkedin"></i></a>
+        <a href="#" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 Stefanos Tzortzoglou. All rights reserved.</p>
-      </div>
+      <p class="mt-4">&copy; 2025 Stefanos Tzortzoglou. All rights reserved.</p>
     </div>
   </footer>
 
@@ -134,5 +102,27 @@
   <script type="module" src="scripts/firebase-config.js"></script>
   <script type="module" src="scripts/auth.js"></script>
   <script src="scripts/main.js"></script>
+  <script>
+    // Theme toggle script
+    const themeToggle = document.getElementById('theme-toggle');
+    const htmlElement = document.documentElement;
+
+    themeToggle.addEventListener('click', () => {
+      if (htmlElement.classList.contains('dark')) {
+        htmlElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        htmlElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
+    // Set theme on initial load
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      htmlElement.classList.add('dark');
+    } else {
+      htmlElement.classList.remove('dark');
+    }
+  </script>
 </body>
 </html>
