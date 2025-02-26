@@ -1,103 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register - Stefanos Tzortzoglou</title>
-  <link rel="stylesheet" href="styles/modern.css">
+  <link href="dist/output.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-  <!-- Header -->
-  <header id="header">
-    <div class="container">
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <header class="bg-white dark:bg-gray-800 shadow-md">
+    <div class="container mx-auto flex justify-between items-center p-4">
       <div class="logo">
-        <a href="index.html">Stefanos Tzortzoglou</a>
+        <a href="index.html" class="text-2xl font-bold text-purple-600 dark:text-purple-400">Stefanos Tzortzoglou</a>
       </div>
-      <nav>
-        <ul id="nav-menu">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="portfolio.html">Portfolio</a></li>
-          <li><a href="contact.html">Contact</a></li>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle">Exclusive Content <i class="fas fa-chevron-down"></i></a>
-            <ul class="dropdown-menu">
-              <li><a href="exclusive.html">All Exclusive Content</a></li>
-              <li><a href="blog.html">Blog</a></li>
-              <li><a href="resources.html">Resources</a></li>
+      <nav class="flex-1 text-center">
+        <ul id="nav-menu" class="inline-flex space-x-4">
+          <li><a href="index.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Home</a></li>
+          <li><a href="about.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">About</a></li>
+          <li><a href="portfolio.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Portfolio</a></li>
+          <li><a href="contact.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Contact</a></li>
+          <li class="relative group">
+            <a href="#" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Exclusive Content <i class="fas fa-chevron-down"></i></a>
+            <ul class="absolute left-0 mt-2 bg-white dark:bg-gray-800 shadow-md hidden group-hover:block">
+              <li><a href="exclusive.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">All Exclusive Content</a></li>
+              <li><a href="blog.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">Blog</a></li>
+              <li><a href="resources.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">Resources</a></li>
             </ul>
           </li>
         </ul>
-        <div class="auth-buttons">
-          <a href="login.html" id="loginBtn" class="btn btn-login">Login</a>
-          <a href="register.html" id="registerBtn" class="btn btn-register active">Register</a>
-          <a href="#" id="logoutBtn" class="btn btn-logout hidden">Logout</a>
-        </div>
-        <button class="hamburger" id="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
       </nav>
+      <div class="flex space-x-4">
+        <a href="login.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-sign-in-alt"></i></a>
+        <a href="register.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-user-plus"></i></a>
+        <button id="theme-toggle" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-adjust"></i></button>
+      </div>
     </div>
   </header>
 
-  <!-- Register Section -->
-  <main>
-    <div class="auth-container">
-      <div class="auth-header">
-        <h1>Register</h1>
-        <p>Create an account to access exclusive content.</p>
-      </div>
-      
-      <form id="registerForm">
-        <div id="errorMsg" class="error-message"></div>
-        
-        <div class="form-group">
-          <label for="email">Email Address</label>
-          <input type="email" id="email" class="form-control" required>
+  <main class="container mx-auto py-8">
+    <section class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+      <h2 class="text-2xl font-bold mb-6">Register</h2>
+      <form>
+        <div class="mb-4">
+          <label for="username" class="block text-gray-700 dark:text-gray-300">Username</label>
+          <input type="text" id="username" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded">
         </div>
-        
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" class="form-control" required>
+        <div class="mb-4">
+          <label for="email" class="block text-gray-700 dark:text-gray-300">Email</label>
+          <input type="email" id="email" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded">
         </div>
-        
-        <div class="form-group">
-          <label for="confirmPassword">Confirm Password</label>
-          <input type="password" id="confirmPassword" class="form-control" required>
+        <div class="mb-4">
+          <label for="password" class="block text-gray-700 dark:text-gray-300">Password</label>
+          <input type="password" id="password" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded">
         </div>
-        
-        <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
+        <div class="mb-4">
+          <label for="confirm-password" class="block text-gray-700 dark:text-gray-300">Confirm Password</label>
+          <input type="password" id="confirm-password" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded">
+        </div>
+        <button type="submit" class="btn btn-primary w-full">Register</button>
       </form>
-      <div class="auth-footer">
-        <p>Already have an account? <a href="login.html">Login here</a></p>
-      </div>
-    </div>
+    </section>
   </main>
 
-  <!-- Footer -->
-  <footer id="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-info">
-          <h3>Stefanos Tzortzoglou</h3>
-          <p>🔧 SaaS Product Specialist | Customer Success & Technical Solutions | Problem-Solving for Growth & Product Implementation</p>
-        </div>
-        <div class="footer-social">
-          <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
-          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        </div>
+  <footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto text-center">
+      <h3 class="text-2xl font-bold">Stefanos Tzortzoglou</h3>
+      <p class="mt-2">🔧 SaaS Product Specialist | Customer Success & Technical Solutions | Problem-Solving for Growth & Product Implementation</p>
+      <div class="mt-4">
+        <a href="#" class="text-white mx-2"><i class="fab fa-github"></i></a>
+        <a href="#" class="text-white mx-2"><i class="fab fa-linkedin"></i></a>
+        <a href="#" class="text-white mx-2"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-white mx-2"><i class="fab fa-instagram"></i></a>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 Stefanos Tzortzoglou. All rights reserved.</p>
-      </div>
+      <p class="mt-4">&copy; 2025 Stefanos Tzortzoglou. All rights reserved.</p>
     </div>
   </footer>
 
@@ -105,5 +83,27 @@
   <script type="module" src="scripts/firebase-config.js"></script>
   <script type="module" src="scripts/auth.js"></script>
   <script src="scripts/main.js"></script>
+  <script>
+    // Theme toggle script
+    const themeToggle = document.getElementById('theme-toggle');
+    const htmlElement = document.documentElement;
+
+    themeToggle.addEventListener('click', () => {
+      if (htmlElement.classList.contains('dark')) {
+        htmlElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        htmlElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
+    // Set theme on initial load
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      htmlElement.classList.add('dark');
+    } else {
+      htmlElement.classList.remove('dark');
+    }
+  </script>
 </body>
 </html>
