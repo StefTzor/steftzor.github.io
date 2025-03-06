@@ -1,62 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Exclusive Content - Stefanos Tzortzoglou</title>
-  <link rel="stylesheet" href="styles/modern.css">
+  <link href="dist/output.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
   <!-- Header -->
-  <header id="header">
-    <div class="container">
+  <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center p-4">
       <div class="logo">
-        <a href="index.html">Stefanos Tzortzoglou</a>
+        <a href="index.html" class="text-2xl font-bold text-purple-600 dark:text-purple-400">Stefanos Tzortzoglou</a>
       </div>
-      <nav>
-        <ul id="nav-menu">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="portfolio.html">Portfolio</a></li>
-          <li><a href="contact.html">Contact</a></li>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle active">Exclusive Content <i class="fas fa-chevron-down"></i></a>
-            <ul class="dropdown-menu">
-              <li><a href="exclusive.html" class="active">All Exclusive Content</a></li>
-              <li><a href="blog.html">Blog</a></li>
-              <li><a href="resources.html">Resources</a></li>
+      
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex space-x-4">
+        <a href="index.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Home</a>
+        <a href="about.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">About</a>
+        <a href="portfolio.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Portfolio</a>
+        <a href="contact.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Contact</a>
+        <div class="relative group">
+          <!-- Parent Trigger -->
+          <a href="#" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">
+            Exclusive Content <i class="fas fa-chevron-down"></i>
+          </a>
+          
+          <!-- Dropdown Menu -->
+          <div class="absolute left-0 mt-2 bg-white dark:bg-gray-800 shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+            <ul>
+              <li><a href="exclusive.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">All Exclusive Content</a></li>
+              <li><a href="blog.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Blog</a></li>
+              <li><a href="resources.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Resources</a></li>
             </ul>
-          </li>
-        </ul>
-        <div class="auth-buttons">
-          <a href="login.html" id="loginBtn" class="btn btn-login">Login</a>
-          <a href="register.html" id="registerBtn" class="btn btn-register">Register</a>
-          <a href="#" id="logoutBtn" class="btn btn-logout hidden">Logout</a>
+          </div>
         </div>
-        <button class="hamburger" id="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
       </nav>
+      
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden">
+        <button id="menu-toggle" class="text-gray-900 dark:text-gray-100 text-2xl">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      
+      <!-- Desktop Actions -->
+      <div class="hidden md:flex space-x-4">
+        <a href="login.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-sign-in-alt"></i></a>
+        <a href="register.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-user-plus"></i></a>
+        <button aria-label="Toggle theme" id="theme-toggle" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-adjust"></i></button>
+      </div>
     </div>
+    
+    <!-- Mobile Navigation Overlay -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden" id="overlay"></div>
+    
+    <!-- Mobile Navigation Menu -->
+    <nav class="fixed top-0 right-0 w-4/5 h-full bg-white dark:bg-gray-800 z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-4 overflow-y-auto" id="mobile-nav">
+      <div class="flex justify-between items-center mb-6">
+        <div class="text-xl font-bold text-purple-600 dark:text-purple-400">Menu</div>
+        <button id="close-menu" class="text-gray-900 dark:text-gray-100 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <ul class="space-y-4">
+        <li><a href="index.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Home</a></li>
+        <li><a href="about.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">About</a></li>
+        <li><a href="portfolio.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Portfolio</a></li>
+        <li><a href="contact.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Contact</a></li>
+        <li>
+          <div class="flex justify-between items-center cursor-pointer text-gray-900 dark:text-gray-100" id="exclusive-toggle">
+            <span>Exclusive Content</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <ul class="pl-4 mt-2 space-y-2 hidden" id="mobile-dropdown">
+            <li><a href="exclusive.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">All Exclusive Content</a></li>
+            <li><a href="blog.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Blog</a></li>
+            <li><a href="resources.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Resources</a></li>
+          </ul>
+        </li>
+        <li class="pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div class="flex space-x-4">
+            <a href="login.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">
+              <i class="fas fa-sign-in-alt mr-2"></i> Login
+            </a>
+            <a href="register.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">
+              <i class="fas fa-user-plus mr-2"></i> Register
+            </a>
+          </div>
+        </li>
+      </ul>
+    </nav>
   </header>
 
   <!-- Main Content -->
-  <main>
+  <main class="container mx-auto py-8 px-4">
     <!-- Auth Required Message (shown when not logged in) -->
-    <section id="authRequired" class="content-locked">
-      <div class="container">
-        <div class="lock-icon">
+    <section id="authRequired" class="content-locked text-center py-12">
+      <div class="container mx-auto">
+        <div class="lock-icon text-6xl mb-4">
           <i class="fas fa-lock"></i>
         </div>
-        <h2>Authentication Required</h2>
-        <p>You need to be logged in to view this exclusive content.</p>
-        <div class="auth-buttons-container">
+        <h2 class="text-2xl font-bold mb-4">Authentication Required</h2>
+        <p class="mb-6">You need to be logged in to view this exclusive content.</p>
+        <div class="flex justify-center space-x-4">
           <a href="login.html" class="btn btn-primary">Login</a>
           <a href="register.html" class="btn btn-secondary">Register</a>
         </div>
@@ -65,40 +116,40 @@
 
     <!-- Exclusive Content (shown when logged in) -->
     <section id="exclusiveContent" class="hidden">
-      <div class="container">
-        <h1 class="section-title">Exclusive Content</h1>
+      <div class="container mx-auto">
+        <h1 class="text-3xl font-bold text-center mb-8">Exclusive Content</h1>
         
-        <div class="content-grid">
-          <div class="content-card">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <div class="content-card bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
             <div class="content-image">
-              <img src="images/content1.jpg" alt="Content 1">
+              <img src="images/content1.jpg" alt="Content 1" class="w-full h-48 object-cover">
             </div>
-            <div class="content-info">
-              <h3>Premium Tutorial</h3>
-              <p>Learn advanced web development techniques that will take your skills to the next level.</p>
-              <a href="#" class="btn btn-sm btn-primary">View Tutorial</a>
+            <div class="p-4">
+              <h3 class="text-xl font-bold">Premium Tutorial</h3>
+              <p class="mt-2 text-gray-700 dark:text-gray-300">Learn advanced web development techniques that will take your skills to the next level.</p>
+              <a href="#" class="btn btn-sm btn-primary mt-4">View Tutorial</a>
             </div>
           </div>
           
-          <div class="content-card">
+          <div class="content-card bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
             <div class="content-image">
-              <img src="images/content2.jpg" alt="Content 2">
+              <img src="images/content2.jpg" alt="Content 2" class="w-full h-48 object-cover">
             </div>
-            <div class="content-info">
-              <h3>Exclusive Resource</h3>
-              <p>Download ready-to-use templates and tools that will speed up your development workflow.</p>
-              <a href="#" class="btn btn-sm btn-primary">Download</a>
+            <div class="p-4">
+              <h3 class="text-xl font-bold">Exclusive Resource</h3>
+              <p class="mt-2 text-gray-700 dark:text-gray-300">Download ready-to-use templates and tools that will speed up your development workflow.</p>
+              <a href="#" class="btn btn-sm btn-primary mt-4">Download</a>
             </div>
           </div>
           
-          <div class="content-card">
+          <div class="content-card bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
             <div class="content-image">
-              <img src="images/content3.jpg" alt="Content 3">
+              <img src="images/content3.jpg" alt="Content 3" class="w-full h-48 object-cover">
             </div>
-            <div class="content-info">
-              <h3>Premium Blog Post</h3>
-              <p>Deep dive into modern techniques and best practices in frontend development.</p>
-              <a href="#" class="btn btn-sm btn-primary">Read Blog</a>
+            <div class="p-4">
+              <h3 class="text-xl font-bold">Premium Blog Post</h3>
+              <p class="mt-2 text-gray-700 dark:text-gray-300">Deep dive into modern techniques and best practices in frontend development.</p>
+              <a href="#" class="btn btn-sm btn-primary mt-4">Read Blog</a>
             </div>
           </div>
         </div>
@@ -107,23 +158,17 @@
   </main>
 
   <!-- Footer -->
-  <footer id="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-info">
-          <h3>Stefanos Tzortzoglou</h3>
-          <p>🔧 SaaS Product Specialist | Customer Success & Technical Solutions | Problem-Solving for Growth & Product Implementation</p>
-        </div>
-        <div class="footer-social">
-          <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
-          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        </div>
+  <footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto text-center px-4">
+      <h3 class="text-xl md:text-2xl font-bold">Stefanos Tzortzoglou</h3>
+      <p class="mt-2 text-sm md:text-base">🔧 SaaS Product Specialist | Customer Success & Technical Solutions</p>
+      <div class="mt-4 flex justify-center space-x-4">
+        <a href="#" class="text-white hover:text-purple-400"><i class="fab fa-github text-xl"></i></a>
+        <a href="#" class="text-white hover:text-purple-400"><i class="fab fa-linkedin text-xl"></i></a>
+        <a href="#" class="text-white hover:text-purple-400"><i class="fab fa-twitter text-xl"></i></a>
+        <a href="#" class="text-white hover:text-purple-400"><i class="fab fa-instagram text-xl"></i></a>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 Stefanos Tzortzoglou. All rights reserved.</p>
-      </div>
+      <p class="mt-4 text-sm">&copy; 2025 Stefanos Tzortzoglou. All rights reserved.</p>
     </div>
   </footer>
 
@@ -131,5 +176,62 @@
   <script type="module" src="scripts/firebase-config.js"></script>
   <script type="module" src="scripts/auth.js"></script>
   <script src="scripts/main.js"></script>
+  <script>
+    // Theme toggle script
+    const themeToggle = document.getElementById('theme-toggle');
+    const htmlElement = document.documentElement;
+
+    themeToggle.addEventListener('click', () => {
+      if (htmlElement.classList.contains('dark')) {
+        htmlElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        htmlElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
+    // Set theme on initial load
+    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      htmlElement.classList.add('dark');
+    } else {
+      htmlElement.classList.remove('dark');
+    }
+    
+    // Mobile menu functionality
+    const menuToggle = document.getElementById('menu-toggle');
+    const closeMenu = document.getElementById('close-menu');
+    const mobileNav = document.getElementById('mobile-nav');
+    const overlay = document.getElementById('overlay');
+    const exclusiveToggle = document.getElementById('exclusive-toggle');
+    const dropdownMenu = document.getElementById('mobile-dropdown');
+    
+    menuToggle.addEventListener('click', () => {
+      mobileNav.classList.add('translate-x-0');
+      overlay.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    });
+    
+    closeMenu.addEventListener('click', closeMenuFunction);
+    overlay.addEventListener('click', closeMenuFunction);
+    
+    function closeMenuFunction() {
+      mobileNav.classList.remove('translate-x-0');
+      overlay.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    
+    exclusiveToggle.addEventListener('click', () => {
+      dropdownMenu.classList.toggle('hidden');
+      const icon = exclusiveToggle.querySelector('i');
+      if (!dropdownMenu.classList.contains('hidden')) {
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+      } else {
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+      }
+    });
+  </script>
 </body>
 </html>
