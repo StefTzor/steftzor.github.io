@@ -726,6 +726,10 @@ html {
   height: 12rem;
 }
 
+.min-h-screen {
+  min-height: 100vh;
+}
+
 .w-full {
   width: 100%;
 }
@@ -734,8 +738,16 @@ html {
   max-width: 28rem;
 }
 
+.flex-grow {
+  flex-grow: 1;
+}
+
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.flex-col {
+  flex-direction: column;
 }
 
 .items-center {
@@ -957,6 +969,10 @@ html {
 
 .duration-200 {
   transition-duration: 200ms;
+}
+
+.duration-300 {
+  transition-duration: 300ms;
 }
 
 @keyframes pulse {
