@@ -5,5 +5,10 @@ module.exports = {
   theme: {
     extend: {},
   },
+  variants: {
+    extend: {
+      textColor: ['hover', 'dark:hover'],
+    },
+  },
   plugins: [],
 };
