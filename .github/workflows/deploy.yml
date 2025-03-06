@@ -15,7 +15,11 @@ jobs:
       - name: Generate Firebase Config File
         run: |
           echo "Generating firebase-config.js..."
-          cat <<EOF > firebase-config.js
+          cat <<EOF > scripts/firebase-config.js
+          import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+          import { getAuth } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+          import { getFirestore } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+
           const firebaseConfig = {
             apiKey: "${{ secrets.FIREBASE_API_KEY }}",
             authDomain: "${{ secrets.FIREBASE_AUTH_DOMAIN }}",
@@ -24,7 +28,12 @@ jobs:
             messagingSenderId: "${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}",
             appId: "${{ secrets.FIREBASE_APP_ID }}"
           };
-          window.firebaseConfig = firebaseConfig;
+
+          const app = initializeApp(firebaseConfig);
+          const auth = getAuth(app);
+          const db = getFirestore(app);
+
+          export { auth, db };
           EOF
 
       - name: Install Dependencies
