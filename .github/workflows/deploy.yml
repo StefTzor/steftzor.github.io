@@ -3,7 +3,10 @@ name: Deploy Firebase Config to GitHub Pages
 on:
   push:
     branches:
-      - main  # Change if your default branch is different
+      - main  # Change if default branch is different
+
+permissions:
+  contents: write  # Allow the action to push changes
 
 jobs:
   deploy:
