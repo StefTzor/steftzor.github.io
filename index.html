@@ -9,90 +9,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    /* Hide mobile elements by default */
-    .mobile-menu-button,
-    .mobile-nav,
-    .overlay {
-      display: none;
-    }
-    
-    /* Mobile-specific styles */
-    @media (max-width: 768px) {
-      .desktop-menu {
-        display: none;
-      }
-      .mobile-menu-button {
-        display: block;
-      }
-      .mobile-nav {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 70%;
-        height: 100vh;
-        background-color: white;
-        z-index: 100;
-        transition: right 0.3s ease-in-out;
-        padding: 1rem;
-        overflow-y: auto;
-      }
-      .dark .mobile-nav {
-        background-color: #1f2937; /* dark:bg-gray-800 */
-      }
-      .mobile-nav.open {
-        right: 0;
-        display: block;
-      }
-      .overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 99;
-        display: none;
-      }
-      .overlay.active {
-        display: block;
-      }
-      .mobile-dropdown {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
-      }
-      .mobile-dropdown.open {
-        max-height: 500px;
-      }
-    }
-    
-    /* Additional responsive styles */
-    .btn {
-      @apply px-4 py-2 rounded-md font-medium transition-colors;
-    }
-    .btn-primary {
-      @apply bg-white text-purple-600 hover:bg-gray-100;
-    }
-    .btn-secondary {
-      @apply bg-transparent border border-white text-white hover:bg-white hover:text-purple-600;
-    }
-    .btn-outline {
-      @apply border border-purple-600 text-purple-600 dark:border-purple-400 dark:text-purple-400 hover:bg-purple-600 hover:text-white dark:hover:bg-purple-400;
-    }
-    .btn-sm {
-      @apply px-3 py-1 text-sm;
-    }
-    
-    /* Make buttons stack on mobile */
-    @media (max-width: 640px) {
-      .hero .btn {
-        display: block;
-        width: 80%;
-        margin: 0.5rem auto;
-      }
-    }
-  </style>
 </head>
 <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
   <!-- Header -->
@@ -103,7 +19,7 @@
       </div>
       
       <!-- Desktop Navigation -->
-      <nav class="desktop-menu flex space-x-4">
+      <nav class="hidden md:flex space-x-4">
         <a href="index.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Home</a>
         <a href="about.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">About</a>
         <a href="portfolio.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Portfolio</a>
@@ -126,14 +42,14 @@
       </nav>
       
       <!-- Mobile Menu Button -->
-      <div class="mobile-menu-button">
+      <div class="md:hidden">
         <button id="menu-toggle" class="text-gray-900 dark:text-gray-100 text-2xl">
           <i class="fas fa-bars"></i>
         </button>
       </div>
       
       <!-- Desktop Actions -->
-      <div class="desktop-menu flex space-x-4">
+      <div class="hidden md:flex space-x-4">
         <a href="login.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-sign-in-alt"></i></a>
         <a href="register.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-user-plus"></i></a>
         <button aria-label="Toggle theme" id="theme-toggle" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-adjust"></i></button>
@@ -141,10 +57,10 @@
     </div>
     
     <!-- Mobile Navigation Overlay -->
-    <div class="overlay" id="overlay"></div>
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden" id="overlay"></div>
     
     <!-- Mobile Navigation Menu -->
-    <nav class="mobile-nav" id="mobile-nav">
+    <nav class="fixed top-0 right-0 w-4/5 h-full bg-white dark:bg-gray-800 z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-4 overflow-y-auto" id="mobile-nav">
       <div class="flex justify-between items-center mb-6">
         <div class="text-xl font-bold text-purple-600 dark:text-purple-400">Menu</div>
         <button id="close-menu" class="text-gray-900 dark:text-gray-100 text-2xl">
@@ -161,7 +77,7 @@
             <span>Exclusive Content</span>
             <i class="fas fa-chevron-down"></i>
           </div>
-          <ul class="mobile-dropdown pl-4 mt-2 space-y-2">
+          <ul class="pl-4 mt-2 space-y-2 hidden" id="mobile-dropdown">
             <li><a href="exclusive.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">All Exclusive Content</a></li>
             <li><a href="blog.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Blog</a></li>
             <li><a href="resources.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Resources</a></li>
@@ -270,11 +186,11 @@
     const mobileNav = document.getElementById('mobile-nav');
     const overlay = document.getElementById('overlay');
     const exclusiveToggle = document.getElementById('exclusive-toggle');
-    const dropdownMenu = exclusiveToggle.nextElementSibling;
+    const dropdownMenu = document.getElementById('mobile-dropdown');
     
     menuToggle.addEventListener('click', () => {
-      mobileNav.classList.add('open');
-      overlay.classList.add('active');
+      mobileNav.classList.add('translate-x-0');
+      overlay.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     });
     
@@ -282,15 +198,15 @@
     overlay.addEventListener('click', closeMenuFunction);
     
     function closeMenuFunction() {
-      mobileNav.classList.remove('open');
-      overlay.classList.remove('active');
+      mobileNav.classList.remove('translate-x-0');
+      overlay.classList.add('hidden');
       document.body.style.overflow = '';
     }
     
     exclusiveToggle.addEventListener('click', () => {
-      dropdownMenu.classList.toggle('open');
+      dropdownMenu.classList.toggle('hidden');
       const icon = exclusiveToggle.querySelector('i');
-      if (dropdownMenu.classList.contains('open')) {
+      if (!dropdownMenu.classList.contains('hidden')) {
         icon.classList.remove('fa-chevron-down');
         icon.classList.add('fa-chevron-up');
       } else {
