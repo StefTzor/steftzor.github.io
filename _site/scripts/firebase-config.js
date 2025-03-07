@@ -18,7 +18,5 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-console.log("Firebase initialized with the following config:", firebaseConfig);
-
 // Export the initialized instances so other scripts can use them
 export { auth, db };
