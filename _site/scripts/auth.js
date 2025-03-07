@@ -9,7 +9,6 @@ import { doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebase
 
 // Wait for DOM to load
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("DOM fully loaded and parsed");
   onAuthStateChanged(auth, handleAuthStateChanged);
 
   // Set up event listeners
@@ -47,13 +46,11 @@ async function handleLogin(e) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-    console.log("User logged in:", user);
 
     // Get user status using the modular syntax
     const userDoc = await getDoc(doc(db, "users", user.uid));
     if (userDoc.exists()) {
       const userData = userDoc.data();
-      console.log("User data:", userData);
       if (userData.status !== "approved") {
         await signOut(auth);
         if (errorMsg) {
@@ -92,7 +89,6 @@ async function handleRegister(e) {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-    console.log("User registered:", user);
 
     // Store user status in Firestore as "pending"
     await setDoc(doc(db, "users", user.uid), {
@@ -127,7 +123,6 @@ function handleLogout(e) {
 
   signOut(auth)
     .then(() => {
-      console.log("User logged out");
       window.location.href = "index.html";
     })
     .catch((error) => {
@@ -142,7 +137,6 @@ function handleAuthStateChanged(user) {
   const logoutBtn = document.getElementById("logoutBtn");
 
   if (user) {
-    console.log("User logged in:", user.email);
 
     if (loginBtn) loginBtn.classList.add("hidden");
     if (registerBtn) registerBtn.classList.add("hidden");
@@ -156,7 +150,6 @@ function handleAuthStateChanged(user) {
       authRequired.classList.add("hidden");
     }
   } else {
-    console.log("User logged out");
 
     if (loginBtn) loginBtn.classList.remove("hidden");
     if (registerBtn) registerBtn.classList.remove("hidden");
@@ -191,7 +184,6 @@ async function handleApproveUser(e) {
     await updateDoc(doc(db, "users", userId), {
       status: "approved",
     });
-    console.log("User approved:", userId);
 
     // Show success message
     const message = document.getElementById("message");

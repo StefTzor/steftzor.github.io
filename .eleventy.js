@@ -3,6 +3,8 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy("dist");
   eleventyConfig.addPassthroughCopy("scripts");
   eleventyConfig.addPassthroughCopy("images");
+  eleventyConfig.addPassthroughCopy({"favicon": "/"});
+
 
   return {
     dir: {
