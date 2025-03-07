@@ -10,6 +10,6 @@ module.exports = function(eleventyConfig) {
       includes: "_includes", // Folder for partials like headers/footers
       output: "_site",         // Build output folder (for GitHub Pages)
     },
-    pathPrefix: "/steftzor.github.io/", // Important: Set pathPrefix to `/` for GitHub Pages root deployment
+    pathPrefix: "/", // Important: Set pathPrefix to `/` for GitHub Pages root deployment
   };
 };
