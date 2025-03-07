@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Stefanos Tzortzoglou</title>
+  <link href="dist/output.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <!-- Header -->
+    <!-- Header -->
+  <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center p-4">
+      <div class="logo">
+        <a href="/index.njk" class="text-2xl font-bold text-purple-600 dark:text-purple-400">Stefanos Tzortzoglou</a>
+      </div>
+      
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex space-x-4">
+        <a href="/index.njk" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Home</a>
+        <a href="about.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">About</a>
+        <a href="portfolio.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Portfolio</a>
+        <a href="contact.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Contact</a>
+        <div class="relative group">
+          <!-- Parent Trigger -->
+          <a href="#" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">
+            Exclusive Content <i class="fas fa-chevron-down"></i>
+          </a>
+          
+          <!-- Dropdown Menu -->
+          <div class="absolute left-0 mt-2 bg-white dark:bg-gray-800 shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+            <ul>
+              <li><a href="/exclusive.njk" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">All Exclusive Content</a></li>
+              <li><a href="blog.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Blog</a></li>
+              <li><a href="resources.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Resources</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden">
+        <button id="menu-toggle" class="text-gray-900 dark:text-gray-100 text-2xl">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      
+      <!-- Desktop Actions -->
+      <div class="hidden md:flex space-x-4">
+        <a href="/login.njk" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-sign-in-alt"></i></a>
+        <a href="/register.njk" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-user-plus"></i></a>
+        <button aria-label="Toggle theme" id="theme-toggle" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-adjust"></i></button>
+      </div>
+    </div>
+    
+    <!-- Mobile Navigation Overlay -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden" id="overlay"></div>
+    
+    <!-- Mobile Navigation Menu -->
+    <nav class="fixed top-0 right-0 w-4/5 h-full bg-white dark:bg-gray-800 z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-4 overflow-y-auto" id="mobile-nav">
+      <div class="flex justify-between items-center mb-6">
+        <div class="text-xl font-bold text-purple-600 dark:text-purple-400">Menu</div>
+        <button id="close-menu" class="text-gray-900 dark:text-gray-100 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <ul class="space-y-4">
+        <li><a href="/index.njk" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Home</a></li>
+        <li><a href="about.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">About</a></li>
+        <li><a href="portfolio.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Portfolio</a></li>
+        <li><a href="contact.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Contact</a></li>
+        <li>
+          <div class="flex justify-between items-center cursor-pointer text-gray-900 dark:text-gray-100" id="exclusive-toggle">
+            <span>Exclusive Content</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <ul class="pl-4 mt-2 space-y-2 hidden" id="mobile-dropdown">
+            <li><a href="/exclusive.njk" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">All Exclusive Content</a></li>
+            <li><a href="blog.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Blog</a></li>
+            <li><a href="resources.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Resources</a></li>
+          </ul>
+        </li>
+        <li class="pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div class="flex space-x-4">
+            <a href="/login.njk" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">
+              <i class="fas fa-sign-in-alt mr-2"></i> Login
+            </a>
+            <a href="/register.njk" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">
+              <i class="fas fa-user-plus mr-2"></i> Register
+            </a>
+          </div>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+<!-- Main Content -->
+<main class="flex-grow container mx-auto py-8">
+  <section class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6">Login</h2>
+    <form id="loginForm">
+      <div class="mb-4">
+        <label for="email" class="block text-gray-700 dark:text-gray-300">Email</label>
+        <input type="email" id="email" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded">
+      </div>
+      <div class="mb-4">
+        <label for="password" class="block text-gray-700 dark:text-gray-300">Password</label>
+        <input type="password" id="password" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded">
+      </div>
+      <div id="errorMsg" class="text-red-500 mb-4"></div>
+      <button type="submit" class="btn btn-primary w-full">Login</button>
+    </form>
+  </section>
+</main>
+
+<!-- Footer -->
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto text-center px-4">
+      <h3 class="text-xl md:text-2xl font-bold">Stefanos Tzortzoglou</h3>
+      <p class="mt-2 text-sm md:text-base">🔧 SaaS Product Specialist | Customer Success & Technical Solutions</p>
+      <div class="mt-4 flex justify-center space-x-4">
+        <a href="#" class="text-white hover:text-purple-400"><i class="fab fa-github text-xl"></i></a>
+        <a href="#" class="text-white hover:text-purple-400"><i class="fab fa-linkedin text-xl"></i></a>
+        <a href="#" class="text-white hover:text-purple-400"><i class="fab fa-twitter text-xl"></i></a>
+        <a href="#" class="text-white hover:text-purple-400"><i class="fab fa-instagram text-xl"></i></a>
+      </div>
+      <p class="mt-4 text-sm">&copy; 2025 Stefanos Tzortzoglou. All rights reserved.</p>
+    </div>
+  </footer>
+
+<!-- Scripts -->
+<script type="module" src="scripts/firebase-config.js"></script>
+<script type="module" src="scripts/auth.js"></script>
+<script src="scripts/main.js"></script>
+<script>
+
+  // Function to load external HTML content
+  function loadComponent(componentId, filePath) {
+    fetch(filePath)
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById(componentId).innerHTML = data;
+      })
+      .catch(error => console.error('Error loading component:', error));
+  }
+
+  // Load the header and footer
+  loadComponent('header-placeholder', '_includes/header.html');
+  loadComponent('footer-placeholder', '_includes/footer.html');
+  
+  // Theme toggle script
+  const themeToggle = document.getElementById('theme-toggle');
+  const htmlElement = document.documentElement;
+
+  themeToggle.addEventListener('click', () => {
+    if (htmlElement.classList.contains('dark')) {
+      htmlElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else {
+      htmlElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+
+  // Set theme on initial load
+  if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    htmlElement.classList.add('dark');
+  } else {
+    htmlElement.classList.remove('dark');
+  }
+  
+  // Mobile menu functionality
+  const menuToggle = document.getElementById('menu-toggle');
+  const closeMenu = document.getElementById('close-menu');
+  const mobileNav = document.getElementById('mobile-nav');
+  const overlay = document.getElementById('overlay');
+  const exclusiveToggle = document.getElementById('exclusive-toggle');
+  const dropdownMenu = document.getElementById('mobile-dropdown');
+  
+  menuToggle.addEventListener('click', () => {
+    mobileNav.classList.add('translate-x-0');
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  });
+  
+  closeMenu.addEventListener('click', closeMenuFunction);
+  overlay.addEventListener('click', closeMenuFunction);
+  
+  function closeMenuFunction() {
+    mobileNav.classList.remove('translate-x-0');
+    overlay.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+  
+  exclusiveToggle.addEventListener('click', () => {
+    dropdownMenu.classList.toggle('hidden');
+    const icon = exclusiveToggle.querySelector('i');
+    if (!dropdownMenu.classList.contains('hidden')) {
+      icon.classList.remove('fa-chevron-down');
+      icon.classList.add('fa-chevron-up');
+    } else {
+      icon.classList.remove('fa-chevron-up');
+      icon.classList.add('fa-chevron-down');
+    }
+  });
+  </script>
+</body>
+</html>

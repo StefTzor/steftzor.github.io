@@ -1,0 +1,85 @@
+  <!-- Header -->
+  <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center p-4">
+      <div class="logo">
+        <a href="/index.njk" class="text-2xl font-bold text-purple-600 dark:text-purple-400">Stefanos Tzortzoglou</a>
+      </div>
+      
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex space-x-4">
+        <a href="/index.njk" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Home</a>
+        <a href="about.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">About</a>
+        <a href="portfolio.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Portfolio</a>
+        <a href="contact.html" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Contact</a>
+        <div class="relative group">
+          <!-- Parent Trigger -->
+          <a href="#" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">
+            Exclusive Content <i class="fas fa-chevron-down"></i>
+          </a>
+          
+          <!-- Dropdown Menu -->
+          <div class="absolute left-0 mt-2 bg-white dark:bg-gray-800 shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+            <ul>
+              <li><a href="/exclusive.njk" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">All Exclusive Content</a></li>
+              <li><a href="blog.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Blog</a></li>
+              <li><a href="resources.html" class="block px-4 py-2 text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Resources</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden">
+        <button id="menu-toggle" class="text-gray-900 dark:text-gray-100 text-2xl">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      
+      <!-- Desktop Actions -->
+      <div class="hidden md:flex space-x-4">
+        <a href="/login.njk" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-sign-in-alt"></i></a>
+        <a href="/register.njk" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-user-plus"></i></a>
+        <button aria-label="Toggle theme" id="theme-toggle" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400"><i class="fas fa-adjust"></i></button>
+      </div>
+    </div>
+    
+    <!-- Mobile Navigation Overlay -->
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden" id="overlay"></div>
+    
+    <!-- Mobile Navigation Menu -->
+    <nav class="fixed top-0 right-0 w-4/5 h-full bg-white dark:bg-gray-800 z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-4 overflow-y-auto" id="mobile-nav">
+      <div class="flex justify-between items-center mb-6">
+        <div class="text-xl font-bold text-purple-600 dark:text-purple-400">Menu</div>
+        <button id="close-menu" class="text-gray-900 dark:text-gray-100 text-2xl">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <ul class="space-y-4">
+        <li><a href="/index.njk" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Home</a></li>
+        <li><a href="about.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">About</a></li>
+        <li><a href="portfolio.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Portfolio</a></li>
+        <li><a href="contact.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Contact</a></li>
+        <li>
+          <div class="flex justify-between items-center cursor-pointer text-gray-900 dark:text-gray-100" id="exclusive-toggle">
+            <span>Exclusive Content</span>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <ul class="pl-4 mt-2 space-y-2 hidden" id="mobile-dropdown">
+            <li><a href="/exclusive.njk" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">All Exclusive Content</a></li>
+            <li><a href="blog.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Blog</a></li>
+            <li><a href="resources.html" class="block text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">Resources</a></li>
+          </ul>
+        </li>
+        <li class="pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div class="flex space-x-4">
+            <a href="/login.njk" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">
+              <i class="fas fa-sign-in-alt mr-2"></i> Login
+            </a>
+            <a href="/register.njk" class="text-gray-900 dark:text-gray-100 hover:text-purple-600 dark:hover:text-purple-400">
+              <i class="fas fa-user-plus mr-2"></i> Register
+            </a>
+          </div>
+        </li>
+      </ul>
+    </nav>
+  </header>
