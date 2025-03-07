@@ -15,7 +15,7 @@ jobs:
       - name: Generate Firebase Config File
         run: |
           echo "Generating firebase-config.js..."
-          cat <<EOF > scripts/firebase-config.js
+          cat <<EOF > _site/scripts/firebase-config.js
           import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
           import { getAuth } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
           import { getFirestore } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
