@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stefanos Tzortzoglou</title>
-  <link href="{{ baseUrl }}dist/output.css" rel="stylesheet">
+  <link href="dist/output.css" rel="stylesheet">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts -->
@@ -12,7 +12,7 @@
 </head>
 <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
   <!-- Header -->
-  {% include "header.html" %}
+  {% include "_includes/header.html" %}
 
   <!-- Hero Section -->
   <section class="hero bg-gradient-to-r from-purple-600 to-red-600 text-white py-12 md:py-20 text-center">
@@ -57,28 +57,13 @@
   </main>
 
   <!-- Footer -->
-  {% include "footer.html" %}
+  {% include "_includes/footer.html" %}
 
   <!-- Scripts -->
-  <script type="module" src="{{ baseUrl }}/scripts/firebase-config.js"></script>
-  <script type="module" src="{{ baseUrl }}/scripts/auth.js"></script>
-  <script src="{{ baseUrl }}/scripts/main.js"></script>
+  <script type="module" src="scripts/firebase-config.js"></script>
+  <script type="module" src="scripts/auth.js"></script>
+  <script src="scripts/main.js"></script>
   <script>
-
-  // Function to load external HTML content
-  function loadComponent(componentId, filePath) {
-    fetch(filePath)
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById(componentId).innerHTML = data;
-      })
-      .catch(error => console.error('Error loading component:', error));
-  }
-
-  // Load the header and footer
-  loadComponent('header-placeholder', '/_includes/header.html');
-  loadComponent('footer-placeholder', '/_includes/footer.html');
-
 
     // Theme toggle script
     const themeToggle = document.getElementById('theme-toggle');
