@@ -644,6 +644,10 @@ html {
   background-color: rgb(126 34 206 / var(--tw-bg-opacity, 1));
 }
 
+.visible {
+  visibility: visible;
+}
+
 .invisible {
   visibility: hidden;
 }

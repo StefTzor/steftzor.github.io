@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Set dynamic year in footer
+    const yearSpan = document.getElementById('footer-year');
+    if (yearSpan) {
+      yearSpan.textContent = new Date().getFullYear();
+    }
     // Mobile menu toggle
     const hamburger = document.getElementById('hamburger');
     const navMenu = document.getElementById('nav-menu');
