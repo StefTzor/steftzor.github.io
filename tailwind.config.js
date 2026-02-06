@@ -3,7 +3,8 @@ module.exports = {
   darkMode: 'class', // Enable dark mode with class strategy
   content: [
     "./pages/**/*.{html,njk}",
-    "./_includes/**/*.html"
+    "./_includes/**/*.html",
+    "./scripts/**/*.js"
   ], // Include your HTML and JS files
   theme: {
     extend: {},

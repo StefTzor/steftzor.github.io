@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
   <!-- Header -->
   {% include "_includes/header.html" %}
@@ -24,11 +26,13 @@
   <section class="hero bg-gradient-to-r from-purple-600 to-red-600 text-white py-12 md:py-20 text-center">
     <div class="container mx-auto px-4">
       <h1 class="text-3xl md:text-5xl font-bold">Hello, I'm <span class="highlight">Stefanos Tzortzoglou</span></h1>
-      <h2 class="text-xl md:text-3xl mt-4">🔧 SaaS Product Specialist | Customer Success & Technical Solutions</h2>
-      <p class="mt-6 text-sm md:text-base">🚀 Passionate about solving technical challenges and helping customers succeed in the SaaS world.</p>
+      <h2 class="text-xl md:text-3xl mt-4">Technical Customer Success Manager | SaaS Implementation & Integrations |
+        SQL, APIs & Data Strategy</h2>
+      <p class="mt-6 text-sm md:text-base">Passionate about solving technical challenges and helping customers
+        succeed in the SaaS world.</p>
       <div class="mt-8 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-        <a href="portfolio.html" class="btn btn-primary">View My Work</a>
-        <a href="contact.html" class="btn btn-secondary">Get In Touch</a>
+        <a href="/portfolio/" class="btn btn-primary">View My Work</a>
+        <a href="/contact/" class="btn btn-secondary">Get In Touch</a>
       </div>
     </div>
   </section>
@@ -57,7 +61,7 @@
         <!-- More project cards -->
       </div>
       <div class="text-center mt-8">
-        <a href="portfolio.html" class="btn btn-outline">See All Projects</a>
+        <a href="/portfolio/" class="btn btn-outline">See All Projects</a>
       </div>
     </section>
   </main>
@@ -91,7 +95,7 @@
     } else {
       htmlElement.classList.remove('dark');
     }
-    
+
     // Mobile menu functionality
     const menuToggle = document.getElementById('menu-toggle');
     const closeMenu = document.getElementById('close-menu');
@@ -99,22 +103,22 @@
     const overlay = document.getElementById('overlay');
     const exclusiveToggle = document.getElementById('exclusive-toggle');
     const dropdownMenu = document.getElementById('mobile-dropdown');
-    
+
     menuToggle.addEventListener('click', () => {
       mobileNav.classList.add('translate-x-0');
       overlay.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     });
-    
+
     closeMenu.addEventListener('click', closeMenuFunction);
     overlay.addEventListener('click', closeMenuFunction);
-    
+
     function closeMenuFunction() {
       mobileNav.classList.remove('translate-x-0');
       overlay.classList.add('hidden');
       document.body.style.overflow = '';
     }
-    
+
     exclusiveToggle.addEventListener('click', () => {
       dropdownMenu.classList.toggle('hidden');
       const icon = exclusiveToggle.querySelector('i');
@@ -128,4 +132,5 @@
     });
   </script>
 </body>
+
 </html>
