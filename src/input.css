@@ -3,44 +3,62 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Light Mode */
+    --color-bg: #f8fafc;      /* Off-White */
+    --color-surface: #ffffff; /* Pure White */
+    --color-text: #1e293b;    /* Lighter Navy */
+    --color-muted: #64748b;   /* Muted Slate */
+    --color-accent: #059669;  /* Deep Emerald */
+    --color-hover: #0f172a;   /* Deep Navy */
+  }
+
+  .dark {
+    /* Dark Mode */
+    --color-bg: #0f172a;      /* Deep Navy */
+    --color-surface: #1e293b; /* Lighter Navy */
+    --color-text: #f1f5f9;    /* Cool White */
+    --color-muted: #94a3b8;   /* Slate Gray */
+    --color-accent: #10b981;  /* Emeralnd Green */
+    --color-hover: #264653;   /* Deep Teal */
+  }
+
   html {
-    font-family: 'Inter', sans-serif;
-    background-color: theme('colors.background');
+    font-family: 'Poppins', 'Inter', sans-serif;
+    @apply antialiased;
+  }
+
+  body {
+    /*These variables swap automatically based on the .dark class */
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary text-accent px-4 py-2 rounded hover:bg-secondary transition duration-300 transform hover:scale-105;
+    /* Using the accent green for the background */
+    @apply bg-[var(--color-accent)] text-[var(--color-bg)] font-bold px-6 py-2 rounded 
+           hover:bg-[var(--color-hover)] hover:text-brand-text transition duration-300 
+           transform hover:scale-105;
   }
+  
   .btn-secondary {
-    @apply bg-secondary text-accent px-4 py-2 rounded hover:bg-primary transition duration-300 transform hover:scale-105;
+    /* An outlined version or muted version */
+    @apply border-2 border-[var(--color-accent)] text-[var(--color-accent)] px-6 py-2 rounded 
+           hover:bg-[var(--color-accent)] hover:text-[var(--color-bg)] transition duration-300 
+           transform hover:scale-105;
   }
 }
 
 @layer utilities {
   .flashy {
-    @apply animate-pulse bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text;
+    /* Updated to use the variable instead of 'primary' */
+    @apply animate-pulse bg-gradient-to-r from-[var(--color-accent)] to-[#3b82f6] text-transparent bg-clip-text;
   }
-  .flashy-bg {
-    @apply bg-gradient-to-r from-primary via-secondary to-primary animate-gradient;
-  }
+  
   .shadow-glow {
-    @apply shadow-lg shadow-primary/50 hover:shadow-xl hover:shadow-secondary/50 transition-shadow duration-300;
-  }
-  .hover-bounce {
-    @apply hover:animate-bounce transition-transform duration-300;
-  }
-}
-
-@layer animations {
-  @keyframes gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-  .animate-gradient {
-    background-size: 200% 200%;
-    animation: gradient 10s ease infinite;
+    @apply shadow-lg shadow-[var(--color-accent)]/20 hover:shadow-xl hover:shadow-[var(--color-accent)]/40 transition-shadow duration-300;
   }
 }

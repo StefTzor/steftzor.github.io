@@ -20,110 +20,117 @@
 
 <body class="bg-background text-accent text-accent dark:text-background">
   <!-- Header -->
-  <header class="bg-white dark:bg-secondary shadow-md sticky top-0 z-50">
+  <header class="bg-brand-bg shadow-md sticky top-0 z-50 border-b border-brand-muted/10 transition-colors duration-300">
   <div class="container mx-auto flex justify-between items-center p-4">
     <div class="logo">
-      <a href="/" class="text-2xl font-bold text-primary dark:text-purple-400">Stefanos Tzortzoglou</a>
+      <a href="/" class="text-brand-accent font-bold text-xl tracking-tight hover:opacity-80 transition-opacity">
+        Stefanos Tzortzoglou
+      </a>
     </div>
 
-    <!-- Desktop Navigation -->
-    <nav class="hidden md:flex space-x-4">
-      <a href="/" class="text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">Home</a>
-      <a href="/about/" class="text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">About</a>
-      <a href="/portfolio/"
-        class="text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">Portfolio</a>
-      <a href="/contact/"
-        class="text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">Contact</a>
-      <div class="relative group">
-        <!-- Parent Trigger -->
-        <a href="#" class="text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">
-          Exclusive Content <i class="fas fa-chevron-down"></i>
-        </a>
+    <nav class="hidden md:flex space-x-6 items-center">
+      <a href="/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">Home</a>
+      <a href="/about/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">About</a>
+      <a href="/portfolio/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">Portfolio</a>
+      <a href="/contact/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">Contact</a>
 
-        <!-- Dropdown Menu -->
+      <div class="relative group">
+        <button
+          class="text-brand-text hover:text-brand-accent font-medium flex items-center gap-1 transition-colors py-2">
+          Exclusive Content <i class="fas fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
+        </button>
         <div
-          class="absolute left-0 mt-2 bg-white dark:bg-secondary shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-          <ul>
-            <li><a href="/exclusive/"
-                class="block px-4 py-2 text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">All
-                Exclusive Content</a></li>
-            <li><a href="/blog/"
-                class="block px-4 py-2 text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">Blog</a>
-            </li>
-            <li><a href="/resources/"
-                class="block px-4 py-2 text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">Resources</a>
-            </li>
-          </ul>
+          class="absolute left-0 mt-0 w-56 bg-brand-surface border border-brand-muted/20 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 rounded-lg overflow-hidden transform translate-y-2 group-hover:translate-y-0 z-50">
+          <a href="/exclusive/"
+            class="block px-4 py-3 text-sm text-brand-text hover:bg-brand-accent hover:text-white transition-colors">
+            All Exclusive Content
+          </a>
+          <a href="/blog/"
+            class="block px-4 py-3 text-sm text-brand-text hover:bg-brand-accent hover:text-white transition-colors">
+            Blog
+          </a>
+          <a href="/resources/"
+            class="block px-4 py-3 text-sm text-brand-text hover:bg-brand-accent hover:text-white transition-colors">
+            Resources
+          </a>
         </div>
       </div>
     </nav>
 
-    <!-- Mobile Menu Button -->
-    <div class="md:hidden">
-      <button id="menu-toggle" class="text-accent dark:text-background text-2xl">
+    <div class="hidden md:flex items-center space-x-4">
+      <a href="/login/" class="text-brand-text hover:text-brand-accent transition-colors" title="Login">
+        <i class="fas fa-sign-in-alt text-lg"></i>
+      </a>
+      <a href="/register/" class="text-brand-text hover:text-brand-accent transition-colors" title="Register">
+        <i class="fas fa-user-plus text-lg"></i>
+      </a>
+      <button id="theme-toggle"
+        class="text-brand-text hover:text-brand-accent p-2 rounded-full hover:bg-brand-muted/10 transition-colors"
+        aria-label="Toggle Dark Mode">
+        <i class="fas fa-adjust text-lg"></i>
+      </button>
+    </div>
+
+    <div class="md:hidden flex items-center gap-4">
+      <button id="theme-toggle-mobile" class="text-brand-text hover:text-brand-accent text-xl">
+        <i class="fas fa-adjust"></i>
+      </button>
+      <button id="menu-toggle" class="text-brand-text hover:text-brand-accent text-2xl focus:outline-none">
         <i class="fas fa-bars"></i>
       </button>
     </div>
-
-    <!-- Desktop Actions -->
-    <div class="hidden md:flex space-x-4">
-      <a href="/login/" class="text-accent dark:text-background hover:text-primary dark:hover:text-purple-400"><i
-          class="fas fa-sign-in-alt"></i></a>
-      <a href="/register/" class="text-accent dark:text-background hover:text-primary dark:hover:text-purple-400"><i
-          class="fas fa-user-plus"></i></a>
-      <button aria-label="Toggle theme" id="theme-toggle"
-        class="text-accent dark:text-background hover:text-primary dark:hover:text-purple-400"><i
-          class="fas fa-adjust"></i></button>
-    </div>
   </div>
 
-  <!-- Mobile Navigation Overlay -->
-  <div class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden" id="overlay"></div>
+  <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden transition-opacity duration-300" id="overlay">
+  </div>
 
-  <!-- Mobile Navigation Menu -->
-  <nav
-    class="fixed top-0 right-0 w-4/5 h-full bg-white dark:bg-secondary z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-4 overflow-y-auto"
-    id="mobile-nav">
-    <div class="flex justify-between items-center mb-6">
-      <div class="text-xl font-bold text-primary dark:text-purple-400">Menu</div>
-      <button id="close-menu" class="text-accent dark:text-background text-2xl">
+  <nav id="mobile-nav"
+    class="fixed top-0 right-0 w-[80%] max-w-sm h-full bg-brand-bg z-50 transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto border-l border-brand-muted/20">
+    <div class="flex justify-between items-center p-5 border-b border-brand-muted/10">
+      <div class="text-xl font-bold text-brand-accent">Menu</div>
+      <button id="close-menu" class="text-brand-muted hover:text-brand-accent text-2xl focus:outline-none">
         <i class="fas fa-times"></i>
       </button>
     </div>
-    <ul class="space-y-4">
+
+    <ul class="p-5 space-y-2">
       <li><a href="/"
-          class="block text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">Home</a></li>
+          class="block py-3 px-4 rounded-lg text-brand-text hover:bg-brand-surface hover:text-brand-accent font-medium">Home</a>
+      </li>
       <li><a href="/about/"
-          class="block text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">About</a></li>
+          class="block py-3 px-4 rounded-lg text-brand-text hover:bg-brand-surface hover:text-brand-accent font-medium">About</a>
+      </li>
       <li><a href="/portfolio/"
-          class="block text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">Portfolio</a>
+          class="block py-3 px-4 rounded-lg text-brand-text hover:bg-brand-surface hover:text-brand-accent font-medium">Portfolio</a>
       </li>
       <li><a href="/contact/"
-          class="block text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">Contact</a></li>
+          class="block py-3 px-4 rounded-lg text-brand-text hover:bg-brand-surface hover:text-brand-accent font-medium">Contact</a>
+      </li>
+
       <li>
-        <div class="flex justify-between items-center cursor-pointer text-accent dark:text-background"
-          id="exclusive-toggle">
+        <button id="exclusive-toggle"
+          class="w-full flex justify-between items-center py-3 px-4 rounded-lg text-brand-text hover:bg-brand-surface hover:text-brand-accent font-medium focus:outline-none">
           <span>Exclusive Content</span>
-          <i class="fas fa-chevron-down"></i>
-        </div>
-        <ul class="pl-4 mt-2 space-y-2 hidden" id="mobile-dropdown">
-          <li><a href="/exclusive/"
-              class="block text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">All Exclusive
+          <i class="fas fa-chevron-down text-sm transition-transform duration-300" id="exclusive-chevron"></i>
+        </button>
+        <ul id="mobile-dropdown" class="hidden pl-4 mt-1 space-y-1 bg-brand-surface/50 rounded-lg mx-2">
+          <li><a href="/exclusive/" class="block py-2 px-4 text-sm text-brand-muted hover:text-brand-accent">All
               Content</a></li>
-          <li><a href="/blog/"
-              class="block text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">Blog</a></li>
+          <li><a href="/blog/" class="block py-2 px-4 text-sm text-brand-muted hover:text-brand-accent">Blog</a></li>
           <li><a href="/resources/"
-              class="block text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">Resources</a>
-          </li>
+              class="block py-2 px-4 text-sm text-brand-muted hover:text-brand-accent">Resources</a></li>
         </ul>
       </li>
-      <li class="pt-4 border-t border-gray-200 dark:border-gray-700">
-        <div class="flex space-x-4">
-          <a href="/login/" class="text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">
-            <i class="fas fa-sign-in-alt mr-2"></i> Login
+
+      <li class="pt-6 mt-6 border-t border-brand-muted/20">
+        <div class="grid grid-cols-2 gap-4">
+          <a href="/login/"
+            class="flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-brand-muted/30 text-brand-text hover:border-brand-accent hover:text-brand-accent transition-colors">
+            <i class="fas fa-sign-in-alt"></i> Login
           </a>
-          <a href="/register/" class="text-accent dark:text-background hover:text-primary dark:hover:text-purple-400">
-            <i class="fas fa-user-plus mr-2"></i> Register
+          <a href="/register/"
+            class="flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-brand-accent text-white hover:bg-brand-hover hover:shadow-lg transition-all">
+            <i class="fas fa-user-plus"></i> Join
           </a>
         </div>
       </li>
@@ -132,7 +139,7 @@
 </header>
 
   <!-- Hero Section -->
-  <section class="hero bg-gradient-to-r from-purple-600 to-red-600 text-white py-12 md:py-20 text-center">
+  <section class="hero bg-gradient-to-r from-purple-600 to-red-600 text-brand-text py-12 md:py-20 text-center">
     <div class="container mx-auto px-4">
       <h1 class="text-3xl md:text-5xl font-bold">Hello, I'm <span class="highlight">Stefanos Tzortzoglou</span></h1>
       <h2 class="text-xl md:text-3xl mt-4">Technical Customer Success Manager | SaaS Implementation & Integrations |
@@ -152,7 +159,7 @@
       <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Featured Projects</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
         <!-- Project cards would go here -->
-        <div class="project-card bg-white dark:bg-secondary shadow-md rounded-lg overflow-hidden">
+        <div class="project-card bg-brand-bg shadow-md rounded-lg overflow-hidden">
           <div class="project-image">
             <img src="images/project1.jpg" alt="Project 1" class="w-full h-48 object-cover">
           </div>
@@ -160,9 +167,9 @@
             <h3 class="text-xl font-bold">Project Title</h3>
             <p class="mt-2 text-gray-700 dark:text-gray-300">Short description of the project and technologies used.</p>
             <div class="mt-4 flex flex-wrap gap-2">
-              <span class="inline-block bg-primary text-white px-2 py-1 rounded text-sm">HTML</span>
-              <span class="inline-block bg-primary text-white px-2 py-1 rounded text-sm">CSS</span>
-              <span class="inline-block bg-primary text-white px-2 py-1 rounded text-sm">JavaScript</span>
+              <span class="inline-block bg-primary text-brand-text px-2 py-1 rounded text-sm">HTML</span>
+              <span class="inline-block bg-primary text-brand-text px-2 py-1 rounded text-sm">CSS</span>
+              <span class="inline-block bg-primary text-brand-text px-2 py-1 rounded text-sm">JavaScript</span>
             </div>
             <a href="#" class="btn btn-sm btn-outline mt-4 inline-block">View Project</a>
           </div>
@@ -177,16 +184,20 @@
 
   <!-- Footer -->
   <!-- Footer -->
-<footer class="bg-secondary text-white py-8">
+<footer class="bg-brand-bg border-t border-brand-muted/10 py-12">
   <div class="container mx-auto text-center px-4">
-    <h3 class="text-xl md:text-2xl font-bold">Stefanos Tzortzoglou</h3>
-    <p class="mt-2 text-sm md:text-base">Technical Customer Success Manager | SaaS Implementation & Integrations | SQL,
-      APIs & Data Strategy</p>
-    <div class="mt-4 flex justify-center space-x-4">
-      <a href="#" class="text-white hover:text-purple-400"><i class="fab fa-github text-xl"></i></a>
-      <a href="#" class="text-white hover:text-purple-400"><i class="fab fa-linkedin text-xl"></i></a>
+    <h3 class="text-brand-accent text-2xl font-bold">Stefanos Tzortzoglou</h3>
+    <p class="mt-2 text-brand-muted max-w-md mx-auto">Technical Customer Success Manager</p>
+    <p class="mt-2 text-brand-muted max-w-md mx-auto">SaaS Implementation & Integrations</p>
+    <p class="mt-2 text-brand-muted max-w-md mx-auto">SQL, APIs & Data Strategy</p>
+    <div class="mt-6 flex justify-center space-x-6">
+      <a href="#" class="text-brand-text hover:text-brand-accent transition-transform hover:-translate-y-1"><i
+          class="fab fa-github text-2xl"></i></a>
+      <a href="#" class="text-brand-text hover:text-brand-accent transition-transform hover:-translate-y-1"><i
+          class="fab fa-linkedin text-2xl"></i></a>
     </div>
-    <p class="mt-4 text-sm">&copy; <span id="footer-year">2025</span> Stefanos Tzortzoglou. All rights reserved.</p>
+    <p class="mt-8 text-xs text-brand-muted uppercase tracking-widest">&copy; <span id="footer-year"></span> Stefanos
+      Tzortzoglou. All rights reserved.</p>
   </div>
 </footer>
 
