@@ -685,10 +685,6 @@ body {
   color: var(--color-bg);
 }
 
-.visible {
-  visibility: visible;
-}
-
 .invisible {
   visibility: hidden;
 }
