@@ -173,64 +173,6 @@
   <script type="module" src="/scripts/firebase-config.js"></script>
   <script type="module" src="/scripts/auth.js"></script>
   <script src="/scripts/main.js"></script>
-  <script>
-
-    // Theme toggle script
-    const themeToggle = document.getElementById('theme-toggle');
-    const htmlElement = document.documentElement;
-
-    themeToggle.addEventListener('click', () => {
-      if (htmlElement.classList.contains('dark')) {
-        htmlElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      } else {
-        htmlElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      }
-    });
-
-    // Set theme on initial load
-    if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      htmlElement.classList.add('dark');
-    } else {
-      htmlElement.classList.remove('dark');
-    }
-
-    // Mobile menu functionality
-    const menuToggle = document.getElementById('menu-toggle');
-    const closeMenu = document.getElementById('close-menu');
-    const mobileNav = document.getElementById('mobile-nav');
-    const overlay = document.getElementById('overlay');
-    const exclusiveToggle = document.getElementById('exclusive-toggle');
-    const dropdownMenu = document.getElementById('mobile-dropdown');
-
-    menuToggle.addEventListener('click', () => {
-      mobileNav.classList.add('translate-x-0');
-      overlay.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-    });
-
-    closeMenu.addEventListener('click', closeMenuFunction);
-    overlay.addEventListener('click', closeMenuFunction);
-
-    function closeMenuFunction() {
-      mobileNav.classList.remove('translate-x-0');
-      overlay.classList.add('hidden');
-      document.body.style.overflow = '';
-    }
-
-    exclusiveToggle.addEventListener('click', () => {
-      dropdownMenu.classList.toggle('hidden');
-      const icon = exclusiveToggle.querySelector('i');
-      if (!dropdownMenu.classList.contains('hidden')) {
-        icon.classList.remove('fa-chevron-down');
-        icon.classList.add('fa-chevron-up');
-      } else {
-        icon.classList.remove('fa-chevron-up');
-        icon.classList.add('fa-chevron-down');
-      }
-    });
-  </script>
 </body>
 
 </html>

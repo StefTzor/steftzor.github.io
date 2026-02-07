@@ -60,8 +60,8 @@ async function handleLogin(e) {
       }
     }
 
-    // Redirect if approved.
-    window.location.href = "exclusive.html";
+    // Redirect if approved - use absolute path
+    window.location.href = window.location.origin + "/exclusive/";
   } catch (error) {
     console.error("Login error:", error);
     if (errorMsg) {
@@ -123,7 +123,7 @@ function handleLogout(e) {
 
   signOut(auth)
     .then(() => {
-      window.location.href = "index.html";
+      window.location.href = "/";
     })
     .catch((error) => {
       console.error("Logout error:", error);
@@ -131,29 +131,53 @@ function handleLogout(e) {
 }
 
 // Handle auth state changes
-function handleAuthStateChanged(user) {
+async function handleAuthStateChanged(user) {
   const loginBtn = document.getElementById("loginBtn");
   const registerBtn = document.getElementById("registerBtn");
   const logoutBtn = document.getElementById("logoutBtn");
+  const exclusiveNavItem = document.getElementById("exclusive-nav-item");
 
   if (user) {
+    // Check if user is approved
+    try {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const isApproved = userDoc.exists() && userDoc.data().status === "approved";
 
-    if (loginBtn) loginBtn.classList.add("hidden");
-    if (registerBtn) registerBtn.classList.add("hidden");
-    if (logoutBtn) logoutBtn.classList.remove("hidden");
+      if (loginBtn) loginBtn.classList.add("hidden");
+      if (registerBtn) registerBtn.classList.add("hidden");
+      if (logoutBtn) logoutBtn.classList.remove("hidden");
 
-    const exclusiveContent = document.getElementById("exclusiveContent");
-    const authRequired = document.getElementById("authRequired");
+      // Show exclusive content nav item only for approved users
+      if (exclusiveNavItem && isApproved) {
+        exclusiveNavItem.classList.remove("hidden");
+      } else if (exclusiveNavItem) {
+        exclusiveNavItem.classList.add("hidden");
+      }
 
-    if (exclusiveContent && authRequired) {
-      exclusiveContent.classList.remove("hidden");
-      authRequired.classList.add("hidden");
+      const exclusiveContent = document.getElementById("exclusiveContent");
+      const authRequired = document.getElementById("authRequired");
+
+      if (exclusiveContent && authRequired) {
+        if (isApproved) {
+          exclusiveContent.classList.remove("hidden");
+          authRequired.classList.add("hidden");
+        } else {
+          exclusiveContent.classList.add("hidden");
+          authRequired.classList.remove("hidden");
+        }
+      }
+    } catch (error) {
+      console.error("Error checking user status:", error);
     }
   } else {
-
     if (loginBtn) loginBtn.classList.remove("hidden");
     if (registerBtn) registerBtn.classList.remove("hidden");
     if (logoutBtn) logoutBtn.classList.add("hidden");
+
+    // Hide exclusive content nav item when not logged in
+    if (exclusiveNavItem) {
+      exclusiveNavItem.classList.add("hidden");
+    }
 
     const exclusiveContent = document.getElementById("exclusiveContent");
     const authRequired = document.getElementById("authRequired");
@@ -164,7 +188,7 @@ function handleAuthStateChanged(user) {
 
       setTimeout(() => {
         if (!auth.currentUser && window.location.pathname.includes("exclusive")) {
-          window.location.href = "login.html";
+          window.location.href = "/login/";
         }
       }, 1500);
     }
