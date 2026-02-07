@@ -1,111 +1,83 @@
+// main.js
 document.addEventListener('DOMContentLoaded', () => {
-    // Set dynamic year in footer
+    // 1. Footer Year
     const yearSpan = document.getElementById('footer-year');
-    if (yearSpan) {
-      yearSpan.textContent = new Date().getFullYear();
-    }
-    // Mobile menu toggle
-    const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('nav-menu');
-    
-    if (hamburger && navMenu) {
-      hamburger.addEventListener('click', () => {
-        navMenu.classList.toggle('active');
-        
-        // Animate hamburger
-        const spans = hamburger.querySelectorAll('span');
-        spans.forEach(span => {
-          span.classList.toggle('active');
+    if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+
+    // 2. Theme Toggle (Sync with Header IDs)
+    const themeToggles = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
+    const htmlElement = document.documentElement;
+
+    themeToggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
         });
-      });
-    }
-    
-    // Close mobile menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (navMenu && navMenu.classList.contains('active') && 
-          !navMenu.contains(e.target) && 
-          !hamburger.contains(e.target)) {
-        navMenu.classList.remove('active');
-        
-        // Reset hamburger
-        const spans = hamburger.querySelectorAll('span');
-        spans.forEach(span => {
-          span.classList.remove('active');
+    });
+
+    // 3. Mobile Menu (Sync with Header IDs)
+    const menuToggle = document.getElementById('menu-toggle');
+    const closeMenu = document.getElementById('close-menu');
+    const mobileNav = document.getElementById('mobile-nav');
+    const overlay = document.getElementById('overlay');
+
+    const toggleMenu = () => {
+        mobileNav.classList.toggle('translate-x-full');
+        overlay.classList.toggle('hidden');
+        document.body.classList.toggle('overflow-hidden');
+    };
+
+    if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
+    if (closeMenu) closeMenu.addEventListener('click', toggleMenu);
+    if (overlay) overlay.addEventListener('click', toggleMenu);
+
+    // 4. Mobile Dropdown Accordion
+    const exclusiveToggle = document.getElementById('exclusive-toggle');
+    const mobileDropdown = document.getElementById('mobile-dropdown');
+    if (exclusiveToggle && mobileDropdown) {
+        exclusiveToggle.addEventListener('click', () => {
+            mobileDropdown.classList.toggle('hidden');
         });
-      }
-    });
-    
-    // Mobile dropdown toggle
-    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
-    
-    dropdownToggles.forEach(toggle => {
-      toggle.addEventListener('click', (e) => {
-        // Only handle clicks in mobile view
-        if (window.innerWidth <= 768) {
-          e.preventDefault();
-          const dropdown = toggle.parentElement;
-          dropdown.classList.toggle('active');
-        }
-      });
-    });
-    
-    // Add active class to current nav item based on URL
-    const currentLocation = window.location.pathname;
-    const navLinks = document.querySelectorAll('#nav-menu a');
-    const pageName = currentLocation.split('/').pop();
-    
-    navLinks.forEach(link => {
-      const linkHref = link.getAttribute('href');
-      
-      if (linkHref === pageName) {
-        link.classList.add('active');
-        
-        // If in dropdown, also make parent active
-        const parentLi = link.closest('li.dropdown');
-        if (parentLi) {
-          const parentLink = parentLi.querySelector('.dropdown-toggle');
-          if (parentLink) {
-            parentLink.classList.add('active');
-          }
-        }
-      }
-    });
-    
-    // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        
-        if (href !== '#' && href !== '') {
-          e.preventDefault();
-          
-          const target = document.querySelector(href);
-          if (target) {
-            target.scrollIntoView({
-              behavior: 'smooth'
-            });
-          }
-        }
-      });
-    });
-    
-    // Animation on scroll (simple implementation)
-    const animateElements = document.querySelectorAll('.animate-on-scroll');
-    
-    function checkIfInView() {
-      animateElements.forEach(element => {
-        const elementTop = element.getBoundingClientRect().top;
-        const elementVisible = 150;
-        
-        if (elementTop < window.innerHeight - elementVisible) {
-          element.classList.add('visible');
-        }
-      });
     }
-    
-    // Initial check
-    checkIfInView();
-    
-    // Check on scroll
-    window.addEventListener('scroll', checkIfInView);
-  });
+});// main.js
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Footer Year
+    const yearSpan = document.getElementById('footer-year');
+    if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+
+    // 2. Theme Toggle (Sync with Header IDs)
+    const themeToggles = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
+    const htmlElement = document.documentElement;
+
+    themeToggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
+        });
+    });
+
+    // 3. Mobile Menu (Sync with Header IDs)
+    const menuToggle = document.getElementById('menu-toggle');
+    const closeMenu = document.getElementById('close-menu');
+    const mobileNav = document.getElementById('mobile-nav');
+    const overlay = document.getElementById('overlay');
+
+    const toggleMenu = () => {
+        mobileNav.classList.toggle('translate-x-full');
+        overlay.classList.toggle('hidden');
+        document.body.classList.toggle('overflow-hidden');
+    };
+
+    if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
+    if (closeMenu) closeMenu.addEventListener('click', toggleMenu);
+    if (overlay) overlay.addEventListener('click', toggleMenu);
+
+    // 4. Mobile Dropdown Accordion
+    const exclusiveToggle = document.getElementById('exclusive-toggle');
+    const mobileDropdown = document.getElementById('mobile-dropdown');
+    if (exclusiveToggle && mobileDropdown) {
+        exclusiveToggle.addEventListener('click', () => {
+            mobileDropdown.classList.toggle('hidden');
+        });
+    }
+});
