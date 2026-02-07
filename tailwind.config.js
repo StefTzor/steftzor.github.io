@@ -9,14 +9,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Using CSS variables allows for easy switching
         brand: {
-          bg: 'var(--color-bg)',
-          surface: 'var(--color-surface)',
-          text: 'var(--color-text)',
-          muted: 'var(--color-muted)',
-          accent: 'var(--color-accent)',
-          hover: 'var(--color-hover)',
+          bg: 'rgb(var(--color-bg) / <alpha-value>)',
+          surface: 'rgb(var(--color-surface) / <alpha-value>)',
+          text: 'rgb(var(--color-text) / <alpha-value>)',
+          muted: 'rgb(var(--color-muted) / <alpha-value>)',
+          accent: 'rgb(var(--color-accent) / <alpha-value>)',
+          hover: 'rgb(var(--color-hover) / <alpha-value>)',
         },
       },
     },
