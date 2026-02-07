@@ -5,12 +5,12 @@
 @layer base {
   :root {
     /* Light Mode */
-    --color-bg: 248 250 252;      /* #f8fafc */     /* Off-White */
-    --color-surface: 255 255 255; /* #ffffff */ /* Pure White */
-    --color-text: 30 41 59;       /* #1e293b */    /* Lighter Navy */
-    --color-muted: 100 116 139;   /* #64748b */   /* Muted Slate */
-    --color-accent: 5 150 105;  /* #059669 */  /* Deep Emerald */
-    --color-hover: 15 23 42;   /* #0f172a */   /* Deep Navy */
+    --color-bg: 203 213 225;      /* #cbd5e1 */
+    --color-surface: 226 232 240; /* #e2e8f0 */
+    --color-text: 2 6 23;         /* #020617 (Slate 950) */
+    --color-muted: 51 65 85;      /* #334155 (Slate 700) */
+    --color-accent: 5 150 105;    /* #059669 */
+    --color-hover: 15 23 42;      /* Deep Navy */
   }
 
   .dark {
