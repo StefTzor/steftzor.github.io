@@ -5,27 +5,28 @@
 @layer base {
   html {
     font-family: 'Inter', sans-serif;
+    background-color: theme('colors.background');
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300 transform hover:scale-105;
+    @apply bg-primary text-accent px-4 py-2 rounded hover:bg-secondary transition duration-300 transform hover:scale-105;
   }
   .btn-secondary {
-    @apply bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition duration-300 transform hover:scale-105;
+    @apply bg-secondary text-accent px-4 py-2 rounded hover:bg-primary transition duration-300 transform hover:scale-105;
   }
 }
 
 @layer utilities {
   .flashy {
-    @apply animate-pulse bg-gradient-to-r from-purple-600 to-red-600 text-transparent bg-clip-text;
+    @apply animate-pulse bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text;
   }
   .flashy-bg {
-    @apply bg-gradient-to-r from-purple-600 via-red-600 to-purple-600 animate-gradient;
+    @apply bg-gradient-to-r from-primary via-secondary to-primary animate-gradient;
   }
   .shadow-glow {
-    @apply shadow-lg shadow-red-500/50 hover:shadow-xl hover:shadow-purple-500/50 transition-shadow duration-300;
+    @apply shadow-lg shadow-primary/50 hover:shadow-xl hover:shadow-secondary/50 transition-shadow duration-300;
   }
   .hover-bounce {
     @apply hover:animate-bounce transition-transform duration-300;

@@ -7,7 +7,14 @@ module.exports = {
     "./scripts/**/*.js"
   ], // Include your HTML and JS files
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        background: "#0F172A", // Dark Navy
+        primary: "#22D3EE",    // Neon Cyan
+        secondary: "#64748B",  // Cool Gray
+        accent: "#F4F4F4",     // Light Gray
+      },
+    },
   },
   variants: {
     extend: {
