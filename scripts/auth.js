@@ -119,78 +119,131 @@ async function handleRegister(e) {
 
 // Handle logout
 function handleLogout(e) {
-  e.preventDefault();
-
-  signOut(auth)
-    .then(() => {
-      window.location.href = "/";
-    })
-    .catch((error) => {
-      console.error("Logout error:", error);
-    });
+  if (e) e.preventDefault();
+  signOut(auth).then(() => {
+    // Force reload to clear any cached states
+    window.location.href = "/login/";
+  }).catch((error) => {
+    console.error("Logout error:", error);
+  });
 }
 
 // Handle auth state changes
 async function handleAuthStateChanged(user) {
-  const loginBtn = document.getElementById("loginBtn");
-  const registerBtn = document.getElementById("registerBtn");
+  // --- DESKTOP ELEMENTS ---
+  const guestView = document.getElementById("guest-view");
+  const userView = document.getElementById("user-view");
+  const userDisplay = document.getElementById("user-display");
   const logoutBtn = document.getElementById("logoutBtn");
   const exclusiveNavItem = document.getElementById("exclusive-nav-item");
 
+  // --- MOBILE ELEMENTS ---
+  const mobGuest = document.getElementById("mobile-guest-view");
+  const mobUser = document.getElementById("mobile-user-view");
+  const mobEmail = document.getElementById("mobile-user-email");
+  const mobLogout = document.getElementById("mobile-logout-btn");
+  const mobExclusive = document.getElementById("mobile-exclusive-item");
+
+  // --- PAGE CONTENT ELEMENTS ---
+  const exclusiveContent = document.getElementById("exclusiveContent");
+  const authRequired = document.getElementById("authRequired");
+  const loader = document.getElementById("authLoader"); // Optional: if you added the loader
+
+  // 1. ATTACH LOGOUT LISTENERS (Desktop & Mobile)
+  // We use cloneNode to safely remove old event listeners before adding new ones
+  if (logoutBtn) {
+    const newBtn = logoutBtn.cloneNode(true);
+    logoutBtn.parentNode.replaceChild(newBtn, logoutBtn);
+    newBtn.addEventListener("click", handleLogout);
+  }
+  if (mobLogout) {
+    const newMobBtn = mobLogout.cloneNode(true);
+    mobLogout.parentNode.replaceChild(newMobBtn, mobLogout);
+    newMobBtn.addEventListener("click", handleLogout);
+  }
+
+  // 2. MAIN AUTH LOGIC
   if (user) {
-    // Check if user is approved
+    // --- USER IS LOGGED IN ---
+
+    // A. Update Desktop UI
+    if (guestView) guestView.classList.add("hidden");
+    if (userView) userView.classList.remove("hidden");
+    if (userDisplay) userDisplay.textContent = user.email;
+
+    // B. Update Mobile UI
+    if (mobGuest) mobGuest.classList.add("hidden");
+    if (mobUser) mobUser.classList.remove("hidden");
+    if (mobEmail) mobEmail.textContent = user.email;
+
+    // C. Check Database for "Approved" Status
     try {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       const isApproved = userDoc.exists() && userDoc.data().status === "approved";
 
-      if (loginBtn) loginBtn.classList.add("hidden");
-      if (registerBtn) registerBtn.classList.add("hidden");
-      if (logoutBtn) logoutBtn.classList.remove("hidden");
+      // Hide Loader if present
+      if (loader) loader.classList.add("hidden");
 
-      // Show exclusive content nav item only for approved users
-      if (exclusiveNavItem && isApproved) {
-        exclusiveNavItem.classList.remove("hidden");
-      } else if (exclusiveNavItem) {
-        exclusiveNavItem.classList.add("hidden");
-      }
+      if (isApproved) {
+        // --- UNLOCK EVERYTHING ---
+        
+        // Show Nav Items
+        if (exclusiveNavItem) exclusiveNavItem.classList.remove("hidden");
+        if (mobExclusive) mobExclusive.classList.remove("hidden");
+        
+        // Show Page Content
+        if (exclusiveContent) exclusiveContent.classList.remove("hidden");
+        if (authRequired) authRequired.classList.add("hidden");
 
-      const exclusiveContent = document.getElementById("exclusiveContent");
-      const authRequired = document.getElementById("authRequired");
-
-      if (exclusiveContent && authRequired) {
-        if (isApproved) {
-          exclusiveContent.classList.remove("hidden");
-          authRequired.classList.add("hidden");
-        } else {
-          exclusiveContent.classList.add("hidden");
-          authRequired.classList.remove("hidden");
+      } else {
+        // --- PENDING APPROVAL ---
+        // User is logged in, but not approved yet. Treat mostly like guest but show status.
+        
+        // Hide Nav Items
+        if (exclusiveNavItem) exclusiveNavItem.classList.add("hidden");
+        if (mobExclusive) mobExclusive.classList.add("hidden");
+        
+        // Lock Page Content
+        if (exclusiveContent) exclusiveContent.classList.add("hidden");
+        if (authRequired) {
+             authRequired.classList.remove("hidden");
+             // Update text to indicate pending status
+             const title = authRequired.querySelector('h2');
+             const text = authRequired.querySelector('p');
+             if(title) title.textContent = "Access Pending";
+             if(text) text.textContent = "Your account is currently awaiting administrator approval. Please check back later.";
         }
       }
     } catch (error) {
-      console.error("Error checking user status:", error);
+      console.error("Auth check failed:", error);
     }
+
   } else {
-    if (loginBtn) loginBtn.classList.remove("hidden");
-    if (registerBtn) registerBtn.classList.remove("hidden");
-    if (logoutBtn) logoutBtn.classList.add("hidden");
+    // --- GUEST (NOT LOGGED IN) ---
+    
+    // Hide Loader
+    if (loader) loader.classList.add("hidden");
 
-    // Hide exclusive content nav item when not logged in
-    if (exclusiveNavItem) {
-      exclusiveNavItem.classList.add("hidden");
-    }
+    // A. Reset Desktop UI
+    if (guestView) guestView.classList.remove("hidden");
+    if (userView) userView.classList.add("hidden");
 
-    const exclusiveContent = document.getElementById("exclusiveContent");
-    const authRequired = document.getElementById("authRequired");
+    // B. Reset Mobile UI
+    if (mobGuest) mobGuest.classList.remove("hidden");
+    if (mobUser) mobUser.classList.add("hidden");
 
-    if (exclusiveContent && authRequired) {
-      exclusiveContent.classList.add("hidden");
+    // C. Lock Everything
+    if (exclusiveNavItem) exclusiveNavItem.classList.add("hidden");
+    if (mobExclusive) mobExclusive.classList.add("hidden");
+    
+    if (exclusiveContent) exclusiveContent.classList.add("hidden");
+    if (authRequired) {
       authRequired.classList.remove("hidden");
-
-      setTimeout(() => {
-        if (!auth.currentUser && window.location.pathname.includes("exclusive")) {
-          window.location.href = "/login/";
-        }
-      }, 1500);
+      // Reset text to default "Login Required"
+      const title = authRequired.querySelector('h2');
+      const text = authRequired.querySelector('p');
+      if(title) title.textContent = "Authentication Required";
+      if(text) text.textContent = "You need to be logged in to view this exclusive content.";
     }
   }
 }

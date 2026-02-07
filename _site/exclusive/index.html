@@ -51,15 +51,27 @@
       </div>
     </nav>
 
-    <div class="hidden md:flex items-center space-x-4">
-      <a href="/login/" class="text-brand-text hover:text-brand-accent transition-colors" title="Login">
-        <i class="fas fa-sign-in-alt text-lg"></i>
-      </a>
-      <a href="/register/" class="text-brand-text hover:text-brand-accent transition-colors" title="Register">
-        <i class="fas fa-user-plus text-lg"></i>
-      </a>
+    <div id="auth-status" class="hidden md:flex items-center space-x-4">
+
+      <div id="guest-view" class="flex items-center space-x-4">
+        <a href="/login/" class="text-brand-text hover:text-brand-accent transition-colors" title="Login">
+          <i class="fas fa-sign-in-alt text-lg"></i>
+        </a>
+        <a href="/register/" class="text-brand-text hover:text-brand-accent transition-colors" title="Register">
+          <i class="fas fa-user-plus text-lg"></i>
+        </a>
+      </div>
+
+      <div id="user-view" class="hidden flex items-center space-x-4">
+        <span id="user-display"
+          class="text-sm font-medium text-brand-text opacity-80 border-r border-brand-muted/30 pr-4"></span>
+        <button id="logoutBtn" class="text-brand-text hover:text-red-500 transition-colors" title="Logout">
+          <i class="fas fa-sign-out-alt text-lg"></i>
+        </button>
+      </div>
+
       <button id="theme-toggle"
-        class="text-brand-text hover:text-brand-accent p-2 rounded-full hover:bg-brand-muted/10 transition-colors"
+        class="text-brand-text hover:text-brand-accent p-2 rounded-full hover:bg-brand-muted/10 transition-colors ml-2"
         aria-label="Toggle Dark Mode">
         <i class="fas fa-adjust text-lg"></i>
       </button>
@@ -101,7 +113,7 @@
           class="block py-3 px-4 rounded-lg text-brand-text hover:bg-brand-surface hover:text-brand-accent font-medium">Contact</a>
       </li>
 
-      <li>
+      <li id="mobile-exclusive-item" class="hidden">
         <button id="exclusive-toggle"
           class="w-full flex justify-between items-center py-3 px-4 rounded-lg text-brand-text hover:bg-brand-surface hover:text-brand-accent font-medium focus:outline-none">
           <span>Exclusive Content</span>
@@ -117,7 +129,8 @@
       </li>
 
       <li class="pt-6 mt-6 border-t border-brand-muted/20">
-        <div class="grid grid-cols-2 gap-4">
+
+        <div id="mobile-guest-view" class="grid grid-cols-2 gap-4">
           <a href="/login/"
             class="flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-brand-muted/30 text-brand-text hover:border-brand-accent hover:text-brand-accent transition-colors">
             <i class="fas fa-sign-in-alt"></i> Login
@@ -127,6 +140,18 @@
             <i class="fas fa-user-plus"></i> Join
           </a>
         </div>
+
+        <div id="mobile-user-view" class="hidden flex flex-col gap-4">
+          <div class="text-center p-2 bg-brand-surface rounded-lg">
+            <span class="text-sm text-brand-muted">Signed in as:</span>
+            <p id="mobile-user-email" class="font-medium text-brand-text truncate"></p>
+          </div>
+          <button id="mobile-logout-btn"
+            class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white transition-all">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+
       </li>
     </ul>
   </nav>
