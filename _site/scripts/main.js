@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load saved theme or default to dark
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    if (savedTheme === 'dark' || !savedTheme) {
         htmlElement.classList.add('dark');
     } else {
         htmlElement.classList.remove('dark');
