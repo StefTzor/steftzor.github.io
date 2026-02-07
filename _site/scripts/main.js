@@ -4,80 +4,81 @@ document.addEventListener('DOMContentLoaded', () => {
     const yearSpan = document.getElementById('footer-year');
     if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
-    // 2. Theme Toggle (Sync with Header IDs)
-    const themeToggles = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
+    // 2. Theme Toggle (Desktop and Mobile)
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleMobile = document.getElementById('theme-toggle-mobile');
     const htmlElement = document.documentElement;
 
-    themeToggles.forEach(toggle => {
-        toggle.addEventListener('click', () => {
-            htmlElement.classList.toggle('dark');
-            localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
-        });
-    });
-
-    // 3. Mobile Menu (Sync with Header IDs)
-    const menuToggle = document.getElementById('menu-toggle');
-    const closeMenu = document.getElementById('close-menu');
-    const mobileNav = document.getElementById('mobile-nav');
-    const overlay = document.getElementById('overlay');
-
-    const toggleMenu = () => {
-        mobileNav.classList.toggle('translate-x-full');
-        overlay.classList.toggle('hidden');
-        document.body.classList.toggle('overflow-hidden');
-    };
-
-    if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
-    if (closeMenu) closeMenu.addEventListener('click', toggleMenu);
-    if (overlay) overlay.addEventListener('click', toggleMenu);
-
-    // 4. Mobile Dropdown Accordion
-    const exclusiveToggle = document.getElementById('exclusive-toggle');
-    const mobileDropdown = document.getElementById('mobile-dropdown');
-    if (exclusiveToggle && mobileDropdown) {
-        exclusiveToggle.addEventListener('click', () => {
-            mobileDropdown.classList.toggle('hidden');
-        });
+    // Load saved theme or default to dark
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        htmlElement.classList.add('dark');
+    } else {
+        htmlElement.classList.remove('dark');
     }
-});// main.js
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Footer Year
-    const yearSpan = document.getElementById('footer-year');
-    if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
-    // 2. Theme Toggle (Sync with Header IDs)
-    const themeToggles = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
-    const htmlElement = document.documentElement;
+    // Theme toggle function
+    const toggleTheme = () => {
+        htmlElement.classList.toggle('dark');
+        const isDark = htmlElement.classList.contains('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    };
 
-    themeToggles.forEach(toggle => {
-        toggle.addEventListener('click', () => {
-            htmlElement.classList.toggle('dark');
-            localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
-        });
-    });
+    // Add event listeners for both desktop and mobile theme toggles
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
+    if (themeToggleMobile) {
+        themeToggleMobile.addEventListener('click', toggleTheme);
+    }
 
-    // 3. Mobile Menu (Sync with Header IDs)
+    // 3. Mobile Menu
     const menuToggle = document.getElementById('menu-toggle');
     const closeMenu = document.getElementById('close-menu');
     const mobileNav = document.getElementById('mobile-nav');
     const overlay = document.getElementById('overlay');
 
-    const toggleMenu = () => {
-        mobileNav.classList.toggle('translate-x-full');
-        overlay.classList.toggle('hidden');
-        document.body.classList.toggle('overflow-hidden');
+    const openMenu = () => {
+        if (mobileNav && overlay) {
+            mobileNav.classList.remove('translate-x-full');
+            mobileNav.classList.add('translate-x-0');
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
     };
 
-    if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
-    if (closeMenu) closeMenu.addEventListener('click', toggleMenu);
-    if (overlay) overlay.addEventListener('click', toggleMenu);
+    const closeMenuFunc = () => {
+        if (mobileNav && overlay) {
+            mobileNav.classList.remove('translate-x-0');
+            mobileNav.classList.add('translate-x-full');
+            overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    };
+
+    if (menuToggle) menuToggle.addEventListener('click', openMenu);
+    if (closeMenu) closeMenu.addEventListener('click', closeMenuFunc);
+    if (overlay) overlay.addEventListener('click', closeMenuFunc);
 
     // 4. Mobile Dropdown Accordion
     const exclusiveToggle = document.getElementById('exclusive-toggle');
     const mobileDropdown = document.getElementById('mobile-dropdown');
+    const exclusiveChevron = document.getElementById('exclusive-chevron');
+
     if (exclusiveToggle && mobileDropdown) {
         exclusiveToggle.addEventListener('click', () => {
             mobileDropdown.classList.toggle('hidden');
+            
+            // Rotate chevron icon
+            if (exclusiveChevron) {
+                if (mobileDropdown.classList.contains('hidden')) {
+                    exclusiveChevron.classList.remove('fa-chevron-up');
+                    exclusiveChevron.classList.add('fa-chevron-down');
+                } else {
+                    exclusiveChevron.classList.remove('fa-chevron-down');
+                    exclusiveChevron.classList.add('fa-chevron-up');
+                }
+            }
         });
     }
 });
