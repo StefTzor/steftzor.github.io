@@ -1,4 +1,4 @@
-// main.js
+// main.js - Comprehensive script for all pages
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Footer Year
     const yearSpan = document.getElementById('footer-year');
@@ -18,18 +18,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Theme toggle function
-    const toggleTheme = () => {
+    const toggleTheme = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         htmlElement.classList.toggle('dark');
         const isDark = htmlElement.classList.contains('dark');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        console.log('Theme toggled to:', isDark ? 'dark' : 'light'); // Debug log
     };
 
     // Add event listeners for both desktop and mobile theme toggles
     if (themeToggle) {
         themeToggle.addEventListener('click', toggleTheme);
+        console.log('Desktop theme toggle attached'); // Debug log
     }
     if (themeToggleMobile) {
         themeToggleMobile.addEventListener('click', toggleTheme);
+        console.log('Mobile theme toggle attached'); // Debug log
     }
 
     // 3. Mobile Menu
