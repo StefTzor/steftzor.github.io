@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,12 +11,13 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+
+<body class="bg-background text-accent text-accent dark:text-background">
   <!-- Header -->
   {% include "_includes/header.html" %}
 
   <main class="container mx-auto py-8">
-    <section class="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md">
+    <section class="max-w-md mx-auto bg-white dark:bg-secondary p-8 rounded-lg shadow-md">
       <h2 class="text-2xl font-bold mb-6">Register</h2>
       <form id="registerForm">
         <div class="mb-4">
@@ -28,7 +30,8 @@
         </div>
         <div class="mb-4">
           <label for="confirmPassword" class="block text-gray-700 dark:text-gray-300">Confirm Password</label>
-          <input type="password" id="confirmPassword" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded">
+          <input type="password" id="confirmPassword"
+            class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded">
         </div>
         <div id="errorMsg" class="text-red-500 mb-4"></div>
         <button type="submit" class="btn btn-primary w-full">Register</button>
@@ -36,8 +39,8 @@
     </section>
   </main>
 
-   <!-- Footer -->
-   {% include "_includes/footer.html" %}
+  <!-- Footer -->
+  {% include "_includes/footer.html" %}
 
   <!-- Scripts -->
   <script type="module" src="/scripts/firebase-config.js"></script>
@@ -65,7 +68,7 @@
     } else {
       htmlElement.classList.remove('dark');
     }
-    
+
     // Mobile menu functionality
     const menuToggle = document.getElementById('menu-toggle');
     const closeMenu = document.getElementById('close-menu');
@@ -73,22 +76,22 @@
     const overlay = document.getElementById('overlay');
     const exclusiveToggle = document.getElementById('exclusive-toggle');
     const dropdownMenu = document.getElementById('mobile-dropdown');
-    
+
     menuToggle.addEventListener('click', () => {
       mobileNav.classList.add('translate-x-0');
       overlay.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     });
-    
+
     closeMenu.addEventListener('click', closeMenuFunction);
     overlay.addEventListener('click', closeMenuFunction);
-    
+
     function closeMenuFunction() {
       mobileNav.classList.remove('translate-x-0');
       overlay.classList.add('hidden');
       document.body.style.overflow = '';
     }
-    
+
     exclusiveToggle.addEventListener('click', () => {
       dropdownMenu.classList.toggle('hidden');
       const icon = exclusiveToggle.querySelector('i');
@@ -100,6 +103,7 @@
         icon.classList.add('fa-chevron-down');
       }
     });
-    </script>
+  </script>
 </body>
+
 </html>
