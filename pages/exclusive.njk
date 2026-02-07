@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,8 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+
+<body class="bg-background text-accent text-accent dark:text-background">
   <!-- Header -->
   {% include "_includes/header.html" %}
 
@@ -35,37 +37,40 @@
     <section id="exclusiveContent" class="hidden">
       <div class="container mx-auto">
         <h1 class="text-3xl font-bold text-center mb-8">Exclusive Content</h1>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          <div class="content-card bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+          <div class="content-card bg-white dark:bg-secondary shadow-md rounded-lg overflow-hidden">
             <div class="content-image">
               <img src="images/content1.jpg" alt="Content 1" class="w-full h-48 object-cover">
             </div>
             <div class="p-4">
               <h3 class="text-xl font-bold">Premium Tutorial</h3>
-              <p class="mt-2 text-gray-700 dark:text-gray-300">Learn advanced web development techniques that will take your skills to the next level.</p>
+              <p class="mt-2 text-gray-700 dark:text-gray-300">Learn advanced web development techniques that will take
+                your skills to the next level.</p>
               <a href="#" class="btn btn-sm btn-primary mt-4">View Tutorial</a>
             </div>
           </div>
-          
-          <div class="content-card bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+
+          <div class="content-card bg-white dark:bg-secondary shadow-md rounded-lg overflow-hidden">
             <div class="content-image">
               <img src="images/content2.jpg" alt="Content 2" class="w-full h-48 object-cover">
             </div>
             <div class="p-4">
               <h3 class="text-xl font-bold">Exclusive Resource</h3>
-              <p class="mt-2 text-gray-700 dark:text-gray-300">Download ready-to-use templates and tools that will speed up your development workflow.</p>
+              <p class="mt-2 text-gray-700 dark:text-gray-300">Download ready-to-use templates and tools that will speed
+                up your development workflow.</p>
               <a href="#" class="btn btn-sm btn-primary mt-4">Download</a>
             </div>
           </div>
-          
-          <div class="content-card bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+
+          <div class="content-card bg-white dark:bg-secondary shadow-md rounded-lg overflow-hidden">
             <div class="content-image">
               <img src="images/content3.jpg" alt="Content 3" class="w-full h-48 object-cover">
             </div>
             <div class="p-4">
               <h3 class="text-xl font-bold">Premium Blog Post</h3>
-              <p class="mt-2 text-gray-700 dark:text-gray-300">Deep dive into modern techniques and best practices in frontend development.</p>
+              <p class="mt-2 text-gray-700 dark:text-gray-300">Deep dive into modern techniques and best practices in
+                frontend development.</p>
               <a href="#" class="btn btn-sm btn-primary mt-4">Read Blog</a>
             </div>
           </div>
@@ -82,7 +87,7 @@
   <script type="module" src="/scripts/auth.js"></script>
   <script src="/scripts/main.js"></script>
   <script>
-  
+
     // Theme toggle script
     const themeToggle = document.getElementById('theme-toggle');
     const htmlElement = document.documentElement;
@@ -103,7 +108,7 @@
     } else {
       htmlElement.classList.remove('dark');
     }
-    
+
     // Mobile menu functionality
     const menuToggle = document.getElementById('menu-toggle');
     const closeMenu = document.getElementById('close-menu');
@@ -111,22 +116,22 @@
     const overlay = document.getElementById('overlay');
     const exclusiveToggle = document.getElementById('exclusive-toggle');
     const dropdownMenu = document.getElementById('mobile-dropdown');
-    
+
     menuToggle.addEventListener('click', () => {
       mobileNav.classList.add('translate-x-0');
       overlay.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     });
-    
+
     closeMenu.addEventListener('click', closeMenuFunction);
     overlay.addEventListener('click', closeMenuFunction);
-    
+
     function closeMenuFunction() {
       mobileNav.classList.remove('translate-x-0');
       overlay.classList.add('hidden');
       document.body.style.overflow = '';
     }
-    
+
     exclusiveToggle.addEventListener('click', () => {
       dropdownMenu.classList.toggle('hidden');
       const icon = exclusiveToggle.querySelector('i');
@@ -140,4 +145,5 @@
     });
   </script>
 </body>
+
 </html>
