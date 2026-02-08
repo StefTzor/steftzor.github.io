@@ -1288,8 +1288,16 @@ body {
   border-bottom-width: 1px;
 }
 
+.border-b-2 {
+  border-bottom-width: 2px;
+}
+
 .border-l {
   border-left-width: 1px;
+}
+
+.border-l-4 {
+  border-left-width: 4px;
 }
 
 .border-r {
@@ -1306,6 +1314,11 @@ body {
 
 .border-blue-500\/20 {
   border-color: rgb(59 130 246 / 0.2);
+}
+
+.border-brand-accent {
+  --tw-border-opacity: 1;
+  border-color: rgb(var(--color-accent) / var(--tw-border-opacity, 1));
 }
 
 .border-brand-muted\/10 {
@@ -1360,6 +1373,10 @@ body {
 
 .border-red-500\/30 {
   border-color: rgb(239 68 68 / 0.3);
+}
+
+.border-transparent {
+  border-color: transparent;
 }
 
 .bg-\[\#0077b5\]\/10 {
