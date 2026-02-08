@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Stefanos Tzortzoglou</title>
+    <link href="/dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="bg-brand-bg text-brand-text transition-colors duration-300 flex flex-col min-h-screen">
+
+    {% include "_includes/header.html" %}
+
+    <main class="flex-grow container mx-auto px-4 flex items-center justify-center">
+
+        <div class="max-w-2xl w-full py-16">
+
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold mb-6">Let's Talk <span
+                        class="text-brand-accent">Strategy</span></h1>
+                <p class="text-xl text-brand-muted leading-relaxed">
+                    I value meaningful connections with leaders in the SaaS ecosystem. Whether you want to discuss
+                    complex implementation challenges or explore potential synergies, let’s start a conversation.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+
+                <a href="mailto:s.tzortzoglou@proton.me"
+                    class="group bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 hover:border-brand-accent/50 hover:shadow-glow transition-all duration-300 text-center">
+                    <div
+                        class="w-16 h-16 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-accent group-hover:text-white transition-colors">
+                        <i class="fas fa-envelope text-2xl text-brand-accent group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Email Me</h3>
+                    <p class="text-brand-muted text-sm mb-4">For strategic inquiries and professional collaboration.</p>
+                    <span class="text-brand-accent font-medium group-hover:underline">s.tzortzoglou@proton.me</span>
+                </a>
+
+                <a href="https://www.linkedin.com" target="_blank"
+                    class="group bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 hover:border-[#0077b5]/50 hover:shadow-lg transition-all duration-300 text-center">
+                    <div
+                        class="w-16 h-16 bg-[#0077b5]/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0077b5] group-hover:text-white transition-colors">
+                        <i class="fab fa-linkedin-in text-2xl text-[#0077b5] group-hover:text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Connect on LinkedIn</h3>
+                    <p class="text-brand-muted text-sm mb-4">For professional networking and industry dialogue.</p>
+                    <span class="text-[#0077b5] font-medium group-hover:underline">View Profile</span>
+                </a>
+
+            </div>
+
+            <div class="bg-brand-surface/50 rounded-lg p-4 text-center border border-brand-muted/10 max-w-md mx-auto">
+                <div
+                    class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-brand-muted text-sm">
+
+                    <div class="flex items-center gap-2">
+                        <span class="relative flex h-3 w-3">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </span>
+                        <span>Based in <strong>Sweden</strong></span>
+                    </div>
+
+                    <span class="hidden sm:inline text-brand-muted/30">|</span>
+
+                    <span>Open to <strong>Strategic Conversations</strong></span>
+
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    {% include "_includes/footer.html" %}
+
+    <script type="module" src="/scripts/firebase-config.js"></script>
+    <script type="module" src="/scripts/auth.js"></script>
+    <script src="/scripts/main.js"></script>
+</body>
+
+</html>
