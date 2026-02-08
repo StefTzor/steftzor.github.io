@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Stefanos Tzortzoglou</title>
+    <link href="/dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="bg-brand-bg text-brand-text transition-colors duration-300 flex flex-col min-h-screen">
+
+    <header class="bg-brand-bg shadow-md sticky top-0 z-50 border-b border-brand-muted/10 transition-colors duration-300">
+  <div class="container mx-auto flex justify-between items-center p-4">
+    <div class="logo">
+      <a href="/" class="text-brand-accent font-bold text-xl tracking-tight hover:opacity-80 transition-opacity">
+        Stefanos Tzortzoglou
+      </a>
+    </div>
+
+    <nav class="hidden md:flex space-x-6 items-center">
+      <a href="/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">Home</a>
+      <a href="/about/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">About</a>
+      <a href="/portfolio/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">Portfolio</a>
+      <a href="/contact/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">Contact</a>
+
+      <div class="relative group hidden" id="exclusive-nav-item">
+        <button
+          class="text-brand-text hover:text-brand-accent font-medium flex items-center gap-1 transition-colors py-2">
+          Exclusive Content <i class="fas fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
+        </button>
+        <div
+          class="absolute left-0 mt-0 w-56 bg-brand-surface border border-brand-muted/20 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 rounded-lg overflow-hidden transform translate-y-2 group-hover:translate-y-0 z-50">
+          <a href="/exclusive/"
+            class="block px-4 py-3 text-sm text-brand-text hover:bg-brand-accent hover:text-white transition-colors">
+            All Exclusive Content
+          </a>
+          <a href="/blog/"
+            class="block px-4 py-3 text-sm text-brand-text hover:bg-brand-accent hover:text-white transition-colors">
+            Blog
+          </a>
+          <a href="/resources/"
+            class="block px-4 py-3 text-sm text-brand-text hover:bg-brand-accent hover:text-white transition-colors">
+            Resources
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="auth-status" class="hidden md:flex items-center space-x-4">
+      <div id="guest-view" class="flex items-center space-x-4">
+        <a href="/login/" class="text-brand-text hover:text-brand-accent transition-colors" title="Login">
+          <i class="fas fa-sign-in-alt text-lg"></i>
+        </a>
+        <a href="/register/" class="text-brand-text hover:text-brand-accent transition-colors" title="Register">
+          <i class="fas fa-user-plus text-lg"></i>
+        </a>
+      </div>
+
+      <div id="user-view" class="hidden flex items-center space-x-4">
+        <span id="user-display"
+          class="text-sm font-medium text-brand-text opacity-80 border-r border-brand-muted/30 pr-4"></span>
+        <button id="logoutBtn" class="text-brand-text hover:text-red-500 transition-colors" title="Logout">
+          <i class="fas fa-sign-out-alt text-lg"></i>
+        </button>
+      </div>
+
+      <button id="theme-toggle"
+        class="text-brand-text hover:text-brand-accent p-2 rounded-full hover:bg-brand-muted/10 transition-colors ml-2"
+        aria-label="Toggle Dark Mode">
+        <i class="fas fa-adjust text-lg"></i>
+      </button>
+    </div>
+
+    <div class="md:hidden flex items-center gap-4">
+      <button id="theme-toggle-mobile" class="text-brand-text hover:text-brand-accent text-xl">
+        <i class="fas fa-adjust"></i>
+      </button>
+      <button id="menu-toggle" class="text-brand-text hover:text-brand-accent text-2xl focus:outline-none">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden transition-opacity duration-300" id="overlay">
+  </div>
+
+  <nav id="mobile-nav"
+    class="fixed top-0 right-0 w-[80%] max-w-sm h-full bg-brand-bg z-50 transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto border-l border-brand-muted/20">
+    <div class="flex justify-between items-center p-5 border-b border-brand-muted/10">
+      <div class="text-xl font-bold text-brand-accent">Menu</div>
+      <button id="close-menu" class="text-brand-muted hover:text-brand-accent text-2xl focus:outline-none">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <ul class="p-5 space-y-2">
+      <li><a href="/"
+          class="block py-3 px-4 rounded-lg text-brand-text hover:bg-brand-surface hover:text-brand-accent font-medium">Home</a>
+      </li>
+      <li><a href="/about/"
+          class="block py-3 px-4 rounded-lg text-brand-text hover:bg-brand-surface hover:text-brand-accent font-medium">About</a>
+      </li>
+      <li><a href="/portfolio/"
+          class="block py-3 px-4 rounded-lg text-brand-text hover:bg-brand-surface hover:text-brand-accent font-medium">Portfolio</a>
+      </li>
+      <li><a href="/contact/"
+          class="block py-3 px-4 rounded-lg text-brand-text hover:bg-brand-surface hover:text-brand-accent font-medium">Contact</a>
+      </li>
+
+      <li id="mobile-exclusive-item" class="hidden">
+        <button id="exclusive-toggle"
+          class="w-full flex justify-between items-center py-3 px-4 rounded-lg text-brand-text hover:bg-brand-surface hover:text-brand-accent font-medium focus:outline-none">
+          <span>Exclusive Content</span>
+          <i class="fas fa-chevron-down text-sm transition-transform duration-300" id="exclusive-chevron"></i>
+        </button>
+        <ul id="mobile-dropdown" class="hidden pl-4 mt-1 space-y-1 bg-brand-surface/50 rounded-lg mx-2">
+          <li><a href="/exclusive/" class="block py-2 px-4 text-sm text-brand-muted hover:text-brand-accent">All
+              Content</a></li>
+          <li><a href="/blog/" class="block py-2 px-4 text-sm text-brand-muted hover:text-brand-accent">Blog</a></li>
+          <li><a href="/resources/"
+              class="block py-2 px-4 text-sm text-brand-muted hover:text-brand-accent">Resources</a></li>
+        </ul>
+      </li>
+
+      <li class="pt-6 mt-6 border-t border-brand-muted/20">
+        <div id="mobile-guest-view" class="grid grid-cols-2 gap-4">
+          <a href="/login/"
+            class="flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-brand-muted/30 text-brand-text hover:border-brand-accent hover:text-brand-accent transition-colors">
+            <i class="fas fa-sign-in-alt"></i> Login
+          </a>
+          <a href="/register/"
+            class="flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-brand-accent text-white hover:bg-brand-hover hover:shadow-lg transition-all">
+            <i class="fas fa-user-plus"></i> Join
+          </a>
+        </div>
+
+        <div id="mobile-user-view" class="hidden flex flex-col gap-4">
+          <div class="text-center p-2 bg-brand-surface rounded-lg">
+            <span class="text-sm text-brand-muted">Signed in as:</span>
+            <p id="mobile-user-email" class="font-medium text-brand-text truncate"></p>
+          </div>
+          <button id="mobile-logout-btn"
+            class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white transition-all">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+    <main class="flex-grow container mx-auto py-16 px-4">
+
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">Technical <span class="text-brand-accent">Case
+                    Studies</span></h1>
+            <p class="text-lg text-brand-muted leading-relaxed">
+                I don't just write code; I solve business problems. Here is a selection of complex implementations and
+                technical challenges I have resolved.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+
+            <div
+                class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
+                <div class="p-8">
+                    <div class="flex justify-between items-start mb-4">
+                        <div
+                            class="bg-blue-500/10 text-blue-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-blue-500/20">
+                            SaaS Implementation
+                        </div>
+                        <i
+                            class="fas fa-network-wired text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-brand-text mb-3">Enterprise ERP Data Migration</h3>
+
+                    <p class="text-brand-muted mb-6 leading-relaxed">
+                        <strong>The Challenge:</strong> A key enterprise client struggled with fragmented customer data
+                        across legacy ERP systems, preventing effective segmentation.
+                        <br><br>
+                        <strong>My Solution:</strong> Architected a custom SQL-based data mapping strategy and
+                        configured robust API endpoints to synchronize over 1 million records.
+                        <br><br>
+                        <strong>The Outcome:</strong> Eliminated data silos, enabling the client to launch automated
+                        campaigns 2 weeks ahead of schedule.
+                    </p>
+
+                    <div class="border-t border-brand-muted/10 pt-4 mt-auto">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">SQL</span>
+                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">REST
+                                APIs</span>
+                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Data
+                                Mapping</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
+                <div class="p-8">
+                    <div class="flex justify-between items-start mb-4">
+                        <div
+                            class="bg-purple-500/10 text-purple-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-purple-500/20">
+                            Full Stack Dev
+                        </div>
+                        <i
+                            class="fas fa-university text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-brand-text mb-3">Automated Exam Archive System</h3>
+
+                    <p class="text-brand-muted mb-6 leading-relaxed">
+                        <strong>The Challenge:</strong> The University department relied on a manual, paper-based
+                        archiving process for exam papers, wasting faculty hours on retrieval.
+                        <br><br>
+                        <strong>My Solution:</strong> Taught myself full-stack development to build a secure web
+                        application with role-based access for professors and students.
+                        <br><br>
+                        <strong>The Outcome:</strong> Digitized the entire workflow. The system was deployed on
+                        university servers and actively used by the department.
+                    </p>
+
+                    <div class="border-t border-brand-muted/10 pt-4 mt-auto">
+                        <div class="flex flex-wrap gap-2">
+                            <span
+                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">PHP/HTML</span>
+                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">MySQL</span>
+                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Web
+                                Security</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
+                <div class="p-8">
+                    <div class="flex justify-between items-start mb-4">
+                        <div
+                            class="bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-emerald-500/20">
+                            Automation
+                        </div>
+                        <i
+                            class="fab fa-github text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-brand-text mb-3">Technical Utility Scripts</h3>
+
+                    <p class="text-brand-muted mb-6 leading-relaxed">
+                        A collection of automation scripts and experimental projects I use to sharpen my technical
+                        skills. Includes exercises in API manipulation, data formatting, and frontend experiments.
+                        <br><br>
+                        <em>Demonstrates my commitment to "figuring it out" and continuous learning.</em>
+                    </p>
+
+                    <div class="border-t border-brand-muted/10 pt-4 mt-auto flex justify-between items-center">
+                        <div class="flex flex-wrap gap-2">
+                            <span
+                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">JavaScript</span>
+                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Python</span>
+                        </div>
+                        <a href="https://github.com/steftzor" target="_blank"
+                            class="text-sm font-bold text-brand-accent hover:underline">View Github <i
+                                class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="bg-brand-bg border-t border-brand-muted/10 py-12">
+  <div class="container mx-auto text-center px-4">
+    <h3 class="text-brand-accent text-2xl font-bold">Stefanos Tzortzoglou</h3>
+    <p class="mt-2 text-brand-muted max-w-md mx-auto">Technical Customer Success Manager</p>
+    <p class="mt-1 text-brand-muted max-w-md mx-auto">Implementation Lead | SaaS Integrations</p>
+
+    <div class="mt-6 flex justify-center space-x-6">
+      <a href="https://github.com/steftzor" target="_blank"
+        class="text-brand-text hover:text-brand-accent transition-transform hover:-translate-y-1">
+        <i class="fab fa-github text-2xl"></i>
+      </a>
+      <a href="https://www.linkedin.com/in/stzortzoglou/" target="_blank"
+        class="text-brand-text hover:text-brand-accent transition-transform hover:-translate-y-1">
+        <i class="fab fa-linkedin text-2xl"></i>
+      </a>
+      <a href="mailto:s.tzortzoglou@proton.me"
+        class="text-brand-text hover:text-brand-accent transition-transform hover:-translate-y-1">
+        <i class="fas fa-envelope text-2xl"></i>
+      </a>
+    </div>
+
+    <p class="mt-8 text-xs text-brand-muted uppercase tracking-widest">&copy; <span id="footer-year"></span> Stefanos
+      Tzortzoglou. All rights reserved.</p>
+  </div>
+</footer>
+
+    <script type="module" src="/scripts/firebase-config.js"></script>
+    <script type="module" src="/scripts/auth.js"></script>
+    <script src="/scripts/main.js"></script>
+</body>
+
+</html>
