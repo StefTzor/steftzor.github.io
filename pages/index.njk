@@ -10,8 +10,8 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/android-chrome-192x192.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/android-chrome-512x512.png">
+  <link rel="android-chrome-192x192" href="/android-chrome-192x192.png">
+  <link rel="android-chrome-512x512" href="/android-chrome-512x512.png">
 
   <link href="/dist/output.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,38 +22,122 @@
 
   {% include "_includes/header.html" %}
 
-  <section class="relative bg-brand-surface border-b border-brand-muted/10 py-20 md:py-32 text-center overflow-hidden">
-    <div
-      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-accent/5 rounded-full blur-3xl -z-10 pointer-events-none">
+  <section class="relative bg-brand-surface border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40">
+
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-accent/5 rounded-full blur-3xl -z-10">
+      </div>
     </div>
 
     <div class="container mx-auto px-4 relative z-10">
-      <h1 class="text-4xl md:text-6xl font-bold tracking-tight">
-        Hello, I'm
-        <span class="bg-gradient-to-r from-brand-accent to-blue-500 bg-clip-text text-transparent">
-          Stefanos Tzortzoglou
-        </span>
-      </h1>
 
-      <h2 class="text-lg md:text-2xl mt-6 font-medium text-brand-muted max-w-3xl mx-auto leading-relaxed">
-        Technical Customer Success Manager | Implementation Lead |
-        SQL, APIs & Data Strategy
-      </h2>
+      <div class="flex flex-col md:flex-row items-center md:items-start justify-center gap-8 md:gap-16">
 
-      <p class="mt-6 text-brand-text/80 text-base md:text-lg max-w-2xl mx-auto">
-        I bridge the gap between commercial goals and technical reality. I don't just manage accounts; I get my hands
-        dirty with <strong>SQL</strong>, <strong>API integrations</strong>, and <strong>CRM/ERP</strong> data mapping to
-        solve the technical blockers that others escalate.
-      </p>
+        <div class="w-full md:w-1/2 text-center md:text-left z-20">
 
-      <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-        <a href="/portfolio/" class="btn-primary shadow-glow">View Technical Case Studies</a>
-        <a href="/contact/" class="btn-secondary">Get In Touch</a>
+          <div class="flex flex-col md:flex-row items-center justify-center md:justify-start gap-6 mb-6">
+
+            <div class="relative w-24 h-24 shrink-0 group">
+              <div
+                class="absolute -inset-1 bg-gradient-to-r from-brand-accent to-blue-500 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000">
+              </div>
+              <img src="/images/stefanos_profile.png" alt="Stefanos Tzortzoglou"
+                class="relative w-full h-full object-cover rounded-full border-2 border-brand-surface shadow-lg transform transition-transform duration-500 hover:scale-105">
+            </div>
+
+            <h1 class="text-4xl md:text-6xl font-bold tracking-tight">
+              Hey👋, I'm <br class="hidden md:block" />
+              <span class="bg-gradient-to-r from-brand-accent to-blue-500 bg-clip-text text-transparent">
+                Stefanos Tzortzoglou
+              </span>
+            </h1>
+          </div>
+
+          <h2 class="text-lg md:text-2xl font-medium text-brand-muted max-w-2xl leading-relaxed mb-6 mx-auto md:mx-0">
+            Technical Customer Success Manager | Implementation Lead |
+            SQL, APIs & Data Strategy
+          </h2>
+
+          <p class="text-brand-text/80 text-base md:text-lg max-w-xl mb-8 leading-relaxed mx-auto md:mx-0">
+            I bridge the gap between commercial goals and technical reality. I don't just manage accounts; I get my
+            hands dirty with <strong>SQL</strong>, <strong>API integrations</strong>, and <strong>CRM/ERP</strong> data
+            mapping to solve the technical blockers that others escalate.
+          </p>
+
+          <div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
+            <a href="/portfolio/" class="btn-primary shadow-glow">View Technical Case Studies</a>
+            <a href="/contact/" class="btn-secondary">Get In Touch</a>
+          </div>
+
+        </div>
+
+        <div
+          class="relative md:absolute mt-16 md:mt-0 bottom-[-96px] md:bottom-[-190px] right-auto md:right-0 w-56 h-64 md:w-80 md:h-96 z-30 pointer-events-none">
+
+          <svg viewBox="0 0 300 450" class="w-full h-full overflow-visible drop-shadow-2xl">
+
+            <path d="M120,280 L125,380 L145,380 L150,280 Z" fill="#1f2937" />
+            <path d="M125,380 L150,380 L150,395 Q135,405 120,395 Z" fill="#0f172a" />
+            <path d="M160,280 L165,390 L185,390 L190,280 Z" fill="#1f2937" />
+            <path d="M165,390 L190,390 L190,405 Q175,415 160,405 Z" fill="#0f172a" />
+            <path d="M100,280 Q100,160 150,150 Q200,160 200,280 Z" fill="#cbd5e1" />
+
+            <line x1="150" y1="150" x2="150" y2="280" stroke="#94a3b8" stroke-width="1" />
+            <circle cx="150" cy="180" r="2" fill="#64748b" />
+            <circle cx="150" cy="210" r="2" fill="#64748b" />
+            <circle cx="150" cy="240" r="2" fill="#64748b" />
+
+            <path d="M100,190 Q90,240 120,270" stroke="#e2cfae" stroke-width="14" stroke-linecap="round" fill="none" />
+            <path d="M200,190 Q210,240 180,270" stroke="#e2cfae" stroke-width="14" stroke-linecap="round" fill="none" />
+
+            <g id="human-head" class="origin-[150px_140px] transition-transform duration-100 ease-out">
+
+              <rect x="138" y="130" width="24" height="25" fill="#e2cfae" />
+
+              <path d="M110,60 L190,60 L190,110 Q190,150 150,165 Q110,150 110,110 Z" fill="#e2cfae" />
+
+              <path d="M110,105 Q110,150 150,165 Q190,150 190,105 L190,120 Q190,155 150,170 Q110,155 110,120 Z"
+                fill="#2d2d2d" />
+              <path d="M135,138 Q150,132 165,138" stroke="#2d2d2d" stroke-width="4" stroke-linecap="round"
+                fill="none" />
+
+              <path d="M140,148 Q150,152 160,148" stroke="#4a3b32" stroke-width="2" stroke-linecap="round"
+                fill="none" />
+
+              <path d="M150,110 L145,125 L155,125" stroke="#e2cfae" stroke-width="2" fill="none" />
+              <g transform="translate(0, 10)">
+                <circle cx="135" cy="95" r="5" fill="white" />
+                <circle id="human-eye-left" cx="135" cy="95" r="2" fill="#1e1e1e" />
+
+                <circle cx="165" cy="95" r="5" fill="white" />
+                <circle id="human-eye-right" cx="165" cy="95" r="2" fill="#1e1e1e" />
+              </g>
+
+              <g stroke="#111827" stroke-width="2.5" fill="none">
+                <rect x="122" y="98" width="26" height="16" rx="4" />
+                <rect x="152" y="98" width="26" height="16" rx="4" />
+                <line x1="148" y1="104" x2="152" y2="104" stroke-width="2" />
+                <line x1="122" y1="102" x2="110" y2="98" />
+                <line x1="178" y1="102" x2="190" y2="98" />
+              </g>
+
+              <circle cx="108" cy="110" r="5" fill="#e2cfae" />
+              <circle cx="106" cy="112" r="1.5" fill="black" />
+              <path d="M105,65 Q110,25 150,25 Q190,25 195,65" fill="#2d2d2d" />
+              <path d="M110,65 L110,100 L115,100 L115,65 Z" fill="#4b5563" opacity="0.6" />
+              <path d="M185,65 L185,100 L190,100 L190,65 Z" fill="#4b5563" opacity="0.6" />
+
+            </g>
+
+          </svg>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <section class="py-20 bg-brand-surface/50 border-b border-brand-muted/10">
+  <section class="py-20 bg-brand-surface/50 border-b border-brand-muted/10 relative z-10">
     <div class="container mx-auto px-4">
       <div class="flex flex-col md:flex-row items-center gap-12 max-w-6xl mx-auto">
 
@@ -118,7 +202,6 @@
   </section>
 
   <main class="container mx-auto py-16 px-4 flex-grow">
-
     <section class="featured-projects">
       <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-brand-text">Selected Case Studies</h2>
@@ -219,6 +302,51 @@
   <script type="module" src="scripts/firebase-config.js"></script>
   <script type="module" src="scripts/auth.js"></script>
   <script src="scripts/main.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const leftEye = document.getElementById('human-eye-left');
+      const rightEye = document.getElementById('human-eye-right');
+      const head = document.getElementById('human-head');
+
+      // Configuration
+      const maxMove = 2; // Reduced pixel movement for cleaner look
+      const headRotateMax = 6; // Reduced tilt for stability
+
+      window.addEventListener('mousemove', (e) => {
+        if (!leftEye || !rightEye) return;
+
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+
+        // Eye Tracking
+        const moveEye = (eye, mouseX, mouseY) => {
+          const eyeRect = eye.getBoundingClientRect();
+          const eyeCenterX = eyeRect.left + eyeRect.width / 2;
+          const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+
+          const angle = Math.atan2(mouseY - eyeCenterY, mouseX - eyeCenterX);
+          const dist = Math.min(maxMove, Math.hypot(mouseX - eyeCenterX, mouseY - eyeCenterY) / 50);
+
+          const x = Math.cos(angle) * dist;
+          const y = Math.sin(angle) * dist;
+
+          eye.style.transform = `translate(${x}px, ${y}px)`;
+        };
+
+        moveEye(leftEye, e.clientX, e.clientY);
+        moveEye(rightEye, e.clientX, e.clientY);
+
+        // Head Tilt
+        const xPercent = (e.clientX - centerX) / centerX;
+        const rotateDeg = xPercent * headRotateMax;
+
+        if (head) {
+          head.style.transform = `rotate(${rotateDeg}deg)`;
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>
