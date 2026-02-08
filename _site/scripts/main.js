@@ -24,18 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
         htmlElement.classList.toggle('dark');
         const isDark = htmlElement.classList.contains('dark');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        console.log('Theme toggled to:', isDark ? 'dark' : 'light'); // Debug log
+        console.log('Theme toggled to:', isDark ? 'dark' : 'light');
     };
 
     // Add event listeners for both desktop and mobile theme toggles
-    if (themeToggle) {
-        themeToggle.addEventListener('click', toggleTheme);
-        console.log('Desktop theme toggle attached'); // Debug log
-    }
-    if (themeToggleMobile) {
-        themeToggleMobile.addEventListener('click', toggleTheme);
-        console.log('Mobile theme toggle attached'); // Debug log
-    }
+    if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+    if (themeToggleMobile) themeToggleMobile.addEventListener('click', toggleTheme);
 
     // 3. Mobile Menu
     const menuToggle = document.getElementById('menu-toggle');
@@ -86,4 +80,40 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // 5. Active Page Highlighting
+    highlightActivePage();
 });
+
+/**
+ * Automatically highlights the navigation link for the current page.
+ * Desktop: Adds a bottom border.
+ * Mobile: Adds a background tint and left border.
+ */
+function highlightActivePage() {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('nav a');
+
+    navLinks.forEach(link => {
+        const linkPath = link.getAttribute('href');
+
+        // Logic: Exact match OR sub-path match (excluding root '/' so Home doesn't light up everywhere)
+        const isActive = linkPath === currentPath || (linkPath !== '/' && currentPath.startsWith(linkPath));
+
+        if (isActive) {
+            // 1. Common Styles (Text Color & Bold)
+            link.classList.remove('text-brand-text');
+            link.classList.add('text-brand-accent', 'font-bold');
+
+            // 2. Desktop Specifics (inside .md:flex container)
+            if (link.closest('.md\\:flex')) {
+                link.classList.add('border-b-2', 'border-brand-accent');
+            }
+
+            // 3. Mobile Specifics (inside #mobile-nav container)
+            if (link.closest('#mobile-nav')) {
+                link.classList.add('bg-brand-accent/10', 'border-l-4', 'border-brand-accent');
+            }
+        }
+    });
+}
