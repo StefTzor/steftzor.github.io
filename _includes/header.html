@@ -1,21 +1,25 @@
 <header class="bg-brand-bg shadow-md sticky top-0 z-50 border-b border-brand-muted/10 transition-colors duration-300">
   <div class="container mx-auto flex justify-between items-center p-4">
     <div class="logo">
-      <a href="/" class="text-brand-accent font-bold text-xl tracking-tight hover:opacity-80 transition-opacity">
+      <a href="/"
+        class="text-brand-accent font-bold text-xl tracking-tight inline-block transition-transform duration-200 hover:-translate-y-1">
         Stefanos Tzortzoglou
       </a>
     </div>
 
     <nav class="hidden md:flex space-x-6 items-center">
-      <a href="/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">Home</a>
+      <a href="/"
+        class="text-brand-text hover:text-brand-accent font-medium transition-transform duration-200 hover:-translate-y-1">Home</a>
       <a href="/about/"
-        class="text-brand-text hover:text-brand-accent font-medium transition-all duration-300 border-b-2 border-transparent">About</a>
-      <a href="/portfolio/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">Portfolio</a>
-      <a href="/contact/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">Contact</a>
+        class="text-brand-text hover:text-brand-accent font-medium transition-transform duration-200 hover:-translate-y-1 border-b-2 border-transparent">About</a>
+      <a href="/portfolio/"
+        class="text-brand-text hover:text-brand-accent font-medium transition-transform duration-200 hover:-translate-y-1">Portfolio</a>
+      <a href="/contact/"
+        class="text-brand-text hover:text-brand-accent font-medium transition-transform duration-200 hover:-translate-y-1">Contact</a>
 
       <div class="relative group hidden" id="exclusive-nav-item">
         <button
-          class="text-brand-text hover:text-brand-accent font-medium flex items-center gap-1 transition-colors py-2">
+          class="text-brand-text hover:text-brand-accent font-medium flex items-center gap-1 transition-transform duration-200 hover:-translate-y-1 py-2">
           Exclusive Content <i class="fas fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
         </button>
         <div
@@ -38,10 +42,14 @@
 
     <div id="auth-status" class="hidden md:flex items-center space-x-4">
       <div id="guest-view" class="flex items-center space-x-4">
-        <a href="/login/" class="text-brand-text hover:text-brand-accent transition-colors" title="Login">
+        <a href="/login/"
+          class="text-brand-text hover:text-brand-accent transition-transform duration-200 hover:-translate-y-1 inline-block"
+          title="Login">
           <i class="fas fa-sign-in-alt text-lg"></i>
         </a>
-        <a href="/register/" class="text-brand-text hover:text-brand-accent transition-colors" title="Register">
+        <a href="/register/"
+          class="text-brand-text hover:text-brand-accent transition-transform duration-200 hover:-translate-y-1 inline-block"
+          title="Register">
           <i class="fas fa-user-plus text-lg"></i>
         </a>
       </div>
@@ -49,13 +57,15 @@
       <div id="user-view" class="hidden flex items-center space-x-4">
         <span id="user-display"
           class="text-sm font-medium text-brand-text opacity-80 border-r border-brand-muted/30 pr-4"></span>
-        <button id="logoutBtn" class="text-brand-text hover:text-red-500 transition-colors" title="Logout">
+        <button id="logoutBtn"
+          class="text-brand-text hover:text-red-500 transition-transform duration-200 hover:-translate-y-1 inline-block"
+          title="Logout">
           <i class="fas fa-sign-out-alt text-lg"></i>
         </button>
       </div>
 
       <button id="theme-toggle"
-        class="text-brand-text hover:text-brand-accent p-2 rounded-full hover:bg-brand-muted/10 transition-colors ml-2"
+        class="text-brand-text hover:text-brand-accent p-2 rounded-full hover:bg-brand-muted/10 transition-transform duration-200 hover:-translate-y-1 ml-2"
         aria-label="Toggle Dark Mode">
         <i class="fas fa-adjust text-lg"></i>
       </button>
