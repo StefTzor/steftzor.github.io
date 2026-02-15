@@ -5,6 +5,7 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy({
     "scripts/auth.js": "scripts/auth.js",
     "scripts/main.js": "scripts/main.js",
+    "scripts/hero.js": "scripts/hero.js"
   });
   eleventyConfig.addPassthroughCopy("images");
   eleventyConfig.addPassthroughCopy({"favicon": "/"});

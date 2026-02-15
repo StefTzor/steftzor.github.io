@@ -23,21 +23,25 @@
   <header class="bg-brand-bg shadow-md sticky top-0 z-50 border-b border-brand-muted/10 transition-colors duration-300">
   <div class="container mx-auto flex justify-between items-center p-4">
     <div class="logo">
-      <a href="/" class="text-brand-accent font-bold text-xl tracking-tight hover:opacity-80 transition-opacity">
+      <a href="/"
+        class="text-brand-accent font-bold text-xl tracking-tight inline-block transition-transform duration-200 hover:-translate-y-1">
         Stefanos Tzortzoglou
       </a>
     </div>
 
     <nav class="hidden md:flex space-x-6 items-center">
-      <a href="/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">Home</a>
+      <a href="/"
+        class="text-brand-text hover:text-brand-accent font-medium transition-transform duration-200 hover:-translate-y-1">Home</a>
       <a href="/about/"
-        class="text-brand-text hover:text-brand-accent font-medium transition-all duration-300 border-b-2 border-transparent">About</a>
-      <a href="/portfolio/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">Portfolio</a>
-      <a href="/contact/" class="text-brand-text hover:text-brand-accent font-medium transition-colors">Contact</a>
+        class="text-brand-text hover:text-brand-accent font-medium transition-transform duration-200 hover:-translate-y-1 border-b-2 border-transparent">About</a>
+      <a href="/portfolio/"
+        class="text-brand-text hover:text-brand-accent font-medium transition-transform duration-200 hover:-translate-y-1">Portfolio</a>
+      <a href="/contact/"
+        class="text-brand-text hover:text-brand-accent font-medium transition-transform duration-200 hover:-translate-y-1">Contact</a>
 
       <div class="relative group hidden" id="exclusive-nav-item">
         <button
-          class="text-brand-text hover:text-brand-accent font-medium flex items-center gap-1 transition-colors py-2">
+          class="text-brand-text hover:text-brand-accent font-medium flex items-center gap-1 transition-transform duration-200 hover:-translate-y-1 py-2">
           Exclusive Content <i class="fas fa-chevron-down text-xs transition-transform group-hover:rotate-180"></i>
         </button>
         <div
@@ -60,10 +64,14 @@
 
     <div id="auth-status" class="hidden md:flex items-center space-x-4">
       <div id="guest-view" class="flex items-center space-x-4">
-        <a href="/login/" class="text-brand-text hover:text-brand-accent transition-colors" title="Login">
+        <a href="/login/"
+          class="text-brand-text hover:text-brand-accent transition-transform duration-200 hover:-translate-y-1 inline-block"
+          title="Login">
           <i class="fas fa-sign-in-alt text-lg"></i>
         </a>
-        <a href="/register/" class="text-brand-text hover:text-brand-accent transition-colors" title="Register">
+        <a href="/register/"
+          class="text-brand-text hover:text-brand-accent transition-transform duration-200 hover:-translate-y-1 inline-block"
+          title="Register">
           <i class="fas fa-user-plus text-lg"></i>
         </a>
       </div>
@@ -71,13 +79,15 @@
       <div id="user-view" class="hidden flex items-center space-x-4">
         <span id="user-display"
           class="text-sm font-medium text-brand-text opacity-80 border-r border-brand-muted/30 pr-4"></span>
-        <button id="logoutBtn" class="text-brand-text hover:text-red-500 transition-colors" title="Logout">
+        <button id="logoutBtn"
+          class="text-brand-text hover:text-red-500 transition-transform duration-200 hover:-translate-y-1 inline-block"
+          title="Logout">
           <i class="fas fa-sign-out-alt text-lg"></i>
         </button>
       </div>
 
       <button id="theme-toggle"
-        class="text-brand-text hover:text-brand-accent p-2 rounded-full hover:bg-brand-muted/10 transition-colors ml-2"
+        class="text-brand-text hover:text-brand-accent p-2 rounded-full hover:bg-brand-muted/10 transition-transform duration-200 hover:-translate-y-1 ml-2"
         aria-label="Toggle Dark Mode">
         <i class="fas fa-adjust text-lg"></i>
       </button>
@@ -161,121 +171,50 @@
   </nav>
 </header>
 
-  <section class="relative bg-brand-surface border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40">
+  <section id="hero-section"
+    class="relative border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40 overflow-hidden">
 
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-      <div
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-accent/5 rounded-full blur-3xl -z-10">
-      </div>
+    <canvas id="hero-canvas" class="absolute inset-0 w-full h-full z-0 opacity-40 dark:opacity-60"></canvas>
+
+    <div class="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-transparent to-brand-bg pointer-events-none">
     </div>
 
     <div class="container mx-auto px-4 relative z-10">
 
-      <div class="flex flex-col md:flex-row items-center md:items-start justify-center gap-8 md:gap-16">
+      <div class="flex flex-col items-center justify-center text-center max-w-4xl mx-auto">
 
-        <div class="w-full md:w-1/2 text-center md:text-left z-20">
-
-          <div class="flex flex-col md:flex-row items-center justify-center md:justify-start gap-6 mb-6">
-
-            <div class="relative w-24 h-24 shrink-0 group">
-              <div
-                class="absolute -inset-1 bg-gradient-to-r from-brand-accent to-blue-500 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000">
-              </div>
-              <img src="/images/stefanos_profile.png" alt="Stefanos Tzortzoglou"
-                class="relative w-full h-full object-cover rounded-full border-2 border-brand-surface shadow-lg transform transition-transform duration-500 hover:scale-105">
+        <div class="flex flex-col items-center justify-center gap-6 mb-8">
+          <div id="hero-profile" class="relative w-32 h-32 shrink-0 group">
+            <div
+              class="absolute -inset-1 bg-gradient-to-r from-brand-accent to-blue-500 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-1000">
             </div>
-
-            <h1 class="text-4xl md:text-6xl font-bold tracking-tight">
-              Hey👋, I'm <br class="hidden md:block" />
-              <span class="bg-gradient-to-r from-brand-accent to-blue-500 bg-clip-text text-transparent">
-                Stefanos Tzortzoglou
-              </span>
-            </h1>
+            <img src="/images/stefanos_profile.png" alt="Stefanos Tzortzoglou"
+              class="relative w-full h-full object-cover rounded-full border-2 border-brand-surface shadow-lg transform transition-transform duration-500 hover:scale-105">
           </div>
 
-          <h2 class="text-lg md:text-2xl font-medium text-brand-muted max-w-2xl leading-relaxed mb-6 mx-auto md:mx-0">
-            Technical Customer Success Manager | Implementation Lead |
-            SQL, APIs & Data Strategy
-          </h2>
-
-          <p class="text-brand-text/80 text-base md:text-lg max-w-xl mb-8 leading-relaxed mx-auto md:mx-0">
-            I bridge the gap between commercial goals and technical reality. I don't just manage accounts; I get my
-            hands dirty with <strong>SQL</strong>, <strong>API integrations</strong>, and <strong>CRM/ERP</strong> data
-            mapping to solve the technical blockers that others escalate.
-          </p>
-
-          <div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
-            <a href="/portfolio/" class="btn-primary shadow-glow">View Technical Case Studies</a>
-            <a href="/contact/" class="btn-secondary">Get In Touch</a>
-          </div>
-
+          <h1 id="hero-title" class="text-4xl md:text-6xl font-bold tracking-tight will-change-transform">
+            <span id="hero-greeting"
+              class="inline-block transition-transform duration-300 ease-out origin-bottom-left">Hey👋</span>, I'm
+            <span class="bg-gradient-to-r from-brand-accent to-blue-500 bg-clip-text text-transparent">
+              Stefanos Tzortzoglou
+            </span>
+          </h1>
         </div>
 
-        <div
-          class="relative md:absolute mt-16 md:mt-0 bottom-[-96px] md:bottom-[-190px] right-auto md:right-0 w-56 h-64 md:w-80 md:h-96 z-30 pointer-events-none">
+        <h2 class="text-xl md:text-3xl font-medium text-brand-muted max-w-3xl leading-relaxed mb-8">
+          Technical Customer Success Manager | Implementation Lead |
+          SQL, APIs & Data Strategy
+        </h2>
 
-          <svg viewBox="0 0 300 450" class="w-full h-full overflow-visible drop-shadow-2xl">
+        <p class="text-brand-text/80 text-base md:text-lg max-w-2xl mb-10 leading-relaxed">
+          I bridge the gap between commercial goals and technical reality. I don't just manage accounts; I get my
+          hands dirty with <strong>SQL</strong>, <strong>API integrations</strong>, and <strong>CRM/ERP</strong> data
+          mapping to solve the technical blockers that others escalate.
+        </p>
 
-            <path d="M125,280 L130,390 L150,390 L155,280 Z" fill="#1f2937" />
-            <path d="M130,390 L155,390 L155,405 Q140,415 125,405 Z" fill="#0f172a" />
-            <path d="M165,280 L170,400 L190,400 L195,280 Z" fill="#1f2937" />
-            <path d="M170,400 L195,400 L195,415 Q180,425 165,415 Z" fill="#0f172a" />
-            <path d="M105,280 Q105,160 155,150 Q205,160 205,280 Z" fill="#e5e7eb" />
-
-            <path d="M155,150 L155,280" stroke="#d1d5db" stroke-width="1.5" />
-            <path d="M105,160 Q130,150 155,150" stroke="#d1d5db" stroke-width="1" fill="none" />
-            <circle cx="155" cy="180" r="2" fill="#9ca3af" />
-            <circle cx="155" cy="210" r="2" fill="#9ca3af" />
-            <circle cx="155" cy="240" r="2" fill="#9ca3af" />
-
-            <path d="M105,190 Q95,240 125,270" stroke="#e2cfae" stroke-width="14" stroke-linecap="round" fill="none" />
-            <path d="M205,190 Q215,240 185,270" stroke="#e2cfae" stroke-width="14" stroke-linecap="round" fill="none" />
-
-            <g id="human-head" class="origin-[155px_140px] transition-transform duration-100 ease-out">
-
-              <rect x="143" y="130" width="24" height="25" fill="#e2cfae" />
-
-              <path d="M115,60 L195,60 L195,100 Q195,145 155,160 Q115,145 115,100 Z" fill="#e2cfae" />
-
-              <path d="M115,100 Q115,145 155,160 Q195,145 195,100 L195,115 Q195,155 155,170 Q115,155 115,115 Z"
-                fill="#1a1a1a" />
-
-              <path d="M138,135 Q155,130 172,135" stroke="#1a1a1a" stroke-width="5" stroke-linecap="round"
-                fill="none" />
-
-              <path d="M142,145 Q155,150 168,145" stroke="#4a3b32" stroke-width="2.5" stroke-linecap="round"
-                fill="none" />
-
-              <path d="M155,100 L152,125 L160,125" stroke="#dcb895" stroke-width="2" fill="none" />
-
-              <g transform="translate(0, 10)">
-                <circle cx="140" cy="92" r="5" fill="white" />
-                <circle id="human-eye-left" cx="140" cy="92" r="2.5" fill="#1e1e1e" />
-
-                <circle cx="170" cy="92" r="5" fill="white" />
-                <circle id="human-eye-right" cx="170" cy="92" r="2.5" fill="#1e1e1e" />
-
-                <path d="M132,82 Q140,78 148,82" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" />
-                <path d="M162,82 Q170,78 178,82" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" />
-              </g>
-
-              <g stroke="#111827" stroke-width="3" fill="none">
-                <rect x="125" y="96" width="28" height="18" rx="3" />
-                <rect x="157" y="96" width="28" height="18" rx="3" />
-                <line x1="153" y1="102" x2="157" y2="102" stroke-width="2.5" />
-                <line x1="125" y1="100" x2="113" y2="96" stroke-width="2" />
-                <line x1="185" y1="100" x2="197" y2="96" stroke-width="2" />
-              </g>
-
-              <circle cx="113" cy="105" r="6" fill="#e2cfae" />
-              <circle cx="111" cy="107" r="2" fill="black" />
-              <path d="M112,62 Q120,25 155,25 Q190,25 198,62" fill="#1a1a1a" />
-              <path d="M115,60 L115,100 L120,100 L120,60 Z" fill="#4b5563" opacity="0.5" />
-              <path d="M190,60 L190,100 L195,100 L195,60 Z" fill="#4b5563" opacity="0.5" />
-
-            </g>
-
-          </svg>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <a href="/portfolio/" class="btn-primary shadow-glow px-8 py-3 text-lg">View Technical Case Studies</a>
+          <a href="/contact/" class="btn-secondary px-8 py-3 text-lg">Get In Touch</a>
         </div>
 
       </div>
@@ -445,7 +384,9 @@
 
   <footer class="bg-brand-bg border-t border-brand-muted/10 py-12">
   <div class="container mx-auto text-center px-4">
-    <h3 class="text-brand-accent text-2xl font-bold">Stefanos Tzortzoglou</h3>
+    <h3
+      class="text-brand-accent text-2xl font-bold inline-block hover:-translate-y-1 transition-transform duration-300">
+      Stefanos Tzortzoglou</h3>
     <p class="mt-2 text-brand-muted max-w-md mx-auto">Technical Customer Success Manager</p>
     <p class="mt-1 text-brand-muted max-w-md mx-auto">Implementation Lead | SaaS Integrations</p>
 
@@ -475,50 +416,8 @@
   <script type="module" src="scripts/auth.js"></script>
   <script src="scripts/main.js"></script>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const leftEye = document.getElementById('human-eye-left');
-      const rightEye = document.getElementById('human-eye-right');
-      const head = document.getElementById('human-head');
+  <script src="scripts/hero.js"></script>
 
-      // Configuration
-      const maxMove = 2; // Pixels the pupil can move
-      const headRotateMax = 6; // Degrees the head can tilt
-
-      window.addEventListener('mousemove', (e) => {
-        if (!leftEye || !rightEye) return;
-
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-
-        // Eye Tracking
-        const moveEye = (eye, mouseX, mouseY) => {
-          const eyeRect = eye.getBoundingClientRect();
-          const eyeCenterX = eyeRect.left + eyeRect.width / 2;
-          const eyeCenterY = eyeRect.top + eyeRect.height / 2;
-
-          const angle = Math.atan2(mouseY - eyeCenterY, mouseX - eyeCenterX);
-          const dist = Math.min(maxMove, Math.hypot(mouseX - eyeCenterX, mouseY - eyeCenterY) / 50);
-
-          const x = Math.cos(angle) * dist;
-          const y = Math.sin(angle) * dist;
-
-          eye.style.transform = `translate(${x}px, ${y}px)`;
-        };
-
-        moveEye(leftEye, e.clientX, e.clientY);
-        moveEye(rightEye, e.clientX, e.clientY);
-
-        // Head Tilt
-        const xPercent = (e.clientX - centerX) / centerX;
-        const rotateDeg = xPercent * headRotateMax;
-
-        if (head) {
-          head.style.transform = `rotate(${rotateDeg}deg)`;
-        }
-      });
-    });
-  </script>
 </body>
 
 </html>
