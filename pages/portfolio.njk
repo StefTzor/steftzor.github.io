@@ -30,36 +30,40 @@
 
             <div
                 class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
-                <div class="p-8">
+                <div class="p-8 h-full flex flex-col">
                     <div class="flex justify-between items-start mb-4">
                         <div
                             class="bg-blue-500/10 text-blue-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-blue-500/20">
-                            SaaS Implementation
+                            API Architecture
                         </div>
                         <i
-                            class="fas fa-network-wired text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
+                            class="fas fa-code-branch text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
                     </div>
 
-                    <h3 class="text-2xl font-bold text-brand-text mb-3">Enterprise ERP Data Migration</h3>
+                    <h3 class="text-2xl font-bold text-brand-text mb-3">Reverse-Engineering Global Ticketing APIs</h3>
 
-                    <p class="text-brand-muted mb-6 leading-relaxed">
-                        <strong>The Challenge:</strong> A key enterprise client struggled with fragmented customer data
-                        across legacy ERP systems, preventing effective segmentation.
+                    <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
+                        <strong>The Challenge:</strong> A global ticketing giant needed to integrate legacy,
+                        multi-layered
+                        event data (Ticketmaster scale) into our platform. Documentation was fragmented, and the data
+                        structure involved complex venue/event relationships.
                         <br><br>
-                        <strong>My Solution:</strong> Architected a custom SQL-based data mapping strategy and
-                        configured robust API endpoints to synchronize over 1 million records.
+                        <strong>My Solution:</strong> I manually mapped the API logic, reverse-engineering the data
+                        relationships. I designed the JSON transformation schema and guided Engineering on the exact
+                        implementation path to standardize millions of data points.
                         <br><br>
-                        <strong>The Outcome:</strong> Eliminated data silos, enabling the client to launch automated
-                        campaigns 2 weeks ahead of schedule.
+                        <strong>The Outcome:</strong> Enabled real-time segmentation on massive event datasets without
+                        breaking the legacy dependency.
                     </p>
 
                     <div class="border-t border-brand-muted/10 pt-4 mt-auto">
                         <div class="flex flex-wrap gap-2">
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">SQL</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">REST
+                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Legacy
                                 APIs</span>
                             <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Data
                                 Mapping</span>
+                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Technical
+                                Specs</span>
                         </div>
                     </div>
                 </div>
@@ -67,36 +71,41 @@
 
             <div
                 class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
-                <div class="p-8">
+                <div class="p-8 h-full flex flex-col">
                     <div class="flex justify-between items-start mb-4">
                         <div
                             class="bg-purple-500/10 text-purple-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-purple-500/20">
-                            Full Stack Dev
+                            Complex Integration
                         </div>
                         <i
-                            class="fas fa-university text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
+                            class="fas fa-sync-alt text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
                     </div>
 
-                    <h3 class="text-2xl font-bold text-brand-text mb-3">Automated Exam Archive System</h3>
+                    <h3 class="text-2xl font-bold text-brand-text mb-3">Sports League Bi-Directional Sync</h3>
 
-                    <p class="text-brand-muted mb-6 leading-relaxed">
-                        <strong>The Challenge:</strong> The University department relied on a manual, paper-based
-                        archiving process for exam papers, wasting faculty hours on retrieval.
+                    <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
+                        <strong>The Challenge:</strong> Onboarding a multi-tenant Sports League (10+ clubs) with a
+                        volatile ecosystem. They required a bi-directional sync between B2B CRMs, mobile apps, and
+                        gamification platforms. We had to handle conflicting data edits and push segmented audiences
+                        back to their CRM.
                         <br><br>
-                        <strong>My Solution:</strong> Taught myself full-stack development to build a secure web
-                        application with role-based access for professors and students.
+                        <strong>My Solution:</strong> Architected the logic flow for a 2-way sync to resolve data
+                        conflicts (Source of Truth logic). I coordinated the integration across Ticketing, E-commerce,
+                        and Membership systems to ensure data consistency.
                         <br><br>
-                        <strong>The Outcome:</strong> Digitized the entire workflow. The system was deployed on
-                        university servers and actively used by the department.
+                        <strong>The Outcome:</strong> Established a closed-loop data ecosystem, allowing clubs to
+                        push highly targeted segments from our platform back to their CRM for sales execution.
                     </p>
 
                     <div class="border-t border-brand-muted/10 pt-4 mt-auto">
                         <div class="flex flex-wrap gap-2">
                             <span
-                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">PHP/HTML</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">MySQL</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Web
-                                Security</span>
+                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Bi-Directional
+                                Sync</span>
+                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">CRM
+                                Architecture</span>
+                            <span
+                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Multi-Tenant</span>
                         </div>
                     </div>
                 </div>
@@ -104,10 +113,50 @@
 
             <div
                 class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
-                <div class="p-8">
+                <div class="p-8 h-full flex flex-col">
                     <div class="flex justify-between items-start mb-4">
                         <div
                             class="bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-emerald-500/20">
+                            Enterprise Governance
+                        </div>
+                        <i
+                            class="fas fa-shield-alt text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-brand-text mb-3">Fortune 500 Data Lake Strategy</h3>
+
+                    <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
+                        <strong>The Challenge:</strong> A Fortune 500 client with rigid Data Lake pipelines needed to
+                        onboard massive "Non-Adult" membership datasets. Privacy compliance was critical: we needed to
+                        target parents/guardians without exposing minor's PII, involving strict legal constraints.
+                        <br><br>
+                        <strong>My Solution:</strong> Led the technical discovery with their Data Engineers. I designed
+                        a "Parent/Guardian" entity model that routed all communications to authorized adults while
+                        keeping the non-adult profile data strictly siloed for analysis only.
+                        <br><br>
+                        <strong>The Outcome:</strong> Delivered a fully GDPR-compliant integration, enabling the client
+                        to monetize their youth segment safely via guardian marketing.
+                    </p>
+
+                    <div class="border-t border-brand-muted/10 pt-4 mt-auto">
+                        <div class="flex flex-wrap gap-2">
+                            <span
+                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Privacy/GDPR</span>
+                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Data
+                                Modeling</span>
+                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">ETL
+                                Strategy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
+                <div class="p-8 h-full flex flex-col">
+                    <div class="flex justify-between items-start mb-4">
+                        <div
+                            class="bg-slate-500/10 text-slate-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-slate-500/20">
                             Automation
                         </div>
                         <i
@@ -116,11 +165,12 @@
 
                     <h3 class="text-2xl font-bold text-brand-text mb-3">Technical Utility Scripts</h3>
 
-                    <p class="text-brand-muted mb-6 leading-relaxed">
+                    <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
                         A collection of automation scripts and experimental projects I use to sharpen my technical
                         skills. Includes exercises in API manipulation, data formatting, and frontend experiments.
                         <br><br>
-                        <em>Demonstrates my commitment to "figuring it out" and continuous learning.</em>
+                        <em>Demonstrates my commitment to "figuring it out" and continuous learning outside of work
+                            hours.</em>
                     </p>
 
                     <div class="border-t border-brand-muted/10 pt-4 mt-auto flex justify-between items-center">
