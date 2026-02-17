@@ -1387,6 +1387,10 @@ body {
   border-color: rgb(239 68 68 / 0.3);
 }
 
+.border-slate-500\/20 {
+  border-color: rgb(100 116 139 / 0.2);
+}
+
 .border-transparent {
   border-color: transparent;
 }
@@ -1474,6 +1478,10 @@ body {
 .bg-rose-400 {
   --tw-bg-opacity: 1;
   background-color: rgb(251 113 133 / var(--tw-bg-opacity, 1));
+}
+
+.bg-slate-500\/10 {
+  background-color: rgb(100 116 139 / 0.1);
 }
 
 .bg-slate-900\/80 {
@@ -1864,6 +1872,11 @@ body {
 .text-red-500 {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity, 1));
+}
+
+.text-slate-400 {
+  --tw-text-opacity: 1;
+  color: rgb(148 163 184 / var(--tw-text-opacity, 1));
 }
 
 .text-slate-600 {
