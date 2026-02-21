@@ -4,11 +4,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio - Stefanos Tzortzoglou</title>
+    <title>Code & Open Source - Stefanos Tzortzoglou</title>
     <link href="/dist/output.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/github-calendar@latest/dist/github-calendar-responsive.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
+
+    <style>
+        /* LIGHT MODE CALENDAR COLORS (Default) */
+        .calendar .width-full {
+            fill: #059669;
+        }
+
+        /* Accent */
+        .calendar .ContributionCalendar-day[data-level="0"] {
+            fill: #e2e8f0;
+        }
+
+        /* Surface */
+        .calendar .ContributionCalendar-day[data-level="1"] {
+            fill: #a7f3d0;
+        }
+
+        .calendar .ContributionCalendar-day[data-level="2"] {
+            fill: #34d399;
+        }
+
+        .calendar .ContributionCalendar-day[data-level="3"] {
+            fill: #10b981;
+        }
+
+        .calendar .ContributionCalendar-day[data-level="4"] {
+            fill: #059669;
+        }
+
+        .calendar {
+            border: none;
+            color: #334155;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Text Muted */
+
+        /* DARK MODE CALENDAR COLORS (.dark class applied to HTML) */
+        .dark .calendar .width-full {
+            fill: #10b981;
+        }
+
+        .dark .calendar .ContributionCalendar-day[data-level="0"] {
+            fill: #1e293b;
+        }
+
+        .dark .calendar .ContributionCalendar-day[data-level="1"] {
+            fill: #064e3b;
+        }
+
+        .dark .calendar .ContributionCalendar-day[data-level="2"] {
+            fill: #065f46;
+        }
+
+        .dark .calendar .ContributionCalendar-day[data-level="3"] {
+            fill: #10b981;
+        }
+
+        .dark .calendar .ContributionCalendar-day[data-level="4"] {
+            fill: #34d399;
+        }
+
+        .dark .calendar {
+            color: #94a3b8;
+        }
+    </style>
 </head>
 
 <body class="bg-brand-bg text-brand-text transition-colors duration-300 flex flex-col min-h-screen">
@@ -172,175 +240,128 @@
     <main class="flex-grow container mx-auto py-16 px-4">
 
         <div class="text-center max-w-3xl mx-auto mb-16">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6">Technical <span class="text-brand-accent">Case
-                    Studies</span></h1>
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">The Code Behind <span class="text-brand-accent">The
+                    Commercial</span></h1>
             <p class="text-lg text-brand-muted leading-relaxed">
-                I don't just write code; I solve business problems. Here is a selection of complex implementations and
-                technical challenges I have resolved.
+                While my day job focuses on driving revenue retention and enterprise implementation, my foundation is
+                deeply technical.
+                This page bridges my commercial portfolio with my raw GitHub output.
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
 
-            <div
-                class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
-                <div class="p-8 h-full flex flex-col">
-                    <div class="flex justify-between items-start mb-4">
-                        <div
-                            class="bg-blue-500/10 text-blue-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-blue-500/20">
-                            API Architecture
-                        </div>
-                        <i
-                            class="fas fa-code-branch text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
-                    </div>
+            <div class="bg-brand-surface p-8 rounded-2xl border border-brand-muted/10">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                    <i class="fas fa-terminal text-brand-accent"></i> Philosophy & Stack
+                </h2>
 
-                    <h3 class="text-2xl font-bold text-brand-text mb-3">Reverse-Engineering Global Ticketing APIs</h3>
-
-                    <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                        <strong>The Challenge:</strong> A global ticketing giant was needed to be integrated with their
-                        legacy,
-                        multi-layered
-                        event data into our platform. Documentation was fragmented, and the data
-                        structure involved complex venue/event relationships.
-                        <br><br>
-                        <strong>My Solution:</strong> I manually mapped the API logic, reverse-engineering the data
-                        relationships. I designed the JSON transformation schema and guided Engineering on the exact
-                        implementation path to standardize millions of data points.
-                        <br><br>
-                        <strong>The Outcome:</strong> Enabled real-time segmentation on massive event datasets without
-                        breaking the legacy dependency.
+                <div class="prose dark:prose-invert text-brand-muted leading-relaxed mb-8">
+                    <p class="mb-4">
+                        <strong>I am a pragmatist.</strong> I run a Linux environment because it forces a logical
+                        understanding of the system, and I strongly advocate for Open Source tools because transparency
+                        beats proprietary black boxes. I avoid gimmicks; I build what works, scales, and stays secure.
                     </p>
+                    <p class="mb-4">
+                        In my daily work, I don't just rely on GUI tools to map CRM/ERP systems. I manage complex B2B
+                        Solutions using raw <strong>SQL</strong>, configure Snowflake data pipelines (leveraging Tasks,
+                        Streams, Stored Procedures, and Dynamic Tables), and deploy infrastructure via
+                        <strong>Terraform</strong>. For campaign execution, I write extensive HTML for high-converting
+                        email templates.
+                    </p>
+                    <p class="mb-4">
+                        When troubleshooting <strong>API integrations</strong>, my attention to detail is exhaustive. I
+                        live in Swagger, OpenAPI, and Insomnia to isolate payload errors long before they require an
+                        Engineering escalation.
+                    </p>
+                    <p>
+                        My GitHub reflects this logical approach. This portfolio is built on a fast, lightweight stack
+                        (11ty, Nunjucks, Tailwind CSS) and deployed via GitHub Actions. It features a custom Firebase
+                        authentication flow for locked content, strictly architected to ensure API keys are never
+                        exposed. For backend utilities and data formatting, I default to JavaScript and Python.
+                    </p>
+                </div>
 
-                    <div class="border-t border-brand-muted/10 pt-4 mt-auto">
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Legacy
-                                APIs</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Data
-                                Mapping</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Technical
-                                Specs</span>
-                        </div>
+                <div class="grid grid-cols-4 sm:grid-cols-5 gap-6 text-center">
+                    <div class="group flex flex-col items-center gap-2">
+                        <i
+                            class="devicon-linux-plain text-4xl text-yellow-600 dark:text-yellow-500 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Linux</span>
+                    </div>
+                    <div class="group flex flex-col items-center gap-2">
+                        <i
+                            class="devicon-azuresqldatabase-plain text-4xl text-blue-600 dark:text-blue-400 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">SQL</span>
+                    </div>
+                    <div class="group flex flex-col items-center gap-2">
+                        <i
+                            class="fas fa-snowflake text-4xl text-blue-500 dark:text-blue-300 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Snowflake</span>
+                    </div>
+                    <div class="group flex flex-col items-center gap-2">
+                        <i
+                            class="devicon-terraform-plain text-4xl text-purple-600 dark:text-purple-400 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Terraform</span>
+                    </div>
+                    <div class="group flex flex-col items-center gap-2">
+                        <i
+                            class="devicon-javascript-plain text-4xl text-yellow-500 dark:text-yellow-300 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">JS</span>
+                    </div>
+                    <div class="group flex flex-col items-center gap-2">
+                        <i
+                            class="devicon-python-plain text-4xl text-blue-600 dark:text-yellow-400 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Python</span>
+                    </div>
+                    <div class="group flex flex-col items-center gap-2">
+                        <i
+                            class="devicon-html5-plain text-4xl text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">HTML</span>
+                    </div>
+                    <div class="group flex flex-col items-center gap-2">
+                        <i
+                            class="devicon-insomnia-plain text-4xl text-purple-700 dark:text-purple-500 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Insomnia</span>
+                    </div>
+                    <div class="group flex flex-col items-center gap-2">
+                        <i
+                            class="devicon-git-plain text-4xl text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Git</span>
+                    </div>
+                    <div class="group flex flex-col items-center gap-2">
+                        <i
+                            class="devicon-eleventy-plain text-4xl text-slate-800 dark:text-gray-200 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">11ty</span>
                     </div>
                 </div>
             </div>
+            <div class="space-y-8">
 
-            <div
-                class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
-                <div class="p-8 h-full flex flex-col">
-                    <div class="flex justify-between items-start mb-4">
-                        <div
-                            class="bg-purple-500/10 text-purple-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-purple-500/20">
-                            Complex Integration
-                        </div>
-                        <i
-                            class="fas fa-sync-alt text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
-                    </div>
-
-                    <h3 class="text-2xl font-bold text-brand-text mb-3">Sports League Bi-Directional Sync</h3>
-
-                    <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                        <strong>The Challenge:</strong> Onboarding a multi-tenant Sports League (10+ clubs) with a
-                        volatile ecosystem. They required a bi-directional sync between B2B CRMs, mobile apps, and
-                        gamification platforms. We had to handle conflicting data edits and push segmented audiences
-                        back to their CRM.
-                        <br><br>
-                        <strong>My Solution:</strong> Architected the logic flow for a 2-way sync to resolve data
-                        conflicts (Source of Truth logic). I coordinated the integration across Ticketing, E-commerce,
-                        and Membership systems to ensure data consistency.
-                        <br><br>
-                        <strong>The Outcome:</strong> Established a closed-loop data ecosystem, allowing clubs to
-                        push highly targeted segments from our platform back to their CRM for sales execution.
-                    </p>
-
-                    <div class="border-t border-brand-muted/10 pt-4 mt-auto">
-                        <div class="flex flex-wrap gap-2">
-                            <span
-                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Bi-Directional
-                                Sync</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">CRM
-                                Architecture</span>
-                            <span
-                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Multi-Tenant</span>
-                        </div>
-                    </div>
+                <div class="bg-brand-surface p-1 rounded-2xl border border-brand-muted/10 shadow-lg overflow-hidden">
+                    <img src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=0f172a&title_color=10b981&icon_color=3b82f6&text_color=94a3b8"
+                        alt="Stefanos GitHub Stats (Dark)" class="hidden dark:block w-full h-auto">
+                    <img src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=e2e8f0&title_color=059669&icon_color=3b82f6&text_color=334155"
+                        alt="Stefanos GitHub Stats (Light)" class="block dark:hidden w-full h-auto">
                 </div>
+
+                <div class="bg-brand-surface p-1 rounded-2xl border border-brand-muted/10 shadow-lg overflow-hidden">
+                    <img src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=0f172a&title_color=10b981&text_color=94a3b8&icon_color=3b82f6"
+                        alt="Top Languages (Dark)" class="hidden dark:block w-full h-auto">
+                    <img src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=e2e8f0&title_color=059669&text_color=334155&icon_color=3b82f6"
+                        alt="Top Languages (Light)" class="block dark:hidden w-full h-auto">
+                </div>
+
             </div>
 
+        </div>
+        <div class="mt-16 max-w-6xl mx-auto w-full">
+            <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-brand-text">
+                <i class="fab fa-github text-brand-accent"></i> Live Code Activity
+            </h3>
             <div
-                class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
-                <div class="p-8 h-full flex flex-col">
-                    <div class="flex justify-between items-start mb-4">
-                        <div
-                            class="bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-emerald-500/20">
-                            Enterprise Governance
-                        </div>
-                        <i
-                            class="fas fa-shield-alt text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
-                    </div>
-
-                    <h3 class="text-2xl font-bold text-brand-text mb-3">Fortune 500 Data Lake Strategy</h3>
-
-                    <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                        <strong>The Challenge:</strong> A Fortune 500 client with rigid Data Lake pipelines needed to
-                        onboard massive "Non-Adult" membership datasets. Privacy compliance was critical: we needed to
-                        target parents/guardians without exposing minor's PII, involving strict legal constraints.
-                        <br><br>
-                        <strong>My Solution:</strong> Led the technical discovery with their Data Engineers. I designed
-                        a "Parent/Guardian" entity model that routed all communications to authorized adults while
-                        keeping the non-adult profile data strictly siloed for analysis only.
-                        <br><br>
-                        <strong>The Outcome:</strong> Delivered a fully GDPR-compliant integration, enabling the client
-                        to monetize their youth segment safely via guardian marketing.
-                    </p>
-
-                    <div class="border-t border-brand-muted/10 pt-4 mt-auto">
-                        <div class="flex flex-wrap gap-2">
-                            <span
-                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Privacy/GDPR</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Data
-                                Modeling</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">ETL
-                                Strategy</span>
-                        </div>
-                    </div>
-                </div>
+                class="calendar bg-brand-surface border border-brand-muted/10 p-6 rounded-xl shadow-lg w-full overflow-x-auto">
+                Loading GitHub data...
             </div>
-
-            <div
-                class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
-                <div class="p-8 h-full flex flex-col">
-                    <div class="flex justify-between items-start mb-4">
-                        <div
-                            class="bg-slate-500/10 text-slate-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-slate-500/20">
-                            Automation
-                        </div>
-                        <i
-                            class="fab fa-github text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
-                    </div>
-
-                    <h3 class="text-2xl font-bold text-brand-text mb-3">Technical Utility Scripts</h3>
-
-                    <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                        A collection of automation scripts and experimental projects I use to sharpen my technical
-                        skills. Includes exercises in API manipulation, data formatting, and frontend experiments.
-                        <br><br>
-                        <em>Demonstrates my commitment to "figuring it out" and continuous learning outside of work
-                            hours.</em>
-                    </p>
-
-                    <div class="border-t border-brand-muted/10 pt-4 mt-auto flex justify-between items-center">
-                        <div class="flex flex-wrap gap-2">
-                            <span
-                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">JavaScript</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Python</span>
-                        </div>
-                        <a href="https://github.com/steftzor" target="_blank"
-                            class="text-sm font-bold text-brand-accent hover:underline">View Github <i
-                                class="fas fa-arrow-right ml-1"></i></a>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
     </main>
@@ -379,6 +400,16 @@
     <script type="module" src="/scripts/firebase-config.js"></script>
     <script type="module" src="/scripts/auth.js"></script>
     <script src="/scripts/main.js"></script>
+    <script src="https://unpkg.com/github-calendar@latest/dist/github-calendar.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            GitHubCalendar(".calendar", "steftzor", {
+                responsive: true,
+                tooltips: true,
+                global_stats: false,
+            });
+        });
+    </script>
 </body>
 
 </html>
