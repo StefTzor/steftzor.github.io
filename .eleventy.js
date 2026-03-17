@@ -9,6 +9,7 @@ module.exports = function(eleventyConfig) {
   });
   eleventyConfig.addPassthroughCopy("images");
   eleventyConfig.addPassthroughCopy({"favicon": "/"});
+  eleventyConfig.addPassthroughCopy({ "CNAME": "CNAME" });
 
    // Prevent firebase-config.js from being copied
    eleventyConfig.ignores.add("scripts/firebase-config.js");
