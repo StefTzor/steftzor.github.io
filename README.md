@@ -1,6 +1,6 @@
 # Stefanos Tzortzoglou | Personal Portfolio
 
-> **Live Site:** [steftzor.github.io](https://steftzor.github.io)
+> **Live Site:** [tzortzoglou.eu](tzortzoglou.eu)
 
 This repository contains the source code for my personal portfolio. It serves as a technical bridge between my commercial experience as a **Technical Customer Success Manager** and my foundational engineering skills.
 
@@ -45,7 +45,7 @@ Create a `.env` file in the root directory and add your Firebase configuration v
 ### 4. Run the development server:
 
 ```bash
-npm run start
+npm run dev
 ```
 
 *This will concurrently compile the Tailwind CSS and serve the 11ty static files on `localhost:8080`.*
