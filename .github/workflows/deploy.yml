@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # or your default branch
+      - main # or your default branch
 
 jobs:
   deploy:
@@ -11,6 +11,12 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Project
+        run: npm run build # This will now run Tailwind and Eleventy
 
       - name: Generate Firebase Config File
         run: |
@@ -36,14 +42,8 @@ jobs:
           export { auth, db };
           EOF
 
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Project
-        run: npm run build  # This will now run Tailwind and Eleventy
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          publish_dir: ./_site  # adjust if your build output directory is different
+          publish_dir: ./_site # adjust if your build output directory is different

@@ -1,6 +1,6 @@
 # Stefanos Tzortzoglou | Personal Portfolio
 
-> **Live Site:** [tzortzoglou.eu](tzortzoglou.eu)
+> **Live Site:** [tzortzoglou.eu](https://tzortzoglou.eu)
 
 This repository contains the source code for my personal portfolio. It serves as a technical bridge between my commercial experience as a **Technical Customer Success Manager** and my foundational engineering skills.
 
