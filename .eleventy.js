@@ -11,6 +11,11 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy({"favicon": "/"});
   eleventyConfig.addPassthroughCopy({ "CNAME": "CNAME" });
   eleventyConfig.addPassthroughCopy("robots.txt");
+  // IndexNow ownership key file (served at site root)
+  eleventyConfig.addPassthroughCopy("4fd3d9a15a8ed562e65c15e73e6682df.txt");
+
+  // Build date for sitemap <lastmod> (YYYY-MM-DD)
+  eleventyConfig.addGlobalData("buildDate", () => new Date().toISOString().split("T")[0]);
 
    // Prevent firebase-config.js from being copied
    eleventyConfig.ignores.add("scripts/firebase-config.js");
