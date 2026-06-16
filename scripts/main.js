@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
         htmlElement.classList.toggle('dark');
         const isDark = htmlElement.classList.contains('dark');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        console.log('Theme toggled to:', isDark ? 'dark' : 'light');
     };
 
     // Add event listeners for both desktop and mobile theme toggles
