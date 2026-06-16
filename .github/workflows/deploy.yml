@@ -75,3 +75,21 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      # Notify IndexNow-enabled engines (Bing, Yandex, Seznam, Naver, Yep) of updated URLs
+      - name: Ping IndexNow
+        run: |
+          curl -sS -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d '{
+              "host": "tzortzoglou.eu",
+              "key": "4fd3d9a15a8ed562e65c15e73e6682df",
+              "keyLocation": "https://tzortzoglou.eu/4fd3d9a15a8ed562e65c15e73e6682df.txt",
+              "urlList": [
+                "https://tzortzoglou.eu/",
+                "https://tzortzoglou.eu/about/",
+                "https://tzortzoglou.eu/portfolio/",
+                "https://tzortzoglou.eu/code/",
+                "https://tzortzoglou.eu/contact/"
+              ]
+            }'
