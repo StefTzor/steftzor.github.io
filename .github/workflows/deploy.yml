@@ -3,20 +3,38 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main # or your default branch
+      - main
+  workflow_dispatch:
+
+# Permissions needed for the official Pages deployment via GITHUB_TOKEN (no PAT required)
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment, don't cancel an in-progress run
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Project
-        run: npm run build # This will now run Tailwind and Eleventy
+        run: npm run build # Runs Tailwind and Eleventy
 
       - name: Generate Firebase Config File
         run: |
@@ -42,8 +60,18 @@ jobs:
           export { auth, db };
           EOF
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          publish_dir: ./_site # adjust if your build output directory is different
+          path: ./_site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
