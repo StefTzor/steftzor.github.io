@@ -16,6 +16,8 @@ module.exports = function(eleventyConfig) {
 
   // Build date for sitemap <lastmod> (YYYY-MM-DD)
   eleventyConfig.addGlobalData("buildDate", () => new Date().toISOString().split("T")[0]);
+  // Full ISO 8601 datetime for JSON-LD dateModified (Google ProfilePage requires a datetime, not a date)
+  eleventyConfig.addGlobalData("buildDateTime", () => new Date().toISOString());
 
    // Prevent firebase-config.js from being copied
    eleventyConfig.ignores.add("scripts/firebase-config.js");
