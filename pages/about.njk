@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
     <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,48 +22,81 @@
     <meta property="og:title" content="About Stefanos Tzortzoglou | Technical Customer Success">
     <meta property="og:description"
         content="Learn about Stefanos Tzortzoglou's journey from a self-taught developer to a Technical Customer Success Manager bridging commercial strategy and technical reality.">
-    <meta property="og:image" content="https://tzortzoglou.eu/images/stefanos_profile.png">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://tzortzoglou.eu/images/og-cover.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead. SQL, APIs, Data Strategy, Enterprise SaaS.">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="About Stefanos Tzortzoglou | Technical Customer Success">
     <meta name="twitter:description"
         content="Learn about Stefanos Tzortzoglou's journey from a self-taught developer to a Technical Customer Success Manager bridging commercial strategy and technical reality.">
-    <meta name="twitter:image" content="https://tzortzoglou.eu/images/stefanos_profile.png">
+    <meta name="twitter:image" content="https://tzortzoglou.eu/images/og-cover.png">
+  <meta name="twitter:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead.">
     <meta name="description"
         content="Learn about Stefanos Tzortzoglou's journey from a self-taught developer to a Technical Customer Success Manager bridging commercial strategy and technical reality.">
 
     <script type="application/ld+json">
-  {
-    "@context": "https://schema.org/",
-    "@type": "Person",
-    "name": "Stefanos Tzortzoglou",
-    "alternateName": ["Στέφανος Τζώρτζογλου", "Stefanos Tzortzoglu"],
-    "givenName": "Stefanos",
-    "familyName": "Tzortzoglou",
-    "mainEntityOfPage": "https://tzortzoglou.eu/about/",
-    "url": "https://tzortzoglou.eu",
-    "image": "https://tzortzoglou.eu/images/stefanos_profile.png",
-    "jobTitle": [
-      "Technical Customer Success Manager",
-      "Implementation Lead",
-      "Technical Account Manager"
-    ],
-    "knowsAbout": [
-      "SaaS Implementation",
-      "API Architecture",
-      "Data Strategy",
-      "SQL",
-      "Snowflake",
-      "Enterprise Customer Success"
-    ],
-    "sameAs": [
-      "https://www.linkedin.com/in/stzortzoglou/",
-      "https://github.com/steftzor"
-    ]
-  }
-  </script>
+    {
+      "@context": "https://schema.org/",
+      "@type": "Person",
+      "name": "Stefanos Tzortzoglou",
+      "alternateName": [
+        "Στέφανος Τζώρτζογλου",
+        "Stefanos Tzortzoglu"
+      ],
+      "givenName": "Stefanos",
+      "familyName": "Tzortzoglou",
+      "mainEntityOfPage": "https://tzortzoglou.eu/about/",
+      "url": "https://tzortzoglou.eu",
+      "image": "https://tzortzoglou.eu/images/stefanos_profile.png",
+      "jobTitle": [
+        "Technical Customer Success Manager",
+        "Implementation Lead",
+        "Technical Account Manager"
+      ],
+      "knowsAbout": [
+        "SaaS Implementation",
+        "API Architecture",
+        "Data Strategy",
+        "SQL",
+        "Snowflake",
+        "Enterprise Customer Success"
+      ],
+      "sameAs": [
+        "https://www.linkedin.com/in/stzortzoglou/",
+        "https://github.com/steftzor"
+      ],
+      "homeLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Uppsala",
+          "addressRegion": "Uppsala län",
+          "addressCountry": "SE"
+        }
+      },
+      "workLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Stockholm",
+          "addressRegion": "Stockholms län",
+          "addressCountry": "SE"
+        }
+      }
+    }
+    </script>
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
 
     <link href="/dist/output.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 </head>
@@ -71,7 +105,7 @@
 
     {% include "_includes/header.html" %}
 
-    <main class="flex-grow container mx-auto py-16 px-4">
+    <main id="main-content" class="flex-grow container mx-auto py-16 px-4">
 
         <section class="max-w-4xl mx-auto mb-16">
             <h1 class="text-4xl md:text-5xl font-bold mb-6">Bridging the Gap Between <span
@@ -97,10 +131,9 @@
                         customers see value.
                     </p>
                     <div class="flex gap-4">
-                        <a href="/contact/" class="btn btn-primary"><i class="fas fa-envelope mr-2"></i> Get in
+                        <a href="/contact/" class="btn btn-primary"><i class="fas fa-envelope mr-2" aria-hidden="true"></i> Get in
                             Touch</a>
-                        <a href="https://www.linkedin.com/in/stzortzoglou/" target="_blank" class="btn btn-secondary"><i
-                                class="fab fa-linkedin mr-2"></i> LinkedIn</a>
+                        <a href="https://www.linkedin.com/in/stzortzoglou/" target="_blank" class="btn btn-secondary" rel="noopener noreferrer"><i class="fab fa-linkedin mr-2" aria-hidden="true"></i> LinkedIn</a>
                     </div>
                 </div>
             </div>
@@ -112,7 +145,7 @@
 
                 <section>
                     <h2 class="text-2xl font-bold mb-8 flex items-center gap-3">
-                        <i class="fas fa-briefcase text-brand-accent"></i> Professional Experience
+                        <i class="fas fa-briefcase text-brand-accent" aria-hidden="true"></i> Professional Experience
                     </h2>
 
                     <div class="bg-brand-surface rounded-xl shadow-sm border border-brand-muted/10 p-0 overflow-hidden">
@@ -126,7 +159,7 @@
                                 <div>
                                     <h3 class="text-xl font-bold text-brand-text leading-tight">
                                         <a href="https://datatalks.se" target="_blank"
-                                            class="hover:text-brand-accent transition-colors">Data Talks</a>
+                                            class="hover:text-brand-accent transition-colors" rel="noopener noreferrer">Data Talks</a>
                                     </h3>
                                     <div class="text-brand-muted text-sm mt-1">Full-time</div>
                                     <div class="text-brand-muted text-sm mt-1">
@@ -282,7 +315,7 @@
 
                 <section>
                     <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-                        <i class="fas fa-graduation-cap text-brand-accent"></i> Education
+                        <i class="fas fa-graduation-cap text-brand-accent" aria-hidden="true"></i> Education
                     </h2>
                     <div
                         class="bg-brand-surface p-6 rounded-xl shadow-sm border border-brand-muted/10 relative overflow-hidden group">
@@ -302,15 +335,13 @@
                                 knowledge and taught myself the necessary stack to deploy a functional, secure platform
                                 used by the university department.
                             </p>
-                            <div class="flex gap-4 text-sm">
-                                <a href="http://dspai.kastoria.teiwm.gr/grapta" target="_blank"
-                                    class="text-brand-accent hover:underline inline-flex items-center gap-1">
-                                    <i class="fas fa-external-link-alt text-xs"></i> View Deployment
-                                </a>
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                                 <a href="https://anaktisis.uowm.gr/10583" target="_blank"
-                                    class="text-brand-accent hover:underline inline-flex items-center gap-1">
-                                    <i class="fas fa-file-pdf text-xs"></i> Read Document
+                                    class="text-brand-accent hover:underline inline-flex items-center gap-1" rel="noopener noreferrer">
+                                    <i class="fas fa-file-pdf text-xs" aria-hidden="true"></i> Read the thesis
                                 </a>
+                                <span class="text-brand-muted text-xs">The original departmental deployment has since been
+                                    retired by the university.</span>
                             </div>
                         </div>
                     </div>
@@ -327,17 +358,17 @@
                         <h4 class="text-sm font-semibold text-brand-muted uppercase tracking-wider mb-3">Core Tech</h4>
                         <div class="flex flex-wrap gap-2">
                             <span
-                                class="px-3 py-1 bg-blue-500/10 text-blue-500 rounded-full text-sm font-medium border border-blue-500/20">SQL</span>
+                                class="px-3 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/20">SQL</span>
                             <span
-                                class="px-3 py-1 bg-blue-500/10 text-blue-500 rounded-full text-sm font-medium border border-blue-500/20">REST
+                                class="px-3 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/20">REST
                                 APIs</span>
                             <span
-                                class="px-3 py-1 bg-blue-500/10 text-blue-500 rounded-full text-sm font-medium border border-blue-500/20">HTML/CSS</span>
+                                class="px-3 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/20">HTML/CSS</span>
                             <span
-                                class="px-3 py-1 bg-blue-500/10 text-blue-500 rounded-full text-sm font-medium border border-blue-500/20">Relational
+                                class="px-3 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/20">Relational
                                 Databases</span>
                             <span
-                                class="px-3 py-1 bg-blue-500/10 text-blue-500 rounded-full text-sm font-medium border border-blue-500/20">Data
+                                class="px-3 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/20">Data
                                 Mapping</span>
                         </div>
                     </div>
@@ -347,18 +378,18 @@
                         </h4>
                         <div class="flex flex-wrap gap-2">
                             <span
-                                class="px-3 py-1 bg-purple-500/10 text-purple-500 rounded-full text-sm font-medium border border-purple-500/20">SaaS
+                                class="px-3 py-1 bg-purple-500/10 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/20">SaaS
                                 Onboarding</span>
                             <span
-                                class="px-3 py-1 bg-purple-500/10 text-purple-500 rounded-full text-sm font-medium border border-purple-500/20">Ticketing
+                                class="px-3 py-1 bg-purple-500/10 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/20">Ticketing
                                 Systems</span>
                             <span
-                                class="px-3 py-1 bg-purple-500/10 text-purple-500 rounded-full text-sm font-medium border border-purple-500/20">E-Commerce</span>
+                                class="px-3 py-1 bg-purple-500/10 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/20">E-Commerce</span>
                             <span
-                                class="px-3 py-1 bg-purple-500/10 text-purple-500 rounded-full text-sm font-medium border border-purple-500/20">CRM
+                                class="px-3 py-1 bg-purple-500/10 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/20">CRM
                                 & ERP</span>
                             <span
-                                class="px-3 py-1 bg-purple-500/10 text-purple-500 rounded-full text-sm font-medium border border-purple-500/20">B2B
+                                class="px-3 py-1 bg-purple-500/10 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/20">B2B
                                 Solutions</span>
                         </div>
                     </div>
@@ -368,16 +399,16 @@
                             Success</h4>
                         <div class="flex flex-wrap gap-2">
                             <span
-                                class="px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-sm font-medium border border-emerald-500/20">Revenue
+                                class="px-3 py-1 bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/20">Revenue
                                 Retention</span>
                             <span
-                                class="px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-sm font-medium border border-emerald-500/20">Adoption
+                                class="px-3 py-1 bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/20">Adoption
                                 Strategy</span>
                             <span
-                                class="px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-sm font-medium border border-emerald-500/20">Technical
+                                class="px-3 py-1 bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/20">Technical
                                 Leadership</span>
                             <span
-                                class="px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-full text-sm font-medium border border-emerald-500/20">Troubleshooting</span>
+                                class="px-3 py-1 bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/20">Troubleshooting</span>
                         </div>
                     </div>
                 </div>
@@ -392,6 +423,7 @@
     <script type="module" src="/scripts/firebase-config.js"></script>
     <script type="module" src="/scripts/auth.js"></script>
     <script src="/scripts/main.js"></script>
+  <script src="/scripts/consent.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

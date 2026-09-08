@@ -1,32 +1,54 @@
 <footer class="bg-brand-bg border-t border-brand-muted/10 py-12">
   <div class="container mx-auto text-center px-4">
-    <h3
-      class="bg-gradient-to-r from-brand-accent to-blue-500 bg-clip-text text-transparent text-2xl font-bold inline-block hover:-translate-y-1 transition-transform duration-300">
+    <h2
+      class="bg-gradient-to-r from-brand-accent to-blue-700 dark:to-blue-400 bg-clip-text text-transparent text-2xl font-bold inline-block hover:-translate-y-1 transition-transform duration-300">
       Stefanos Tzortzoglou
-    </h3>
+    </h2>
     <p lang="el" class="mt-1 text-sm font-light tracking-wide text-brand-muted max-w-md mx-auto">Στέφανος
       Τζώρτζογλου</p>
     <p class="mt-2 text-brand-muted max-w-md mx-auto">Technical Customer Success Manager</p>
     <p class="mt-1 text-brand-muted max-w-md mx-auto">Implementation Lead | SaaS Integrations</p>
 
     <div class="mt-6 flex justify-center space-x-6">
-      <a href="https://github.com/steftzor" target="_blank"
+      <a href="https://github.com/steftzor" target="_blank" rel="noopener noreferrer"
         class="text-brand-text hover:text-brand-accent transition-transform hover:-translate-y-1">
-        <i class="fab fa-github text-2xl"></i>
+        <i class="fab fa-github text-2xl" aria-hidden="true"></i>
+        <span class="sr-only">GitHub profile (opens in a new tab)</span>
       </a>
-      <a href="https://www.linkedin.com/in/stzortzoglou/" target="_blank"
+      <a href="https://www.linkedin.com/in/stzortzoglou/" target="_blank" rel="noopener noreferrer"
         class="text-brand-text hover:text-brand-accent transition-transform hover:-translate-y-1">
-        <i class="fab fa-linkedin text-2xl"></i>
+        <i class="fab fa-linkedin text-2xl" aria-hidden="true"></i>
+        <span class="sr-only">LinkedIn profile (opens in a new tab)</span>
       </a>
-      <a href="mailto:s.tzortzoglou@proton.me"
+      <a href="mailto:stefanos@tzortzoglou.eu"
         class="text-brand-text hover:text-brand-accent transition-transform hover:-translate-y-1">
-        <i class="fas fa-envelope text-2xl"></i>
+        <i class="fas fa-envelope text-2xl" aria-hidden="true"></i>
+        <span class="sr-only">Email Stefanos Tzortzoglou</span>
       </a>
     </div>
 
-    <p class="mt-8 text-xs text-brand-muted uppercase tracking-widest">&copy; <span id="footer-year"></span> Stefanos
-      Tzortzoglou. All rights reserved.</p>
+    <nav aria-label="Legal" class="mt-8">
+      <ul class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
+        <li><a href="/privacy/" class="text-brand-muted hover:text-brand-accent underline">Privacy Policy</a></li>
+        <li><a href="/cookies/" class="text-brand-muted hover:text-brand-accent underline">Cookies &amp; Local
+            Storage</a></li>
+        <li><a href="/terms/" class="text-brand-muted hover:text-brand-accent underline">Terms of Use</a></li>
+        <li><a href="/accessibility/" class="text-brand-muted hover:text-brand-accent underline">Accessibility</a></li>
+      </ul>
+    </nav>
+
+    <!-- Site operator / data controller identity (GDPR Art. 13(1)(a)) -->
+    <address class="mt-6 text-xs text-brand-muted not-italic leading-relaxed">
+      Operated as a personal portfolio by <strong>Stefanos Tzortzoglou</strong>, a private individual based in
+      Uppsala, Sweden.<br>
+      Not a registered company. No goods or services are sold through this site.<br>
+      Contact: <a href="mailto:stefanos@tzortzoglou.eu"
+        class="underline hover:text-brand-accent">stefanos@tzortzoglou.eu</a>
+    </address>
+
+    <p class="mt-6 text-xs text-brand-muted uppercase tracking-widest">&copy; <span id="footer-year">2026</span>
+      Stefanos Tzortzoglou. All rights reserved.</p>
   </div>
 </footer>
 
-<script data-goatcounter="https://steftzor.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<!-- Analytics is loaded by /scripts/consent.js only after the visitor accepts. -->

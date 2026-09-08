@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!canvas || !heroSection) return;
 
   const ctx = canvas.getContext('2d');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let width, height;
   let points = [];
   
@@ -104,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 3. DOM Elements Parallax (Only if mouse is active inside section)
-    if (mouse.clientX !== null && profile && title) {
+    if (!reduceMotion.matches && mouse.clientX !== null && profile && title) {
       const centerX = window.innerWidth / 2;
       const centerY = window.innerHeight / 2;
       
@@ -117,6 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
       title.style.transform = `translate3d(${deltaX * titleSpeed}px, ${deltaY * titleSpeed}px, 0)`;
     }
 
+    // A CSS media query cannot stop a requestAnimationFrame loop, so the check lives here.
+    // Under reduced motion the grid is painted once and left still (WCAG 2.3.3).
+    if (reduceMotion.matches) return;
     requestAnimationFrame(animate);
   };
 
@@ -161,9 +165,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Define the Animation Functions
     const startWave = () => {
+      // Web Animations API is out of reach of the CSS reduced-motion rule too.
+      if (reduceMotion.matches) return;
+
       // Pop up the whole "Hey" text
       greeting.style.transform = 'translateY(-5px) scale(1.1)';
-      
+
       // Animate the emoji waving
       if (emoji) {
         // .animate() cancels any currently running animation on the element automatically

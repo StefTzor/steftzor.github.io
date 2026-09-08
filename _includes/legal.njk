@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="canonical" href="https://tzortzoglou.eu{{ page.url }}">
+  <link rel="alternate" hreflang="x-default" href="https://tzortzoglou.eu{{ page.url }}">
+  <title>{{ title }}</title>
+  <meta name="description" content="{{ description }}">
+
+  <!-- Open Graph / social sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Stefanos Tzortzoglou">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="el_GR">
+  <meta property="og:url" content="https://tzortzoglou.eu{{ page.url }}">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:description" content="{{ description }}">
+  <meta property="og:image" content="https://tzortzoglou.eu/images/og-cover.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead. SQL, APIs, Data Strategy, Enterprise SaaS.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ title }}">
+  <meta name="twitter:description" content="{{ description }}">
+  <meta name="twitter:image" content="https://tzortzoglou.eu/images/og-cover.png">
+  <meta name="twitter:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": {{ title | dump | safe }},
+    "description": {{ description | dump | safe }},
+    "url": "https://tzortzoglou.eu{{ page.url }}",
+    "dateModified": "{{ buildDateTime }}",
+    "inLanguage": "en",
+    "isPartOf": {
+      "@type": "WebSite",
+      "url": "https://tzortzoglou.eu",
+      "name": "Stefanos Tzortzoglou"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Stefanos Tzortzoglou",
+      "url": "https://tzortzoglou.eu"
+    }
+  }
+  </script>
+
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+  <link href="/dist/output.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous"
+    referrerpolicy="no-referrer">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body class="bg-brand-bg text-brand-text antialiased transition-colors duration-300 flex flex-col min-h-screen">
+
+  {% include "_includes/header.html" %}
+
+  <main id="main-content" class="flex-grow container mx-auto py-16 px-4">
+    <div class="max-w-3xl mx-auto legal">
+
+      <h1 class="text-4xl md:text-5xl font-bold text-brand-text mb-4">{{ heading }}</h1>
+      <p class="text-sm text-brand-muted mb-2">
+        Last updated: <time datetime="{{ updated }}">{{ updatedLabel }}</time>
+      </p>
+      {% if summary %}
+      <p class="text-lg text-brand-muted border-l-4 border-brand-accent pl-4 py-1 mb-10">{{ summary }}</p>
+      {% endif %}
+
+      {{ content | safe }}
+
+      <hr class="my-12 border-brand-muted/20">
+      <p class="text-sm">
+        Questions about this page? Email
+        <a href="mailto:stefanos@tzortzoglou.eu">stefanos@tzortzoglou.eu</a>.
+      </p>
+    </div>
+  </main>
+
+  {% include "_includes/footer.html" %}
+
+  <script type="module" src="/scripts/firebase-config.js"></script>
+  <script type="module" src="/scripts/auth.js"></script>
+  <script src="/scripts/main.js"></script>
+  <script src="/scripts/consent.js"></script>
+</body>
+
+</html>

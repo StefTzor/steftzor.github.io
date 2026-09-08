@@ -3,7 +3,7 @@ module.exports = {
   darkMode: 'class',
   content: [
     "./pages/**/*.{html,njk}",
-    "./_includes/**/*.html",
+    "./_includes/**/*.{html,njk}",
     "./scripts/**/*.js"
   ],
   theme: {
@@ -16,6 +16,7 @@ module.exports = {
           muted: 'rgb(var(--color-muted) / <alpha-value>)',
           accent: 'rgb(var(--color-accent) / <alpha-value>)',
           hover: 'rgb(var(--color-hover) / <alpha-value>)',
+          onaccent: 'rgb(var(--color-onaccent) / <alpha-value>)',
         },
       },
     },

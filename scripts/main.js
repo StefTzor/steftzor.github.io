@@ -17,6 +17,19 @@ document.addEventListener('DOMContentLoaded', () => {
         htmlElement.classList.remove('dark');
     }
 
+    // Keep the toggles' accessible state/label in sync with the actual theme,
+    // so a screen reader announces what the button will do next.
+    const syncThemeButtons = () => {
+        const isDark = htmlElement.classList.contains('dark');
+        [themeToggle, themeToggleMobile].forEach(btn => {
+            if (!btn) return;
+            btn.setAttribute('aria-pressed', String(isDark));
+            const label = btn.querySelector('.sr-only');
+            if (label) label.textContent = isDark ? 'Switch to light theme' : 'Switch to dark theme';
+        });
+    };
+    syncThemeButtons();
+
     // Theme toggle function
     const toggleTheme = (e) => {
         e.preventDefault();
@@ -24,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         htmlElement.classList.toggle('dark');
         const isDark = htmlElement.classList.contains('dark');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        syncThemeButtons();
     };
 
     // Add event listeners for both desktop and mobile theme toggles
@@ -37,50 +51,81 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('overlay');
 
     const openMenu = () => {
-        if (mobileNav && overlay) {
-            mobileNav.classList.remove('translate-x-full');
-            mobileNav.classList.add('translate-x-0');
-            overlay.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
+        if (!mobileNav || !overlay) return;
+        mobileNav.classList.remove('translate-x-full');
+        mobileNav.classList.add('translate-x-0');
+        // `inert` while closed keeps the off-screen links out of the tab order.
+        mobileNav.removeAttribute('inert');
+        overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        if (menuToggle) menuToggle.setAttribute('aria-expanded', 'true');
+        if (closeMenu) closeMenu.focus();
     };
 
-    const closeMenuFunc = () => {
-        if (mobileNav && overlay) {
-            mobileNav.classList.remove('translate-x-0');
-            mobileNav.classList.add('translate-x-full');
-            overlay.classList.add('hidden');
-            document.body.style.overflow = '';
+    const closeMenuFunc = ({ restoreFocus = true } = {}) => {
+        if (!mobileNav || !overlay) return;
+        // Move focus out before making the panel inert, or the browser drops it to <body>.
+        if (mobileNav.contains(document.activeElement)) {
+            if (restoreFocus && menuToggle) menuToggle.focus();
+            else document.activeElement.blur();
         }
+        mobileNav.classList.remove('translate-x-0');
+        mobileNav.classList.add('translate-x-full');
+        mobileNav.setAttribute('inert', '');
+        overlay.classList.add('hidden');
+        document.body.style.overflow = '';
+        if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
     };
 
     if (menuToggle) menuToggle.addEventListener('click', openMenu);
-    if (closeMenu) closeMenu.addEventListener('click', closeMenuFunc);
-    if (overlay) overlay.addEventListener('click', closeMenuFunc);
+    if (closeMenu) closeMenu.addEventListener('click', () => closeMenuFunc());
+    if (overlay) overlay.addEventListener('click', () => closeMenuFunc());
 
-    // 4. Mobile Dropdown Accordion
-    const exclusiveToggle = document.getElementById('exclusive-toggle');
-    const mobileDropdown = document.getElementById('mobile-dropdown');
-    const exclusiveChevron = document.getElementById('exclusive-chevron');
-
-    if (exclusiveToggle && mobileDropdown) {
-        exclusiveToggle.addEventListener('click', () => {
-            mobileDropdown.classList.toggle('hidden');
-            
-            // Rotate chevron icon
-            if (exclusiveChevron) {
-                if (mobileDropdown.classList.contains('hidden')) {
-                    exclusiveChevron.classList.remove('fa-chevron-up');
-                    exclusiveChevron.classList.add('fa-chevron-down');
-                } else {
-                    exclusiveChevron.classList.remove('fa-chevron-down');
-                    exclusiveChevron.classList.add('fa-chevron-up');
-                }
-            }
+    // 4. Exclusive dropdowns — click/keyboard driven, not hover-only.
+    const bindDisclosure = (btn, panel, chevron) => {
+        if (!btn || !panel) return null;
+        const setOpen = (open) => {
+            panel.classList.toggle('hidden', !open);
+            btn.setAttribute('aria-expanded', String(open));
+            if (chevron) chevron.classList.toggle('rotate-180', open);
+        };
+        btn.addEventListener('click', () => {
+            setOpen(panel.classList.contains('hidden'));
         });
-    }
+        return setOpen;
+    };
 
-    // 5. Active Page Highlighting
+    const closeDesktopMenu = bindDisclosure(
+        document.getElementById('desktop-exclusive-toggle'),
+        document.getElementById('desktop-exclusive-menu'),
+        document.getElementById('desktop-exclusive-chevron')
+    );
+    bindDisclosure(
+        document.getElementById('exclusive-toggle'),
+        document.getElementById('mobile-dropdown'),
+        document.getElementById('exclusive-chevron')
+    );
+
+    // Close the desktop dropdown on an outside click.
+    document.addEventListener('click', (e) => {
+        const wrapper = document.getElementById('exclusive-nav-item');
+        if (closeDesktopMenu && wrapper && !wrapper.contains(e.target)) closeDesktopMenu(false);
+    });
+
+    // 5. Escape closes whatever overlay is open (WCAG 2.1.2, no keyboard trap).
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        if (mobileNav && !mobileNav.hasAttribute('inert')) closeMenuFunc();
+        if (closeDesktopMenu) {
+            const btn = document.getElementById('desktop-exclusive-toggle');
+            if (btn && btn.getAttribute('aria-expanded') === 'true') {
+                closeDesktopMenu(false);
+                btn.focus();
+            }
+        }
+    });
+
+    // 6. Active Page Highlighting
     highlightActivePage();
 });
 
@@ -103,6 +148,8 @@ function highlightActivePage() {
             // 1. Common Styles (Text Color & Bold)
             link.classList.remove('text-brand-text');
             link.classList.add('text-brand-accent', 'font-bold');
+            // Announce the current page to assistive tech, not just visually.
+            link.setAttribute('aria-current', 'page');
 
             // 2. Desktop Specifics (inside .md:flex container)
             if (link.closest('.md\\:flex')) {

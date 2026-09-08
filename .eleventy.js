@@ -5,7 +5,9 @@ module.exports = function(eleventyConfig) {
   eleventyConfig.addPassthroughCopy({
     "scripts/auth.js": "scripts/auth.js",
     "scripts/main.js": "scripts/main.js",
-    "scripts/hero.js": "scripts/hero.js"
+    "scripts/hero.js": "scripts/hero.js",
+    "scripts/consent.js": "scripts/consent.js",
+    "scripts/exclusive.js": "scripts/exclusive.js"
   });
   eleventyConfig.addPassthroughCopy("images");
   eleventyConfig.addPassthroughCopy({"favicon": "/"});
@@ -27,6 +29,7 @@ module.exports = function(eleventyConfig) {
     dir: {
       input: "pages",          // Source directory for pages
       includes: "_includes", // Folder for partials like headers/footers
+      layouts: "../_includes", // Layouts live at the project root, not under pages/
       output: "_site",         // Build output folder (for GitHub Pages)
     },
     pathPrefix: "/", // Important: Set pathPrefix to `/` for GitHub Pages root deployment

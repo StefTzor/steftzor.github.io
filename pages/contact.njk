@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
     <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,12 +22,16 @@
     <meta property="og:title" content="Contact Stefanos Tzortzoglou | SaaS Implementation">
     <meta property="og:description"
         content="Contact Stefanos Tzortzoglou for strategic inquiries, professional collaboration, and technical leadership opportunities in the SaaS ecosystem.">
-    <meta property="og:image" content="https://tzortzoglou.eu/images/stefanos_profile.png">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://tzortzoglou.eu/images/og-cover.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead. SQL, APIs, Data Strategy, Enterprise SaaS.">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Contact Stefanos Tzortzoglou | SaaS Implementation">
     <meta name="twitter:description"
         content="Contact Stefanos Tzortzoglou for strategic inquiries, professional collaboration, and technical leadership opportunities in the SaaS ecosystem.">
-    <meta name="twitter:image" content="https://tzortzoglou.eu/images/stefanos_profile.png">
+    <meta name="twitter:image" content="https://tzortzoglou.eu/images/og-cover.png">
+  <meta name="twitter:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead.">
     <meta name="description"
         content="Contact Stefanos Tzortzoglou for strategic inquiries, professional collaboration, and technical leadership opportunities in the SaaS ecosystem.">
 
@@ -35,7 +40,10 @@
       "@context": "https://schema.org/",
       "@type": "Person",
       "name": "Stefanos Tzortzoglou",
-      "alternateName": ["Στέφανος Τζώρτζογλου", "Stefanos Tzortzoglu"],
+      "alternateName": [
+        "Στέφανος Τζώρτζογλου",
+        "Stefanos Tzortzoglu"
+      ],
       "givenName": "Stefanos",
       "familyName": "Tzortzoglou",
       "mainEntityOfPage": "https://tzortzoglou.eu/about/",
@@ -57,12 +65,38 @@
       "sameAs": [
         "https://www.linkedin.com/in/stzortzoglou/",
         "https://github.com/steftzor"
-      ]
+      ],
+      "homeLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Uppsala",
+          "addressRegion": "Uppsala län",
+          "addressCountry": "SE"
+        }
+      },
+      "workLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Stockholm",
+          "addressRegion": "Stockholms län",
+          "addressCountry": "SE"
+        }
+      }
     }
     </script>
 
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
+
     <link href="/dist/output.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 </head>
@@ -71,7 +105,7 @@
 
     {% include "_includes/header.html" %}
 
-    <main class="flex-grow container mx-auto px-4 flex items-center justify-center">
+    <main id="main-content" class="flex-grow container mx-auto px-4 flex items-center justify-center">
 
         <div class="max-w-2xl w-full py-16">
 
@@ -86,26 +120,26 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
 
-                <a href="mailto:s.tzortzoglou@proton.me"
+                <a href="mailto:stefanos@tzortzoglou.eu"
                     class="group bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 hover:border-brand-accent/50 hover:shadow-glow transition-all duration-300 text-center">
                     <div
                         class="w-16 h-16 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-accent group-hover:text-white group-hover:-translate-y-2 transition-all duration-300">
-                        <i class="fas fa-envelope text-2xl text-brand-accent group-hover:text-white"></i>
+                        <i class="fas fa-envelope text-2xl text-brand-accent group-hover:text-white" aria-hidden="true"></i>
                     </div>
 
-                    <h3 class="text-xl font-bold mb-2">Email Me</h3>
+                    <h2 class="text-xl font-bold mb-2">Email Me</h2>
                     <p class="text-brand-muted text-sm mb-4">For strategic inquiries and professional collaboration.</p>
-                    <span class="text-brand-accent font-medium group-hover:underline">s.tzortzoglou@proton.me</span>
+                    <span class="text-brand-accent font-medium group-hover:underline">stefanos@tzortzoglou.eu</span>
                 </a>
 
                 <a href="https://www.linkedin.com/in/stzortzoglou/" target="_blank"
-                    class="group bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 hover:border-[#0077b5]/50 hover:shadow-lg transition-all duration-300 text-center">
+                    class="group bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 hover:border-[#0077b5]/50 hover:shadow-lg transition-all duration-300 text-center" rel="noopener noreferrer">
                     <div
                         class="w-16 h-16 bg-[#0077b5]/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0077b5] group-hover:text-white group-hover:-translate-y-2 transition-all duration-300">
-                        <i class="fab fa-linkedin-in text-2xl text-[#0077b5] group-hover:text-white"></i>
+                        <i class="fab fa-linkedin-in text-2xl text-[#0077b5] group-hover:text-white" aria-hidden="true"></i>
                     </div>
 
-                    <h3 class="text-xl font-bold mb-2">Connect on LinkedIn</h3>
+                    <h2 class="text-xl font-bold mb-2">Connect on LinkedIn</h2>
                     <p class="text-brand-muted text-sm mb-4">For professional networking and industry dialogue.</p>
                     <span class="text-[#0077b5] font-medium group-hover:underline">View Profile</span>
                 </a>
@@ -122,7 +156,7 @@
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                         </span>
-                        <span>Based in <strong>Sweden</strong></span>
+                        <span>Based in <strong>Uppsala, Sweden</strong></span>
                     </div>
 
                     <span class="hidden sm:inline text-brand-muted/30">|</span>
@@ -141,6 +175,7 @@
     <script type="module" src="/scripts/firebase-config.js"></script>
     <script type="module" src="/scripts/auth.js"></script>
     <script src="/scripts/main.js"></script>
+  <script src="/scripts/consent.js"></script>
 </body>
 
 </html>
