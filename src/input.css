@@ -4,23 +4,25 @@
 
 @layer base {
   :root {
-    /* Light Mode */
+    /* Light Mode — contrast-audited against --color-bg / --color-surface (WCAG 2.1 AA) */
     --color-bg: 203 213 225;      /* #cbd5e1 */
     --color-surface: 226 232 240; /* #e2e8f0 */
-    --color-text: 2 6 23;         /* #020617 (Slate 950) */
-    --color-muted: 51 65 85;      /* #334155 (Slate 700) */
-    --color-accent: 5 150 105;    /* #059669 */
-    --color-hover: 15 23 42;      /* Deep Navy */
+    --color-text: 2 6 23;         /* #020617 (Slate 950)  — 13.6:1 on bg */
+    --color-muted: 51 65 85;      /* #334155 (Slate 700)  — 6.97:1 on bg */
+    --color-accent: 6 95 70;      /* #065f46 (Emerald 800) — 5.18:1 on bg, 6.23:1 on surface */
+    --color-hover: 4 61 44;       /* #043d2c — darker accent for button hover */
+    --color-onaccent: 255 255 255;/* text that sits ON the accent — 7.68:1 */
   }
 
   .dark {
     /* Dark Mode */
-    --color-bg: 15 23 42;      /* Deep Navy */
-    --color-surface: 30 41 59; /* Lighter Navy */
-    --color-text: 241 245 249;    /* Cool White */
-    --color-muted: 148 163 184;   /* Slate Gray */
-    --color-accent: 16 185 129;  /* Emeralnd Green */
-    --color-hover: 38 70 83;   /* Deep Teal */
+    --color-bg: 15 23 42;         /* Deep Navy */
+    --color-surface: 30 41 59;    /* Lighter Navy */
+    --color-text: 241 245 249;    /* Cool White        — 16.3:1 on bg */
+    --color-muted: 148 163 184;   /* Slate Gray        — 6.96:1 on bg */
+    --color-accent: 16 185 129;   /* Emerald 500       — 7.04:1 on bg, 5.77:1 on surface */
+    --color-hover: 52 211 153;    /* Emerald 400 — lighter accent for button hover */
+    --color-onaccent: 15 23 42;   /* Deep Navy on accent — 7.04:1 */
   }
 
   html {
@@ -32,21 +34,57 @@
     @apply bg-brand-bg text-brand-text;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
+
+  /* WCAG 2.4.7 — every interactive element keeps a visible keyboard focus indicator.
+     Applies only to keyboard focus, so mouse users see no change. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-brand-accent ring-offset-brand-bg rounded-sm;
+  }
+
+  /* Respect prefers-reduced-motion (WCAG 2.3.3) */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer components {
   .btn-primary {
-    /* Using the accent green for the background */
-    @apply bg-brand-accent text-brand-bg font-bold px-6 py-2 rounded 
-           hover:bg-brand-hover hover:text-brand-text transition duration-300 
+    @apply bg-brand-accent text-brand-onaccent font-bold px-6 py-2 rounded
+           hover:bg-brand-hover transition duration-300
            transform hover:scale-105;
   }
-  
+
   .btn-secondary {
-    /* An outlined version or muted version */
-    @apply border-2 border-brand-accent text-brand-accent px-6 py-2 rounded 
-           hover:bg-brand-accent hover:text-brand-bg transition duration-300 
+    @apply border-2 border-brand-accent text-brand-accent px-6 py-2 rounded
+           hover:bg-brand-accent hover:text-brand-onaccent transition duration-300
            transform hover:scale-105;
+  }
+
+  /* Long-form legal prose: readable measure, clear hierarchy, tokenised colours. */
+  .legal h2 { @apply text-2xl font-bold text-brand-text mt-12 mb-4; }
+  .legal h3 { @apply text-lg font-bold text-brand-text mt-8 mb-3; }
+  .legal p  { @apply text-brand-muted leading-relaxed mb-4; }
+  .legal li { @apply text-brand-muted leading-relaxed; }
+  .legal ul { @apply list-disc pl-6 mb-4 space-y-2; }
+  .legal ol { @apply list-decimal pl-6 mb-4 space-y-2; }
+  .legal a  { @apply text-brand-accent underline hover:no-underline; }
+  .legal strong { @apply text-brand-text font-semibold; }
+  .legal table  { @apply w-full text-left text-sm border-collapse mb-6; }
+  .legal th { @apply text-brand-text font-semibold p-3 border-b-2 border-brand-muted/30 align-top; }
+  .legal td { @apply text-brand-muted p-3 border-b border-brand-muted/15 align-top; }
+
+  /* Keyboard-only "skip to content" link (WCAG 2.4.1) */
+  .skip-link {
+    @apply sr-only;
+  }
+  .skip-link:focus {
+    @apply not-sr-only fixed top-2 left-2 z-[200] bg-brand-accent text-brand-onaccent
+           font-bold px-4 py-2 rounded shadow-lg;
   }
 }
 
@@ -54,7 +92,7 @@
   .flashy {
     @apply animate-pulse bg-gradient-to-r from-brand-accent to-[#3b82f6] text-transparent bg-clip-text;
   }
-  
+
   .shadow-glow {
     box-shadow: 0 10px 15px -3px rgb(var(--color-accent) / 0.2);
     transition: box-shadow 0.3s ease;

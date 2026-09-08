@@ -1,0 +1,92 @@
+---
+permalink: /404.html
+eleventyExcludeFromCollections: true
+---
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, follow">
+  <meta name="theme-color" content="#0f172a">
+  <title>Page not found | Stefanos Tzortzoglou</title>
+  <meta name="description" content="That page does not exist. Links to the main sections of tzortzoglou.eu.">
+
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <link href="/dist/output.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous"
+    referrerpolicy="no-referrer">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-brand-bg text-brand-text antialiased transition-colors duration-300 flex flex-col min-h-screen">
+
+  {% include "_includes/header.html" %}
+
+  <main id="main-content" class="flex-grow container mx-auto px-4 py-24">
+    <div class="max-w-2xl mx-auto text-center">
+
+      <p class="text-7xl md:text-8xl font-bold text-brand-accent tracking-tight">404</p>
+
+      <h1 class="mt-4 text-3xl md:text-4xl font-bold text-brand-text">This page doesn't exist</h1>
+
+      <p class="mt-6 text-lg text-brand-muted leading-relaxed">
+        The link may be out of date, or the address may have a typo. Nothing is broken on your end.
+      </p>
+
+      <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+        <a href="/" class="btn-primary px-8 py-3">Back to the homepage</a>
+        <a href="/contact/" class="btn-secondary px-8 py-3">Get in touch</a>
+      </div>
+
+      <nav aria-label="Site sections" class="mt-16 text-left">
+        <h2 class="text-sm font-bold text-brand-muted uppercase tracking-widest mb-4 text-center">Or try one of these
+        </h2>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <li><a href="/about/"
+              class="block p-4 rounded-lg bg-brand-surface border border-brand-muted/10 hover:border-brand-accent/50 transition-colors">
+              <span class="font-bold text-brand-text">About</span>
+              <span class="block text-sm text-brand-muted mt-1">Experience and background</span>
+            </a></li>
+          <li><a href="/portfolio/"
+              class="block p-4 rounded-lg bg-brand-surface border border-brand-muted/10 hover:border-brand-accent/50 transition-colors">
+              <span class="font-bold text-brand-text">Case Studies</span>
+              <span class="block text-sm text-brand-muted mt-1">Technical implementation work</span>
+            </a></li>
+          <li><a href="/code/"
+              class="block p-4 rounded-lg bg-brand-surface border border-brand-muted/10 hover:border-brand-accent/50 transition-colors">
+              <span class="font-bold text-brand-text">Code</span>
+              <span class="block text-sm text-brand-muted mt-1">Stack, philosophy and GitHub activity</span>
+            </a></li>
+          <li><a href="/contact/"
+              class="block p-4 rounded-lg bg-brand-surface border border-brand-muted/10 hover:border-brand-accent/50 transition-colors">
+              <span class="font-bold text-brand-text">Contact</span>
+              <span class="block text-sm text-brand-muted mt-1">Email and LinkedIn</span>
+            </a></li>
+        </ul>
+      </nav>
+
+    </div>
+  </main>
+
+  {% include "_includes/footer.html" %}
+
+  <script type="module" src="/scripts/firebase-config.js"></script>
+  <script type="module" src="/scripts/auth.js"></script>
+  <script src="/scripts/main.js"></script>
+  <script src="/scripts/consent.js"></script>
+</body>
+
+</html>

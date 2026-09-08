@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
     <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,12 +22,16 @@
     <meta property="og:title" content="Technical Case Studies | Stefanos Tzortzoglou">
     <meta property="og:description"
         content="Explore technical case studies by Stefanos Tzortzoglou, showcasing solutions in API architecture, complex SaaS integrations, and enterprise data governance.">
-    <meta property="og:image" content="https://tzortzoglou.eu/images/stefanos_profile.png">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://tzortzoglou.eu/images/og-cover.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead. SQL, APIs, Data Strategy, Enterprise SaaS.">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Technical Case Studies | Stefanos Tzortzoglou">
     <meta name="twitter:description"
         content="Explore technical case studies by Stefanos Tzortzoglou, showcasing solutions in API architecture, complex SaaS integrations, and enterprise data governance.">
-    <meta name="twitter:image" content="https://tzortzoglou.eu/images/stefanos_profile.png">
+    <meta name="twitter:image" content="https://tzortzoglou.eu/images/og-cover.png">
+  <meta name="twitter:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead.">
     <meta name="description"
         content="Explore technical case studies by Stefanos Tzortzoglou, showcasing solutions in API architecture, complex SaaS integrations, and enterprise data governance.">
 
@@ -35,7 +40,10 @@
       "@context": "https://schema.org/",
       "@type": "Person",
       "name": "Stefanos Tzortzoglou",
-      "alternateName": ["Στέφανος Τζώρτζογλου", "Stefanos Tzortzoglu"],
+      "alternateName": [
+        "Στέφανος Τζώρτζογλου",
+        "Stefanos Tzortzoglu"
+      ],
       "givenName": "Stefanos",
       "familyName": "Tzortzoglou",
       "mainEntityOfPage": "https://tzortzoglou.eu/about/",
@@ -57,12 +65,38 @@
       "sameAs": [
         "https://www.linkedin.com/in/stzortzoglou/",
         "https://github.com/steftzor"
-      ]
+      ],
+      "homeLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Uppsala",
+          "addressRegion": "Uppsala län",
+          "addressCountry": "SE"
+        }
+      },
+      "workLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Stockholm",
+          "addressRegion": "Stockholms län",
+          "addressCountry": "SE"
+        }
+      }
     }
     </script>
 
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
+
     <link href="/dist/output.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 </head>
@@ -71,7 +105,7 @@
 
     {% include "_includes/header.html" %}
 
-    <main class="flex-grow container mx-auto py-16 px-4">
+    <main id="main-content" class="flex-grow container mx-auto py-16 px-4">
 
         <div class="text-center max-w-3xl mx-auto mb-16">
             <h1 class="text-4xl md:text-5xl font-bold mb-6">Technical <span class="text-brand-accent">Case
@@ -79,6 +113,13 @@
             <p class="text-lg text-brand-muted leading-relaxed">
                 I don't just write code; I solve business problems. Here is a selection of complex implementations and
                 technical challenges I have resolved.
+            </p>
+            <p class="mt-6 text-sm text-brand-muted border-l-4 border-brand-accent pl-4 py-1 text-left">
+                <strong class="text-brand-text">A note on these case studies.</strong> Clients are described in
+                general terms and are not named. No confidential information, client data, credentials or proprietary
+                implementation detail appears here. Outcomes describe what each project was designed and signed off to
+                achieve; they are not warranties or compliance opinions. See the
+                <a href="/terms/" class="text-brand-accent underline hover:no-underline">Terms of Use</a>.
             </p>
         </div>
 
@@ -89,14 +130,13 @@
                 <div class="p-8 h-full flex flex-col">
                     <div class="flex justify-between items-start mb-4">
                         <div
-                            class="bg-blue-500/10 text-blue-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-blue-500/20">
+                            class="bg-blue-500/10 text-blue-700 dark:text-blue-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-blue-500/20">
                             API Architecture
                         </div>
-                        <i
-                            class="fas fa-code-branch text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
+                        <i class="fas fa-code-branch text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" aria-hidden="true"></i>
                     </div>
 
-                    <h3 class="text-2xl font-bold text-brand-text mb-3">Reverse-Engineering Global Ticketing APIs</h3>
+                    <h2 class="text-2xl font-bold text-brand-text mb-3">Reverse-Engineering Global Ticketing APIs</h2>
 
                     <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
                         <strong>The Challenge:</strong> A global ticketing giant was needed to be integrated with their
@@ -131,14 +171,13 @@
                 <div class="p-8 h-full flex flex-col">
                     <div class="flex justify-between items-start mb-4">
                         <div
-                            class="bg-purple-500/10 text-purple-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-purple-500/20">
+                            class="bg-purple-500/10 text-purple-700 dark:text-purple-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-purple-500/20">
                             Complex Integration
                         </div>
-                        <i
-                            class="fas fa-sync-alt text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
+                        <i class="fas fa-sync-alt text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" aria-hidden="true"></i>
                     </div>
 
-                    <h3 class="text-2xl font-bold text-brand-text mb-3">Sports League Bi-Directional Sync</h3>
+                    <h2 class="text-2xl font-bold text-brand-text mb-3">Sports League Bi-Directional Sync</h2>
 
                     <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
                         <strong>The Challenge:</strong> Onboarding a multi-tenant Sports League (10+ clubs) with a
@@ -173,14 +212,13 @@
                 <div class="p-8 h-full flex flex-col">
                     <div class="flex justify-between items-start mb-4">
                         <div
-                            class="bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-emerald-500/20">
+                            class="bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-emerald-500/20">
                             Enterprise Governance
                         </div>
-                        <i
-                            class="fas fa-shield-alt text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
+                        <i class="fas fa-shield-alt text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" aria-hidden="true"></i>
                     </div>
 
-                    <h3 class="text-2xl font-bold text-brand-text mb-3">Fortune 500 Data Lake Strategy</h3>
+                    <h2 class="text-2xl font-bold text-brand-text mb-3">Fortune 500 Data Lake Strategy</h2>
 
                     <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
                         <strong>The Challenge:</strong> A Fortune 500 client with rigid Data Lake pipelines needed to
@@ -191,8 +229,9 @@
                         a "Parent/Guardian" entity model that routed all communications to authorized adults while
                         keeping the non-adult profile data strictly siloed for analysis only.
                         <br><br>
-                        <strong>The Outcome:</strong> Delivered a fully GDPR-compliant integration, enabling the client
-                        to monetize their youth segment safely via guardian marketing.
+                        <strong>The Outcome:</strong> The model was signed off by the client's own data-protection and
+                        engineering teams and shipped, letting them reach the guardian audience without minors' personal
+                        data leaving the analytics silo.
                     </p>
 
                     <div class="border-t border-brand-muted/10 pt-4 mt-auto">
@@ -213,14 +252,13 @@
                 <div class="p-8 h-full flex flex-col">
                     <div class="flex justify-between items-start mb-4">
                         <div
-                            class="bg-slate-500/10 text-slate-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-slate-500/20">
+                            class="bg-slate-500/10 text-slate-600 dark:text-slate-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-slate-500/20">
                             Automation
                         </div>
-                        <i
-                            class="fab fa-github text-brand-muted text-2xl group-hover:text-brand-accent transition-colors"></i>
+                        <i class="fab fa-github text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" aria-hidden="true"></i>
                     </div>
 
-                    <h3 class="text-2xl font-bold text-brand-text mb-3">Technical Utility Scripts</h3>
+                    <h2 class="text-2xl font-bold text-brand-text mb-3">Technical Utility Scripts</h2>
 
                     <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
                         A collection of automation scripts and experimental projects I use to sharpen my technical
@@ -237,8 +275,7 @@
                             <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Python</span>
                         </div>
                         <a href="https://github.com/steftzor" target="_blank"
-                            class="text-sm font-bold text-brand-accent hover:underline">View Github <i
-                                class="fas fa-arrow-right ml-1"></i></a>
+                            class="text-sm font-bold text-brand-accent hover:underline" rel="noopener noreferrer">View Github <i class="fas fa-arrow-right ml-1" aria-hidden="true"></i></a>
                     </div>
                 </div>
             </div>
@@ -252,6 +289,7 @@
     <script type="module" src="/scripts/firebase-config.js"></script>
     <script type="module" src="/scripts/auth.js"></script>
     <script src="/scripts/main.js"></script>
+  <script src="/scripts/consent.js"></script>
 </body>
 
 </html>

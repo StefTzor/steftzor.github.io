@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
     <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,50 +24,83 @@
     <meta property="og:title" content="Code & Architecture | Stefanos Tzortzoglou">
     <meta property="og:description"
         content="Review the technical stack, Open Source philosophy, and live GitHub telemetry of Stefanos Tzortzoglou.">
-    <meta property="og:image" content="https://tzortzoglou.eu/images/stefanos_profile.png">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://tzortzoglou.eu/images/og-cover.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead. SQL, APIs, Data Strategy, Enterprise SaaS.">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Code & Architecture | Stefanos Tzortzoglou">
     <meta name="twitter:description"
         content="Review the technical stack, Open Source philosophy, and live GitHub telemetry of Stefanos Tzortzoglou.">
-    <meta name="twitter:image" content="https://tzortzoglou.eu/images/stefanos_profile.png">
+    <meta name="twitter:image" content="https://tzortzoglou.eu/images/og-cover.png">
+  <meta name="twitter:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead.">
     <meta name="description"
         content="Review the technical stack, Open Source philosophy, and live GitHub telemetry of Stefanos Tzortzoglou.">
 
     <script type="application/ld+json">
-      {
-        "@context": "https://schema.org/",
-        "@type": "Person",
-        "name": "Stefanos Tzortzoglou",
-        "alternateName": ["Στέφανος Τζώρτζογλου", "Stefanos Tzortzoglu"],
-        "givenName": "Stefanos",
-        "familyName": "Tzortzoglou",
-        "mainEntityOfPage": "https://tzortzoglou.eu/about/",
-        "url": "https://tzortzoglou.eu",
-        "image": "https://tzortzoglou.eu/images/stefanos_profile.png",
-        "jobTitle": [
-          "Technical Customer Success Manager",
-          "Implementation Lead",
-          "Technical Account Manager"
-        ],
-        "knowsAbout": [
-          "SaaS Implementation",
-          "API Architecture",
-          "Data Strategy",
-          "SQL",
-          "Snowflake",
-          "Enterprise Customer Success"
-        ],
-        "sameAs": [
-          "https://www.linkedin.com/in/stzortzoglou/",
-          "https://github.com/steftzor"
-        ]
+    {
+      "@context": "https://schema.org/",
+      "@type": "Person",
+      "name": "Stefanos Tzortzoglou",
+      "alternateName": [
+        "Στέφανος Τζώρτζογλου",
+        "Stefanos Tzortzoglu"
+      ],
+      "givenName": "Stefanos",
+      "familyName": "Tzortzoglou",
+      "mainEntityOfPage": "https://tzortzoglou.eu/about/",
+      "url": "https://tzortzoglou.eu",
+      "image": "https://tzortzoglou.eu/images/stefanos_profile.png",
+      "jobTitle": [
+        "Technical Customer Success Manager",
+        "Implementation Lead",
+        "Technical Account Manager"
+      ],
+      "knowsAbout": [
+        "SaaS Implementation",
+        "API Architecture",
+        "Data Strategy",
+        "SQL",
+        "Snowflake",
+        "Enterprise Customer Success"
+      ],
+      "sameAs": [
+        "https://www.linkedin.com/in/stzortzoglou/",
+        "https://github.com/steftzor"
+      ],
+      "homeLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Uppsala",
+          "addressRegion": "Uppsala län",
+          "addressCountry": "SE"
+        }
+      },
+      "workLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Stockholm",
+          "addressRegion": "Stockholms län",
+          "addressCountry": "SE"
+        }
       }
-      </script>
+    }
+    </script>
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
 
     <link href="/dist/output.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@2.17.0/devicon.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/github-calendar@2.3.4/dist/github-calendar-responsive.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@2.17.0/devicon.min.css" integrity="sha384-6iv3tXABd3c9DYulXujJl8n22ahn/12f45MomxoPv6jBX4LBE4gNJjfkx5mAKIqR" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://unpkg.com/github-calendar@2.3.4/dist/github-calendar-responsive.css" integrity="sha384-ZAeKgxOPgv6O3+nHBWycj4Q4A3aDcPQO9mPRwEKRT5dFMEBVKZPaEgP+v1Phe+1l" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
@@ -141,7 +175,7 @@
 
     {% include "_includes/header.html" %}
 
-    <main class="flex-grow container mx-auto py-16 px-4">
+    <main id="main-content" class="flex-grow container mx-auto py-16 px-4">
 
         <div class="text-center max-w-3xl mx-auto mb-16">
             <h1 class="text-4xl md:text-5xl font-bold mb-6">The Code Behind <span class="text-brand-accent">The
@@ -157,7 +191,7 @@
 
             <div class="bg-brand-surface p-8 rounded-2xl border border-brand-muted/10">
                 <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-                    <i class="fas fa-terminal text-brand-accent"></i> Philosophy & Stack
+                    <i class="fas fa-terminal text-brand-accent" aria-hidden="true"></i> Philosophy & Stack
                 </h2>
 
                 <div class="prose dark:prose-invert text-brand-muted leading-relaxed mb-8">
@@ -170,8 +204,8 @@
                         In my daily work, I don't just rely on GUI tools to map CRM/ERP systems. I manage complex B2B
                         Solutions using raw <strong>SQL</strong>, configure Snowflake data pipelines (leveraging Tasks,
                         Streams, Stored Procedures, and Dynamic Tables), and deploy infrastructure via
-                        <strong>Terraform</strong>. For campaign execution, I write extensive HTML for high-converting
-                        email templates.
+                        <strong>Terraform</strong>. For campaign execution, I write and hand-tune the HTML behind
+                        client email templates.
                     </p>
                     <p class="mb-4">
                         When troubleshooting <strong>API integrations</strong>, my attention to detail is exhaustive. I
@@ -181,60 +215,52 @@
                     <p>
                         My GitHub reflects this logical approach. This portfolio is built on a fast, lightweight stack
                         (11ty, Nunjucks, Tailwind CSS) and deployed via GitHub Actions. It features a custom Firebase
-                        authentication flow for locked content, strictly architected to ensure API keys are never
-                        exposed. For backend utilities and data formatting, I default to JavaScript and Python.
+                        authentication flow for locked content. The Firebase web config is public by design, as it is in
+                        every Firebase web app, so access is enforced where it actually counts: server-side Firestore
+                        security rules that let an account read only its own record and reserve approval to the owner.
+                        For backend utilities and data formatting, I default to JavaScript and Python.
                     </p>
                 </div>
 
                 <div class="grid grid-cols-4 sm:grid-cols-5 gap-6 text-center">
                     <div class="group flex flex-col items-center gap-2">
-                        <i
-                            class="devicon-linux-plain text-4xl text-yellow-600 dark:text-yellow-500 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <i class="devicon-linux-plain text-4xl text-yellow-600 dark:text-yellow-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
                         <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Linux</span>
                     </div>
                     <div class="group flex flex-col items-center gap-2">
-                        <i
-                            class="devicon-azuresqldatabase-plain text-4xl text-blue-600 dark:text-blue-400 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <i class="devicon-azuresqldatabase-plain text-4xl text-blue-600 dark:text-blue-400 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
                         <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">SQL</span>
                     </div>
                     <div class="group flex flex-col items-center gap-2">
-                        <i
-                            class="fas fa-snowflake text-4xl text-blue-500 dark:text-blue-300 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <i class="fas fa-snowflake text-4xl text-blue-500 dark:text-blue-300 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
                         <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Snowflake</span>
                     </div>
                     <div class="group flex flex-col items-center gap-2">
-                        <i
-                            class="devicon-terraform-plain text-4xl text-purple-600 dark:text-purple-400 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <i class="devicon-terraform-plain text-4xl text-purple-600 dark:text-purple-400 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
                         <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Terraform</span>
                     </div>
                     <div class="group flex flex-col items-center gap-2">
-                        <i
-                            class="devicon-javascript-plain text-4xl text-yellow-500 dark:text-yellow-300 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <i class="devicon-javascript-plain text-4xl text-yellow-500 dark:text-yellow-300 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
                         <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">JS</span>
                     </div>
                     <div class="group flex flex-col items-center gap-2">
-                        <i
-                            class="devicon-python-plain text-4xl text-blue-600 dark:text-yellow-400 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <i class="devicon-python-plain text-4xl text-blue-600 dark:text-yellow-400 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
                         <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Python</span>
                     </div>
                     <div class="group flex flex-col items-center gap-2">
-                        <i
-                            class="devicon-html5-plain text-4xl text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <i class="devicon-html5-plain text-4xl text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
                         <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">HTML</span>
                     </div>
                     <div class="group flex flex-col items-center gap-2">
-                        <i
-                            class="devicon-insomnia-plain text-4xl text-purple-700 dark:text-purple-500 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <i class="devicon-insomnia-plain text-4xl text-purple-700 dark:text-purple-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
                         <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Insomnia</span>
                     </div>
                     <div class="group flex flex-col items-center gap-2">
-                        <i
-                            class="devicon-git-plain text-4xl text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <i class="devicon-git-plain text-4xl text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
                         <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Git</span>
                     </div>
                     <div class="group flex flex-col items-center gap-2">
-                        <i
-                            class="devicon-eleventy-plain text-4xl text-slate-800 dark:text-gray-200 group-hover:text-brand-muted transition-colors duration-300"></i>
+                        <i class="devicon-eleventy-plain text-4xl text-slate-800 dark:text-gray-200 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
                         <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">11ty</span>
                     </div>
                 </div>
@@ -243,16 +269,16 @@
 
                 <div class="bg-brand-surface p-1 rounded-2xl border border-brand-muted/10 shadow-lg overflow-hidden">
                     <img src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=0f172a&title_color=10b981&icon_color=3b82f6&text_color=94a3b8"
-                        alt="Stefanos GitHub Stats (Dark)" class="hidden dark:block w-full h-auto">
+                        alt="GitHub statistics for steftzor: total stars, commits, pull requests, issues and contributions. Full detail on the GitHub profile linked below." class="hidden dark:block w-full h-auto">
                     <img src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=e2e8f0&title_color=059669&icon_color=3b82f6&text_color=334155"
-                        alt="Stefanos GitHub Stats (Light)" class="block dark:hidden w-full h-auto">
+                        alt="" role="presentation" class="block dark:hidden w-full h-auto">
                 </div>
 
                 <div class="bg-brand-surface p-1 rounded-2xl border border-brand-muted/10 shadow-lg overflow-hidden">
                     <img src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=0f172a&title_color=10b981&text_color=94a3b8&icon_color=3b82f6"
-                        alt="Top Languages (Dark)" class="hidden dark:block w-full h-auto">
+                        alt="Most-used programming languages across steftzor's public GitHub repositories, by share of code." class="hidden dark:block w-full h-auto">
                     <img src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=e2e8f0&title_color=059669&text_color=334155&icon_color=3b82f6"
-                        alt="Top Languages (Light)" class="block dark:hidden w-full h-auto">
+                        alt="" role="presentation" class="block dark:hidden w-full h-auto">
                 </div>
 
             </div>
@@ -260,9 +286,10 @@
         </div>
         <div class="mt-16 max-w-6xl mx-auto w-full">
             <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-brand-text">
-                <i class="fab fa-github text-brand-accent"></i> Live Code Activity
+                <i class="fab fa-github text-brand-accent" aria-hidden="true"></i> Live Code Activity
             </h3>
-            <div
+            <div role="img" tabindex="0"
+                aria-label="GitHub contribution calendar for steftzor over the past year, rendered by a third-party widget. The same data is available on the GitHub profile."
                 class="calendar bg-brand-surface border border-brand-muted/10 p-6 rounded-xl shadow-lg w-full overflow-x-auto">
                 Loading GitHub data...
             </div>
@@ -275,7 +302,8 @@
     <script type="module" src="/scripts/firebase-config.js"></script>
     <script type="module" src="/scripts/auth.js"></script>
     <script src="/scripts/main.js"></script>
-    <script src="https://unpkg.com/github-calendar@2.3.4/dist/github-calendar.min.js"></script>
+  <script src="/scripts/consent.js"></script>
+    <script src="https://unpkg.com/github-calendar@2.3.4/dist/github-calendar.min.js" integrity="sha384-2s+7Up7VDLmpPywDmGwv4wxi0Ccd0ELf3V66c4FkyRCBUVGFo5imdKcH8H1U0FkD" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             GitHubCalendar(".calendar", "steftzor", {

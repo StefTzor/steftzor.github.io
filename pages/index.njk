@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,12 +24,16 @@
   <meta property="og:title" content="Stefanos Tzortzoglou | Technical CSM & Implementation Lead">
   <meta property="og:description"
     content="Official portfolio of Stefanos Tzortzoglou, a Technical Customer Success Manager and Implementation Lead specializing in SQL, APIs, and Data Strategy.">
-  <meta property="og:image" content="https://tzortzoglou.eu/images/stefanos_profile.png">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="https://tzortzoglou.eu/images/og-cover.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead. SQL, APIs, Data Strategy, Enterprise SaaS.">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Stefanos Tzortzoglou | Technical CSM & Implementation Lead">
   <meta name="twitter:description"
     content="Official portfolio of Stefanos Tzortzoglou, a Technical Customer Success Manager and Implementation Lead specializing in SQL, APIs, and Data Strategy.">
-  <meta name="twitter:image" content="https://tzortzoglou.eu/images/stefanos_profile.png">
+  <meta name="twitter:image" content="https://tzortzoglou.eu/images/og-cover.png">
+  <meta name="twitter:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead.">
 
   <script type="application/ld+json">
   {
@@ -38,7 +43,10 @@
     "mainEntity": {
       "@type": "Person",
       "name": "Stefanos Tzortzoglou",
-      "alternateName": ["Στέφανος Τζώρτζογλου", "Stefanos Tzortzoglu"],
+      "alternateName": [
+        "Στέφανος Τζώρτζογλου",
+        "Stefanos Tzortzoglu"
+      ],
       "givenName": "Stefanos",
       "familyName": "Tzortzoglou",
       "mainEntityOfPage": "https://tzortzoglou.eu/about/",
@@ -60,7 +68,25 @@
       "sameAs": [
         "https://www.linkedin.com/in/stzortzoglou/",
         "https://github.com/steftzor"
-      ]
+      ],
+      "homeLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Uppsala",
+          "addressRegion": "Uppsala län",
+          "addressCountry": "SE"
+        }
+      },
+      "workLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Stockholm",
+          "addressRegion": "Stockholms län",
+          "addressCountry": "SE"
+        }
+      }
     }
   }
   </script>
@@ -77,6 +103,9 @@
   </script>
 
   <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -84,7 +113,7 @@
   <link rel="android-chrome-512x512" href="/android-chrome-512x512.png">
 
   <link href="/dist/output.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
@@ -92,10 +121,13 @@
 
   {% include "_includes/header.html" %}
 
+  <main id="main-content" class="flex-grow">
+
   <section id="hero-section"
     class="relative border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40 overflow-hidden">
 
-    <canvas id="hero-canvas" class="absolute inset-0 w-full h-full z-0 opacity-40 dark:opacity-60"></canvas>
+    <canvas id="hero-canvas" class="absolute inset-0 w-full h-full z-0 opacity-40 dark:opacity-60"
+      aria-hidden="true"></canvas>
 
     <div class="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-transparent to-brand-bg pointer-events-none">
     </div>
@@ -109,7 +141,7 @@
             <div
               class="absolute -inset-1 bg-gradient-to-r from-brand-accent to-blue-500 rounded-full blur opacity-40 group-hover:opacity-75 transition duration-1000">
             </div>
-            <img src="/images/stefanos_profile.png" alt="Stefanos Tzortzoglou"
+            <img src="/images/stefanos_profile.png" alt="Portrait of Stefanos Tzortzoglou"
               class="relative w-full h-full object-cover rounded-full border-2 border-brand-surface shadow-lg transform transition-transform duration-500 hover:scale-105">
           </div>
 
@@ -134,9 +166,15 @@
           mapping to solve the technical blockers that others escalate.
         </p>
 
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-          <a href="/portfolio/" class="btn-primary shadow-glow px-8 py-3 text-lg">View Technical Case Studies</a>
-          <a href="/contact/" class="btn-secondary px-8 py-3 text-lg">Get In Touch</a>
+        <div class="flex flex-col items-center gap-4">
+          <a href="/portfolio/" class="btn-primary shadow-glow px-10 py-4 text-lg inline-flex items-center gap-3">
+            View Technical Case Studies
+            <i class="fas fa-arrow-right text-base" aria-hidden="true"></i>
+          </a>
+          <p class="text-sm text-brand-muted">
+            Hiring for a technical CSM or implementation role?
+            <a href="/contact/" class="text-brand-accent underline hover:no-underline font-medium">Get in touch</a>.
+          </p>
         </div>
 
       </div>
@@ -161,14 +199,14 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
             <div class="flex items-start gap-3">
-              <div class="mt-1 text-brand-accent"><i class="fas fa-cogs"></i></div>
+              <div class="mt-1 text-brand-accent"><i class="fas fa-cogs" aria-hidden="true"></i></div>
               <div>
                 <h4 class="font-bold text-brand-text">Technical Execution</h4>
                 <p class="text-sm text-brand-muted">SQL, REST APIs, and complex data mapping.</p>
               </div>
             </div>
             <div class="flex items-start gap-3">
-              <div class="mt-1 text-brand-accent"><i class="fas fa-chart-line"></i></div>
+              <div class="mt-1 text-brand-accent"><i class="fas fa-chart-line" aria-hidden="true"></i></div>
               <div>
                 <h4 class="font-bold text-brand-text">Revenue Protection</h4>
                 <p class="text-sm text-brand-muted">Turning technical adoption into secured ARR.</p>
@@ -177,28 +215,28 @@
           </div>
 
           <a href="/about/" class="btn btn-secondary group">
-            Read Full Profile <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+            Read Full Profile <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1" aria-hidden="true"></i>
           </a>
         </div>
 
         <div class="w-full md:w-1/3 flex justify-center">
           <div
             class="relative w-64 h-64 bg-brand-bg rounded-full flex items-center justify-center border-4 border-brand-muted/10 shadow-glow">
-            <i class="fas fa-layer-group text-8xl text-brand-accent/20"></i>
+            <i class="fas fa-layer-group text-8xl text-brand-accent/20" aria-hidden="true"></i>
             <div class="absolute inset-0 flex items-center justify-center">
-              <i class="fas fa-code-branch text-6xl text-brand-accent"></i>
+              <i class="fas fa-code-branch text-6xl text-brand-accent" aria-hidden="true"></i>
             </div>
             <div
               class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 bg-brand-surface p-3 rounded-full border border-brand-muted/20 shadow-lg">
-              <i class="fas fa-database text-brand-text"></i>
+              <i class="fas fa-database text-brand-text" aria-hidden="true"></i>
             </div>
             <div
               class="absolute bottom-4 right-4 bg-brand-surface p-3 rounded-full border border-brand-muted/20 shadow-lg">
-              <i class="fas fa-users text-brand-text"></i>
+              <i class="fas fa-users text-brand-text" aria-hidden="true"></i>
             </div>
             <div
               class="absolute bottom-4 left-4 bg-brand-surface p-3 rounded-full border border-brand-muted/20 shadow-lg">
-              <i class="fas fa-server text-brand-text"></i>
+              <i class="fas fa-server text-brand-text" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -207,7 +245,7 @@
     </div>
   </section>
 
-  <main class="container mx-auto py-16 px-4 flex-grow">
+  <div class="container mx-auto py-16 px-4">
 
     <section class="featured-projects">
       <div class="text-center mb-12">
@@ -222,9 +260,9 @@
           <div class="p-8 h-full flex flex-col">
             <div class="flex justify-between items-start mb-4">
               <span
-                class="bg-blue-500/10 text-blue-500 text-xs font-bold px-3 py-1 rounded-full border border-blue-500/20">API
+                class="bg-blue-500/10 text-blue-700 dark:text-blue-400 text-xs font-bold px-3 py-1 rounded-full border border-blue-500/20">API
                 Architecture</span>
-              <i class="fas fa-network-wired text-brand-muted text-xl"></i>
+              <i class="fas fa-network-wired text-brand-muted text-xl" aria-hidden="true"></i>
             </div>
             <h3 class="text-xl font-bold text-brand-text group-hover:text-brand-accent transition-colors">Global
               Ticketing API Mapping</h3>
@@ -249,15 +287,15 @@
           <div class="p-8 h-full flex flex-col">
             <div class="flex justify-between items-start mb-4">
               <span
-                class="bg-emerald-500/10 text-emerald-500 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/20">Enterprise
+                class="bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/20">Enterprise
                 Governance</span>
-              <i class="fas fa-shield-alt text-brand-muted text-xl"></i>
+              <i class="fas fa-shield-alt text-brand-muted text-xl" aria-hidden="true"></i>
             </div>
             <h3 class="text-xl font-bold text-brand-text group-hover:text-brand-accent transition-colors">Fortune 500
               Data Lake Strategy</h3>
             <p class="mt-3 text-sm text-brand-muted leading-relaxed flex-grow">
-              Designed a GDPR-compliant "Parent/Guardian" entity model for a Fortune 500 client, enabling safe marketing
-              to sensitive "non-adult" segments.
+              Designed a "Parent/Guardian" entity model for an enterprise client so marketing reached authorised
+              adults while minors' data stayed siloed.
             </p>
             <div class="mt-5 flex flex-wrap gap-2">
               <span class="inline-block bg-brand-bg text-brand-muted text-xs font-mono px-2 py-1 rounded">Privacy</span>
@@ -275,8 +313,8 @@
           <div class="p-8 h-full flex flex-col">
             <div class="flex justify-between items-start mb-4">
               <span
-                class="bg-purple-500/10 text-purple-500 text-xs font-bold px-3 py-1 rounded-full border border-purple-500/20">Automation</span>
-              <i class="fab fa-github text-brand-muted text-xl"></i>
+                class="bg-purple-500/10 text-purple-700 dark:text-purple-400 text-xs font-bold px-3 py-1 rounded-full border border-purple-500/20">Automation</span>
+              <i class="fab fa-github text-brand-muted text-xl" aria-hidden="true"></i>
             </div>
             <h3 class="text-xl font-bold text-brand-text group-hover:text-brand-accent transition-colors">Technical
               Utility Scripts</h3>
@@ -289,7 +327,7 @@
               <span class="inline-block bg-brand-bg text-brand-muted text-xs font-mono px-2 py-1 rounded">Python</span>
             </div>
             <a href="https://github.com/steftzor" target="_blank"
-              class="block mt-6 text-center w-full py-2 rounded border border-brand-muted/30 text-brand-muted hover:border-brand-accent hover:text-brand-accent transition-colors text-sm font-medium">
+              class="block mt-6 text-center w-full py-2 rounded border border-brand-muted/30 text-brand-muted hover:border-brand-accent hover:text-brand-accent transition-colors text-sm font-medium" rel="noopener noreferrer">
               View on GitHub
             </a>
           </div>
@@ -299,10 +337,24 @@
 
       <div class="text-center mt-12">
         <a href="/portfolio/" class="btn-secondary inline-flex items-center gap-2">
-          View All Case Studies <i class="fas fa-arrow-right text-sm"></i>
+          View All Case Studies <i class="fas fa-arrow-right text-sm" aria-hidden="true"></i>
+        </a>
+      </div>
+
+      <div class="mt-20 max-w-3xl mx-auto text-center bg-brand-surface border border-brand-accent/30 rounded-2xl p-10">
+        <h2 class="text-2xl md:text-3xl font-bold text-brand-text">Need someone who fixes it instead of escalating it?</h2>
+        <p class="mt-4 text-brand-muted leading-relaxed">
+          I am open to Technical Customer Success and Implementation Lead roles, and to conversations about hard
+          integration problems.
+        </p>
+        <a href="/contact/" class="btn-primary shadow-glow mt-8 px-10 py-4 text-lg inline-flex items-center gap-3">
+          Start a conversation
+          <i class="fas fa-arrow-right text-base" aria-hidden="true"></i>
         </a>
       </div>
     </section>
+  </div>
+
   </main>
 
   {% include "_includes/footer.html" %}
@@ -310,6 +362,7 @@
   <script type="module" src="/scripts/firebase-config.js"></script>
   <script type="module" src="/scripts/auth.js"></script>
   <script src="/scripts/main.js"></script>
+  <script src="/scripts/consent.js"></script>
 
   <script src="/scripts/hero.js"></script>
 

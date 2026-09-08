@@ -1,0 +1,168 @@
+---
+layout: legal.njk
+permalink: /cookies/
+title: "Cookies & Local Storage | Stefanos Tzortzoglou"
+heading: "Cookies & Local Storage"
+description: "This site sets no cookies and shows no consent banner. Here is exactly what is stored in your browser, which third parties your browser contacts, and why no consent is legally required."
+summary: "This site sets no cookies. The only thing you could reasonably object to is the page-view counter, so that is what the banner asks about — and it is off until you say yes."
+updated: "2026-09-09"
+updatedLabel: "9 September 2026"
+---
+
+<h2 id="cookies">1. Cookies</h2>
+<p>
+  <strong>This site sets no cookies of its own, and no third party sets cookies through it.</strong> There is no
+  advertising, no tag manager, no social tracking pixel, no Google Analytics, and no embedded video player.
+</p>
+
+<h2 id="storage">2. What is stored in your browser</h2>
+<p>
+  Three things may be written to your browser's local storage. None is a cookie, none is sent to a server
+  automatically, and none is used to track you across sites.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Type</th>
+      <th scope="col">Purpose</th>
+      <th scope="col">Lifetime</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>theme</code></td>
+      <td><code>localStorage</code></td>
+      <td>Remembers whether you chose the light or dark colour scheme. Written only when you use the theme toggle.</td>
+      <td>Until you clear your browser data.</td>
+    </tr>
+    <tr>
+      <td><code>analytics-consent</code></td>
+      <td><code>localStorage</code></td>
+      <td>Remembers whether you accepted or declined the page-view counter, so you are not asked again.</td>
+      <td>Until you clear your browser data.</td>
+    </tr>
+    <tr>
+      <td><code>firebaseLocalStorageDb</code></td>
+      <td><code>IndexedDB</code></td>
+      <td>Holds your sign-in session token so you stay logged in between pages. Written only if you create an account
+        and log in.</td>
+      <td>Until you log out or the token expires.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  You can delete both at any time by clearing site data for tzortzoglou.eu in your browser settings. Clearing the theme
+  key simply resets the site to its default appearance; clearing the Firebase entry logs you out.
+</p>
+
+<h2 id="choice">3. Your analytics choice</h2>
+
+<p id="consent-state" class="font-semibold"></p>
+<p>
+  <button type="button" id="consent-withdraw" class="btn-secondary px-5 py-2 text-sm">Turn analytics on</button>
+</p>
+<p id="consent-note" role="status" aria-live="polite" class="text-sm"></p>
+<noscript>
+  <p><strong>JavaScript is disabled, so no analytics runs at all.</strong> Nothing is being counted.</p>
+</noscript>
+
+<p>
+  You are asked once, on your first visit. <strong>Analytics stays off unless you actively accept</strong> — declining
+  is one click, exactly as easy as accepting, and nothing on the site changes either way. Your answer is remembered in
+  your browser under <code>analytics-consent</code> and never leaves your device.
+</p>
+
+<h3>Why the banner only asks about this one thing</h3>
+<p>
+  Under Article 5(3) of the ePrivacy Directive (in Sweden, the Electronic Communications Act,
+  <span lang="sv">lag (2022:482) om elektronisk kommunikation</span>), consent is required before storing or reading
+  information on your device — <em>except</em> where it is strictly necessary for a service you explicitly asked for.
+</p>
+<p>
+  The theme preference and the login token both fall inside that exemption, so asking permission for them would be
+  asking a question with only one honest answer. The page counter is different: it is not necessary for anything, so it
+  is the one thing genuinely worth your consent, and the one thing the banner controls. A banner whose buttons changed
+  nothing would be theatre, and regulators across the EU have repeatedly acted against exactly that pattern.
+</p>
+<p>
+  Because analytics now runs on consent rather than on legitimate interest, you can also withdraw it at any time using
+  the button above — as easily as you gave it (Art. 7(3) GDPR).
+</p>
+<p>
+  If this site ever adds anything else that requires consent — advertising, cross-site analytics, an embedded YouTube or
+  Maps frame, a marketing pixel — it will be added to this same mechanism <strong>before</strong> it goes live.
+</p>
+
+<h2 id="third-parties">4. Third parties your browser contacts</h2>
+<p>
+  Some assets are loaded from other providers instead of this domain. Your browser connects to them directly, so they
+  receive your IP address, user-agent, and the page you were viewing. None of them set cookies here, but the connection
+  itself is a transfer of data, so it is listed in full:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th scope="col">Provider</th>
+      <th scope="col">What it serves</th>
+      <th scope="col">Where</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Google Fonts (Google Ireland Ltd. / Google LLC)</td>
+      <td>The Poppins typeface</td>
+      <td>Every page</td>
+    </tr>
+    <tr>
+      <td>Cloudflare cdnjs</td>
+      <td>Font Awesome icon set</td>
+      <td>Every page</td>
+    </tr>
+    <tr>
+      <td>Google Firebase (Google Ireland Ltd.)</td>
+      <td>Authentication and database libraries</td>
+      <td>Every page; contacted for data only when you log in</td>
+    </tr>
+    <tr>
+      <td>GoatCounter</td>
+      <td>Cookieless page-view counter</td>
+      <td><strong>Only after you accept</strong></td>
+    </tr>
+    <tr>
+      <td>jsDelivr</td>
+      <td>Devicon technology icons; confetti animation</td>
+      <td><a href="/code/">Code</a>, <a href="/exclusive/">private area</a></td>
+    </tr>
+    <tr>
+      <td>unpkg</td>
+      <td>GitHub contribution calendar widget</td>
+      <td><a href="/code/">Code</a></td>
+    </tr>
+    <tr>
+      <td>Vercel (hosting my own deployment of github-readme-stats)</td>
+      <td>Rendered GitHub statistics images</td>
+      <td><a href="/code/">Code</a></td>
+    </tr>
+    <tr>
+      <td>GitHub</td>
+      <td>Public contribution data for the activity graph</td>
+      <td><a href="/code/">Code</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  Where these providers may process data outside the EEA, they do so under their own standard contractual clauses. See
+  the <a href="/privacy/">Privacy Policy</a> for the legal bases involved.
+</p>
+
+<h2 id="control">5. How to block them</h2>
+<p>
+  Any content-blocking extension, or a browser in strict tracking-protection mode, will stop these requests. The site is
+  built to stay readable without them: text, layout and navigation are served entirely from this domain. What you lose
+  is the icon glyphs, the custom typeface, and the GitHub activity graph.
+</p>

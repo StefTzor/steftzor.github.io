@@ -90,6 +90,10 @@ jobs:
                 "https://tzortzoglou.eu/about/",
                 "https://tzortzoglou.eu/portfolio/",
                 "https://tzortzoglou.eu/code/",
-                "https://tzortzoglou.eu/contact/"
+                "https://tzortzoglou.eu/contact/",
+                "https://tzortzoglou.eu/privacy/",
+                "https://tzortzoglou.eu/cookies/",
+                "https://tzortzoglou.eu/terms/",
+                "https://tzortzoglou.eu/accessibility/"
               ]
             }'
