@@ -3,3 +3,7 @@ _site
 dist
 ignore
 .env
+graphify-out
+.agents
+.claude
+skills-lock.json
