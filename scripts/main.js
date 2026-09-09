@@ -9,8 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggleMobile = document.getElementById('theme-toggle-mobile');
     const htmlElement = document.documentElement;
 
-    // Load saved theme or default to dark
-    const savedTheme = localStorage.getItem('theme');
+    // Load saved theme or default to dark. Reading localStorage THROWS when site
+    // data is blocked, and an uncaught throw here would kill every listener below.
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem('theme'); } catch (e) { /* session-only theme */ }
     if (savedTheme === 'dark' || !savedTheme) {
         htmlElement.classList.add('dark');
     } else {
@@ -36,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.stopPropagation();
         htmlElement.classList.toggle('dark');
         const isDark = htmlElement.classList.contains('dark');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch (e) { /* not persisted */ }
         syncThemeButtons();
     };
 

@@ -17,6 +17,14 @@ const API_BASE = (location.hostname === "localhost" || location.hostname === "12
 
 // Shown both on a successful registration AND when the address already has an
 // account, so the form cannot be used to test whether an address is registered.
+/** Render PENDING_MESSAGE as neutral, not as an error. Both call sites must match. */
+function showPending(el) {
+  if (!el) return;
+  el.textContent = PENDING_MESSAGE;
+  el.classList.remove("hidden", "text-red-700", "dark:text-red-400");
+  el.classList.add("text-emerald-700", "dark:text-emerald-400");
+}
+
 const PENDING_MESSAGE =
   "Thanks — your request has been received. Access is granted manually, so you will not be able to sign in until it is approved.";
 
@@ -62,16 +70,14 @@ async function handleLogin(e) {
     const user = userCredential.user;
 
     // Get user status using the modular syntax
+    // Fail closed: a missing doc is not an approval.
     const userDoc = await getDoc(doc(db, "users", user.uid));
-    if (userDoc.exists()) {
-      const userData = userDoc.data();
-      if (userData.status !== "approved") {
-        await signOut(auth);
-        if (errorMsg) {
-          errorMsg.textContent = "Your account is pending approval. Please wait for an administrator to approve your registration.";
-        }
-        return;
+    if (!userDoc.exists() || userDoc.data().status !== "approved") {
+      await signOut(auth);
+      if (errorMsg) {
+        errorMsg.textContent = "Your account is pending approval. Please wait for an administrator to approve your registration.";
       }
+      return;
     }
 
     // Redirect if approved - use absolute path
@@ -133,29 +139,28 @@ async function handleRegister(e) {
     // Store user status in Firestore as "pending"
     // consentAt records WHEN consent was given, so it can be demonstrated (GDPR Art. 7(1)).
     // NOTE: firestore.rules must allow this key — deploy the rules before deploying this script.
-    await setDoc(doc(db, "users", user.uid), {
-      email: user.email,
-      status: "pending",
-      createdAt: new Date().toISOString(),
-      consentAt: new Date().toISOString(),
-    });
-
-    // Sign out the user immediately
-    await signOut(auth);
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        status: "pending",
+        createdAt: new Date().toISOString(),
+        consentAt: new Date().toISOString(),
+      });
+    } finally {
+      // Sign out even if the write failed, so a half-registered account never
+      // leaves an authenticated session behind.
+      await signOut(auth);
+    }
 
     // Show message
-    const errorMsg = document.getElementById("errorMsg");
-    if (errorMsg) {
-      errorMsg.textContent = PENDING_MESSAGE;
-      errorMsg.classList.remove("hidden");
-    }
+    showPending(document.getElementById("errorMsg"));
 
   } catch (error) {
     console.error("Registration error:", error.code || error);
     if (error.code === 'auth/email-already-in-use') {
       // Show exactly what a brand-new registration shows. Confirming that an
       // address is already registered turns this form into an account oracle.
-      errorMsg.textContent = PENDING_MESSAGE;
+      showPending(errorMsg);
     } else if (error.code === 'auth/weak-password') {
       errorMsg.textContent = "Please choose a password of at least 8 characters.";
     } else if (error.code === 'auth/invalid-email') {
@@ -213,8 +218,6 @@ async function handleAuthStateChanged(user) {
   const mobExclusive = document.getElementById("mobile-exclusive-item");
 
   // --- PAGE CONTENT ELEMENTS ---
-  const exclusiveContent = document.getElementById("exclusiveContent");
-  const authRequired = document.getElementById("authRequired");
   const loader = document.getElementById("authLoader"); // Optional: if you added the loader
 
   // 1. ATTACH LOGOUT LISTENERS (Desktop & Mobile)
@@ -258,10 +261,8 @@ async function handleAuthStateChanged(user) {
         // Show Nav Items
         if (exclusiveNavItem) exclusiveNavItem.classList.remove("hidden");
         if (mobExclusive) mobExclusive.classList.remove("hidden");
-        
-        // Show Page Content
-        if (exclusiveContent) exclusiveContent.classList.remove("hidden");
-        if (authRequired) authRequired.classList.add("hidden");
+        // Page content on /exclusive/ is owned by exclusive.js, which drives it from
+        // the API result. Touching it here raced that and could reveal empty shells.
 
       } else {
         // --- PENDING APPROVAL ---
@@ -270,17 +271,7 @@ async function handleAuthStateChanged(user) {
         // Hide Nav Items
         if (exclusiveNavItem) exclusiveNavItem.classList.add("hidden");
         if (mobExclusive) mobExclusive.classList.add("hidden");
-        
-        // Lock Page Content
-        if (exclusiveContent) exclusiveContent.classList.add("hidden");
-        if (authRequired) {
-             authRequired.classList.remove("hidden");
-             // Update text to indicate pending status
-             const title = authRequired.querySelector('h1, h2');
-             const text = authRequired.querySelector('p');
-             if(title) title.textContent = "Access Pending";
-             if(text) text.textContent = "Your account is currently awaiting administrator approval. Please check back later.";
-        }
+        // Pending state on /exclusive/ is rendered by exclusive.js from the API's 403.
       }
     } catch (error) {
       console.error("Auth check failed:", error);
@@ -303,16 +294,7 @@ async function handleAuthStateChanged(user) {
     // C. Lock Everything
     if (exclusiveNavItem) exclusiveNavItem.classList.add("hidden");
     if (mobExclusive) mobExclusive.classList.add("hidden");
-    
-    if (exclusiveContent) exclusiveContent.classList.add("hidden");
-    if (authRequired) {
-      authRequired.classList.remove("hidden");
-      // Reset text to default "Login Required"
-      const title = authRequired.querySelector('h1, h2');
-      const text = authRequired.querySelector('p');
-      if(title) title.textContent = "Authentication Required";
-      if(text) text.textContent = "You need to be logged in to view this exclusive content.";
-    }
+    // Guest state on /exclusive/ is rendered by exclusive.js.
   }
 }
 
