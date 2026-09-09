@@ -76,7 +76,7 @@ async function render(user) {
     $('invite-greeting').textContent = data.invite.greeting;
     $('invite-lead').textContent = data.invite.lead;
     $('invite-caption').textContent = data.invite.coverCaption;
-    $('openMessageBtn').lastChild.textContent = ' ' + data.invite.openLabel;
+    $('openMessageBtn').querySelector('span').textContent = ' ' + data.invite.openLabel;
 
     $('question-title').textContent = data.question.title;
     const answers = $('question-answers');

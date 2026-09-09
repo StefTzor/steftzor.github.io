@@ -14,11 +14,15 @@
   var KEY = 'analytics-consent';           // 'granted' | 'denied'
   var GC = 'https://gc.zgo.at/count.js';
 
+  var memory = null;                       // fallback when storage is blocked
   function read() {
-    try { return localStorage.getItem(KEY); } catch (e) { return null; }
+    try { return localStorage.getItem(KEY); } catch (e) { return memory; }
   }
+  // Returns false when the choice could not be persisted, so the UI can say so
+  // instead of claiming "Saved."
   function write(v) {
-    try { localStorage.setItem(KEY, v); } catch (e) { /* private mode: session-only */ }
+    memory = v;
+    try { localStorage.setItem(KEY, v); return true; } catch (e) { return false; }
   }
 
   function loadAnalytics() {
@@ -31,7 +35,7 @@
   }
 
   function decide(value) {
-    write(value);
+    var saved = write(value);
     if (value === 'granted') loadAnalytics();
     var b = document.getElementById('consent-banner');
     if (b) {
@@ -41,6 +45,7 @@
       if (main) { main.setAttribute('tabindex', '-1'); main.focus(); }
     }
     render();
+    return saved;
   }
 
   // Reflect the current choice on /cookies/, where it can be changed.
@@ -82,7 +87,6 @@
     document.body.appendChild(el);
     document.getElementById('consent-accept').addEventListener('click', function () { decide('granted'); });
     document.getElementById('consent-reject').addEventListener('click', function () { decide('denied'); });
-    document.getElementById('consent-reject').focus();
   }
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -95,15 +99,14 @@
     if (toggle) {
       toggle.addEventListener('click', function () {
         var next = read() === 'granted' ? 'denied' : 'granted';
-        write(next);
-        // Turning it off takes effect on the next page load; say so rather than pretend.
-        if (next === 'granted') loadAnalytics();
-        render();
+        var saved = decide(next);
         var note = document.getElementById('consent-note');
         if (note) {
-          note.textContent = next === 'denied'
-            ? 'Saved. Analytics will not load on any further page you visit.'
-            : 'Saved. Analytics is now enabled.';
+          note.textContent = !saved
+            ? 'Applied to this page only — your browser is blocking site storage, so this choice cannot be remembered.'
+            : next === 'denied'
+              ? 'Saved. Analytics will not load on any further page you visit.'
+              : 'Saved. Analytics is now enabled.';
         }
       });
     }
