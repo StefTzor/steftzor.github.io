@@ -150,7 +150,69 @@
 
             </div>
 
-            <div class="bg-brand-surface/50 rounded-lg p-4 text-center border border-brand-muted/10 max-w-md mx-auto">
+            <div class="bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 mb-12">
+      <h2 class="text-2xl font-bold mb-2">Or send it from here</h2>
+      <p class="text-brand-muted text-sm mb-6">
+        Describe the problem in as much detail as you like. I read every message myself and reply from
+        <strong>stefanos@tzortzoglou.eu</strong>.
+      </p>
+
+      <form id="contactForm" novalidate>
+        <div class="mb-4">
+          <label for="contactName" class="block mb-1 font-medium text-brand-text">Your name</label>
+          <input type="text" id="contactName" name="name" required maxlength="100" autocomplete="name"
+            class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent">
+        </div>
+
+        <div class="mb-4">
+          <label for="contactEmail" class="block mb-1 font-medium text-brand-text">Your email address</label>
+          <input type="email" id="contactEmail" name="email" required maxlength="254" autocomplete="email"
+            aria-describedby="contactEmail-hint"
+            class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent">
+          <p id="contactEmail-hint" class="mt-1 text-xs text-brand-muted">So I can reply. Nothing else.</p>
+        </div>
+
+        <div class="mb-6">
+          <label for="contactMessage" class="block mb-1 font-medium text-brand-text">Message</label>
+          <textarea id="contactMessage" name="message" required minlength="10" maxlength="5000" rows="6"
+            class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent"></textarea>
+        </div>
+
+        <!-- GDPR Art. 6(1)(a) / Art. 7: consent must be a specific, informed, unticked opt-in. -->
+        <div class="mb-6 flex items-start gap-3">
+          <input type="checkbox" id="contactConsent" name="contactConsent" required
+            class="mt-1 h-4 w-4 shrink-0 accent-brand-accent">
+          <label for="contactConsent" class="text-sm text-brand-muted leading-relaxed">
+            I agree that my name, email address and message may be stored and emailed to Stefanos so that he can
+            reply, as described in the
+            <a href="/privacy/" class="text-brand-accent underline hover:no-underline">Privacy Policy</a>.
+            I can ask for the message to be deleted at any time by emailing
+            <a href="mailto:stefanos@tzortzoglou.eu"
+              class="text-brand-accent underline hover:no-underline">stefanos@tzortzoglou.eu</a>.
+          </label>
+        </div>
+
+        <p class="mb-6 text-xs text-brand-muted">
+          Your details are never used for marketing, never added to a mailing list, never shared, and never sold.
+          Please do not send anything confidential — ordinary email is not end-to-end encrypted.
+        </p>
+
+        <!-- Spam trap: hidden from people and from screen readers, irresistible to bots.
+             Paired with a minimum fill time in contact.js. No third-party CAPTCHA, so no
+             tracking is introduced and no visitor is asked to solve puzzles. -->
+        <div class="hidden" aria-hidden="true">
+          <label for="website">Leave this field empty</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <!-- role="status" so both errors and the success message are announced, without hijacking focus. -->
+        <div id="contactStatus" role="status" aria-live="polite" class="mb-4 text-sm"></div>
+
+        <button type="submit" id="contactSubmit" class="btn-primary w-full">Send message</button>
+      </form>
+    </div>
+
+    <div class="bg-brand-surface/50 rounded-lg p-4 text-center border border-brand-muted/10 max-w-md mx-auto">
                 <div
                     class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-brand-muted text-sm">
 
@@ -179,6 +241,7 @@
     <script type="module" src="/scripts/firebase-config.js"></script>
     <script type="module" src="/scripts/auth.js"></script>
     <script src="/scripts/main.js"></script>
+    <script src="/scripts/contact.js"></script>
   <script src="/scripts/consent.js"></script>
 </body>
 

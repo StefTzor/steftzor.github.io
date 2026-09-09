@@ -7,7 +7,8 @@ module.exports = function(eleventyConfig) {
     "scripts/main.js": "scripts/main.js",
     "scripts/hero.js": "scripts/hero.js",
     "scripts/consent.js": "scripts/consent.js",
-    "scripts/exclusive.js": "scripts/exclusive.js"
+    "scripts/exclusive.js": "scripts/exclusive.js",
+    "scripts/contact.js": "scripts/contact.js"
   });
   eleventyConfig.addPassthroughCopy("images");
   eleventyConfig.addPassthroughCopy({"favicon": "/"});

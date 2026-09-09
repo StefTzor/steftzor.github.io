@@ -4,7 +4,7 @@ permalink: /privacy/
 title: "Privacy Policy | Stefanos Tzortzoglou"
 heading: "Privacy Policy"
 description: "How tzortzoglou.eu handles personal data: what is collected, why, the legal basis under GDPR, who processes it, and how to exercise your rights."
-summary: "This site is a personal portfolio. It sets no cookies, runs no advertising, and does no profiling. The only personal data it stores is the email address of people who deliberately create an account for the private area."
+summary: "This site is a personal portfolio. It sets no cookies, runs no advertising, and does no profiling. The only personal data it stores is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form."
 updated: "2026-09-09"
 updatedLabel: "9 September 2026"
 ---
@@ -28,7 +28,9 @@ updatedLabel: "9 September 2026"
 
 <h2 id="browsing">2. If you only browse the site</h2>
 
-<p>You do not need an account to read anything on the public pages, and you are not asked for any information.
+<p>You do not need an account to read anything on the public pages, and nothing is required of you to read them.
+  You are asked for information only if you choose to send it — by creating an account
+  (<a href="#account">section 3</a>) or by using the contact form (<a href="#contact">section 4</a>).
   Three things still happen automatically, because that is how the web works:</p>
 
 <h3>2.1 Hosting logs</h3>
@@ -133,7 +135,9 @@ updatedLabel: "9 September 2026"
   Art. 22 GDPR.
 </p>
 
-<h2 id="contact-email">4. If you email me</h2>
+<h2 id="contact">4. If you contact me</h2>
+
+<h3 id="contact-email">4.1 If you email me directly</h3>
 <p>
   Email sent to <a href="mailto:stefanos@tzortzoglou.eu">stefanos@tzortzoglou.eu</a> is not delivered to a mailbox on
   this domain. It is relayed by my domain registrar's mail-forwarding service
@@ -150,6 +154,56 @@ updatedLabel: "9 September 2026"
   <li><strong>Transfer outside the EEA:</strong> possible, under those providers' own standard contractual clauses.</li>
   <li><strong>Sensitive information:</strong> ordinary email is not end-to-end encrypted. Please do not send anything
     confidential or sensitive to this address.</li>
+</ul>
+
+<h3 id="contact-form">4.2 If you use the contact form</h3>
+<p>
+  The form on the <a href="/contact/">contact page</a> sends what you type to an application I run at
+  <strong>api.tzortzoglou.eu</strong>, on a virtual private server rented in my own name. Your message is stored
+  there in a database, and a copy is emailed to me so that I see it.
+</p>
+
+<table>
+  <caption class="sr-only">Data collected by the contact form</caption>
+  <thead>
+    <tr><th scope="col">What</th><th scope="col">Where it is stored</th><th scope="col">Why</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>The name, email address and message you type</td>
+      <td>PostgreSQL database on the server, and my Gmail mailbox</td>
+      <td>To read your message and reply to it.</td>
+    </tr>
+    <tr>
+      <td>Your IP address and browser user-agent string</td>
+      <td>Same database record</td>
+      <td>To detect and limit automated abuse of the form.</td>
+    </tr>
+    <tr>
+      <td>The time you gave consent</td>
+      <td>Same database record</td>
+      <td>To evidence the consent, as Art. 7(1) GDPR requires.</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li><strong>Purpose:</strong> receiving and answering messages sent deliberately through the form.</li>
+  <li><strong>Legal basis:</strong> your consent, Art. 6(1)(a) GDPR, given by ticking the box on the form.
+    The form cannot be sent without it. You may withdraw it at any time (see <a href="#rights">section 6</a>);
+    withdrawal does not affect processing already carried out.</li>
+  <li><strong>Processors:</strong> the server is rented from a hosting provider who necessarily stores the data on
+    its hardware. The notification email is transmitted by <strong>Brevo</strong> (Sendinblue SAS, France) and
+    delivered to a personal <strong>Gmail</strong> mailbox (Google Ireland Limited).</li>
+  <li><strong>Retention:</strong> messages are kept for as long as needed to deal with them and to keep a record of
+    the correspondence, and deleted on request.</li>
+  <li><strong>No marketing:</strong> an address given through this form is never added to a mailing list, never used
+    for marketing, never shared, and never sold. There is no profiling and no automated decision-making within the
+    meaning of Art. 22 GDPR.</li>
+  <li><strong>Sensitive information:</strong> please do not send anything confidential or sensitive through the form.
+    It is transmitted over HTTPS, but the resulting email is ordinary email and is not end-to-end encrypted.</li>
+  <li><strong>Instead of the form:</strong> emailing me directly (section 4.1) avoids the server and the database
+    entirely. Both routes reach me.</li>
 </ul>
 
 <h2 id="device">5. What is stored on your device</h2>
@@ -197,6 +251,7 @@ updatedLabel: "9 September 2026"
 
 <h2 id="changes">9. Changes to this policy</h2>
 <p>
-  If the site starts doing something new with personal data — a contact form, a newsletter, embedded third-party media —
-  this policy will be updated before that goes live, and the "last updated" date above will change.
+  If the site starts doing something new with personal data — a newsletter, embedded third-party media, a change of
+  provider — this policy will be updated before that goes live, and the "last updated" date above will change.
+  The contact form described in <a href="#contact-form">section 4.2</a> was added under this commitment.
 </p>
