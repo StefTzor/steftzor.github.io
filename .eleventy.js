@@ -1,3 +1,39 @@
+const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
+
+/**
+ * `scripts/firebase-config.js` is deliberately NOT versioned.
+ *
+ * The committed copy holds only {{PLACEHOLDER}} values; CI overwrites it with the real
+ * config from GitHub Secrets *after* the build. Hashing it here would therefore hash the
+ * placeholders and produce a version that never changes, which is worse than no version
+ * at all - it would look busted while being permanently stale.
+ *
+ * Versioning it on build time instead would only half-work: auth.js and exclusive.js
+ * reach it through `import "./firebase-config.js"`, and a query string on the <script>
+ * tag does not reach that import. So one of the two fetch paths would stay unversioned
+ * either way. GitHub Pages serves it with max-age=600, which bounds the staleness to ten
+ * minutes - acceptable for a file that only changes when Firebase secrets are rotated.
+ */
+const UNVERSIONED = new Set(["/scripts/firebase-config.js"]);
+const versionCache = new Map();
+function assetVersion(urlPath) {
+  if (versionCache.has(urlPath)) return versionCache.get(urlPath);
+  let v;
+  try {
+    v = crypto.createHash("sha1")
+      .update(fs.readFileSync(path.join(__dirname, urlPath)))
+      .digest("hex")
+      .slice(0, 8);
+  } catch (err) {
+    // Asset missing at build time: skip rather than invent a version.
+    v = null;
+  }
+  versionCache.set(urlPath, v);
+  return v;
+}
+
 module.exports = function(eleventyConfig) {
   // Copy the dist folder (Tailwind output) to the final site
   eleventyConfig.addPassthroughCopy("dist");
@@ -25,6 +61,24 @@ module.exports = function(eleventyConfig) {
    // Prevent firebase-config.js from being copied
    eleventyConfig.ignores.add("scripts/firebase-config.js");
 
+
+  /**
+   * Cache-busting. Rewrites every /dist and /scripts URL in the built HTML to carry a
+   * ?v= content hash, so a deploy cannot leave a visitor running last week's auth.js,
+   * consent.js or stylesheet. Done as a transform rather than per-template so nothing
+   * has to be remembered when a page or a script is added.
+   */
+  eleventyConfig.addTransform("cachebust", function (content) {
+    if (!this.page.outputPath || !this.page.outputPath.endsWith(".html")) return content;
+    return content.replace(
+      /(href|src)="(\/(?:dist|scripts)\/[^"?#]+\.(?:css|js))"/g,
+      (match, attr, urlPath) => {
+        if (UNVERSIONED.has(urlPath)) return match;
+        const v = assetVersion(urlPath);
+        return v ? `${attr}="${urlPath}?v=${v}"` : match;
+      }
+    );
+  });
 
   return {
     dir: {
