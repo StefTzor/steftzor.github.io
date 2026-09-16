@@ -47,6 +47,8 @@ module.exports = function(eleventyConfig) {
     "scripts/contact.js": "scripts/contact.js"
   });
   eleventyConfig.addPassthroughCopy("images");
+  // Self-hosted webfonts; scripts/ and fonts/ are not copied wholesale elsewhere.
+  eleventyConfig.addPassthroughCopy("fonts");
   eleventyConfig.addPassthroughCopy({"favicon": "/"});
   eleventyConfig.addPassthroughCopy({ "CNAME": "CNAME" });
   eleventyConfig.addPassthroughCopy("robots.txt");

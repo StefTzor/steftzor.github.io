@@ -21,7 +21,6 @@
     headScripts: []      synchronous head scripts, each {src, integrity}
     bodyScripts: []      extra end-of-body scripts, each {src, type, integrity}
     mainClass            classes on <main>
-    fontsHref            Google Fonts URL, when a page needs an extra family
 #}
 <html lang="en" class="scroll-smooth dark">
 
@@ -30,8 +29,6 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   {# Must stay here, before the stylesheet, or the wrong theme paints first. #}
   <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   {%- for host in headPreconnect %}
   <link rel="preconnect" href="{{ host }}">
@@ -96,7 +93,6 @@
   {%- for sheet in headStyles %}
   <link rel="stylesheet" href="{{ sheet.href }}"{% if sheet.integrity %} integrity="{{ sheet.integrity }}" crossorigin="anonymous" referrerpolicy="no-referrer"{% endif %}>
   {%- endfor %}
-  <link href="{{ fontsHref | default('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap') }}" rel="stylesheet">
   {%- for s in headScripts %}
   {# Synchronous on purpose where a page's inline caller runs before DOMContentLoaded. #}
   <script src="{{ s.src }}"{% if s.integrity %} integrity="{{ s.integrity }}" crossorigin="anonymous" referrerpolicy="no-referrer"{% endif %}></script>
