@@ -105,68 +105,81 @@
         rel="stylesheet">
 
     <style>
-        /* LIGHT MODE CALENDAR COLORS (Default) */
-        .calendar .width-full {
-            fill: #059669;
-        }
-
-        /* Accent */
-        .calendar .ContributionCalendar-day[data-level="0"] {
-            fill: #e2e8f0;
-        }
-
-        /* Surface */
-        .calendar .ContributionCalendar-day[data-level="1"] {
-            fill: #a7f3d0;
-        }
-
-        .calendar .ContributionCalendar-day[data-level="2"] {
-            fill: #34d399;
-        }
-
-        .calendar .ContributionCalendar-day[data-level="3"] {
-            fill: #10b981;
-        }
-
-        .calendar .ContributionCalendar-day[data-level="4"] {
-            fill: #059669;
-        }
-
+        /*
+         * GitHub contribution calendar.
+         *
+         * The widget no longer renders SVG: GitHub serves an HTML <table>, so every
+         * `fill:` rule this block used to carry was dead and the chart had been showing
+         * the vendor stylesheet's own saturated green - unchanged between light and dark,
+         * which is why level-0 cells glared on the dark surface.
+         *
+         * The vendor colours cells from five custom properties, so redefining those on
+         * .calendar is enough to bring the whole ramp, legend included, onto the brand
+         * emerald. Light runs pale-to-deep, dark runs deep-to-bright, so in both themes
+         * "more" reads as further from the surface behind it.
+         */
         .calendar {
+            --color-calendar-graph-day-bg: #cbd5e1;    /* slate-300  */
+            --color-calendar-graph-day-L1-bg: #34d399; /* emerald-400 */
+            --color-calendar-graph-day-L2-bg: #059669; /* emerald-600 */
+            --color-calendar-graph-day-L3-bg: #047857; /* emerald-700 */
+            --color-calendar-graph-day-L4-bg: #064e3b; /* emerald-900 */
+
             border: none;
-            color: #334155;
+            min-height: 0;
             font-family: 'Poppins', sans-serif;
-        }
-
-        /* Text Muted */
-
-        /* DARK MODE CALENDAR COLORS (.dark class applied to HTML) */
-        .dark .calendar .width-full {
-            fill: #10b981;
-        }
-
-        .dark .calendar .ContributionCalendar-day[data-level="0"] {
-            fill: #1e293b;
-        }
-
-        .dark .calendar .ContributionCalendar-day[data-level="1"] {
-            fill: #064e3b;
-        }
-
-        .dark .calendar .ContributionCalendar-day[data-level="2"] {
-            fill: #065f46;
-        }
-
-        .dark .calendar .ContributionCalendar-day[data-level="3"] {
-            fill: #10b981;
-        }
-
-        .dark .calendar .ContributionCalendar-day[data-level="4"] {
-            fill: #34d399;
+            color: rgb(var(--color-muted));
         }
 
         .dark .calendar {
-            color: #94a3b8;
+            --color-calendar-graph-day-bg: #334155;    /* slate-700  */
+            --color-calendar-graph-day-L1-bg: #065f46; /* emerald-800 */
+            --color-calendar-graph-day-L2-bg: #059669; /* emerald-600 */
+            --color-calendar-graph-day-L3-bg: #34d399; /* emerald-400 */
+            --color-calendar-graph-day-L4-bg: #a7f3d0; /* emerald-200 */
+        }
+
+        .calendar td.ContributionCalendar-day {
+            border-radius: 2px;
+        }
+
+        /*
+         * The weekday column. The vendor absolutely positions these labels at left:-1pt
+         * inside a cell only as wide as its padding, so "Mon", "Wed" and "Fri" overflowed
+         * to the left and were cut off by the container's horizontal scroll. Giving the
+         * column a real width and setting the text in it fixes the clipping; making it
+         * sticky keeps the axis readable while the year scrolls on a narrow screen.
+         * Both overrides need !important because the widget sets position inline.
+         */
+        .calendar td.ContributionCalendar-label:not([colspan]) {
+            position: sticky !important;
+            left: 0;
+            z-index: 1;
+            width: 2.5rem;
+            min-width: 2.5rem;
+            padding-right: 0.5rem !important;
+            background-color: rgb(var(--color-surface));
+        }
+
+        .calendar td.ContributionCalendar-label:not([colspan]) span[aria-hidden="true"] {
+            position: static !important;
+            display: block;
+            text-align: right;
+            font-size: 0.6875rem;
+            line-height: 1;
+        }
+
+        /* Month labels stay absolutely positioned over their columns - they are the one
+           thing the vendor gets right - but the first one sat flush against the weekday
+           column. Nudge it clear. */
+        .calendar td.ContributionCalendar-label[colspan] span[aria-hidden="true"] {
+            font-size: 0.6875rem;
+            padding-left: 0.125rem;
+        }
+
+        /* "Learn how we count contributions" - a link into GitHub's docs, not content. */
+        .calendar .width-full .float-left {
+            display: none;
         }
     </style>
 </head>
