@@ -206,8 +206,58 @@ async function load() {
   render();
 }
 
+/** Invite someone: one address, one role, and a clear answer either way. */
+function wireInvite() {
+  const form = el("inviteForm");
+  if (!form) return;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (form.dataset.submitting === "1") return;
+
+    const field = el("inviteEmail");
+    field.removeAttribute("aria-invalid");
+    const email = field.value.trim();
+    const role = el("inviteRole").value;
+    if (!email) {
+      field.setAttribute("aria-invalid", "true");
+      field.focus();
+      say("Enter an email address to invite.", "error");
+      return;
+    }
+
+    const btn = form.querySelector('button[type="submit"]');
+    form.dataset.submitting = "1";
+    btn.disabled = true;
+    const idle = btn.textContent;
+    btn.textContent = "Sending…";
+    say(`Inviting ${email}…`);
+    try {
+      const res = await api("/admin/invites", { method: "POST", body: JSON.stringify({ email, role }) });
+      say(res.sent
+        ? `Invited ${email} as ${res.role}. They have been emailed a link to choose a password.`
+        : `Account created for ${email} as ${res.role}, but the email could not be sent. Use Reset password to try again.`,
+        res.sent ? "ok" : "error");
+      form.reset();
+      await load();
+    } catch (err) {
+      console.error("admin: invite failed", err.status, err.code);
+      field.setAttribute("aria-invalid", "true");
+      say(err.code === "already_exists"
+        ? "That address already has an account — it is in the list above."
+        : err.code === "invalid_email" ? "That is not a valid email address."
+        : "The invitation could not be sent.", "error");
+      field.focus();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = idle;
+      form.dataset.submitting = "0";
+    }
+  });
+}
+
 profile.then(async (profileData) => {
   me = profileData;
+  wireInvite();
   try {
     await load();
     say("");
