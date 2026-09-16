@@ -1,10 +1,27 @@
 ---
 layout: app.njk
-title: "App | Stefanos Tzortzoglou"
 permalink: /
+title: "Home | Stefanos Tzortzoglou"
+appScript: { src: "/scripts/app.js", type: "module" }
+bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
+shell: true
 ---
-{# Placeholder. The Home view - greeting, weather, role-driven nav - is stage 3. #}
-<section class="container mx-auto px-4 py-16 max-w-md text-center">
-  <h1 class="text-2xl font-bold mb-3">app.tzortzoglou.eu</h1>
-  <p class="text-brand-muted">Signed-in area. Nothing here yet.</p>
+<section class="container mx-auto px-4 py-10 max-w-3xl">
+
+  <h1 id="greeting" class="text-3xl font-bold mb-8 text-brand-text">&nbsp;</h1>
+
+  <section aria-labelledby="weather-heading"
+    class="bg-brand-surface rounded-lg border border-brand-muted/10 p-6">
+    <div class="flex items-baseline justify-between gap-4 mb-4">
+      <h2 id="weather-heading" class="text-lg font-bold text-brand-text">Weather</h2>
+      <p id="weatherPlace" class="text-sm text-brand-muted"></p>
+    </div>
+
+    {# One live region for the whole card: loading, the forecast, and any failure all land
+       here, so a screen reader is told once rather than on every field. #}
+    <div id="weather" role="status" aria-live="polite">
+      <p class="text-sm text-brand-muted">Loading the forecast…</p>
+    </div>
+  </section>
+
 </section>

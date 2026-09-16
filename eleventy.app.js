@@ -30,6 +30,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({
     "app/scripts/auth.js": "scripts/auth.js",
     "app/scripts/action.js": "scripts/action.js",
+    "app/scripts/app.js": "scripts/app.js",
   });
 
   // Same reason as the public site: CI writes the real config after the build.
