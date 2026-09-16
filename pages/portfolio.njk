@@ -20,7 +20,10 @@ personSchema: true
         </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+    {# items-start: without it the grid stretches every card to the tallest in its row, and
+   the card's own flex-grow description then opens a void above the footer - 370px of empty
+   surface under the shortest case study. #}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto items-start">
 
         <div
             class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
