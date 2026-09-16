@@ -63,6 +63,16 @@ module.exports = function(eleventyConfig) {
 
 
   /**
+   * Stamps a schema.org node with the URL of the page carrying it. mainEntityOfPage used to be
+   * pasted into four pages by hand, so three of them claimed to be /about/. A filter rather than
+   * a function in _data, because data functions do not survive an incremental rebuild.
+   */
+  eleventyConfig.addFilter("forPage", (node, url) => ({
+    ...node,
+    mainEntityOfPage: `https://tzortzoglou.eu${url}`,
+  }));
+
+  /**
    * Cache-busting. Rewrites every /dist and /scripts URL in the built HTML to carry a
    * ?v= content hash, so a deploy cannot leave a visitor running last week's auth.js,
    * consent.js or stylesheet. Done as a transform rather than per-template so nothing
