@@ -136,6 +136,11 @@ let lastFocused = null;
 function openQuestionModal() {
   lastFocused = document.activeElement;
   modal.classList.remove('hidden');
+  // Force a style recalculation before focusing. Removing the class marks the style dirty but
+  // does not apply it, so the button is still display:none when focus() runs and the call
+  // silently does nothing - leaving the dialog open with focus stranded behind it. Same idiom
+  // the celebration reveal below already uses.
+  void modal.offsetWidth;
   // Focus the first action so the dialog is usable from the keyboard immediately.
   modal.querySelector('button[data-close-modal]').focus();
 }

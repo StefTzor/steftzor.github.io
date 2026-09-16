@@ -96,6 +96,22 @@ pageStyle: |
     </div>
   </div>
 
+  <!-- The question. private.js fills the title and builds the answer buttons from the API
+       response; the markup for this was missing entirely, which is why the page has been
+       showing "Content unavailable" - render() threw on the first element it could not find. -->
+  <div id="questionModal" role="dialog" aria-modal="true" aria-labelledby="question-title"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border-4 border-pink-300 dark:border-pink-900/50 max-w-md w-full p-8 text-center relative">
+      <button type="button" data-close-modal aria-label="Close"
+        class="absolute top-3 right-4 text-2xl leading-none text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">&times;</button>
+
+      <h2 id="question-title" class="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-6"></h2>
+
+      <!-- Buttons are created by private.js, one per answer the API returns. -->
+      <div id="question-answers" class="flex flex-col gap-3"></div>
+    </div>
+  </div>
+
   <div id="celebrationView" class="hidden opacity-0 transition-opacity duration-1000">
     <div
       class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl overflow-hidden border-4 border-pink-400 relative">

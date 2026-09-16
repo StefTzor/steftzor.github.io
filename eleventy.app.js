@@ -24,6 +24,10 @@ module.exports = function (eleventyConfig) {
       "connect-src": ["'self'", "https://api.tzortzoglou.eu",
         "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com",
         "https://firestore.googleapis.com"],
+      // blob: because the private view fetches its photos over an authenticated request and
+      // renders them from createObjectURL - a blob: URL is not covered by 'self', so without
+      // this the images are blocked and the page looks broken for the one person it is for.
+      "img-src": ["'self'", "data:", "blob:"],
     },
   });
 
