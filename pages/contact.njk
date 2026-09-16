@@ -1,244 +1,132 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
+---
+layout: base.njk
+permalink: /contact/
+title: "Contact Stefanos Tzortzoglou | SaaS Implementation"
+description: "Contact Stefanos Tzortzoglou, Technical Customer Success Manager and Implementation Lead in Sweden. Email and LinkedIn."
+personSchema: true
+mainClass: "flex-grow container mx-auto px-4 flex items-center justify-center"
+bodyScripts:
+  - src: "/scripts/contact.js"
+---
+    <div class="max-w-2xl w-full py-16">
 
-<head>
-    <meta charset="UTF-8">
-  <meta name="referrer" content="strict-origin-when-cross-origin">
-    <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="canonical" href="https://tzortzoglou.eu{{ page.url }}">
-    <link rel="alternate" hreflang="x-default" href="https://tzortzoglou.eu{{ page.url }}">
-    <title>Contact Stefanos Tzortzoglou | SaaS Implementation</title>
-
-    <!-- Open Graph / social sharing -->
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Stefanos Tzortzoglou">
-    <meta property="og:locale" content="en_US">
-    <meta property="og:locale:alternate" content="el_GR">
-    <meta property="og:url" content="https://tzortzoglou.eu{{ page.url }}">
-    <meta property="og:title" content="Contact Stefanos Tzortzoglou | SaaS Implementation">
-    <meta property="og:description"
-        content="Contact Stefanos Tzortzoglou, Technical Customer Success Manager and Implementation Lead in Sweden. Email and LinkedIn.">
-    <meta property="og:image" content="https://tzortzoglou.eu/images/og-cover.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead. SQL, APIs, Data Strategy, Enterprise SaaS.">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Contact Stefanos Tzortzoglou | SaaS Implementation">
-    <meta name="twitter:description"
-        content="Contact Stefanos Tzortzoglou, Technical Customer Success Manager and Implementation Lead in Sweden. Email and LinkedIn.">
-    <meta name="twitter:image" content="https://tzortzoglou.eu/images/og-cover.png">
-  <meta name="twitter:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead.">
-    <meta name="description"
-        content="Contact Stefanos Tzortzoglou, Technical Customer Success Manager and Implementation Lead in Sweden. Email and LinkedIn.">
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "Person",
-      "name": "Stefanos Tzortzoglou",
-      "alternateName": [
-        "Στέφανος Τζώρτζογλου",
-        "Stefanos Tzortzoglu"
-      ],
-      "givenName": "Stefanos",
-      "familyName": "Tzortzoglou",
-      "mainEntityOfPage": "https://tzortzoglou.eu/about/",
-      "url": "https://tzortzoglou.eu",
-      "image": "https://tzortzoglou.eu/images/stefanos_profile.png",
-      "jobTitle": [
-        "Technical Customer Success Manager",
-        "Implementation Lead",
-        "Technical Account Manager"
-      ],
-      "knowsAbout": [
-        "SaaS Implementation",
-        "API Architecture",
-        "Data Strategy",
-        "SQL",
-        "Snowflake",
-        "Enterprise Customer Success"
-      ],
-      "sameAs": [
-        "https://www.linkedin.com/in/stzortzoglou/",
-        "https://github.com/steftzor"
-      ],
-      "homeLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Uppsala",
-          "addressRegion": "Uppsala län",
-          "addressCountry": "SE"
-        }
-      },
-      "workLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Stockholm",
-          "addressRegion": "Stockholms län",
-          "addressCountry": "SE"
-        }
-      }
-    }
-    </script>
-
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
-
-    <link href="/dist/output.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-</head>
-
-<body class="bg-brand-bg text-brand-text transition-colors duration-300 flex flex-col min-h-screen">
-
-    {% include "_includes/header.html" %}
-
-    <main id="main-content" class="flex-grow container mx-auto px-4 flex items-center justify-center">
-
-        <div class="max-w-2xl w-full py-16">
-
-            <div class="text-center mb-12">
-                <h1 class="text-4xl md:text-5xl font-bold mb-6">Get in <span
-                        class="text-brand-accent">Touch</span></h1>
-                <p class="text-xl text-brand-muted leading-relaxed">
-                    I am a Technical Customer Success Manager at Data Talks, leading enterprise implementations.
-                    Email, LinkedIn and the form below all reach me directly, and I answer every message myself.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-
-                <a href="mailto:stefanos@tzortzoglou.eu"
-                    class="group bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 hover:border-brand-accent/50 hover:shadow-glow transition-all duration-300 text-center">
-                    <div
-                        class="w-16 h-16 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-accent group-hover:text-white group-hover:-translate-y-2 transition-all duration-300">
-                        <i class="fas fa-envelope text-2xl text-brand-accent group-hover:text-white" aria-hidden="true"></i>
-                    </div>
-
-                    <h2 class="text-xl font-bold mb-2">Email Me</h2>
-                    <p class="text-brand-muted text-sm mb-4">Best for anything that needs more than a paragraph.</p>
-                    <span class="text-brand-accent font-medium group-hover:underline">stefanos@tzortzoglou.eu</span>
-                </a>
-
-                <a href="https://www.linkedin.com/in/stzortzoglou/" target="_blank"
-                    class="group bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 hover:border-[#0077b5]/50 hover:shadow-lg transition-all duration-300 text-center" rel="noopener noreferrer">
-                    <div
-                        class="w-16 h-16 bg-[#0077b5]/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0077b5] group-hover:text-white group-hover:-translate-y-2 transition-all duration-300">
-                        <i class="fab fa-linkedin-in text-2xl text-[#0077b5] group-hover:text-white" aria-hidden="true"></i>
-                    </div>
-
-                    <h2 class="text-xl font-bold mb-2">Connect on LinkedIn</h2>
-                    <p class="text-brand-muted text-sm mb-4">Full work history, and where I am easiest to reach for a quick
-                        message.</p>
-                    <span class="text-[#0077b5] font-medium group-hover:underline">View Profile</span>
-                </a>
-
-            </div>
-
-            <div class="bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 mb-12">
-      <h2 class="text-2xl font-bold mb-2">Or write to me here</h2>
-      <p class="text-brand-muted text-sm mb-6">
-        Write as much or as little as you like. I reply from <strong>stefanos@tzortzoglou.eu</strong>.
-      </p>
-
-      <form id="contactForm" novalidate>
-        <div class="mb-4">
-          <label for="contactName" class="block mb-1 font-medium text-brand-text">Your name</label>
-          <input type="text" id="contactName" name="name" required maxlength="100" autocomplete="name"
-            class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">Get in <span
+                    class="text-brand-accent">Touch</span></h1>
+            <p class="text-xl text-brand-muted leading-relaxed">
+                I am a Technical Customer Success Manager at Data Talks, leading enterprise implementations.
+                Email, LinkedIn and the form below all reach me directly, and I answer every message myself.
+            </p>
         </div>
 
-        <div class="mb-4">
-          <label for="contactEmail" class="block mb-1 font-medium text-brand-text">Your email address</label>
-          <input type="email" id="contactEmail" name="email" required maxlength="254" autocomplete="email"
-            aria-describedby="contactEmail-hint"
-            class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent">
-          <p id="contactEmail-hint" class="mt-1 text-xs text-brand-muted">So I can reply. Nothing else.</p>
-        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
 
-        <div class="mb-6">
-          <label for="contactMessage" class="block mb-1 font-medium text-brand-text">Message</label>
-          <textarea id="contactMessage" name="message" required minlength="10" maxlength="5000" rows="6"
-            class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent"></textarea>
-        </div>
-
-        <!-- GDPR Art. 6(1)(a) / Art. 7: consent must be a specific, informed, unticked opt-in. -->
-        <div class="mb-6 flex items-start gap-3">
-          <input type="checkbox" id="contactConsent" name="contactConsent" required
-            class="mt-1 h-4 w-4 shrink-0 accent-brand-accent">
-          <label for="contactConsent" class="text-sm text-brand-muted leading-relaxed">
-            I agree that my name, email address and message may be stored and emailed to Stefanos so that he can
-            reply, as described in the
-            <a href="/privacy/" class="text-brand-accent underline hover:no-underline">Privacy Policy</a>.
-            I can ask for the message to be deleted at any time by emailing
             <a href="mailto:stefanos@tzortzoglou.eu"
-              class="text-brand-accent underline hover:no-underline">stefanos@tzortzoglou.eu</a>.
-          </label>
+                class="group bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 hover:border-brand-accent/50 hover:shadow-glow transition-all duration-300 text-center">
+                <div
+                    class="w-16 h-16 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-accent group-hover:text-white group-hover:-translate-y-2 transition-all duration-300">
+                    <i class="fas fa-envelope text-2xl text-brand-accent group-hover:text-white" aria-hidden="true"></i>
+                </div>
+
+                <h2 class="text-xl font-bold mb-2">Email Me</h2>
+                <p class="text-brand-muted text-sm mb-4">Best for anything that needs more than a paragraph.</p>
+                <span class="text-brand-accent font-medium group-hover:underline">stefanos@tzortzoglou.eu</span>
+            </a>
+
+            <a href="https://www.linkedin.com/in/stzortzoglou/" target="_blank"
+                class="group bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 hover:border-[#0077b5]/50 hover:shadow-lg transition-all duration-300 text-center" rel="noopener noreferrer">
+                <div
+                    class="w-16 h-16 bg-[#0077b5]/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0077b5] group-hover:text-white group-hover:-translate-y-2 transition-all duration-300">
+                    <i class="fab fa-linkedin-in text-2xl text-[#0077b5] group-hover:text-white" aria-hidden="true"></i>
+                </div>
+
+                <h2 class="text-xl font-bold mb-2">Connect on LinkedIn</h2>
+                <p class="text-brand-muted text-sm mb-4">Full work history, and where I am easiest to reach for a quick
+                    message.</p>
+                <span class="text-[#0077b5] font-medium group-hover:underline">View Profile</span>
+            </a>
+
         </div>
 
-        <p class="mb-6 text-xs text-brand-muted">
-          Your details are never used for marketing, never added to a mailing list, never shared, and never sold.
-          Please do not send anything confidential. Ordinary email is not end-to-end encrypted.
-        </p>
+        <div class="bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 mb-12">
+  <h2 class="text-2xl font-bold mb-2">Or write to me here</h2>
+  <p class="text-brand-muted text-sm mb-6">
+    Write as much or as little as you like. I reply from <strong>stefanos@tzortzoglou.eu</strong>.
+  </p>
 
-        <!-- Spam trap: hidden from people and from screen readers, irresistible to bots.
-             Paired with a minimum fill time in contact.js. No third-party CAPTCHA, so no
-             tracking is introduced and no visitor is asked to solve puzzles. -->
-        <div class="hidden" aria-hidden="true">
-          <label for="website">Leave this field empty</label>
-          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
-        </div>
-
-        <!-- role="status" so both errors and the success message are announced, without hijacking focus. -->
-        <div id="contactStatus" role="status" aria-live="polite" class="mb-4 text-sm"></div>
-
-        <button type="submit" id="contactSubmit" class="btn-primary w-full">Send message</button>
-      </form>
+  <form id="contactForm" novalidate>
+    <div class="mb-4">
+      <label for="contactName" class="block mb-1 font-medium text-brand-text">Your name</label>
+      <input type="text" id="contactName" name="name" required maxlength="100" autocomplete="name"
+        class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent">
     </div>
 
-    <div class="bg-brand-surface/50 rounded-lg p-4 text-center border border-brand-muted/10 max-w-md mx-auto">
-                <div
-                    class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-brand-muted text-sm">
+    <div class="mb-4">
+      <label for="contactEmail" class="block mb-1 font-medium text-brand-text">Your email address</label>
+      <input type="email" id="contactEmail" name="email" required maxlength="254" autocomplete="email"
+        aria-describedby="contactEmail-hint"
+        class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent">
+      <p id="contactEmail-hint" class="mt-1 text-xs text-brand-muted">So I can reply. Nothing else.</p>
+    </div>
 
-                    <div class="flex items-center gap-2">
-                        <span class="relative flex h-3 w-3">
-                            <span
-                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                        </span>
-                        <span>Based in <strong>Uppsala, Sweden</strong></span>
-                    </div>
+    <div class="mb-6">
+      <label for="contactMessage" class="block mb-1 font-medium text-brand-text">Message</label>
+      <textarea id="contactMessage" name="message" required minlength="10" maxlength="5000" rows="6"
+        class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent"></textarea>
+    </div>
 
-                    <span class="hidden sm:inline text-brand-muted/30">|</span>
+    <!-- GDPR Art. 6(1)(a) / Art. 7: consent must be a specific, informed, unticked opt-in. -->
+    <div class="mb-6 flex items-start gap-3">
+      <input type="checkbox" id="contactConsent" name="contactConsent" required
+        class="mt-1 h-4 w-4 shrink-0 accent-brand-accent">
+      <label for="contactConsent" class="text-sm text-brand-muted leading-relaxed">
+        I agree that my name, email address and message may be stored and emailed to Stefanos so that he can
+        reply, as described in the
+        <a href="/privacy/" class="text-brand-accent underline hover:no-underline">Privacy Policy</a>.
+        I can ask for the message to be deleted at any time by emailing
+        <a href="mailto:stefanos@tzortzoglou.eu"
+          class="text-brand-accent underline hover:no-underline">stefanos@tzortzoglou.eu</a>.
+      </label>
+    </div>
 
-                    <span>Working in <strong>Stockholm</strong></span>
+    <p class="mb-6 text-xs text-brand-muted">
+      Your details are never used for marketing, never added to a mailing list, never shared, and never sold.
+      Please do not send anything confidential. Ordinary email is not end-to-end encrypted.
+    </p>
 
+    <!-- Spam trap: hidden from people and from screen readers, irresistible to bots.
+         Paired with a minimum fill time in contact.js. No third-party CAPTCHA, so no
+         tracking is introduced and no visitor is asked to solve puzzles. -->
+    <div class="hidden" aria-hidden="true">
+      <label for="website">Leave this field empty</label>
+      <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+    </div>
+
+    <!-- role="status" so both errors and the success message are announced, without hijacking focus. -->
+    <div id="contactStatus" role="status" aria-live="polite" class="mb-4 text-sm"></div>
+
+    <button type="submit" id="contactSubmit" class="btn-primary w-full">Send message</button>
+  </form>
+</div>
+
+<div class="bg-brand-surface/50 rounded-lg p-4 text-center border border-brand-muted/10 max-w-md mx-auto">
+            <div
+                class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-brand-muted text-sm">
+
+                <div class="flex items-center gap-2">
+                    <span class="relative flex h-3 w-3">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </span>
+                    <span>Based in <strong>Uppsala, Sweden</strong></span>
                 </div>
-            </div>
 
+                <span class="hidden sm:inline text-brand-muted/30">|</span>
+
+                <span>Working in <strong>Stockholm</strong></span>
+
+            </div>
         </div>
 
-    </main>
-
-    {% include "_includes/footer.html" %}
-
-    <script type="module" src="/scripts/firebase-config.js"></script>
-    <script type="module" src="/scripts/auth.js"></script>
-    <script src="/scripts/main.js"></script>
-    <script src="/scripts/contact.js"></script>
-  <script src="/scripts/consent.js"></script>
-</body>
-
-</html>
+    </div>

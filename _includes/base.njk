@@ -12,7 +12,8 @@
 
     title, description   the <title>, meta description, OG and Twitter text
     noindex: true        robots noindex, and skips canonical/hreflang/OG/Twitter entirely
-    jsonLd: []           list of schema.org objects, dumped as JSON (escaping handled here)
+    personSchema: true   emits the shared Person schema from _data/person.json
+    jsonLd: []           further schema.org objects, dumped as JSON (escaping handled here)
     headPreconnect: []   extra preconnect hosts, for assets only this page loads
     headStyles: []       extra stylesheets; emitted BEFORE pageStyle so a page can override them
     pageStyle            inline <style> for this page
@@ -64,6 +65,11 @@
   <meta name="twitter:image" content="https://tzortzoglou.eu{{ ogImage | default('/images/og-cover.png') }}">
   <meta name="twitter:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead.">
 {% endif %}
+  {%- if personSchema %}
+  {# One copy in _data/person.json. It used to be pasted into four pages, which is
+     how they all ended up claiming the same mainEntityOfPage. #}
+  <script type="application/ld+json">{{ person | dump | safe }}</script>
+  {%- endif %}
   {%- for schema in jsonLd %}
   {# dump handles the escaping - titles here contain ampersands. #}
   <script type="application/ld+json">{{ schema | dump | safe }}</script>

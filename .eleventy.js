@@ -85,6 +85,7 @@ module.exports = function(eleventyConfig) {
       input: "pages",          // Source directory for pages
       includes: "_includes", // Folder for partials like headers/footers
       layouts: "../_includes", // Layouts live at the project root, not under pages/
+      data: "../_data",        // Same again: dir.data is resolved relative to dir.input
       output: "_site",         // Build output folder (for GitHub Pages)
     },
     pathPrefix: "/", // Important: Set pathPrefix to `/` for GitHub Pages root deployment

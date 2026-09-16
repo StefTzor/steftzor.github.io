@@ -1,286 +1,172 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
+---
+layout: base.njk
+permalink: /portfolio/
+title: "Technical Case Studies | Stefanos Tzortzoglou"
+description: "Explore technical case studies by Stefanos Tzortzoglou, covering API architecture, complex SaaS integrations, and enterprise data governance."
+personSchema: true
+---
+    <div class="text-center max-w-3xl mx-auto mb-16">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6">Technical <span class="text-brand-accent">Case
+                Studies</span></h1>
+        <p class="text-lg text-brand-muted leading-relaxed">
+            A selection of the implementations and technical problems I have resolved, and how.
+        </p>
+        <p class="mt-6 text-sm text-brand-muted border-l-4 border-brand-accent pl-4 py-1 text-left">
+            <strong class="text-brand-text">A note on these case studies.</strong> Clients are described in
+            general terms and are not named. No confidential information, client data, credentials or proprietary
+            implementation detail appears here. Outcomes describe what each project was designed and signed off to
+            achieve; they are not warranties or compliance opinions. See the
+            <a href="/terms/" class="text-brand-accent underline hover:no-underline">Terms of Use</a>.
+        </p>
+    </div>
 
-<head>
-    <meta charset="UTF-8">
-  <meta name="referrer" content="strict-origin-when-cross-origin">
-    <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="canonical" href="https://tzortzoglou.eu{{ page.url }}">
-    <link rel="alternate" hreflang="x-default" href="https://tzortzoglou.eu{{ page.url }}">
-    <title>Technical Case Studies | Stefanos Tzortzoglou</title>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
 
-    <!-- Open Graph / social sharing -->
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Stefanos Tzortzoglou">
-    <meta property="og:locale" content="en_US">
-    <meta property="og:locale:alternate" content="el_GR">
-    <meta property="og:url" content="https://tzortzoglou.eu{{ page.url }}">
-    <meta property="og:title" content="Technical Case Studies | Stefanos Tzortzoglou">
-    <meta property="og:description"
-        content="Explore technical case studies by Stefanos Tzortzoglou, covering API architecture, complex SaaS integrations, and enterprise data governance.">
-    <meta property="og:image" content="https://tzortzoglou.eu/images/og-cover.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead. SQL, APIs, Data Strategy, Enterprise SaaS.">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Technical Case Studies | Stefanos Tzortzoglou">
-    <meta name="twitter:description"
-        content="Explore technical case studies by Stefanos Tzortzoglou, covering API architecture, complex SaaS integrations, and enterprise data governance.">
-    <meta name="twitter:image" content="https://tzortzoglou.eu/images/og-cover.png">
-  <meta name="twitter:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead.">
-    <meta name="description"
-        content="Explore technical case studies by Stefanos Tzortzoglou, covering API architecture, complex SaaS integrations, and enterprise data governance.">
+        <div
+            class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
+            <div class="p-8 h-full flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="bg-blue-500/10 text-blue-700 dark:text-blue-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-blue-500/20">
+                        API Architecture
+                    </div>
+                    <i class="fas fa-code-branch text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" aria-hidden="true"></i>
+                </div>
 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "Person",
-      "name": "Stefanos Tzortzoglou",
-      "alternateName": [
-        "Στέφανος Τζώρτζογλου",
-        "Stefanos Tzortzoglu"
-      ],
-      "givenName": "Stefanos",
-      "familyName": "Tzortzoglou",
-      "mainEntityOfPage": "https://tzortzoglou.eu/about/",
-      "url": "https://tzortzoglou.eu",
-      "image": "https://tzortzoglou.eu/images/stefanos_profile.png",
-      "jobTitle": [
-        "Technical Customer Success Manager",
-        "Implementation Lead",
-        "Technical Account Manager"
-      ],
-      "knowsAbout": [
-        "SaaS Implementation",
-        "API Architecture",
-        "Data Strategy",
-        "SQL",
-        "Snowflake",
-        "Enterprise Customer Success"
-      ],
-      "sameAs": [
-        "https://www.linkedin.com/in/stzortzoglou/",
-        "https://github.com/steftzor"
-      ],
-      "homeLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Uppsala",
-          "addressRegion": "Uppsala län",
-          "addressCountry": "SE"
-        }
-      },
-      "workLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Stockholm",
-          "addressRegion": "Stockholms län",
-          "addressCountry": "SE"
-        }
-      }
-    }
-    </script>
+                <h2 class="text-2xl font-bold text-brand-text mb-3">Reverse-Engineering Global Ticketing APIs</h2>
 
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
+                <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
+                    <strong>The Challenge:</strong> A global ticketing giant needed its legacy, multi-layered event data
+                    integrated into our platform. Documentation was fragmented, and venues and events were related in ways the structure did not make obvious.
+                    <br><br>
+                    <strong>My Solution:</strong> I manually mapped the API logic, reverse-engineering the data
+                    relationships. I designed the JSON transformation schema and guided Engineering on the exact
+                    implementation path to standardize millions of data points.
+                    <br><br>
+                    <strong>The Outcome:</strong> Enabled real-time segmentation on massive event datasets without
+                    breaking the legacy dependency.
+                </p>
 
-    <link href="/dist/output.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-</head>
-
-<body class="bg-brand-bg text-brand-text transition-colors duration-300 flex flex-col min-h-screen">
-
-    {% include "_includes/header.html" %}
-
-    <main id="main-content" class="flex-grow container mx-auto py-16 px-4">
-
-        <div class="text-center max-w-3xl mx-auto mb-16">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6">Technical <span class="text-brand-accent">Case
-                    Studies</span></h1>
-            <p class="text-lg text-brand-muted leading-relaxed">
-                A selection of the implementations and technical problems I have resolved, and how.
-            </p>
-            <p class="mt-6 text-sm text-brand-muted border-l-4 border-brand-accent pl-4 py-1 text-left">
-                <strong class="text-brand-text">A note on these case studies.</strong> Clients are described in
-                general terms and are not named. No confidential information, client data, credentials or proprietary
-                implementation detail appears here. Outcomes describe what each project was designed and signed off to
-                achieve; they are not warranties or compliance opinions. See the
-                <a href="/terms/" class="text-brand-accent underline hover:no-underline">Terms of Use</a>.
-            </p>
+                <div class="border-t border-brand-muted/10 pt-4 mt-auto">
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Legacy
+                            APIs</span>
+                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Data
+                            Mapping</span>
+                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Technical
+                            Specs</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-
-            <div
-                class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
-                <div class="p-8 h-full flex flex-col">
-                    <div class="flex justify-between items-start mb-4">
-                        <div
-                            class="bg-blue-500/10 text-blue-700 dark:text-blue-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-blue-500/20">
-                            API Architecture
-                        </div>
-                        <i class="fas fa-code-branch text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" aria-hidden="true"></i>
+        <div
+            class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
+            <div class="p-8 h-full flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="bg-purple-500/10 text-purple-700 dark:text-purple-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-purple-500/20">
+                        Complex Integration
                     </div>
+                    <i class="fas fa-sync-alt text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" aria-hidden="true"></i>
+                </div>
 
-                    <h2 class="text-2xl font-bold text-brand-text mb-3">Reverse-Engineering Global Ticketing APIs</h2>
+                <h2 class="text-2xl font-bold text-brand-text mb-3">Sports League Bi-Directional Sync</h2>
 
-                    <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                        <strong>The Challenge:</strong> A global ticketing giant needed its legacy, multi-layered event data
-                        integrated into our platform. Documentation was fragmented, and venues and events were related in ways the structure did not make obvious.
-                        <br><br>
-                        <strong>My Solution:</strong> I manually mapped the API logic, reverse-engineering the data
-                        relationships. I designed the JSON transformation schema and guided Engineering on the exact
-                        implementation path to standardize millions of data points.
-                        <br><br>
-                        <strong>The Outcome:</strong> Enabled real-time segmentation on massive event datasets without
-                        breaking the legacy dependency.
-                    </p>
+                <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
+                    <strong>The Challenge:</strong> Onboarding a multi-tenant Sports League (10+ clubs) with a
+                    volatile ecosystem. They required a bi-directional sync between B2B CRMs, mobile apps, and
+                    gamification platforms. We had to handle conflicting data edits and push segmented audiences
+                    back to their CRM.
+                    <br><br>
+                    <strong>My Solution:</strong> Architected the logic flow for a 2-way sync to resolve data
+                    conflicts (Source of Truth logic). I coordinated the integration across Ticketing, E-commerce,
+                    and Membership systems to ensure data consistency.
+                    <br><br>
+                    <strong>The Outcome:</strong> Clubs could push targeted segments from our platform back into their CRM and sell against them.
+                </p>
 
-                    <div class="border-t border-brand-muted/10 pt-4 mt-auto">
-                        <div class="flex flex-wrap gap-2">
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Legacy
-                                APIs</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Data
-                                Mapping</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Technical
-                                Specs</span>
-                        </div>
+                <div class="border-t border-brand-muted/10 pt-4 mt-auto">
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Bi-Directional
+                            Sync</span>
+                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">CRM
+                            Architecture</span>
+                        <span
+                            class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Multi-Tenant</span>
                     </div>
                 </div>
             </div>
-
-            <div
-                class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
-                <div class="p-8 h-full flex flex-col">
-                    <div class="flex justify-between items-start mb-4">
-                        <div
-                            class="bg-purple-500/10 text-purple-700 dark:text-purple-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-purple-500/20">
-                            Complex Integration
-                        </div>
-                        <i class="fas fa-sync-alt text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" aria-hidden="true"></i>
-                    </div>
-
-                    <h2 class="text-2xl font-bold text-brand-text mb-3">Sports League Bi-Directional Sync</h2>
-
-                    <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                        <strong>The Challenge:</strong> Onboarding a multi-tenant Sports League (10+ clubs) with a
-                        volatile ecosystem. They required a bi-directional sync between B2B CRMs, mobile apps, and
-                        gamification platforms. We had to handle conflicting data edits and push segmented audiences
-                        back to their CRM.
-                        <br><br>
-                        <strong>My Solution:</strong> Architected the logic flow for a 2-way sync to resolve data
-                        conflicts (Source of Truth logic). I coordinated the integration across Ticketing, E-commerce,
-                        and Membership systems to ensure data consistency.
-                        <br><br>
-                        <strong>The Outcome:</strong> Clubs could push targeted segments from our platform back into their CRM and sell against them.
-                    </p>
-
-                    <div class="border-t border-brand-muted/10 pt-4 mt-auto">
-                        <div class="flex flex-wrap gap-2">
-                            <span
-                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Bi-Directional
-                                Sync</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">CRM
-                                Architecture</span>
-                            <span
-                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Multi-Tenant</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
-                <div class="p-8 h-full flex flex-col">
-                    <div class="flex justify-between items-start mb-4">
-                        <div
-                            class="bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-emerald-500/20">
-                            Enterprise Governance
-                        </div>
-                        <i class="fas fa-shield-alt text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" aria-hidden="true"></i>
-                    </div>
-
-                    <h2 class="text-2xl font-bold text-brand-text mb-3">Fortune 500 Data Lake Strategy</h2>
-
-                    <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                        <strong>The Challenge:</strong> A Fortune 500 client with rigid Data Lake pipelines needed to
-                        onboard massive "Non-Adult" membership datasets. Under strict legal constraints, marketing had to reach parents and guardians without exposing any minor's personal data.
-                        <br><br>
-                        <strong>My Solution:</strong> Led the technical discovery with their Data Engineers. I designed
-                        a "Parent/Guardian" entity model that routed all communications to authorized adults while
-                        keeping the non-adult profile data strictly siloed for analysis only.
-                        <br><br>
-                        <strong>The Outcome:</strong> The model was signed off by the client's own data-protection and
-                        engineering teams and shipped, letting them reach the guardian audience without minors' personal
-                        data leaving the analytics silo.
-                    </p>
-
-                    <div class="border-t border-brand-muted/10 pt-4 mt-auto">
-                        <div class="flex flex-wrap gap-2">
-                            <span
-                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Privacy/GDPR</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Data
-                                Modeling</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">ETL
-                                Strategy</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
-                <div class="p-8 h-full flex flex-col">
-                    <div class="flex justify-between items-start mb-4">
-                        <div
-                            class="bg-slate-500/10 text-slate-600 dark:text-slate-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-slate-500/20">
-                            Automation
-                        </div>
-                        <i class="fab fa-github text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" aria-hidden="true"></i>
-                    </div>
-
-                    <h2 class="text-2xl font-bold text-brand-text mb-3">Technical Utility Scripts</h2>
-
-                    <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                        A collection of automation scripts and experimental projects I use to sharpen my technical
-                        skills. Includes exercises in API manipulation, data formatting, and frontend experiments.
-                    </p>
-
-                    <div class="border-t border-brand-muted/10 pt-4 mt-auto flex justify-between items-center">
-                        <div class="flex flex-wrap gap-2">
-                            <span
-                                class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">JavaScript</span>
-                            <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Python</span>
-                        </div>
-                        <a href="https://github.com/steftzor" target="_blank"
-                            class="text-sm font-bold text-brand-accent hover:underline" rel="noopener noreferrer">View Github <i class="fas fa-arrow-right ml-1" aria-hidden="true"></i></a>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-    </main>
+        <div
+            class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
+            <div class="p-8 h-full flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-emerald-500/20">
+                        Enterprise Governance
+                    </div>
+                    <i class="fas fa-shield-alt text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" aria-hidden="true"></i>
+                </div>
 
-    {% include "_includes/footer.html" %}
+                <h2 class="text-2xl font-bold text-brand-text mb-3">Fortune 500 Data Lake Strategy</h2>
 
-    <script type="module" src="/scripts/firebase-config.js"></script>
-    <script type="module" src="/scripts/auth.js"></script>
-    <script src="/scripts/main.js"></script>
-  <script src="/scripts/consent.js"></script>
-</body>
+                <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
+                    <strong>The Challenge:</strong> A Fortune 500 client with rigid Data Lake pipelines needed to
+                    onboard massive "Non-Adult" membership datasets. Under strict legal constraints, marketing had to reach parents and guardians without exposing any minor's personal data.
+                    <br><br>
+                    <strong>My Solution:</strong> Led the technical discovery with their Data Engineers. I designed
+                    a "Parent/Guardian" entity model that routed all communications to authorized adults while
+                    keeping the non-adult profile data strictly siloed for analysis only.
+                    <br><br>
+                    <strong>The Outcome:</strong> The model was signed off by the client's own data-protection and
+                    engineering teams and shipped, letting them reach the guardian audience without minors' personal
+                    data leaving the analytics silo.
+                </p>
 
-</html>
+                <div class="border-t border-brand-muted/10 pt-4 mt-auto">
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Privacy/GDPR</span>
+                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Data
+                            Modeling</span>
+                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">ETL
+                            Strategy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-muted/10 hover:shadow-glow hover:border-brand-accent/30 transition-all duration-300">
+            <div class="p-8 h-full flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <div
+                        class="bg-slate-500/10 text-slate-600 dark:text-slate-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-slate-500/20">
+                        Automation
+                    </div>
+                    <i class="fab fa-github text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" aria-hidden="true"></i>
+                </div>
+
+                <h2 class="text-2xl font-bold text-brand-text mb-3">Technical Utility Scripts</h2>
+
+                <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
+                    A collection of automation scripts and experimental projects I use to sharpen my technical
+                    skills. Includes exercises in API manipulation, data formatting, and frontend experiments.
+                </p>
+
+                <div class="border-t border-brand-muted/10 pt-4 mt-auto flex justify-between items-center">
+                    <div class="flex flex-wrap gap-2">
+                        <span
+                            class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">JavaScript</span>
+                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Python</span>
+                    </div>
+                    <a href="https://github.com/steftzor" target="_blank"
+                        class="text-sm font-bold text-brand-accent hover:underline" rel="noopener noreferrer">View Github <i class="fas fa-arrow-right ml-1" aria-hidden="true"></i></a>
+                </div>
+            </div>
+        </div>
+
+    </div>
