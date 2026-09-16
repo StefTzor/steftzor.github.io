@@ -33,6 +33,10 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
 
+      - name: Note the time before deploying
+        id: before
+        run: echo "at=$(date -u +%s)" >> "$GITHUB_OUTPUT"
+
       - name: Trigger the Dokploy deployment
         env:
           DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
@@ -50,3 +54,25 @@ jobs:
           head -c 500 /tmp/out.json || true
           echo
           test "$code" -ge 200 -a "$code" -lt 300
+
+      - name: Confirm the new build is actually serving
+        env:
+          BEFORE: ${{ steps.before.outputs.at }}
+        run: |
+          set -euo pipefail
+          # Dokploy answers as soon as the build is queued, and the old container keeps serving
+          # until the new one replaces it - so a 2xx above says nothing about what is live. The
+          # site stamps its build time into /build.txt; wait for one later than this job.
+          for i in $(seq 1 40); do
+            built=$(curl -s --max-time 10 "https://app.tzortzoglou.eu/build.txt?cb=$i" | tr -d '[:space:]' || true)
+            if [ -n "$built" ]; then
+              at=$(date -u -d "$built" +%s 2>/dev/null || echo 0)
+              if [ "$at" -gt "$BEFORE" ]; then
+                echo "app built at $built - new build is live (after ${i} check(s))"
+                exit 0
+              fi
+            fi
+            sleep 10
+          done
+          echo "the app never served a build newer than this deploy"
+          exit 1
