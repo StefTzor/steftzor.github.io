@@ -6,6 +6,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+import { fieldError, clearAll, focusFirstError, check, validateOnBlur, busy as setBusy } from "./forms.js";
 
 /**
  * Auth for app.tzortzoglou.eu.
@@ -55,16 +56,24 @@ function showNeutral(el, message) {
  * Report a problem. The field is marked aria-invalid and takes focus, so a screen-reader user
  * lands on the input that needs fixing instead of having to hunt for it after the announcement.
  */
+/**
+ * Report a problem.
+ *
+ * With a field, the message goes beneath that field and the cursor lands there - so the fix is
+ * where you are looking. Without one, it is about the whole form and goes to the shared region.
+ * Both are announced; neither is only a colour.
+ */
 function fail(message, field) {
+  if (field) {
+    fieldError(field, message);
+    field.focus();
+    return;
+  }
   const el = document.getElementById("errorMsg");
   if (el) {
     el.textContent = message;
     el.classList.remove("hidden", "text-emerald-700", "dark:text-emerald-400");
     el.classList.add("text-red-700", "dark:text-red-400");
-  }
-  if (field) {
-    field.setAttribute("aria-invalid", "true");
-    field.focus();
   }
 }
 
@@ -72,27 +81,11 @@ function fail(message, field) {
 function resetState(form) {
   const el = document.getElementById("errorMsg");
   if (el) el.textContent = "";
-  form.querySelectorAll("[aria-invalid]").forEach((f) => f.removeAttribute("aria-invalid"));
+  clearAll(form);
 }
 
-/**
- * Disable the submit button for the duration of the request and say what is happening.
- *
- * Without this every one of these forms stays live across its whole network round trip, so an
- * impatient second click starts a second sign-in, a second account, or a second reset mail.
- */
-function busy(form, on, label) {
-  const btn = form.querySelector('button[type="submit"]');
-  form.setAttribute("aria-busy", on ? "true" : "false");
-  if (!btn) return;
-  if (on) {
-    if (!btn.dataset.idleLabel) btn.dataset.idleLabel = btn.textContent;
-    btn.textContent = label;
-  } else if (btn.dataset.idleLabel) {
-    btn.textContent = btn.dataset.idleLabel;
-  }
-  btn.disabled = on;
-}
+// The loading/disabled guard is shared with every other form in the app; see forms.js.
+const busy = setBusy;
 
 /**
  * Run once the DOM is ready — or immediately if it already is.
@@ -111,17 +104,31 @@ function onReady(fn) {
 onReady(() => {
   onAuthStateChanged(auth, handleAuthStateChanged);
 
-  const loginForm = document.getElementById("loginForm");
-  if (loginForm) loginForm.addEventListener("submit", handleLogin);
+  const $ = (id) => document.getElementById(id);
 
-  const registerForm = document.getElementById("registerForm");
+  const loginForm = $("loginForm");
+  if (loginForm) {
+    loginForm.addEventListener("submit", handleLogin);
+    validateOnBlur($("email"), check.email);
+  }
+
+  const registerForm = $("registerForm");
   if (registerForm) {
     formLoadedAt = Date.now();
     registerForm.addEventListener("submit", handleRegister);
+    validateOnBlur($("firstName"), (v) => check.required(v, "first name"));
+    validateOnBlur($("lastName"), (v) => check.required(v, "last name"));
+    validateOnBlur($("email"), check.email);
+    validateOnBlur($("password"), check.newPassword);
+    validateOnBlur($("confirmPassword"), (v) =>
+      v !== $("password").value ? "Those passwords do not match." : null);
   }
 
-  const resetForm = document.getElementById("resetForm");
-  if (resetForm) resetForm.addEventListener("submit", handleReset);
+  const resetForm = $("resetForm");
+  if (resetForm) {
+    resetForm.addEventListener("submit", handleReset);
+    validateOnBlur($("email"), check.email);
+  }
 
   document.querySelectorAll("[data-logout]").forEach((btn) =>
     btn.addEventListener("click", handleLogout));
@@ -138,10 +145,9 @@ async function handleLogin(e) {
   const email = emailField.value.trim();
   const password = passwordField.value;
 
-  if (!email || !password) {
-    fail("Enter your email address and password.", email ? passwordField : emailField);
-    return;
-  }
+  const emailProblem = check.email(email);
+  if (emailProblem) { fail(emailProblem, emailField); return; }
+  if (!password) { fail("Enter your password.", passwordField); return; }
 
   form.dataset.submitting = "1";
   busy(form, true, "Signing in…");
@@ -200,10 +206,8 @@ async function handleRegister(e) {
   }
   // The page says eight characters; Firebase's own minimum is six, so without this the copy
   // and the behaviour disagree and the shorter password is silently accepted.
-  if (password.length < 8) {
-    fail("Please choose a password of at least 8 characters.", passwordField);
-    return;
-  }
+  const weak = check.newPassword(password);
+  if (weak) { fail(weak, passwordField); return; }
   if (!consent || !consent.checked) {
     fail("Please agree to the Privacy Policy and Terms of Use before creating an account.", consent);
     return;
@@ -272,10 +276,8 @@ async function handleReset(e) {
   resetState(form);
   const emailField = document.getElementById("email");
   const email = emailField.value.trim();
-  if (!email) {
-    fail("Enter the email address you signed up with.", emailField);
-    return;
-  }
+  const problem = check.email(email);
+  if (problem) { fail(problem, emailField); return; }
 
   form.dataset.submitting = "1";
   busy(form, true, "Sending…");
