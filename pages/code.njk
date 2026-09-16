@@ -14,6 +14,11 @@ pageStyle: |
   /* Contribution grid. The data is fetched at build time (_data/contributions.js) and the
      markup is ours, so this styles real elements rather than overriding a vendor stylesheet. */
   .contrib { --cell: 11px; --gap: 3px; }
+  /* Two columns, two rows: the weekday axis and the month row are laid out against the grid
+     itself rather than floated beside it. Nesting the grid under the month row and putting the
+     axis next to the pair is what threw the labels a row out of step. */
+  .contrib-layout { display: grid; grid-template-columns: auto auto;
+    column-gap: .5rem; row-gap: .35rem; justify-content: start; }
   .contrib-grid { display: grid; grid-auto-flow: column;
     grid-template-rows: repeat(7, var(--cell)); grid-auto-columns: var(--cell); gap: var(--gap); }
   .contrib-day { width: var(--cell); height: var(--cell); border-radius: 2px; background: #cbd5e1; }
@@ -26,15 +31,16 @@ pageStyle: |
   .dark .contrib-day[data-level="2"] { background: #059669; }
   .dark .contrib-day[data-level="3"] { background: #34d399; }
   .dark .contrib-day[data-level="4"] { background: #a7f3d0; }
-  /* The weekday axis stays put while a year of columns scrolls under it. */
+  /* Same row track as the grid, so each label sits on the weekday it names. Sticky keeps the
+     axis readable while a year of columns scrolls under it. */
   .contrib-days { display: grid; grid-template-rows: repeat(7, var(--cell)); gap: var(--gap);
-    position: sticky; left: 0; z-index: 1; padding-right: .5rem;
-    background: rgb(var(--color-surface)); font-size: .6875rem; line-height: var(--cell); }
-  /* One column per week, same width as the day grid, or the labels drift out of step with
-     the columns they name. They are wider than a cell and overflow to the right on purpose -
-     only every fourth or fifth week carries one. */
+    position: sticky; left: 0; z-index: 1; background: rgb(var(--color-surface));
+    font-size: .6875rem; line-height: var(--cell); text-align: right; }
+  /* One column per week, same width as the grid, or the labels drift out of step with the
+     columns they name. They are wider than a cell and overflow right on purpose - only every
+     fourth or fifth week carries one. */
   .contrib-months { display: grid; grid-auto-flow: column; grid-auto-columns: var(--cell);
-    gap: var(--gap); font-size: .6875rem; margin-bottom: .35rem; }
+    gap: var(--gap); font-size: .6875rem; }
   .contrib-months span { white-space: nowrap; }
 ---
     <div class="text-center max-w-3xl mx-auto mb-16">
@@ -150,23 +156,22 @@ pageStyle: |
         {{ contributions.total }} GitHub contributions between {{ contributions.from }} and
         {{ contributions.to }}, shown as a grid of days shaded by how many contributions each holds.
     </figcaption>
-    <div class="flex text-brand-muted">
+    <div class="contrib-layout text-brand-muted">
+        <div></div>
+        <div class="contrib-months" aria-hidden="true">
+            {%- for month in contributions.months %}
+            <span>{{ month }}</span>
+            {%- endfor %}
+        </div>
         <div class="contrib-days" aria-hidden="true">
             <span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span>
         </div>
-        <div>
-            <div class="contrib-months" aria-hidden="true">
-                {%- for month in contributions.months %}
-                <span>{{ month }}</span>
-                {%- endfor %}
-            </div>
-            <div class="contrib-grid">
-                {%- for week in contributions.weeks %}{% for day in week %}
-                {%- if day %}<div class="contrib-day" data-level="{{ day.level }}" title="{{ day.label }}"></div>
-                {%- else %}<div></div>
-                {%- endif %}
-                {%- endfor %}{% endfor %}
-            </div>
+        <div class="contrib-grid">
+            {%- for week in contributions.weeks %}{% for day in week %}
+            {%- if day %}<div class="contrib-day" data-level="{{ day.level }}" title="{{ day.label }}"></div>
+            {%- else %}<div></div>
+            {%- endif %}
+            {%- endfor %}{% endfor %}
         </div>
     </div>
     <p class="mt-4 text-sm text-brand-muted">
