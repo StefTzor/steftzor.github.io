@@ -12,7 +12,8 @@
 
     title, description   the <title>, meta description, OG and Twitter text
     noindex: true        robots noindex, and skips canonical/hreflang/OG/Twitter entirely
-    personSchema: true   emits the shared Person schema from _data/person.json
+    personSchema: true   emits the shared Person schema from _data/schema.js
+    profilePage: true    wraps that Person in a ProfilePage with dateModified (homepage)
     jsonLd: []           further schema.org objects, dumped as JSON (escaping handled here)
     headPreconnect: []   extra preconnect hosts, for assets only this page loads
     headStyles: []       extra stylesheets; emitted BEFORE pageStyle so a page can override them
@@ -66,9 +67,14 @@
   <meta name="twitter:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead.">
 {% endif %}
   {%- if personSchema %}
-  {# One copy in _data/person.json. It used to be pasted into four pages, which is
+  {# One copy, in _data/schema.js. It used to be pasted into four pages, which is
      how they all ended up claiming the same mainEntityOfPage. #}
-  <script type="application/ld+json">{{ person | dump | safe }}</script>
+  <script type="application/ld+json">{{ schema.personStandalone | dump | safe }}</script>
+  {%- endif %}
+  {%- if profilePage %}
+  {# The homepage wraps the same Person in a ProfilePage carrying the build time.
+     dateModified cannot live in front matter - Eleventy does not template it. #}
+  <script type="application/ld+json">{{ { "@context": "https://schema.org", "@type": "ProfilePage", "dateModified": buildDateTime, "mainEntity": schema.person } | dump | safe }}</script>
   {%- endif %}
   {%- for schema in jsonLd %}
   {# dump handles the escaping - titles here contain ampersands. #}
