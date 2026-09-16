@@ -35,7 +35,9 @@ const person = {
       "Data Strategy",
       "SQL",
       "Snowflake",
-      "Enterprise Customer Success"
+      "Enterprise Customer Success",
+    "Project Management",
+    "Stakeholder Communication"
     ],
   
     "name": "Stefanos Tzortzoglou",

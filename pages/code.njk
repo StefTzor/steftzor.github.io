@@ -7,101 +7,35 @@ personSchema: true
 mainClass: "flex-grow container mx-auto py-16 px-4"
 headPreconnect:
   - "https://cdn.jsdelivr.net"
-  - "https://unpkg.com"
 headStyles:
   - href: "https://cdn.jsdelivr.net/gh/devicons/devicon@2.17.0/devicon.min.css"
     integrity: "sha384-6iv3tXABd3c9DYulXujJl8n22ahn/12f45MomxoPv6jBX4LBE4gNJjfkx5mAKIqR"
-  - href: "https://unpkg.com/github-calendar@2.3.4/dist/github-calendar-responsive.css"
-    integrity: "sha384-ZAeKgxOPgv6O3+nHBWycj4Q4A3aDcPQO9mPRwEKRT5dFMEBVKZPaEgP+v1Phe+1l"
 pageStyle: |
-          /*
-           * GitHub contribution calendar.
-           *
-           * The widget no longer renders SVG: GitHub serves an HTML <table>, so every
-           * `fill:` rule this block used to carry was dead and the chart had been showing
-           * the vendor stylesheet's own saturated green - unchanged between light and dark,
-           * which is why level-0 cells glared on the dark surface.
-           *
-           * The vendor colours cells from five custom properties, so redefining those on
-           * .calendar is enough to bring the whole ramp, legend included, onto the brand
-           * emerald. Light runs pale-to-deep, dark runs deep-to-bright, so in both themes
-           * "more" reads as further from the surface behind it.
-           */
-          .calendar {
-              --color-calendar-graph-day-bg: #cbd5e1;    /* slate-300  */
-              --color-calendar-graph-day-L1-bg: #34d399; /* emerald-400 */
-              --color-calendar-graph-day-L2-bg: #059669; /* emerald-600 */
-              --color-calendar-graph-day-L3-bg: #047857; /* emerald-700 */
-              --color-calendar-graph-day-L4-bg: #064e3b; /* emerald-900 */
-
-              border: none;
-              min-height: 0;
-              font-family: 'Poppins', sans-serif;
-              color: rgb(var(--color-muted));
-          }
-
-          .dark .calendar {
-              --color-calendar-graph-day-bg: #334155;    /* slate-700  */
-              --color-calendar-graph-day-L1-bg: #065f46; /* emerald-800 */
-              --color-calendar-graph-day-L2-bg: #059669; /* emerald-600 */
-              --color-calendar-graph-day-L3-bg: #34d399; /* emerald-400 */
-              --color-calendar-graph-day-L4-bg: #a7f3d0; /* emerald-200 */
-          }
-
-          .calendar td.ContributionCalendar-day {
-              border-radius: 2px;
-          }
-
-          /*
-           * The weekday column. The vendor absolutely positions these labels at left:-1pt
-           * inside a cell only as wide as its padding, so "Mon", "Wed" and "Fri" overflowed
-           * to the left and were cut off by the container's horizontal scroll. Giving the
-           * column a real width and setting the text in it fixes the clipping; making it
-           * sticky keeps the axis readable while the year scrolls on a narrow screen.
-           * Both overrides need !important because the widget sets position inline.
-           */
-          .calendar td.ContributionCalendar-label:not([colspan]) {
-              position: sticky !important;
-              left: 0;
-              z-index: 1;
-              width: 2.5rem;
-              min-width: 2.5rem;
-              padding-right: 0.5rem !important;
-              background-color: rgb(var(--color-surface));
-          }
-
-          .calendar td.ContributionCalendar-label:not([colspan]) span[aria-hidden="true"] {
-              position: static !important;
-              display: block;
-              text-align: right;
-              font-size: 0.6875rem;
-              line-height: 1;
-          }
-
-          /* Month labels stay absolutely positioned over their columns - they are the one
-             thing the vendor gets right - but the first one sat flush against the weekday
-             column. Nudge it clear. */
-          .calendar td.ContributionCalendar-label[colspan] span[aria-hidden="true"] {
-              font-size: 0.6875rem;
-              padding-left: 0.125rem;
-          }
-
-          /* "Learn how we count contributions" - a link into GitHub's docs, not content. */
-          .calendar .width-full .float-left {
-              display: none;
-          }
-
-bodyScripts:
-  - src: "https://unpkg.com/github-calendar@2.3.4/dist/github-calendar.min.js"
-    integrity: "sha384-2s+7Up7VDLmpPywDmGwv4wxi0Ccd0ELf3V66c4FkyRCBUVGFo5imdKcH8H1U0FkD"
-inlineScript: |
-          document.addEventListener('DOMContentLoaded', () => {
-              GitHubCalendar(".calendar", "steftzor", {
-                  responsive: true,
-                  tooltips: true,
-                  global_stats: false,
-              });
-          });
+  /* Contribution grid. The data is fetched at build time (_data/contributions.js) and the
+     markup is ours, so this styles real elements rather than overriding a vendor stylesheet. */
+  .contrib { --cell: 11px; --gap: 3px; }
+  .contrib-grid { display: grid; grid-auto-flow: column;
+    grid-template-rows: repeat(7, var(--cell)); grid-auto-columns: var(--cell); gap: var(--gap); }
+  .contrib-day { width: var(--cell); height: var(--cell); border-radius: 2px; background: #cbd5e1; }
+  .contrib-day[data-level="1"] { background: #34d399; }
+  .contrib-day[data-level="2"] { background: #059669; }
+  .contrib-day[data-level="3"] { background: #047857; }
+  .contrib-day[data-level="4"] { background: #064e3b; }
+  .dark .contrib-day { background: #334155; }
+  .dark .contrib-day[data-level="1"] { background: #065f46; }
+  .dark .contrib-day[data-level="2"] { background: #059669; }
+  .dark .contrib-day[data-level="3"] { background: #34d399; }
+  .dark .contrib-day[data-level="4"] { background: #a7f3d0; }
+  /* The weekday axis stays put while a year of columns scrolls under it. */
+  .contrib-days { display: grid; grid-template-rows: repeat(7, var(--cell)); gap: var(--gap);
+    position: sticky; left: 0; z-index: 1; padding-right: .5rem;
+    background: rgb(var(--color-surface)); font-size: .6875rem; line-height: var(--cell); }
+  /* One column per week, same width as the day grid, or the labels drift out of step with
+     the columns they name. They are wider than a cell and overflow to the right on purpose -
+     only every fourth or fifth week carries one. */
+  .contrib-months { display: grid; grid-auto-flow: column; grid-auto-columns: var(--cell);
+    gap: var(--gap); font-size: .6875rem; margin-bottom: .35rem; }
+  .contrib-months span { white-space: nowrap; }
 ---
     <div class="text-center max-w-3xl mx-auto mb-16">
         <h1 class="text-4xl md:text-5xl font-bold mb-6">The Code Behind the <span class="text-brand-accent">Commercial</span></h1>
@@ -210,9 +144,42 @@ inlineScript: |
         <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-brand-text">
             <i class="fab fa-github text-brand-accent" aria-hidden="true"></i> Live Code Activity
         </h3>
-        <div role="img" tabindex="0"
-            aria-label="GitHub contribution calendar for steftzor over the past year, rendered by a third-party widget. The same data is available on the GitHub profile."
-            class="calendar bg-brand-surface border border-brand-muted/10 p-6 rounded-xl shadow-lg w-full overflow-x-auto">
-            Loading GitHub data...
+        {% if contributions %}
+<figure class="contrib bg-brand-surface border border-brand-muted/10 p-6 rounded-xl shadow-lg w-full overflow-x-auto">
+    <figcaption class="sr-only">
+        {{ contributions.total }} GitHub contributions between {{ contributions.from }} and
+        {{ contributions.to }}, shown as a grid of days shaded by how many contributions each holds.
+    </figcaption>
+    <div class="flex text-brand-muted">
+        <div class="contrib-days" aria-hidden="true">
+            <span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span>
         </div>
+        <div>
+            <div class="contrib-months" aria-hidden="true">
+                {%- for month in contributions.months %}
+                <span>{{ month }}</span>
+                {%- endfor %}
+            </div>
+            <div class="contrib-grid">
+                {%- for week in contributions.weeks %}{% for day in week %}
+                {%- if day %}<div class="contrib-day" data-level="{{ day.level }}" title="{{ day.label }}"></div>
+                {%- else %}<div></div>
+                {%- endif %}
+                {%- endfor %}{% endfor %}
+            </div>
+        </div>
+    </div>
+    <p class="mt-4 text-sm text-brand-muted">
+        {{ contributions.total }} contributions in the last year.
+        <a href="{{ contributions.profile }}" target="_blank" rel="noopener noreferrer"
+            class="text-brand-accent underline hover:no-underline">See the profile on GitHub</a>.
+    </p>
+</figure>
+{% else %}
+<p class="bg-brand-surface border border-brand-muted/10 p-6 rounded-xl text-brand-muted">
+    The contribution data could not be fetched for this build.
+    <a href="https://github.com/steftzor" target="_blank" rel="noopener noreferrer"
+        class="text-brand-accent underline hover:no-underline">See the profile on GitHub</a>.
+</p>
+{% endif %}
     </div>
