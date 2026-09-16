@@ -1,327 +1,218 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
+---
+layout: base.njk
+permalink: /code/
+title: "Code & Architecture | Stefanos Tzortzoglou"
+description: "Review the technical stack, Open Source philosophy, and live GitHub telemetry of Stefanos Tzortzoglou."
+personSchema: true
+mainClass: "flex-grow container mx-auto py-16 px-4"
+headPreconnect:
+  - "https://cdn.jsdelivr.net"
+  - "https://unpkg.com"
+headStyles:
+  - href: "https://cdn.jsdelivr.net/gh/devicons/devicon@2.17.0/devicon.min.css"
+    integrity: "sha384-6iv3tXABd3c9DYulXujJl8n22ahn/12f45MomxoPv6jBX4LBE4gNJjfkx5mAKIqR"
+  - href: "https://unpkg.com/github-calendar@2.3.4/dist/github-calendar-responsive.css"
+    integrity: "sha384-ZAeKgxOPgv6O3+nHBWycj4Q4A3aDcPQO9mPRwEKRT5dFMEBVKZPaEgP+v1Phe+1l"
+pageStyle: |
+          /*
+           * GitHub contribution calendar.
+           *
+           * The widget no longer renders SVG: GitHub serves an HTML <table>, so every
+           * `fill:` rule this block used to carry was dead and the chart had been showing
+           * the vendor stylesheet's own saturated green - unchanged between light and dark,
+           * which is why level-0 cells glared on the dark surface.
+           *
+           * The vendor colours cells from five custom properties, so redefining those on
+           * .calendar is enough to bring the whole ramp, legend included, onto the brand
+           * emerald. Light runs pale-to-deep, dark runs deep-to-bright, so in both themes
+           * "more" reads as further from the surface behind it.
+           */
+          .calendar {
+              --color-calendar-graph-day-bg: #cbd5e1;    /* slate-300  */
+              --color-calendar-graph-day-L1-bg: #34d399; /* emerald-400 */
+              --color-calendar-graph-day-L2-bg: #059669; /* emerald-600 */
+              --color-calendar-graph-day-L3-bg: #047857; /* emerald-700 */
+              --color-calendar-graph-day-L4-bg: #064e3b; /* emerald-900 */
 
-<head>
-    <meta charset="UTF-8">
-  <meta name="referrer" content="strict-origin-when-cross-origin">
-    <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="preconnect" href="https://unpkg.com">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="canonical" href="https://tzortzoglou.eu{{ page.url }}">
-    <link rel="alternate" hreflang="x-default" href="https://tzortzoglou.eu{{ page.url }}">
-    <title>Code & Architecture | Stefanos Tzortzoglou</title>
+              border: none;
+              min-height: 0;
+              font-family: 'Poppins', sans-serif;
+              color: rgb(var(--color-muted));
+          }
 
-    <!-- Open Graph / social sharing -->
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Stefanos Tzortzoglou">
-    <meta property="og:locale" content="en_US">
-    <meta property="og:locale:alternate" content="el_GR">
-    <meta property="og:url" content="https://tzortzoglou.eu{{ page.url }}">
-    <meta property="og:title" content="Code & Architecture | Stefanos Tzortzoglou">
-    <meta property="og:description"
-        content="Review the technical stack, Open Source philosophy, and live GitHub telemetry of Stefanos Tzortzoglou.">
-    <meta property="og:image" content="https://tzortzoglou.eu/images/og-cover.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead. SQL, APIs, Data Strategy, Enterprise SaaS.">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Code & Architecture | Stefanos Tzortzoglou">
-    <meta name="twitter:description"
-        content="Review the technical stack, Open Source philosophy, and live GitHub telemetry of Stefanos Tzortzoglou.">
-    <meta name="twitter:image" content="https://tzortzoglou.eu/images/og-cover.png">
-  <meta name="twitter:image:alt" content="Stefanos Tzortzoglou — Technical Customer Success Manager and Implementation Lead.">
-    <meta name="description"
-        content="Review the technical stack, Open Source philosophy, and live GitHub telemetry of Stefanos Tzortzoglou.">
+          .dark .calendar {
+              --color-calendar-graph-day-bg: #334155;    /* slate-700  */
+              --color-calendar-graph-day-L1-bg: #065f46; /* emerald-800 */
+              --color-calendar-graph-day-L2-bg: #059669; /* emerald-600 */
+              --color-calendar-graph-day-L3-bg: #34d399; /* emerald-400 */
+              --color-calendar-graph-day-L4-bg: #a7f3d0; /* emerald-200 */
+          }
 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "Person",
-      "name": "Stefanos Tzortzoglou",
-      "alternateName": [
-        "Στέφανος Τζώρτζογλου",
-        "Stefanos Tzortzoglu"
-      ],
-      "givenName": "Stefanos",
-      "familyName": "Tzortzoglou",
-      "mainEntityOfPage": "https://tzortzoglou.eu/about/",
-      "url": "https://tzortzoglou.eu",
-      "image": "https://tzortzoglou.eu/images/stefanos_profile.png",
-      "jobTitle": [
-        "Technical Customer Success Manager",
-        "Implementation Lead",
-        "Technical Account Manager"
-      ],
-      "knowsAbout": [
-        "SaaS Implementation",
-        "API Architecture",
-        "Data Strategy",
-        "SQL",
-        "Snowflake",
-        "Enterprise Customer Success"
-      ],
-      "sameAs": [
-        "https://www.linkedin.com/in/stzortzoglou/",
-        "https://github.com/steftzor"
-      ],
-      "homeLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Uppsala",
-          "addressRegion": "Uppsala län",
-          "addressCountry": "SE"
-        }
-      },
-      "workLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Stockholm",
-          "addressRegion": "Stockholms län",
-          "addressCountry": "SE"
-        }
-      }
-    }
-    </script>
+          .calendar td.ContributionCalendar-day {
+              border-radius: 2px;
+          }
 
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
+          /*
+           * The weekday column. The vendor absolutely positions these labels at left:-1pt
+           * inside a cell only as wide as its padding, so "Mon", "Wed" and "Fri" overflowed
+           * to the left and were cut off by the container's horizontal scroll. Giving the
+           * column a real width and setting the text in it fixes the clipping; making it
+           * sticky keeps the axis readable while the year scrolls on a narrow screen.
+           * Both overrides need !important because the widget sets position inline.
+           */
+          .calendar td.ContributionCalendar-label:not([colspan]) {
+              position: sticky !important;
+              left: 0;
+              z-index: 1;
+              width: 2.5rem;
+              min-width: 2.5rem;
+              padding-right: 0.5rem !important;
+              background-color: rgb(var(--color-surface));
+          }
 
-    <link href="/dist/output.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@2.17.0/devicon.min.css" integrity="sha384-6iv3tXABd3c9DYulXujJl8n22ahn/12f45MomxoPv6jBX4LBE4gNJjfkx5mAKIqR" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link rel="stylesheet" href="https://unpkg.com/github-calendar@2.3.4/dist/github-calendar-responsive.css" integrity="sha384-ZAeKgxOPgv6O3+nHBWycj4Q4A3aDcPQO9mPRwEKRT5dFMEBVKZPaEgP+v1Phe+1l" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+          .calendar td.ContributionCalendar-label:not([colspan]) span[aria-hidden="true"] {
+              position: static !important;
+              display: block;
+              text-align: right;
+              font-size: 0.6875rem;
+              line-height: 1;
+          }
 
-    <style>
-        /*
-         * GitHub contribution calendar.
-         *
-         * The widget no longer renders SVG: GitHub serves an HTML <table>, so every
-         * `fill:` rule this block used to carry was dead and the chart had been showing
-         * the vendor stylesheet's own saturated green - unchanged between light and dark,
-         * which is why level-0 cells glared on the dark surface.
-         *
-         * The vendor colours cells from five custom properties, so redefining those on
-         * .calendar is enough to bring the whole ramp, legend included, onto the brand
-         * emerald. Light runs pale-to-deep, dark runs deep-to-bright, so in both themes
-         * "more" reads as further from the surface behind it.
-         */
-        .calendar {
-            --color-calendar-graph-day-bg: #cbd5e1;    /* slate-300  */
-            --color-calendar-graph-day-L1-bg: #34d399; /* emerald-400 */
-            --color-calendar-graph-day-L2-bg: #059669; /* emerald-600 */
-            --color-calendar-graph-day-L3-bg: #047857; /* emerald-700 */
-            --color-calendar-graph-day-L4-bg: #064e3b; /* emerald-900 */
+          /* Month labels stay absolutely positioned over their columns - they are the one
+             thing the vendor gets right - but the first one sat flush against the weekday
+             column. Nudge it clear. */
+          .calendar td.ContributionCalendar-label[colspan] span[aria-hidden="true"] {
+              font-size: 0.6875rem;
+              padding-left: 0.125rem;
+          }
 
-            border: none;
-            min-height: 0;
-            font-family: 'Poppins', sans-serif;
-            color: rgb(var(--color-muted));
-        }
+          /* "Learn how we count contributions" - a link into GitHub's docs, not content. */
+          .calendar .width-full .float-left {
+              display: none;
+          }
 
-        .dark .calendar {
-            --color-calendar-graph-day-bg: #334155;    /* slate-700  */
-            --color-calendar-graph-day-L1-bg: #065f46; /* emerald-800 */
-            --color-calendar-graph-day-L2-bg: #059669; /* emerald-600 */
-            --color-calendar-graph-day-L3-bg: #34d399; /* emerald-400 */
-            --color-calendar-graph-day-L4-bg: #a7f3d0; /* emerald-200 */
-        }
+bodyScripts:
+  - src: "https://unpkg.com/github-calendar@2.3.4/dist/github-calendar.min.js"
+    integrity: "sha384-2s+7Up7VDLmpPywDmGwv4wxi0Ccd0ELf3V66c4FkyRCBUVGFo5imdKcH8H1U0FkD"
+inlineScript: |
+          document.addEventListener('DOMContentLoaded', () => {
+              GitHubCalendar(".calendar", "steftzor", {
+                  responsive: true,
+                  tooltips: true,
+                  global_stats: false,
+              });
+          });
+---
+    <div class="text-center max-w-3xl mx-auto mb-16">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6">The Code Behind the <span class="text-brand-accent">Commercial</span></h1>
+        <p class="text-lg text-brand-muted leading-relaxed">
+            While my day job focuses on driving revenue retention and enterprise implementation, my foundation is
+            deeply technical.
+            This page bridges my commercial portfolio with my raw GitHub output.
+        </p>
+    </div>
 
-        .calendar td.ContributionCalendar-day {
-            border-radius: 2px;
-        }
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
 
-        /*
-         * The weekday column. The vendor absolutely positions these labels at left:-1pt
-         * inside a cell only as wide as its padding, so "Mon", "Wed" and "Fri" overflowed
-         * to the left and were cut off by the container's horizontal scroll. Giving the
-         * column a real width and setting the text in it fixes the clipping; making it
-         * sticky keeps the axis readable while the year scrolls on a narrow screen.
-         * Both overrides need !important because the widget sets position inline.
-         */
-        .calendar td.ContributionCalendar-label:not([colspan]) {
-            position: sticky !important;
-            left: 0;
-            z-index: 1;
-            width: 2.5rem;
-            min-width: 2.5rem;
-            padding-right: 0.5rem !important;
-            background-color: rgb(var(--color-surface));
-        }
+        <div class="bg-brand-surface p-8 rounded-2xl border border-brand-muted/10">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <i class="fas fa-terminal text-brand-accent" aria-hidden="true"></i> Philosophy & Stack
+            </h2>
 
-        .calendar td.ContributionCalendar-label:not([colspan]) span[aria-hidden="true"] {
-            position: static !important;
-            display: block;
-            text-align: right;
-            font-size: 0.6875rem;
-            line-height: 1;
-        }
+            <div class="prose dark:prose-invert text-brand-muted leading-relaxed mb-8">
+                <p class="mb-4">
+                    <strong>I am a pragmatist.</strong> I run a Linux environment because it forces a logical
+                    understanding of the system, and I strongly advocate for Open Source tools because transparency
+                    beats proprietary black boxes.
+                </p>
+                <p class="mb-4">
+                    I map CRM/ERP systems in raw <strong>SQL</strong> rather than through GUI tools, and work
+                    with <strong>Snowflake</strong> on the data side. For campaign execution, I write and hand-tune
+                    the HTML behind client email templates.
+                </p>
+                <p class="mb-4">
+                    When troubleshooting <strong>API integrations</strong>, I live in Swagger, OpenAPI, and
+                    Insomnia, isolating payload errors long before they require an Engineering escalation.
+                </p>
+                <p>
+                    My GitHub reflects this logical approach. This portfolio is built on a fast, lightweight stack
+                    (11ty, Nunjucks, Tailwind CSS) and deployed via GitHub Actions. It features a custom Firebase
+                    authentication flow for locked content. The Firebase web config is public by design, as it is in
+                    every Firebase web app, so access is enforced where it actually counts: server-side Firestore
+                    security rules that let an account read only its own record and reserve approval to the owner.
+                    For backend utilities and data formatting, I default to JavaScript and Python.
+                </p>
+            </div>
 
-        /* Month labels stay absolutely positioned over their columns - they are the one
-           thing the vendor gets right - but the first one sat flush against the weekday
-           column. Nudge it clear. */
-        .calendar td.ContributionCalendar-label[colspan] span[aria-hidden="true"] {
-            font-size: 0.6875rem;
-            padding-left: 0.125rem;
-        }
-
-        /* "Learn how we count contributions" - a link into GitHub's docs, not content. */
-        .calendar .width-full .float-left {
-            display: none;
-        }
-    </style>
-</head>
-
-<body class="bg-brand-bg text-brand-text transition-colors duration-300 flex flex-col min-h-screen">
-
-    {% include "_includes/header.html" %}
-
-    <main id="main-content" class="flex-grow container mx-auto py-16 px-4">
-
-        <div class="text-center max-w-3xl mx-auto mb-16">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6">The Code Behind the <span class="text-brand-accent">Commercial</span></h1>
-            <p class="text-lg text-brand-muted leading-relaxed">
-                While my day job focuses on driving revenue retention and enterprise implementation, my foundation is
-                deeply technical.
-                This page bridges my commercial portfolio with my raw GitHub output.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-
-            <div class="bg-brand-surface p-8 rounded-2xl border border-brand-muted/10">
-                <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-                    <i class="fas fa-terminal text-brand-accent" aria-hidden="true"></i> Philosophy & Stack
-                </h2>
-
-                <div class="prose dark:prose-invert text-brand-muted leading-relaxed mb-8">
-                    <p class="mb-4">
-                        <strong>I am a pragmatist.</strong> I run a Linux environment because it forces a logical
-                        understanding of the system, and I strongly advocate for Open Source tools because transparency
-                        beats proprietary black boxes.
-                    </p>
-                    <p class="mb-4">
-                        I map CRM/ERP systems in raw <strong>SQL</strong> rather than through GUI tools, and work
-                        with <strong>Snowflake</strong> on the data side. For campaign execution, I write and hand-tune
-                        the HTML behind client email templates.
-                    </p>
-                    <p class="mb-4">
-                        When troubleshooting <strong>API integrations</strong>, I live in Swagger, OpenAPI, and
-                        Insomnia, isolating payload errors long before they require an Engineering escalation.
-                    </p>
-                    <p>
-                        My GitHub reflects this logical approach. This portfolio is built on a fast, lightweight stack
-                        (11ty, Nunjucks, Tailwind CSS) and deployed via GitHub Actions. It features a custom Firebase
-                        authentication flow for locked content. The Firebase web config is public by design, as it is in
-                        every Firebase web app, so access is enforced where it actually counts: server-side Firestore
-                        security rules that let an account read only its own record and reserve approval to the owner.
-                        For backend utilities and data formatting, I default to JavaScript and Python.
-                    </p>
+            <div class="grid grid-cols-4 sm:grid-cols-5 gap-6 text-center">
+                <div class="group flex flex-col items-center gap-2">
+                    <i class="devicon-linux-plain text-4xl text-yellow-600 dark:text-yellow-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Linux</span>
                 </div>
-
-                <div class="grid grid-cols-4 sm:grid-cols-5 gap-6 text-center">
-                    <div class="group flex flex-col items-center gap-2">
-                        <i class="devicon-linux-plain text-4xl text-yellow-600 dark:text-yellow-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Linux</span>
-                    </div>
-                    <div class="group flex flex-col items-center gap-2">
-                        <i class="devicon-azuresqldatabase-plain text-4xl text-blue-600 dark:text-blue-400 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">SQL</span>
-                    </div>
-                    <div class="group flex flex-col items-center gap-2">
-                        <i class="fas fa-snowflake text-4xl text-blue-500 dark:text-blue-300 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Snowflake</span>
-                    </div>
-                    <div class="group flex flex-col items-center gap-2">
-                        <i class="devicon-terraform-plain text-4xl text-purple-600 dark:text-purple-400 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Terraform</span>
-                    </div>
-                    <div class="group flex flex-col items-center gap-2">
-                        <i class="devicon-javascript-plain text-4xl text-yellow-500 dark:text-yellow-300 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">JS</span>
-                    </div>
-                    <div class="group flex flex-col items-center gap-2">
-                        <i class="devicon-python-plain text-4xl text-blue-600 dark:text-yellow-400 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Python</span>
-                    </div>
-                    <div class="group flex flex-col items-center gap-2">
-                        <i class="devicon-html5-plain text-4xl text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">HTML</span>
-                    </div>
-                    <div class="group flex flex-col items-center gap-2">
-                        <i class="devicon-insomnia-plain text-4xl text-purple-700 dark:text-purple-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Insomnia</span>
-                    </div>
-                    <div class="group flex flex-col items-center gap-2">
-                        <i class="devicon-git-plain text-4xl text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Git</span>
-                    </div>
-                    <div class="group flex flex-col items-center gap-2">
-                        <i class="devicon-eleventy-plain text-4xl text-slate-800 dark:text-gray-200 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
-                        <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">11ty</span>
-                    </div>
+                <div class="group flex flex-col items-center gap-2">
+                    <i class="devicon-azuresqldatabase-plain text-4xl text-blue-600 dark:text-blue-400 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">SQL</span>
+                </div>
+                <div class="group flex flex-col items-center gap-2">
+                    <i class="fas fa-snowflake text-4xl text-blue-500 dark:text-blue-300 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Snowflake</span>
+                </div>
+                <div class="group flex flex-col items-center gap-2">
+                    <i class="devicon-terraform-plain text-4xl text-purple-600 dark:text-purple-400 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Terraform</span>
+                </div>
+                <div class="group flex flex-col items-center gap-2">
+                    <i class="devicon-javascript-plain text-4xl text-yellow-500 dark:text-yellow-300 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">JS</span>
+                </div>
+                <div class="group flex flex-col items-center gap-2">
+                    <i class="devicon-python-plain text-4xl text-blue-600 dark:text-yellow-400 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Python</span>
+                </div>
+                <div class="group flex flex-col items-center gap-2">
+                    <i class="devicon-html5-plain text-4xl text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">HTML</span>
+                </div>
+                <div class="group flex flex-col items-center gap-2">
+                    <i class="devicon-insomnia-plain text-4xl text-purple-700 dark:text-purple-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Insomnia</span>
+                </div>
+                <div class="group flex flex-col items-center gap-2">
+                    <i class="devicon-git-plain text-4xl text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Git</span>
+                </div>
+                <div class="group flex flex-col items-center gap-2">
+                    <i class="devicon-eleventy-plain text-4xl text-slate-800 dark:text-gray-200 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">11ty</span>
                 </div>
             </div>
-            <div class="space-y-8">
+        </div>
+        <div class="space-y-8">
 
-                <div class="bg-brand-surface p-1 rounded-2xl border border-brand-muted/10 shadow-lg overflow-hidden">
-                    <img src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=0f172a&title_color=10b981&icon_color=3b82f6&text_color=94a3b8"
-                        alt="GitHub statistics for steftzor: total stars, commits, pull requests, issues and contributions. Full detail on the GitHub profile linked below." class="hidden dark:block w-full h-auto">
-                    <img src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=e2e8f0&title_color=059669&icon_color=3b82f6&text_color=334155"
-                        alt="" role="presentation" class="block dark:hidden w-full h-auto">
-                </div>
+            <div class="bg-brand-surface p-1 rounded-2xl border border-brand-muted/10 shadow-lg overflow-hidden">
+                <img src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=0f172a&title_color=10b981&icon_color=3b82f6&text_color=94a3b8"
+                    alt="GitHub statistics for steftzor: total stars, commits, pull requests, issues and contributions. Full detail on the GitHub profile linked below." class="hidden dark:block w-full h-auto">
+                <img src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=e2e8f0&title_color=059669&icon_color=3b82f6&text_color=334155"
+                    alt="" role="presentation" class="block dark:hidden w-full h-auto">
+            </div>
 
-                <div class="bg-brand-surface p-1 rounded-2xl border border-brand-muted/10 shadow-lg overflow-hidden">
-                    <img src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=0f172a&title_color=10b981&text_color=94a3b8&icon_color=3b82f6"
-                        alt="Most-used programming languages across steftzor's public GitHub repositories, by share of code." class="hidden dark:block w-full h-auto">
-                    <img src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=e2e8f0&title_color=059669&text_color=334155&icon_color=3b82f6"
-                        alt="" role="presentation" class="block dark:hidden w-full h-auto">
-                </div>
-
+            <div class="bg-brand-surface p-1 rounded-2xl border border-brand-muted/10 shadow-lg overflow-hidden">
+                <img src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=0f172a&title_color=10b981&text_color=94a3b8&icon_color=3b82f6"
+                    alt="Most-used programming languages across steftzor's public GitHub repositories, by share of code." class="hidden dark:block w-full h-auto">
+                <img src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=e2e8f0&title_color=059669&text_color=334155&icon_color=3b82f6"
+                    alt="" role="presentation" class="block dark:hidden w-full h-auto">
             </div>
 
         </div>
-        <div class="mt-16 max-w-6xl mx-auto w-full">
-            <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-brand-text">
-                <i class="fab fa-github text-brand-accent" aria-hidden="true"></i> Live Code Activity
-            </h3>
-            <div role="img" tabindex="0"
-                aria-label="GitHub contribution calendar for steftzor over the past year, rendered by a third-party widget. The same data is available on the GitHub profile."
-                class="calendar bg-brand-surface border border-brand-muted/10 p-6 rounded-xl shadow-lg w-full overflow-x-auto">
-                Loading GitHub data...
-            </div>
+
+    </div>
+    <div class="mt-16 max-w-6xl mx-auto w-full">
+        <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-brand-text">
+            <i class="fab fa-github text-brand-accent" aria-hidden="true"></i> Live Code Activity
+        </h3>
+        <div role="img" tabindex="0"
+            aria-label="GitHub contribution calendar for steftzor over the past year, rendered by a third-party widget. The same data is available on the GitHub profile."
+            class="calendar bg-brand-surface border border-brand-muted/10 p-6 rounded-xl shadow-lg w-full overflow-x-auto">
+            Loading GitHub data...
         </div>
-
-    </main>
-
-    {% include "_includes/footer.html" %}
-
-    <script type="module" src="/scripts/firebase-config.js"></script>
-    <script type="module" src="/scripts/auth.js"></script>
-    <script src="/scripts/main.js"></script>
-  <script src="/scripts/consent.js"></script>
-    <script src="https://unpkg.com/github-calendar@2.3.4/dist/github-calendar.min.js" integrity="sha384-2s+7Up7VDLmpPywDmGwv4wxi0Ccd0ELf3V66c4FkyRCBUVGFo5imdKcH8H1U0FkD" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            GitHubCalendar(".calendar", "steftzor", {
-                responsive: true,
-                tooltips: true,
-                global_stats: false,
-            });
-        });
-    </script>
-</body>
-
-</html>
+    </div>
