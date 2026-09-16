@@ -66,6 +66,31 @@ module.exports = function(eleventyConfig) {
 
 
   /**
+   * Every page that should be in the sitemap and pinged to IndexNow.
+   *
+   * Those two lists used to be hand-maintained in pages/sitemap.njk and in the urlList in
+   * deploy.yml, and the SEO reference names them as the most common regression here: update one,
+   * forget the other. They now come from this collection, so adding a page registers it in both
+   * or in neither.
+   *
+   * A page is indexable unless it says otherwise - noindex front matter, or no output at all
+   * (the permalink: false stubs). That way a new page is included by default rather than
+   * forgotten, and opting out is explicit.
+   */
+  eleventyConfig.addCollection("indexable", (api) =>
+    api
+      .getAll()
+      .filter(
+        (p) =>
+          p.outputPath &&
+          String(p.outputPath).endsWith(".html") &&
+          p.url &&
+          !p.data.noindex
+      )
+      .sort((a, b) => (a.data.sitemapOrder ?? 50) - (b.data.sitemapOrder ?? 50))
+  );
+
+  /**
    * Inlines one of the SVGs in _includes/icons. These replaced the devicon webfont, which
    * cost 777 KB of TTF from a CDN to draw nine logos - the heaviest asset on the site by a
    * wide margin. Inlined they are about 11 KB, need no request, and cannot fail to load.

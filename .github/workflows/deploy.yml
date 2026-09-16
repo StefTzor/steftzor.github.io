@@ -80,23 +80,20 @@ jobs:
         uses: actions/deploy-pages@v4
 
       # Notify IndexNow-enabled engines (Bing, Yandex, Seznam, Naver, Yep) of updated URLs
+      # Posts the list the build generated, rather than a second copy maintained here. The two
+      # drifted apart before. This job has no checkout, so it fetches the file it just published -
+      # which also means a ping can only ever describe what is actually live.
       - name: Ping IndexNow
         run: |
-          curl -sS -X POST "https://api.indexnow.org/indexnow" \
-            -H "Content-Type: application/json; charset=utf-8" \
-            -d '{
-              "host": "tzortzoglou.eu",
-              "key": "4fd3d9a15a8ed562e65c15e73e6682df",
-              "keyLocation": "https://tzortzoglou.eu/4fd3d9a15a8ed562e65c15e73e6682df.txt",
-              "urlList": [
-                "https://tzortzoglou.eu/",
-                "https://tzortzoglou.eu/about/",
-                "https://tzortzoglou.eu/portfolio/",
-                "https://tzortzoglou.eu/code/",
-                "https://tzortzoglou.eu/contact/",
-                "https://tzortzoglou.eu/privacy/",
-                "https://tzortzoglou.eu/cookies/",
-                "https://tzortzoglou.eu/terms/",
-                "https://tzortzoglou.eu/accessibility/"
-              ]
-            }'
+          set -o pipefail
+          if curl -sS --fail --max-time 30 \
+               "https://tzortzoglou.eu/indexnow.json?cachebust=${GITHUB_SHA}" \
+               -o indexnow.json; then
+            echo "Pinging IndexNow with $(python3 -c 'import json;print(len(json.load(open("indexnow.json"))["urlList"]))') URLs"
+            curl -sS --max-time 30 -X POST "https://api.indexnow.org/indexnow" \
+              -H "Content-Type: application/json; charset=utf-8" \
+              --data @indexnow.json
+          else
+            # A failed ping must not fail a good deploy; search engines recrawl anyway.
+            echo "::warning::Could not fetch indexnow.json - skipping the IndexNow ping."
+          fi

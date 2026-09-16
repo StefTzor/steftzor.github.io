@@ -3,59 +3,16 @@ permalink: /sitemap.xml
 eleventyExcludeFromCollections: true
 ---
 <?xml version="1.0" encoding="utf-8"?>
+{#- Generated from the `indexable` collection in .eleventy.js, the same source the IndexNow
+    list uses, so adding a page registers it in both or in neither. The two lists used to be
+    maintained by hand and the SEO reference names their drift as the commonest regression here. #}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{%- for page in collections.indexable %}
     <url>
-        <loc>https://tzortzoglou.eu/</loc>
+        <loc>https://tzortzoglou.eu{{ page.url }}</loc>
         <lastmod>{{ buildDate }}</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>1.0</priority>
+        <changefreq>{{ page.data.sitemapChangefreq | default("monthly") }}</changefreq>
+        <priority>{{ page.data.sitemapPriority | default("0.5") }}</priority>
     </url>
-    <url>
-        <loc>https://tzortzoglou.eu/about/</loc>
-        <lastmod>{{ buildDate }}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>https://tzortzoglou.eu/portfolio/</loc>
-        <lastmod>{{ buildDate }}</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>https://tzortzoglou.eu/code/</loc>
-        <lastmod>{{ buildDate }}</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    <url>
-        <loc>https://tzortzoglou.eu/contact/</loc>
-        <lastmod>{{ buildDate }}</lastmod>
-        <changefreq>yearly</changefreq>
-        <priority>0.5</priority>
-    </url>
-    <url>
-        <loc>https://tzortzoglou.eu/privacy/</loc>
-        <lastmod>{{ buildDate }}</lastmod>
-        <changefreq>yearly</changefreq>
-        <priority>0.3</priority>
-    </url>
-    <url>
-        <loc>https://tzortzoglou.eu/cookies/</loc>
-        <lastmod>{{ buildDate }}</lastmod>
-        <changefreq>yearly</changefreq>
-        <priority>0.3</priority>
-    </url>
-    <url>
-        <loc>https://tzortzoglou.eu/terms/</loc>
-        <lastmod>{{ buildDate }}</lastmod>
-        <changefreq>yearly</changefreq>
-        <priority>0.3</priority>
-    </url>
-    <url>
-        <loc>https://tzortzoglou.eu/accessibility/</loc>
-        <lastmod>{{ buildDate }}</lastmod>
-        <changefreq>yearly</changefreq>
-        <priority>0.3</priority>
-    </url>
+{%- endfor %}
 </urlset>

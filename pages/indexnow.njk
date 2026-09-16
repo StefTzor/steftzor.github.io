@@ -1,0 +1,17 @@
+---
+permalink: /indexnow.json
+eleventyExcludeFromCollections: true
+---
+{#- The IndexNow payload, built from the same `indexable` collection as the sitemap. The deploy
+    workflow POSTs this file instead of carrying its own hand-written copy of the URL list, which
+    is how the two drifted apart before. Not linked from anywhere and harmless if fetched. -#}
+{
+  "host": "tzortzoglou.eu",
+  "key": "4fd3d9a15a8ed562e65c15e73e6682df",
+  "keyLocation": "https://tzortzoglou.eu/4fd3d9a15a8ed562e65c15e73e6682df.txt",
+  "urlList": [
+{%- for page in collections.indexable %}
+    "https://tzortzoglou.eu{{ page.url }}"{% if not loop.last %},{% endif %}
+{%- endfor %}
+  ]
+}
