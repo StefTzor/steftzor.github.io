@@ -29,7 +29,7 @@ bodyScripts:
   </div>
 
   <section aria-labelledby="invite-heading"
-    class="mt-12 rounded-lg border border-brand-muted/15 bg-brand-surface p-6">
+    class="card mt-12">
     <h2 id="invite-heading" class="text-lg font-bold text-brand-text mb-1">Invite someone</h2>
     <p class="text-sm text-brand-muted mb-5">
       Creates an approved account and emails them a link to choose a password. They never need
@@ -38,15 +38,15 @@ bodyScripts:
 
     <form id="inviteForm" method="post" novalidate class="grid gap-3 sm:grid-cols-[1fr,auto,auto] sm:items-end">
       <div>
-        <label for="inviteEmail" class="block mb-1 text-sm font-medium text-brand-text">Email address</label>
+        <label for="inviteEmail" class="field-label text-sm">Email address</label>
         <input type="email" id="inviteEmail" name="inviteEmail" required autocomplete="off" maxlength="254"
           aria-describedby="status"
-          class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent aria-[invalid=true]:border-red-600">
+          class="field">
       </div>
       <div>
-        <label for="inviteRole" class="block mb-1 text-sm font-medium text-brand-text">Role</label>
+        <label for="inviteRole" class="field-label text-sm">Role</label>
         <select id="inviteRole" name="inviteRole"
-          class="w-full sm:w-auto p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40">
+          class="field sm:w-auto">
           <option value="user">user</option>
           <option value="superuser">superuser</option>
           <option value="admin">admin</option>

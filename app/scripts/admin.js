@@ -64,7 +64,7 @@ function controls(u) {
 
   const select = document.createElement("select");
   select.id = roleId;
-  select.className = "rounded border border-brand-muted/40 bg-brand-bg text-brand-text text-sm px-2 py-1.5";
+  select.className = "field w-auto text-sm py-1.5";
   ROLES.forEach((r) => {
     const opt = document.createElement("option");
     opt.value = r;

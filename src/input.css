@@ -67,6 +67,29 @@
            transform hover:scale-105;
   }
 
+  /* The app's surfaces and form controls.
+     These were twelve copies of the same class string across five pages, which is how two of
+     them had already drifted apart. One definition each, so a change to the look of a field is
+     a change in one place - and so a new page cannot invent a slightly different field. */
+  .card {
+    @apply bg-brand-surface rounded-lg border border-brand-muted/15 p-6;
+  }
+
+  .field-label {
+    @apply block mb-1 font-medium text-brand-text;
+  }
+
+  .field {
+    @apply w-full p-2 rounded bg-brand-bg text-brand-text
+           border border-brand-muted/40 focus:border-brand-accent
+           aria-[invalid=true]:border-red-600 aria-[invalid=true]:border-2;
+  }
+
+  /* Help text under a field: the quiet explanation, never the error. */
+  .hint {
+    @apply mt-1 text-xs text-brand-muted;
+  }
+
   /* Long-form legal prose: readable measure, clear hierarchy, tokenised colours. */
   .legal h2 { @apply text-2xl font-bold text-brand-text mt-12 mb-4; }
   .legal h3 { @apply text-lg font-bold text-brand-text mt-8 mb-3; }
