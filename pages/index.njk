@@ -47,7 +47,11 @@ class="relative border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40 o
       <h1 id="hero-title" class="text-4xl md:text-6xl font-bold tracking-tight will-change-transform">
         <span id="hero-greeting"
           class="inline-block transition-transform duration-300 ease-out origin-bottom-left">Hey👋</span>, I'm
-        <span class="bg-gradient-to-r from-brand-accent to-blue-500 bg-clip-text text-transparent">
+        {# The name fits on one line from 360px up (measured: 323px of text in a 328px container),
+           so keeping it whole just moves the break to before it. Below 360px it would overflow, so
+           the nowrap starts there. #}
+        <span
+          class="bg-gradient-to-r from-brand-accent to-blue-500 bg-clip-text text-transparent min-[360px]:whitespace-nowrap">
           Stefanos Tzortzoglou
         </span>
       </h1>
