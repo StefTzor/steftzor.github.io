@@ -1,34 +1,13 @@
-import { auth } from "./firebase-config.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+import { api, profile } from "./shell.js";
 
 /**
- * The signed-in app shell: who you are, what you may see, and the home view.
- *
- * The role decides only what is *drawn*. Every byte that matters is refused by the API, which
- * re-reads approval and role from Firestore on every request - so hiding the admin link is a
- * courtesy to the viewer, never a security boundary. Anyone can unhide it; the endpoint behind
- * it will still say no.
+ * The home view. The shell owns identity, navigation and signing out; this owns the greeting
+ * and the forecast, and nothing else.
  */
 
-const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
-  ? "http://localhost:3000"
-  : "https://api.tzortzoglou.eu";
-
-const RANK = { user: 1, superuser: 2, admin: 3 };
 const el = (id) => document.getElementById(id);
 
-/** Every call carries a fresh ID token; getIdToken refreshes it when it is close to expiry. */
-async function api(path) {
-  const user = auth.currentUser;
-  if (!user) throw new Error("not signed in");
-  const res = await fetch(API_BASE + path, {
-    headers: { Authorization: "Bearer " + (await user.getIdToken()) },
-  });
-  if (!res.ok) throw Object.assign(new Error("api " + res.status), { status: res.status });
-  return res.json();
-}
-
-/** "stefanos.tzortzoglou@..." with no name set is still better greeted as Stefanos. */
+/** A name if we have one, otherwise the readable part of the address rather than the whole thing. */
 function firstName(me) {
   if (me.name) return me.name.split(" ")[0];
   const local = (me.email || "").split("@")[0].split(/[.+_-]/)[0];
@@ -37,26 +16,13 @@ function firstName(me) {
 
 function greet(me) {
   const hour = new Date().getHours();
-  const part = hour < 5 ? "Still up" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const part = hour < 5 ? "Still up" : hour < 12 ? "Good morning"
+             : hour < 18 ? "Good afternoon" : "Good evening";
   el("greeting").textContent = `${part}, ${firstName(me)}`;
-  el("whoami").textContent = me.email + (me.role === "user" ? "" : ` · ${me.role}`);
 }
 
-function revealNav(role) {
-  const rank = RANK[role] || 1;
-  document.querySelectorAll("[data-min-role]").forEach((item) => {
-    if (rank >= (RANK[item.dataset.minRole] || 99)) item.classList.remove("hidden");
-  });
-  const here = document.querySelector(`[data-nav="${location.pathname === "/" ? "home" : location.pathname.replace(/\//g, "")}"]`);
-  if (here) {
-    here.classList.add("border-brand-accent", "font-semibold");
-    here.setAttribute("aria-current", "page");
-  }
-  el("appHeader").classList.remove("hidden");
-}
-
-// WMO weather codes, grouped rather than enumerated: the difference between "slight" and
-// "moderate" drizzle is not worth thirty lines on a personal dashboard.
+// WMO codes, grouped rather than enumerated: the difference between slight and moderate
+// drizzle is not worth thirty lines on a personal dashboard.
 function describe(code) {
   if (code === 0) return "Clear";
   if (code <= 2) return "Mostly clear";
@@ -77,16 +43,14 @@ const dayName = (iso, i) =>
 function renderWeather(data) {
   el("weatherPlace").textContent = data.place || "";
   const now = data.current || {};
-  const days = (data.daily || []).slice(0, 3);
-
-  // textContent everywhere: this is upstream data, and none of it is trusted enough for HTML.
   const box = el("weather");
   box.textContent = "";
 
+  // createElement and textContent throughout: this is upstream data and has no business being
+  // parsed as HTML.
   const headline = document.createElement("p");
-  headline.className = "text-3xl font-bold text-brand-text";
+  headline.className = "text-4xl font-bold text-brand-text";
   headline.textContent = round(now.temperature) !== null ? `${round(now.temperature)}°C` : "—";
-  box.appendChild(headline);
 
   const detail = document.createElement("p");
   detail.className = "text-sm text-brand-muted mt-1";
@@ -94,19 +58,20 @@ function renderWeather(data) {
   if (round(now.feelsLike) !== null) bits.push(`feels like ${round(now.feelsLike)}°`);
   if (round(now.windSpeed) !== null) bits.push(`wind ${round(now.windSpeed)} km/h`);
   detail.textContent = bits.join(" · ");
-  box.appendChild(detail);
+  box.append(headline, detail);
 
+  const days = (data.daily || []).slice(0, 3);
   if (days.length) {
     const list = document.createElement("ul");
     list.className = "mt-6 grid grid-cols-3 gap-3";
     days.forEach((d, i) => {
       const item = document.createElement("li");
-      item.className = "rounded border border-brand-muted/15 p-3 text-center";
+      item.className = "rounded-lg border border-brand-muted/15 p-3 text-center";
       const name = document.createElement("p");
       name.className = "text-xs font-semibold text-brand-text";
       name.textContent = dayName(d.date, i);
       const temps = document.createElement("p");
-      temps.className = "text-sm text-brand-muted mt-1";
+      temps.className = "text-sm text-brand-text mt-1";
       temps.textContent = `${round(d.max) ?? "—"}° / ${round(d.min) ?? "—"}°`;
       const what = document.createElement("p");
       what.className = "text-xs text-brand-muted mt-1";
@@ -118,7 +83,7 @@ function renderWeather(data) {
   }
 }
 
-function weatherUnavailable() {
+function unavailable() {
   const box = el("weather");
   box.textContent = "";
   const p = document.createElement("p");
@@ -127,56 +92,13 @@ function weatherUnavailable() {
   box.appendChild(p);
 }
 
-async function start(user) {
-  let me;
-  try {
-    me = await api("/me");
-  } catch (err) {
-    // 403 means the account exists but is not approved - the one failure worth explaining,
-    // because it is the normal state for someone who has just registered.
-    if (err.status === 403) {
-      document.body.textContent = "";
-      const p = document.createElement("p");
-      p.className = "container mx-auto px-4 py-16 max-w-md text-brand-muted";
-      p.textContent = "This account is waiting to be approved. You will be able to use the app once it is.";
-      document.body.appendChild(p);
-      return;
-    }
-    console.error("app: /me failed", err.message);
-    await signOut(auth);
-    location.href = "/login/";
-    return;
-  }
-
+profile.then(async (me) => {
   greet(me);
-  revealNav(me.role);
-  document.getElementById("main-content").setAttribute("aria-busy", "false");
-
   try {
     renderWeather(await api("/weather"));
   } catch (err) {
+    // A missing forecast must not take the page with it.
     console.error("app: weather failed", err.message);
-    weatherUnavailable();
+    unavailable();
   }
-}
-
-onAuthStateChanged(auth, (user) => {
-  if (!user) { location.href = "/login/"; return; }
-  start(user);
 });
-
-document.querySelectorAll("[data-logout]").forEach((btn) =>
-  btn.addEventListener("click", async () => {
-    try {
-      const token = await auth.currentUser?.getIdToken();
-      if (token) {
-        await fetch(API_BASE + "/session/revoke", {
-          method: "POST", headers: { Authorization: "Bearer " + token }, keepalive: true,
-        });
-      }
-    } catch (err) {
-      console.warn("sign-out: revoke failed", err.message);
-    }
-    await signOut(auth).catch(() => {});
-    location.href = "/login/";
-  }));

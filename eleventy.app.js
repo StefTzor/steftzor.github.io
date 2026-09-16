@@ -34,6 +34,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({
     "app/scripts/auth.js": "scripts/auth.js",
     "app/scripts/action.js": "scripts/action.js",
+    "app/scripts/shell.js": "scripts/shell.js",
     "app/scripts/app.js": "scripts/app.js",
     "app/scripts/private.js": "scripts/private.js",
   });

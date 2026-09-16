@@ -12,6 +12,9 @@
  */
 import { auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+// Imported for its side effects: the sidebar, the role-gated links and sign-out. It also sends
+// a signed-out visitor to /login/, so this file only handles a session ending mid-visit.
+import "./shell.js";
 
 const API = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
   ? 'http://localhost:3000'
