@@ -9,16 +9,28 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
+      // Names are shown in the admin list and used to greet the person, so the client writes
+      // them - but the client is not trusted about their shape. A missing name is allowed (the
+      // older sign-up form does not collect one); a 500-character one is not.
+      function okName(field) {
+        return !(field in request.resource.data)
+          || (request.resource.data[field] is string && request.resource.data[field].size() <= 60);
+      }
+
       // Read own doc; admin can read anyone's.
       allow read: if request.auth != null
         && (request.auth.uid == userId || isAdmin());
 
       // Create ONLY your own doc, ONLY as "pending" — blocks self-approval at signup.
+      // hasOnly is the line that stops a client writing its own `role`: adding a key here is
+      // adding something the browser may set about itself, so it is never a routine edit.
       allow create: if request.auth != null
         && request.auth.uid == userId
         && request.resource.data.status == 'pending'
         && request.resource.data.email == request.auth.token.email
-        && request.resource.data.keys().hasOnly(['email', 'status', 'createdAt', 'consentAt']);
+        && okName('firstName') && okName('lastName')
+        && request.resource.data.keys().hasOnly(
+             ['email', 'firstName', 'lastName', 'status', 'createdAt', 'consentAt']);
 
       // Only the admin (site owner) can approve / change status.
       allow update: if isAdmin();

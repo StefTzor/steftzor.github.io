@@ -178,8 +178,21 @@ async function handleRegister(e) {
   const passwordField = document.getElementById("password");
   const confirmField = document.getElementById("confirmPassword");
   const consent = document.getElementById("privacyConsent");
+  const firstField = document.getElementById("firstName");
+  const lastField = document.getElementById("lastName");
   const email = emailField.value.trim();
   const password = passwordField.value;
+  const firstName = firstField ? firstField.value.trim() : "";
+  const lastName = lastField ? lastField.value.trim() : "";
+
+  if (firstField && !firstName) {
+    fail("Please enter your first name.", firstField);
+    return;
+  }
+  if (lastField && !lastName) {
+    fail("Please enter your last name.", lastField);
+    return;
+  }
 
   if (password !== confirmField.value) {
     fail("Those passwords do not match.", confirmField);
@@ -213,6 +226,8 @@ async function handleRegister(e) {
     try {
       await setDoc(doc(db, "users", user.uid), {
         email: user.email,
+        firstName,
+        lastName,
         status: "pending",
         createdAt: new Date().toISOString(),
         consentAt: new Date().toISOString(),

@@ -14,6 +14,21 @@ bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
     </p>
 
     <form id="registerForm" method="post" novalidate>
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div>
+          <label for="firstName" class="block mb-1 font-medium text-brand-text">First name</label>
+          <input type="text" id="firstName" name="firstName" required autocomplete="given-name" maxlength="60"
+            aria-describedby="errorMsg"
+            class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent aria-[invalid=true]:border-red-600">
+        </div>
+        <div>
+          <label for="lastName" class="block mb-1 font-medium text-brand-text">Last name</label>
+          <input type="text" id="lastName" name="lastName" required autocomplete="family-name" maxlength="60"
+            aria-describedby="errorMsg"
+            class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent aria-[invalid=true]:border-red-600">
+        </div>
+      </div>
+
       <div class="mb-4">
         <label for="email" class="block mb-1 font-medium text-brand-text">Email address</label>
         <input type="email" id="email" name="email" required autocomplete="email"
@@ -41,7 +56,7 @@ bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
         <input type="checkbox" id="privacyConsent" name="privacyConsent" required
           class="mt-0.5 h-6 w-6 shrink-0 accent-brand-accent">
         <label for="privacyConsent" class="text-sm text-brand-muted leading-relaxed">
-          I agree that my email address and account status may be stored so that this account can be created and
+          I agree that my name, email address and account status may be stored so that this account can be created and
           manually approved, as described in the
           <a href="https://tzortzoglou.eu/privacy/" class="text-brand-accent underline hover:no-underline">Privacy Policy</a>.
           I accept the
