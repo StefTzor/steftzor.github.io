@@ -2,7 +2,9 @@
 layout: app.njk
 permalink: /action/
 title: "Your account | Stefanos Tzortzoglou"
-appScript: { src: "/scripts/action.js", type: "module" }
+bodyScripts:
+  - src: "/scripts/action.js"
+    type: "module"
 bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
 ---
 {#

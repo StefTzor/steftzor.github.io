@@ -2,7 +2,9 @@
 layout: app.njk
 permalink: /reset/
 title: "Reset your password | Stefanos Tzortzoglou"
-appScript: { src: "/scripts/auth.js", type: "module" }
+bodyScripts:
+  - src: "/scripts/auth.js"
+    type: "module"
 bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
 ---
 <section class="container mx-auto px-4 py-16 max-w-md">

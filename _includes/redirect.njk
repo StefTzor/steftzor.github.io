@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+{#
+  A page that has moved to app.tzortzoglou.eu.
+
+  GitHub Pages cannot issue a 301, so this is the honest alternative: a canonical link for
+  crawlers, a meta refresh for browsers with no JavaScript, an immediate replace() for those
+  with it, and a visible link for anyone the first three fail. replace() rather than assign()
+  so Back does not bounce the visitor straight back here.
+
+  Front matter: `to` (the destination) and `title`.
+#}
+<html lang="en" class="scroll-smooth dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="{{ to }}">
+  <meta http-equiv="refresh" content="0; url={{ to }}">
+  <title>{{ title }}</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link href="/dist/output.css" rel="stylesheet">
+  <script>location.replace({{ to | dump | safe }});</script>
+</head>
+
+<body class="bg-brand-bg text-brand-text antialiased min-h-screen flex items-center justify-center">
+  <main id="main-content" class="container mx-auto px-4 max-w-md text-center">
+    <h1 class="text-2xl font-bold mb-3">This has moved</h1>
+    <p class="text-brand-muted mb-6">Signing in now happens on the app.</p>
+    <a href="{{ to }}" class="btn-primary inline-block">Continue to {{ to | replace("https://", "") }}</a>
+  </main>
+</body>
+
+</html>

@@ -16,7 +16,8 @@
     redirectWhenAuthed  send an already-signed-in visitor to the app home
     shell        render the signed-in header and role-driven navigation
     inlineScript end-of-body script
-    appScript    {src, type} loaded at end of body
+    pageStyle    inline <style> for this page
+    bodyScripts  [{src, type, integrity, defer}] loaded at end of body
 #}
 <html lang="en" class="scroll-smooth dark">
 
@@ -41,6 +42,13 @@
   <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
 
   <link href="/dist/output.css" rel="stylesheet">
+  {%- if pageStyle %}
+  {# Inline rather than a stylesheet: it is one page's worth of CSS, and the CSP transform
+     hashes it automatically, so there is nothing to keep in sync. #}
+  <style>
+{{ pageStyle | safe }}
+  </style>
+  {%- endif %}
 </head>
 
 <body{% if redirectWhenAuthed %} data-redirect-when-authed="1"{% endif %} class="{{ bodyClass | default('bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col') }}">
@@ -70,9 +78,10 @@
     {{ content | safe }}
   </main>
 
-  {%- if appScript %}
-  <script{% if appScript.type %} type="{{ appScript.type }}"{% endif %} src="{{ appScript.src }}"></script>
-  {%- endif %}
+  {%- for s in bodyScripts %}
+  {# Literal src="..." with double quotes - the cachebust transform only versions that shape. #}
+  <script{% if s.type %} type="{{ s.type }}"{% endif %} src="{{ s.src }}"{% if s.integrity %} integrity="{{ s.integrity }}" crossorigin="anonymous" referrerpolicy="no-referrer"{% endif %}{% if s.defer %} defer{% endif %}></script>
+  {%- endfor %}
   {%- if inlineScript %}
   <script>
 {{ inlineScript | safe }}

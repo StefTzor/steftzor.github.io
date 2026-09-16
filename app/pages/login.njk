@@ -2,7 +2,9 @@
 layout: app.njk
 permalink: /login/
 title: "Sign in | Stefanos Tzortzoglou"
-appScript: { src: "/scripts/auth.js", type: "module" }
+bodyScripts:
+  - src: "/scripts/auth.js"
+    type: "module"
 bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
 redirectWhenAuthed: true
 ---

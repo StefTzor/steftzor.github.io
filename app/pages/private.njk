@@ -1,0 +1,131 @@
+---
+layout: app.njk
+permalink: /private/
+title: "For Your Eyes Only | Stefanos Tzortzoglou"
+shell: true
+bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
+bodyScripts:
+  # Only used on a click, long after load, so it does not need to block parsing the way it did
+  # on the old page - where an inline caller ran before DOMContentLoaded.
+  - src: "https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"
+    integrity: "sha384-HAH79XdRvHr6axVGh4xQWVCp14kcd32bNk4Xu0sHDHtFQ42n6BAM8ykvB47dGz6D"
+    defer: true
+  - src: "/scripts/private.js"
+    type: "module"
+pageStyle: |
+  /* Only this page uses Pacifico, so it is not in the global stylesheet. */
+  @font-face {
+    font-family: 'Pacifico';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/pacifico-400-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+      .font-handwriting {
+        font-family: 'Pacifico', cursive;
+      }
+
+      .heart-beat {
+        animation: heartbeat 1.5s infinite;
+      }
+
+      @keyframes heartbeat {
+        0% {
+          transform: scale(1);
+        }
+
+        15% {
+          transform: scale(1.15);
+        }
+
+        30% {
+          transform: scale(1);
+        }
+
+        45% {
+          transform: scale(1.15);
+        }
+
+        60% {
+          transform: scale(1);
+        }
+      }
+
+---
+<div class="container mx-auto py-12 px-4 flex items-center justify-center">
+<section id="authRequired" class="content-locked text-center max-w-lg mx-auto">
+  <div class="bg-brand-surface p-8 rounded-2xl shadow-xl border border-brand-muted/20">
+    <div class="text-6xl mb-6 text-pink-600 dark:text-pink-400">
+      {% icon "fa-solid-heart-lock", "" %}
+    </div>
+    <h1 class="text-3xl font-bold mb-4 text-brand-text">For Your Eyes Only</h1>
+    <p class="text-brand-muted text-lg">
+      This is written for one person, and this account is not it.
+    </p>
+  </div>
+</section>
+
+<!-- Empty shells only. Every string and image below is injected by
+     /scripts/exclusive.js after api.tzortzoglou.eu verifies the caller.
+     An unauthenticated fetch of this file reveals nothing. -->
+<section id="exclusiveContent" class="hidden w-full max-w-4xl">
+
+  <div id="inviteCard" class="transition-all duration-700 ease-in-out transform scale-100 opacity-100">
+    <div
+      class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl overflow-hidden border-4 border-pink-200 dark:border-pink-900/50 max-w-md mx-auto relative group hover:-translate-y-2 transition-transform duration-300">
+
+      <div class="h-64 overflow-hidden relative bg-brand-surface">
+        <img id="invite-cover" src="" alt=""
+          class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center pb-6">
+          <span id="invite-caption" class="text-white font-handwriting text-3xl drop-shadow-lg"></span>
+        </div>
+      </div>
+
+      <div class="p-8 text-center bg-white dark:bg-slate-800 relative z-10">
+        <h2 id="invite-greeting" class="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-3"></h2>
+        <p id="invite-lead" class="text-slate-600 dark:text-slate-300 mb-8 leading-relaxed"></p>
+
+        <button type="button" id="openMessageBtn"
+          class="w-full py-4 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 text-white font-bold text-lg shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+          {% icon "fa-solid-envelope-open-text", "" %}<span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="celebrationView" class="hidden opacity-0 transition-opacity duration-1000">
+    <div
+      class="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl overflow-hidden border-4 border-pink-400 relative">
+      <div class="grid md:grid-cols-2 gap-0">
+        <div class="h-64 md:h-auto min-h-[400px] relative bg-brand-surface">
+          <img id="celebration-photo" src="" alt=""
+            class="absolute inset-0 w-full h-full object-cover">
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent md:bg-gradient-to-r">
+          </div>
+        </div>
+
+        <div
+          class="p-8 md:p-12 flex flex-col justify-center text-center md:text-left bg-pink-50 dark:bg-slate-800/50">
+          <div class="mb-6">
+            {% icon "fa-solid-heart", "text-5xl text-pink-600 dark:text-pink-400 heart-beat inline-block" %}
+          </div>
+          <h2 id="celebration-heading"
+            class="text-4xl md:text-5xl font-handwriting text-pink-600 dark:text-pink-400 mb-6"></h2>
+          <p id="celebration-body" class="text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-6 font-medium">
+          </p>
+          <p id="celebration-quote" class="text-slate-600 dark:text-slate-400 italic"></p>
+          <div class="mt-8 pt-6 border-t border-pink-200 dark:border-slate-700">
+            <span id="celebration-signoff"
+              class="text-sm font-bold text-pink-700 dark:text-pink-300 uppercase tracking-widest"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+</div>

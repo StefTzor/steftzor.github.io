@@ -2,7 +2,9 @@
 layout: app.njk
 permalink: /
 title: "Home | Stefanos Tzortzoglou"
-appScript: { src: "/scripts/app.js", type: "module" }
+bodyScripts:
+  - src: "/scripts/app.js"
+    type: "module"
 bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
 shell: true
 ---

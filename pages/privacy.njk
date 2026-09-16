@@ -87,9 +87,10 @@ sitemapPriority: "0.3"
 <h2 id="account">3. If you create an account</h2>
 
 <p>
-  A small part of this site (<a href="/exclusive/">the private area</a>) is personal content shared with specific
-  people. Reaching it requires an account, which is approved manually by me. Creating one is entirely optional — nothing
-  on the public site depends on it.
+  Some personal content is shared with specific people through a separate application at
+  <a href="https://app.tzortzoglou.eu/">app.tzortzoglou.eu</a>, where signing in, registering and the private area all
+  live. Reaching it requires an account, which is approved manually by me, and each account carries a role that decides
+  what it may see. Creating an account is entirely optional — nothing on this public site depends on it.
 </p>
 
 <p>When you register, the following is stored:</p>
@@ -113,9 +114,20 @@ sitemapPriority: "0.3"
       <td>To let you sign in. I never see your password and cannot recover it.</td>
     </tr>
     <tr>
+      <td>First and last name</td>
+      <td>Cloud Firestore</td>
+      <td>To address you by name in the application, and so that I can tell approved accounts apart by something more
+        readable than an email address.</td>
+    </tr>
+    <tr>
       <td>Account status (<code>pending</code> / <code>approved</code>) and creation timestamp</td>
       <td>Cloud Firestore</td>
       <td>To run the manual approval step.</td>
+    </tr>
+    <tr>
+      <td>Role (<code>user</code>, <code>superuser</code> or <code>admin</code>)</td>
+      <td>Cloud Firestore</td>
+      <td>To decide which parts of the application the account may see. Only I can set it.</td>
     </tr>
   </tbody>
 </table>
