@@ -1,0 +1,52 @@
+# Deploys app.tzortzoglou.eu to Dokploy on the VPS.
+#
+# Separate from deploy.yml on purpose. That workflow builds the public site for GitHub Pages and
+# its step order is load-bearing - the Firebase config is injected after the build - so it is not
+# touched. This one only tells Dokploy to rebuild the app container.
+#
+# It has to reach a panel that is not on the public internet: ops is VPN-only, which is why the
+# GitHub webhook that would normally do this cannot be delivered. The runner joins the tailnet
+# for the length of the job instead, which keeps the panel unreachable from everywhere else.
+#
+# Deploys on every push rather than filtering by path. A path list is one more thing that rots,
+# and the failure mode - a deploy that silently does not happen - is exactly the kind of
+# staleness that is hard to notice. A minute of build time is the cheaper mistake.
+name: Deploy the app to Dokploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-app
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Join the tailnet
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Trigger the Dokploy deployment
+        env:
+          DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+          DOKPLOY_API_KEY: ${{ secrets.DOKPLOY_API_KEY }}
+          APP_ID: ${{ secrets.DOKPLOY_APP_FRONTEND_ID }}
+        run: |
+          set -euo pipefail
+          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' -X POST \
+            "$DOKPLOY_URL/api/application.deploy" \
+            -H "x-api-key: $DOKPLOY_API_KEY" \
+            -H 'Content-Type: application/json' \
+            -d "{\"applicationId\":\"$APP_ID\"}")
+          echo "Dokploy responded $code"
+          # The body can carry a reason; it must not be swallowed on failure.
+          head -c 500 /tmp/out.json || true
+          echo
+          test "$code" -ge 200 -a "$code" -lt 300
