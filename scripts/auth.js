@@ -203,6 +203,14 @@ async function handleLogout(e) {
 
 // Handle auth state changes
 async function handleAuthStateChanged(user) {
+  // Tells scripts/auth-boot.js whether to load Firebase at all on the next page. A hint for
+  // fetching only - every real check is server-side.
+  try {
+    if (user) localStorage.setItem("auth-ui", "1");
+    else localStorage.removeItem("auth-ui");
+    document.documentElement.classList.toggle("is-authed", !!user);
+  } catch (e) { /* private mode: fall back to loading Firebase every time */ }
+
   // --- DESKTOP ELEMENTS ---
   const guestView = document.getElementById("guest-view");
   const userView = document.getElementById("user-view");

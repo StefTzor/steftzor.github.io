@@ -44,7 +44,8 @@ module.exports = function(eleventyConfig) {
     "scripts/hero.js": "scripts/hero.js",
     "scripts/consent.js": "scripts/consent.js",
     "scripts/exclusive.js": "scripts/exclusive.js",
-    "scripts/contact.js": "scripts/contact.js"
+    "scripts/contact.js": "scripts/contact.js",
+    "scripts/auth-boot.js": "scripts/auth-boot.js"
   });
   eleventyConfig.addPassthroughCopy("images");
   // Self-hosted webfonts; scripts/ and fonts/ are not copied wholesale elsewhere.
@@ -63,6 +64,18 @@ module.exports = function(eleventyConfig) {
    // Prevent firebase-config.js from being copied
    eleventyConfig.ignores.add("scripts/firebase-config.js");
 
+
+  /**
+   * Inlines one of the SVGs in _includes/icons. These replaced the devicon webfont, which
+   * cost 777 KB of TTF from a CDN to draw nine logos - the heaviest asset on the site by a
+   * wide margin. Inlined they are about 11 KB, need no request, and cannot fail to load.
+   * fill="currentColor" keeps them tinted by the surrounding text colour, as the font was.
+   */
+  eleventyConfig.addShortcode("icon", (name, cls = "") => {
+    const file = path.join(__dirname, "_includes", "icons", `${name}.svg`);
+    return fs.readFileSync(file, "utf8")
+      .replace("<svg", `<svg class="${cls}" aria-hidden="true" focusable="false"`);
+  });
 
   /**
    * Stamps a schema.org node with the URL of the page carrying it. mainEntityOfPage used to be

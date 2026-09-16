@@ -5,11 +5,6 @@ title: "Code & Architecture | Stefanos Tzortzoglou"
 description: "Review the technical stack, Open Source philosophy, and live GitHub telemetry of Stefanos Tzortzoglou."
 personSchema: true
 mainClass: "flex-grow container mx-auto py-16 px-4"
-headPreconnect:
-  - "https://cdn.jsdelivr.net"
-headStyles:
-  - href: "https://cdn.jsdelivr.net/gh/devicons/devicon@2.17.0/devicon.min.css"
-    integrity: "sha384-6iv3tXABd3c9DYulXujJl8n22ahn/12f45MomxoPv6jBX4LBE4gNJjfkx5mAKIqR"
 pageStyle: |
   /* Contribution grid. The data is fetched at build time (_data/contributions.js) and the
      markup is ours, so this styles real elements rather than overriding a vendor stylesheet. */
@@ -91,11 +86,11 @@ pageStyle: |
 
             <div class="grid grid-cols-4 sm:grid-cols-5 gap-6 text-center">
                 <div class="group flex flex-col items-center gap-2">
-                    <i class="devicon-linux-plain text-4xl text-yellow-600 dark:text-yellow-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    {% icon "linux", "w-9 h-9 text-yellow-600 dark:text-yellow-500 group-hover:text-brand-muted transition-colors duration-300" %}
                     <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Linux</span>
                 </div>
                 <div class="group flex flex-col items-center gap-2">
-                    <i class="devicon-azuresqldatabase-plain text-4xl text-blue-600 dark:text-blue-400 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    {% icon "azuresqldatabase", "w-9 h-9 text-blue-600 dark:text-blue-400 group-hover:text-brand-muted transition-colors duration-300" %}
                     <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">SQL</span>
                 </div>
                 <div class="group flex flex-col items-center gap-2">
@@ -103,31 +98,31 @@ pageStyle: |
                     <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Snowflake</span>
                 </div>
                 <div class="group flex flex-col items-center gap-2">
-                    <i class="devicon-terraform-plain text-4xl text-purple-600 dark:text-purple-400 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    {% icon "terraform", "w-9 h-9 text-purple-600 dark:text-purple-400 group-hover:text-brand-muted transition-colors duration-300" %}
                     <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Terraform</span>
                 </div>
                 <div class="group flex flex-col items-center gap-2">
-                    <i class="devicon-javascript-plain text-4xl text-yellow-500 dark:text-yellow-300 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    {% icon "javascript", "w-9 h-9 text-yellow-500 dark:text-yellow-300 group-hover:text-brand-muted transition-colors duration-300" %}
                     <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">JS</span>
                 </div>
                 <div class="group flex flex-col items-center gap-2">
-                    <i class="devicon-python-plain text-4xl text-blue-600 dark:text-yellow-400 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    {% icon "python", "w-9 h-9 text-blue-600 dark:text-yellow-400 group-hover:text-brand-muted transition-colors duration-300" %}
                     <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Python</span>
                 </div>
                 <div class="group flex flex-col items-center gap-2">
-                    <i class="devicon-html5-plain text-4xl text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    {% icon "html5", "w-9 h-9 text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300" %}
                     <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">HTML</span>
                 </div>
                 <div class="group flex flex-col items-center gap-2">
-                    <i class="devicon-insomnia-plain text-4xl text-purple-700 dark:text-purple-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    {% icon "insomnia", "w-9 h-9 text-purple-700 dark:text-purple-500 group-hover:text-brand-muted transition-colors duration-300" %}
                     <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Insomnia</span>
                 </div>
                 <div class="group flex flex-col items-center gap-2">
-                    <i class="devicon-git-plain text-4xl text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    {% icon "git", "w-9 h-9 text-orange-600 dark:text-orange-500 group-hover:text-brand-muted transition-colors duration-300" %}
                     <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">Git</span>
                 </div>
                 <div class="group flex flex-col items-center gap-2">
-                    <i class="devicon-eleventy-plain text-4xl text-slate-800 dark:text-gray-200 group-hover:text-brand-muted transition-colors duration-300" aria-hidden="true"></i>
+                    {% icon "eleventy", "w-9 h-9 text-slate-800 dark:text-gray-200 group-hover:text-brand-muted transition-colors duration-300" %}
                     <span class="text-xs opacity-0 group-hover:opacity-100 transition-opacity">11ty</span>
                 </div>
             </div>
@@ -135,16 +130,16 @@ pageStyle: |
         <div class="space-y-8">
 
             <div class="bg-brand-surface p-1 rounded-2xl border border-brand-muted/10 shadow-lg overflow-hidden">
-                <img src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=0f172a&title_color=10b981&icon_color=3b82f6&text_color=94a3b8"
+                <img width="467" height="195" src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=0f172a&title_color=10b981&icon_color=3b82f6&text_color=94a3b8"
                     alt="GitHub statistics for steftzor: total stars, commits, pull requests, issues and contributions. Full detail on the GitHub profile linked below." class="hidden dark:block w-full h-auto">
-                <img src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=e2e8f0&title_color=059669&icon_color=3b82f6&text_color=334155"
+                <img width="467" height="195" src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=e2e8f0&title_color=059669&icon_color=3b82f6&text_color=334155"
                     alt="" role="presentation" class="block dark:hidden w-full h-auto">
             </div>
 
             <div class="bg-brand-surface p-1 rounded-2xl border border-brand-muted/10 shadow-lg overflow-hidden">
-                <img src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=0f172a&title_color=10b981&text_color=94a3b8&icon_color=3b82f6"
+                <img width="300" height="165" src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=0f172a&title_color=10b981&text_color=94a3b8&icon_color=3b82f6"
                     alt="Most-used programming languages across steftzor's public GitHub repositories, by share of code." class="hidden dark:block w-full h-auto">
-                <img src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=e2e8f0&title_color=059669&text_color=334155&icon_color=3b82f6"
+                <img width="300" height="165" src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=e2e8f0&title_color=059669&text_color=334155&icon_color=3b82f6"
                     alt="" role="presentation" class="block dark:hidden w-full h-auto">
             </div>
 

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node scripts/consent.test.js && node scripts/auth.security.test.js && node scripts/contact.security.test.js",
-    "build": "tailwindcss -i ./src/input.css -o ./dist/output.css && eleventy && node scripts/cachebust.test.js",
+    "build": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify && eleventy && node scripts/cachebust.test.js",
     "watch": "concurrently \"tailwindcss -i ./src/input.css -o ./dist/output.css --watch\" \"eleventy --serve\"",
     "dev": "npm run watch"
   },
