@@ -1,0 +1,60 @@
+---
+layout: app.njk
+permalink: /action/
+title: "Your account | Stefanos Tzortzoglou"
+appScript: { src: "/scripts/action.js", type: "module" }
+bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
+---
+{#
+  Firebase's email action handler, hosted here instead of on firebaseapp.com.
+
+  Every link Firebase mails - password reset, email verification, and the invitations that come
+  later - arrives here carrying ?mode= and ?oobCode=. Without this page those links land on
+  Firebase's generic handler under a firebaseapp.com address, which works but looks like it
+  belongs to someone else, and is exactly the kind of thing people are right to distrust in an
+  email about their password.
+
+  Set Authentication -> Templates -> Customize action URL to https://app.tzortzoglou.eu/action/
+#}
+<section class="container mx-auto px-4 py-16 max-w-md">
+  <div class="bg-brand-surface p-8 rounded-lg shadow-md border border-brand-muted/10">
+
+    <div id="loading">
+      <h1 class="text-2xl font-bold mb-2 text-brand-text">Checking your link…</h1>
+      <p class="text-sm text-brand-muted">One moment.</p>
+    </div>
+
+    <div id="resetPanel" class="hidden">
+      <h1 class="text-2xl font-bold mb-2 text-brand-text">Choose a new password</h1>
+      <p id="resetFor" class="text-sm text-brand-muted mb-6"></p>
+
+      <form id="resetPasswordForm" method="post" novalidate>
+        <div class="mb-4">
+          <label for="newPassword" class="block mb-1 font-medium text-brand-text">New password</label>
+          <input type="password" id="newPassword" name="newPassword" required autocomplete="new-password" minlength="8"
+            aria-describedby="newPassword-hint errorMsg"
+            class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent aria-[invalid=true]:border-red-600">
+          <p id="newPassword-hint" class="mt-1 text-xs text-brand-muted">At least 8 characters.</p>
+        </div>
+
+        <div class="mb-6">
+          <label for="confirmNewPassword" class="block mb-1 font-medium text-brand-text">Confirm new password</label>
+          <input type="password" id="confirmNewPassword" name="confirmNewPassword" required autocomplete="new-password"
+            aria-describedby="errorMsg"
+            class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent aria-[invalid=true]:border-red-600">
+        </div>
+
+        <div id="errorMsg" role="status" aria-live="polite" class="mb-4 text-sm text-red-700 dark:text-red-400"></div>
+
+        <button type="submit" class="btn-primary w-full">Set new password</button>
+      </form>
+    </div>
+
+    <div id="resultPanel" class="hidden">
+      <h1 id="resultTitle" class="text-2xl font-bold mb-2 text-brand-text"></h1>
+      <p id="resultBody" class="text-sm text-brand-muted mb-6"></p>
+      <a href="/login/" class="btn-primary inline-block">Go to sign in</a>
+    </div>
+
+  </div>
+</section>

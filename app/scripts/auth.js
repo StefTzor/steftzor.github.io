@@ -185,6 +185,12 @@ async function handleRegister(e) {
     fail("Those passwords do not match.", confirmField);
     return;
   }
+  // The page says eight characters; Firebase's own minimum is six, so without this the copy
+  // and the behaviour disagree and the shorter password is silently accepted.
+  if (password.length < 8) {
+    fail("Please choose a password of at least 8 characters.", passwordField);
+    return;
+  }
   if (!consent || !consent.checked) {
     fail("Please agree to the Privacy Policy and Terms of Use before creating an account.", consent);
     return;
