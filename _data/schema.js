@@ -37,7 +37,7 @@ const person = {
       "Snowflake",
       "Enterprise Customer Success"
     ],
-    "mainEntityOfPage": "https://tzortzoglou.eu/about/",
+  
     "name": "Stefanos Tzortzoglou",
     "sameAs": [
       "https://www.linkedin.com/in/stzortzoglou/",
@@ -57,5 +57,8 @@ const person = {
 
 module.exports = {
   person,
-  personStandalone: { "@context": "https://schema.org/", ...person },
+  // mainEntityOfPage has to name the page carrying the schema. It used to be pasted as
+  // /about/ into all four pages, so three of them told Google they were the about page.
+  personFor: (url) => ({ ...person, mainEntityOfPage: `https://tzortzoglou.eu${url}` }),
+  standaloneFor: (url) => ({ "@context": "https://schema.org/", ...person, mainEntityOfPage: `https://tzortzoglou.eu${url}` }),
 };
