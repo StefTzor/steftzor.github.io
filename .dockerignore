@@ -8,3 +8,13 @@ dist
 graphify-out
 .remember
 *.test.js
+# Local tooling and anything holding credentials. Nothing here reaches the final image today -
+# it copies only _app - but a build context should not carry what it has no use for.
+.claude
+.agents
+skills-lock.json
+.env
+.env.*
+ignore
+firestore.rules
+.firebaserc
