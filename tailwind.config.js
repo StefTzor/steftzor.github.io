@@ -4,7 +4,10 @@ module.exports = {
   content: [
     "./pages/**/*.{html,njk}",
     "./_includes/**/*.{html,njk}",
-    "./scripts/**/*.js"
+    "./scripts/**/*.js",
+    // The app builds from the same config and the same input.css, so brand tokens cannot
+    // drift between the two sites - there is only ever one definition of each.
+    "./app/**/*.{html,njk,js}"
   ],
   theme: {
     extend: {

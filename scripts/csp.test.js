@@ -11,20 +11,25 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
-const SITE = path.join(__dirname, '..', '_site');
-if (!fs.existsSync(SITE)) {
-  console.log('csp: _site not built, skipping (run npm run build first)');
+// Both builds: _site is tzortzoglou.eu, _app is app.tzortzoglou.eu. The app is checked here
+// too because it shares the transform - the first version of the app's CSP override silently
+// dropped the inline-script hash, and nothing would have caught it if this only walked _site.
+const ROOTS = ['_site', '_app'].map((d) => path.join(__dirname, '..', d)).filter(fs.existsSync);
+if (!ROOTS.length) {
+  console.log('csp: nothing built, skipping (run npm run build first)');
   process.exit(0);
 }
 
 const pages = [];
-(function walk(dir) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) walk(full);
-    else if (entry.name.endsWith('.html')) pages.push(full);
-  }
-})(SITE);
+for (const root of ROOTS) {
+  (function walk(dir) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (entry.name.endsWith('.html')) pages.push(full);
+    }
+  })(root);
+}
 assert.ok(pages.length > 5, `expected the built site, found ${pages.length} pages`);
 
 const sha256 = (s) => `'sha256-${crypto.createHash('sha256').update(s, 'utf8').digest('base64')}'`;
@@ -32,7 +37,7 @@ let hashed = 0;
 
 for (const page of pages) {
   const html = fs.readFileSync(page, 'utf8');
-  const where = path.relative(SITE, page);
+  const where = path.relative(path.join(__dirname, '..'), page);
 
   const meta = html.match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)">/);
   assert.ok(meta, `${where} has no Content-Security-Policy`);

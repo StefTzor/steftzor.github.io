@@ -1,0 +1,10 @@
+# The image builds from source; none of this belongs in the build context.
+node_modules
+_site
+_app
+dist
+.git
+.github
+graphify-out
+.remember
+*.test.js
