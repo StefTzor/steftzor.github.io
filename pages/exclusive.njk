@@ -144,7 +144,7 @@ inlineScript: |
 <section id="authRequired" class="content-locked text-center max-w-lg mx-auto">
   <div class="bg-brand-surface p-8 rounded-2xl shadow-xl border border-brand-muted/20">
     <div class="text-6xl mb-6 text-pink-600 dark:text-pink-400">
-      <i class="fas fa-heart-lock" aria-hidden="true"></i>
+      {% icon "fa-solid-heart-lock", "" %}
     </div>
     <h1 class="text-3xl font-bold mb-4 text-brand-text">For Your Eyes Only</h1>
     <p class="mb-8 text-brand-muted text-lg">
@@ -183,7 +183,7 @@ inlineScript: |
 
         <button type="button" id="openMessageBtn"
           class="w-full py-4 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 text-white font-bold text-lg shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
-          <i class="fas fa-envelope-open-text" aria-hidden="true"></i><span></span>
+          {% icon "fa-solid-envelope-open-text", "" %}<span></span>
         </button>
       </div>
     </div>
@@ -204,8 +204,7 @@ inlineScript: |
         <div
           class="p-8 md:p-12 flex flex-col justify-center text-center md:text-left bg-pink-50 dark:bg-slate-800/50">
           <div class="mb-6">
-            <i class="fas fa-heart text-5xl text-pink-600 dark:text-pink-400 heart-beat inline-block"
-              aria-hidden="true"></i>
+            {% icon "fa-solid-heart", "text-5xl text-pink-600 dark:text-pink-400 heart-beat inline-block" %}
           </div>
           <h2 id="celebration-heading"
             class="text-4xl md:text-5xl font-handwriting text-pink-600 dark:text-pink-400 mb-6"></h2>

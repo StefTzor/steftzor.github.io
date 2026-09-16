@@ -68,7 +68,7 @@ class="relative border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40 o
     <div class="flex flex-col items-center gap-4">
       <a href="/portfolio/" class="btn-primary shadow-glow px-10 py-4 text-lg inline-flex items-center gap-3">
         View Technical Case Studies
-        <i class="fas fa-arrow-right text-base" aria-hidden="true"></i>
+        {% icon "fa-solid-arrow-right", "text-base" %}
       </a>
       <p class="text-sm text-brand-muted">
         Currently a Technical Customer Success Manager at Data Talks.
@@ -97,14 +97,14 @@ class="relative border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40 o
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
         <div class="flex items-start gap-3">
-          <div class="mt-1 text-brand-accent"><i class="fas fa-cogs" aria-hidden="true"></i></div>
+          <div class="mt-1 text-brand-accent">{% icon "fa-solid-cogs", "" %}</div>
           <div>
             <h4 class="font-bold text-brand-text">Technical Execution</h4>
             <p class="text-sm text-brand-muted">SQL, REST APIs, and complex data mapping.</p>
           </div>
         </div>
         <div class="flex items-start gap-3">
-          <div class="mt-1 text-brand-accent"><i class="fas fa-chart-line" aria-hidden="true"></i></div>
+          <div class="mt-1 text-brand-accent">{% icon "fa-solid-chart-line", "" %}</div>
           <div>
             <h4 class="font-bold text-brand-text">Revenue Protection</h4>
             <p class="text-sm text-brand-muted">Turning technical adoption into secured ARR.</p>
@@ -113,28 +113,28 @@ class="relative border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40 o
       </div>
 
       <a href="/about/" class="btn btn-secondary group">
-        Read Full Profile <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1" aria-hidden="true"></i>
+        Read Full Profile {% icon "fa-solid-arrow-right", "ml-2 transition-transform group-hover:translate-x-1" %}
       </a>
     </div>
 
     <div class="w-full md:w-1/3 flex justify-center">
       <div
         class="relative w-64 h-64 bg-brand-bg rounded-full flex items-center justify-center border-4 border-brand-muted/10 shadow-glow">
-        <i class="fas fa-layer-group text-8xl text-brand-accent/20" aria-hidden="true"></i>
+        {% icon "fa-solid-layer-group", "text-8xl text-brand-accent/20" %}
         <div class="absolute inset-0 flex items-center justify-center">
-          <i class="fas fa-code-branch text-6xl text-brand-accent" aria-hidden="true"></i>
+          {% icon "fa-solid-code-branch", "text-6xl text-brand-accent" %}
         </div>
         <div
           class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 bg-brand-surface p-3 rounded-full border border-brand-muted/20 shadow-lg">
-          <i class="fas fa-database text-brand-text" aria-hidden="true"></i>
+          {% icon "fa-solid-database", "text-brand-text" %}
         </div>
         <div
           class="absolute bottom-4 right-4 bg-brand-surface p-3 rounded-full border border-brand-muted/20 shadow-lg">
-          <i class="fas fa-users text-brand-text" aria-hidden="true"></i>
+          {% icon "fa-solid-users", "text-brand-text" %}
         </div>
         <div
           class="absolute bottom-4 left-4 bg-brand-surface p-3 rounded-full border border-brand-muted/20 shadow-lg">
-          <i class="fas fa-server text-brand-text" aria-hidden="true"></i>
+          {% icon "fa-solid-server", "text-brand-text" %}
         </div>
       </div>
     </div>
@@ -160,7 +160,7 @@ class="relative border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40 o
           <span
             class="bg-blue-500/10 text-blue-700 dark:text-blue-400 text-xs font-bold px-3 py-1 rounded-full border border-blue-500/20">API
             Architecture</span>
-          <i class="fas fa-network-wired text-brand-muted text-xl" aria-hidden="true"></i>
+          {% icon "fa-solid-network-wired", "text-brand-muted text-xl" %}
         </div>
         <h3 class="text-xl font-bold text-brand-text group-hover:text-brand-accent transition-colors">Global
           Ticketing API Mapping</h3>
@@ -187,7 +187,7 @@ class="relative border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40 o
           <span
             class="bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/20">Enterprise
             Governance</span>
-          <i class="fas fa-shield-alt text-brand-muted text-xl" aria-hidden="true"></i>
+          {% icon "fa-solid-shield-alt", "text-brand-muted text-xl" %}
         </div>
         <h3 class="text-xl font-bold text-brand-text group-hover:text-brand-accent transition-colors">Fortune 500
           Data Lake Strategy</h3>
@@ -212,7 +212,7 @@ class="relative border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40 o
         <div class="flex justify-between items-start mb-4">
           <span
             class="bg-purple-500/10 text-purple-700 dark:text-purple-400 text-xs font-bold px-3 py-1 rounded-full border border-purple-500/20">Automation</span>
-          <i class="fab fa-github text-brand-muted text-xl" aria-hidden="true"></i>
+          {% icon "fa-brands-github", "text-brand-muted text-xl" %}
         </div>
         <h3 class="text-xl font-bold text-brand-text group-hover:text-brand-accent transition-colors">Technical
           Utility Scripts</h3>
@@ -235,7 +235,7 @@ class="relative border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40 o
 
   <div class="text-center mt-12">
     <a href="/portfolio/" class="btn-secondary inline-flex items-center gap-2">
-      View All Case Studies <i class="fas fa-arrow-right text-sm" aria-hidden="true"></i>
+      View All Case Studies {% icon "fa-solid-arrow-right", "text-sm" %}
     </a>
   </div>
 
@@ -247,7 +247,7 @@ class="relative border-b-2 border-brand-muted/10 pt-20 pb-24 md:pt-32 md:pb-40 o
     </p>
     <a href="/contact/" class="btn-primary shadow-glow mt-8 px-10 py-4 text-lg inline-flex items-center gap-3">
       Start a conversation
-      <i class="fas fa-arrow-right text-base" aria-hidden="true"></i>
+      {% icon "fa-solid-arrow-right", "text-base" %}
     </a>
   </div>
 </section>
