@@ -28,8 +28,21 @@ function showPending(el) {
 const PENDING_MESSAGE =
   "Thanks — your request has been received. Access is granted manually, so you will not be able to sign in until it is approved.";
 
-// Wait for DOM to load
-document.addEventListener("DOMContentLoaded", () => {
+/**
+ * Run once the DOM is ready — or immediately if it already is.
+ *
+ * This file is reached through a dynamic import() from auth-boot.js, which resolves long after
+ * DOMContentLoaded has fired. Registering a DOMContentLoaded listener at that point waits for an
+ * event that has already happened, so the handlers never attach, and a form with no submit
+ * handler falls back to a native GET - putting the password in the URL, the browser history and
+ * the referrer of the next request. That is exactly what happened on the live site.
+ */
+function onReady(fn) {
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
+  else fn();
+}
+
+onReady(() => {
   onAuthStateChanged(auth, handleAuthStateChanged);
 
   // Set up event listeners

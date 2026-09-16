@@ -71,10 +71,36 @@ if (/app\/scripts/.test(where)) {
   }
 }
 
-// 7. Spam gate must still be wired.
+// 7. Init must not depend on DOMContentLoaded having not yet fired.
+//    auth.js is reached by a dynamic import() that resolves after that event, so a listener
+//    registered for it never runs, no submit handler attaches, and the form does a native GET -
+//    which puts the password in the URL, the history and the next request's referrer. That
+//    happened on the live site on 2026-09-16.
+assert.ok(/document\.readyState === "loading"/.test(src),
+  where + ' must attach handlers even when the DOM is already ready');
+assert.ok(!/^document\.addEventListener\("DOMContentLoaded"/m.test(src),
+  where + ' must not register handlers on DOMContentLoaded alone');
+
+// 8. Spam gate must still be wired.
 assert.ok(/getElementById\("website"\)/.test(src) && /formLoadedAt/.test(src),
   where + ' honeypot and timing gate must remain in place');
 
+}
+
+// 9. No form that carries a credential may submit as GET, whatever the JavaScript does.
+//     This is the containment for invariant 7: with method="post" a broken handler produces a
+//     rejected request instead of a password in the URL bar.
+for (const dir of [path.join(__dirname, '..', 'pages'), path.join(__dirname, '..', 'app', 'pages')]) {
+  if (!fs.existsSync(dir)) continue;
+  for (const name of fs.readdirSync(dir).filter((f) => f.endsWith('.njk'))) {
+    const page = fs.readFileSync(path.join(dir, name), 'utf8');
+    if (!/type="password"/.test(page)) continue;
+    for (const [, tag] of page.matchAll(/(<form[^>]*>)/g)) {
+      assert.ok(/method="post"/i.test(tag),
+        `${path.basename(dir)}/${name} has a password field in a form without method="post" - ` +
+        `a native submit would put the password in the URL`);
+    }
+  }
 }
 
 console.log(`auth.js: all security invariants hold in ${COPIES.length} file(s) — ` +
