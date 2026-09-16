@@ -18,4 +18,6 @@ FROM nginx:alpine
 COPY --from=build /build/_app /usr/share/nginx/html
 COPY nginx.app.conf /etc/nginx/conf.d/default.conf
 COPY nginx.app.headers.conf /etc/nginx/snippets/security.conf
+# Runs before nginx starts; see the script for why the config is generated rather than baked.
+COPY docker/10-firebase-config.sh /docker-entrypoint.d/10-firebase-config.sh
 EXPOSE 80

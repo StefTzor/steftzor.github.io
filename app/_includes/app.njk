@@ -13,6 +13,7 @@
   Front matter:
     title        the <title>
     bodyClass    classes on <body>
+    redirectWhenAuthed  send an already-signed-in visitor to the app home
     inlineScript end-of-body script
     appScript    {src, type} loaded at end of body
 #}
@@ -41,7 +42,7 @@
   <link href="/dist/output.css" rel="stylesheet">
 </head>
 
-<body class="{{ bodyClass | default('bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col') }}">
+<body{% if redirectWhenAuthed %} data-redirect-when-authed="1"{% endif %} class="{{ bodyClass | default('bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col') }}">
 
   <a href="#main-content" class="skip-link">Skip to content</a>
 
