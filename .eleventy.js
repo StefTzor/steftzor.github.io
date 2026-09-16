@@ -130,6 +130,68 @@ module.exports = function(eleventyConfig) {
     );
   });
 
+
+  /**
+   * Content-Security-Policy.
+   *
+   * GitHub Pages cannot set response headers, so the policy ships as a <meta>. That costs
+   * frame-ancestors, report-uri and sandbox, which are header-only - clickjacking stays
+   * covered by nothing, and is the one thing this cannot do.
+   *
+   * The hashes are computed from the built output rather than written into the layout by
+   * hand. A hand-kept hash rots the moment anyone edits the theme script or the calendar
+   * CSS, and the only symptom is a console error on the live site: the build stays green.
+   * Third-party origins are read off the page's own <script src> and <img src>, so a page
+   * that stops loading something stops allowing it in the same commit. External stylesheets
+   * are deliberately not picked up that way: there are none left, and re-introducing one
+   * should fail the build (scripts/csp.test.js) rather than quietly widen the policy.
+   */
+  const CHARSET = '<meta charset="UTF-8">';
+  const sha256 = (s) => `'sha256-${crypto.createHash("sha256").update(s, "utf8").digest("base64")}'`;
+  const originsIn = (html, re) =>
+    [...new Set([...html.matchAll(re)].map((m) => new URL(m[1]).origin))];
+
+  eleventyConfig.addTransform("csp", function (content) {
+    if (!this.page.outputPath || !this.page.outputPath.endsWith(".html")) return content;
+
+    // Only executable scripts are matched against script-src. A <script type="application/ld+json">
+    // is a data block - the HTML parser returns before the CSP check - so the schema needs no hash.
+    const scriptHashes = [...content.matchAll(/<script((?![^>]*\ssrc=)[^>]*)>([\s\S]*?)<\/script>/g)]
+      .filter(([, attrs]) => !/ld\+json/.test(attrs))
+      .map(([, , body]) => sha256(body));
+    const styleHashes = [...content.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => sha256(m[1]));
+
+    const policy = {
+      "default-src": ["'self'"],
+      // gstatic serves the Firebase SDK modules that scripts/auth.js imports; gc.zgo.at is
+      // GoatCounter, injected by consent.js after consent, so no hash can ever cover it.
+      "script-src": ["'self'", "https://www.gstatic.com", "https://gc.zgo.at",
+        ...originsIn(content, /<script[^>]*\ssrc="(https:\/\/[^"]+)"/g), ...scriptHashes],
+      // style-src-elem and -attr are what current browsers honour; the plain style-src is the
+      // fallback for those that do not know them. The attribute source has to stay
+      // 'unsafe-inline': the inlined Font Awesome icons carry style="display:inline-block"
+      // to survive Preflight's svg{display:block}, and no hash can cover a style attribute.
+      "style-src": ["'self'", "'unsafe-inline'"],
+      "style-src-elem": ["'self'", ...styleHashes],
+      "style-src-attr": ["'unsafe-inline'"],
+      "img-src": ["'self'", "data:", ...originsIn(content, /<img[^>]*\ssrc="(https:\/\/[^"]+)"/g)],
+      "font-src": ["'self'"],
+      // Firebase Auth and Firestore, the contact form and the auth gate, and GoatCounter's beacon.
+      "connect-src": ["'self'", "https://api.tzortzoglou.eu", "https://identitytoolkit.googleapis.com",
+        "https://securetoken.googleapis.com", "https://firestore.googleapis.com",
+        "https://steftzor.goatcounter.com"],
+      "form-action": ["'self'"],
+      "frame-src": ["'none'"],
+      "object-src": ["'none'"],
+      "base-uri": ["'self'"],
+    };
+
+    const meta = `<meta http-equiv="Content-Security-Policy" content="${Object.entries(policy)
+      .map(([name, sources]) => `${name} ${sources.join(" ")}`)
+      .join("; ")}">`;
+    return content.replace(CHARSET, () => `${CHARSET}\n  ${meta}`);
+  });
+
   return {
     dir: {
       input: "pages",          // Source directory for pages
