@@ -14,7 +14,12 @@ const path = require('path');
 // Both builds: _site is tzortzoglou.eu, _app is app.tzortzoglou.eu. The app is checked here
 // too because it shares the transform - the first version of the app's CSP override silently
 // dropped the inline-script hash, and nothing would have caught it if this only walked _site.
-const ROOTS = ['_site', '_app'].map((d) => path.join(__dirname, '..', d)).filter(fs.existsSync);
+// Which build to check, named by the caller: `node scripts/csp.test.js _app`. Without an
+// argument both are checked. The site build and the app build pass their own, so a stale
+// directory left by the other one cannot fail a build that has nothing to do with it.
+const ROOTS = (process.argv.slice(2).length ? process.argv.slice(2) : ['_site', '_app'])
+  .map((d) => path.join(__dirname, '..', d))
+  .filter(fs.existsSync);
 if (!ROOTS.length) {
   console.log('csp: nothing built, skipping (run npm run build first)');
   process.exit(0);
@@ -22,6 +27,7 @@ if (!ROOTS.length) {
 
 const pages = [];
 for (const root of ROOTS) {
+  const before = pages.length;
   (function walk(dir) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name);
@@ -29,8 +35,11 @@ for (const root of ROOTS) {
       else if (entry.name.endsWith('.html')) pages.push(full);
     }
   })(root);
+  // Per root rather than a total: a build that emitted nothing at all is the failure worth
+  // catching, and the two builds are different sizes.
+  assert.ok(pages.length > before, `${path.basename(root)} contains no HTML — did the build run?`);
 }
-assert.ok(pages.length > 5, `expected the built site, found ${pages.length} pages`);
+assert.ok(pages.length, 'nothing to check');
 
 const sha256 = (s) => `'sha256-${crypto.createHash('sha256').update(s, 'utf8').digest('base64')}'`;
 let hashed = 0;
