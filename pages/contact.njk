@@ -25,10 +25,13 @@ sitemapPriority: "0.5"
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
 
             <a href="mailto:stefanos@tzortzoglou.eu"
-                class="group bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 hover:border-brand-accent/50 hover:shadow-glow transition duration-300 text-center">
+                class="group bg-brand-surface p-8 rounded-2xl border border-brand-border hover:border-brand-accent/50 hover:shadow-glow transition duration-300 text-center">
                 <div
-                    class="w-16 h-16 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-accent group-hover:text-white group-hover:-translate-y-2 transition duration-300">
-                    {% icon "fa-solid-envelope", "text-2xl text-brand-accent group-hover:text-white" %}
+                    class="w-16 h-16 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-brand-accent group-hover:text-brand-onaccent group-hover:-translate-y-2 transition duration-300">
+                    {# On hover the circle fills with the accent, so the icon takes the token defined
+                       for text on it. Plain white was only right in light mode: on dark mode's
+                       Emerald 500 it lands at 2.5:1, under the 3:1 a graphic needs. #}
+                    {% icon "fa-solid-envelope", "text-2xl text-brand-accent group-hover:text-brand-onaccent" %}
                 </div>
 
                 <h2 class="text-xl font-bold mb-2">Email Me</h2>
@@ -37,7 +40,7 @@ sitemapPriority: "0.5"
             </a>
 
             <a href="https://www.linkedin.com/in/stzortzoglou/" target="_blank"
-                class="group bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 hover:border-[#0077b5]/50 hover:shadow-lg transition duration-300 text-center" rel="noopener noreferrer">
+                class="group bg-brand-surface p-8 rounded-2xl border border-brand-border hover:border-[#0077b5]/50 hover:shadow-lg transition duration-300 text-center" rel="noopener noreferrer">
                 <div
                     class="w-16 h-16 bg-[#0077b5]/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0077b5] group-hover:text-white group-hover:-translate-y-2 transition duration-300">
                     {% icon "fa-brands-linkedin-in", "text-2xl text-[#0077b5] group-hover:text-white" %}
@@ -51,7 +54,7 @@ sitemapPriority: "0.5"
 
         </div>
 
-        <div class="bg-brand-surface p-8 rounded-2xl border border-brand-muted/10 mb-12">
+        <div class="bg-brand-surface p-8 rounded-2xl border border-brand-border mb-12">
   <h2 class="text-2xl font-bold mb-2">Or write to me here</h2>
   <p class="text-brand-muted text-sm mb-6">
     Write as much or as little as you like. I reply from <strong>stefanos@tzortzoglou.eu</strong>.
@@ -61,21 +64,21 @@ sitemapPriority: "0.5"
     <div class="mb-4">
       <label for="contactName" class="block mb-1 font-medium text-brand-text">Your name</label>
       <input type="text" id="contactName" name="name" required maxlength="100" autocomplete="name"
-        class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent">
+        class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-border focus:border-brand-accent">
     </div>
 
     <div class="mb-4">
       <label for="contactEmail" class="block mb-1 font-medium text-brand-text">Your email address</label>
       <input spellcheck="false" type="email" id="contactEmail" name="email" required maxlength="254" autocomplete="email"
         aria-describedby="contactEmail-hint"
-        class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent">
+        class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-border focus:border-brand-accent">
       <p id="contactEmail-hint" class="mt-1 text-xs text-brand-muted">So I can reply. Nothing else.</p>
     </div>
 
     <div class="mb-6">
       <label for="contactMessage" class="block mb-1 font-medium text-brand-text">Message</label>
       <textarea id="contactMessage" name="message" required minlength="10" maxlength="5000" rows="6"
-        class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-muted/40 focus:border-brand-accent"></textarea>
+        class="w-full p-2 rounded bg-brand-bg text-brand-text border border-brand-border focus:border-brand-accent"></textarea>
     </div>
 
     <!-- GDPR Art. 6(1)(a) / Art. 7: consent must be a specific, informed, unticked opt-in. -->
@@ -112,15 +115,15 @@ sitemapPriority: "0.5"
   </form>
 </div>
 
-<div class="bg-brand-surface/50 rounded-lg p-4 text-center border border-brand-muted/10 max-w-md mx-auto">
+<div class="bg-brand-surface/50 rounded-lg p-4 text-center border border-brand-border max-w-md mx-auto">
             <div
                 class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 text-brand-muted text-sm">
 
                 <div class="flex items-center gap-2">
                     <span class="relative flex h-3 w-3">
                         <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-accent opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-brand-accent"></span>
                     </span>
                     <span>Based in <strong>Uppsala, Sweden</strong></span>
                 </div>

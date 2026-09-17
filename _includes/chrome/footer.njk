@@ -12,11 +12,16 @@
               and the site must not have them - a same-origin link that goes out and comes back
               is a needless round trip and breaks the view transition.
 #}
-<footer class="bg-brand-bg border-t border-brand-muted/10 py-12 mt-auto">
+{# `chrome-dark` for the same reason as the bar: the footer is chrome, so it keeps the dark
+   palette in both themes. Light mode used to end on the same colour the page was already, which
+   left the bottom of every page with no edge at all. In dark mode the class is a no-op. #}
+<footer class="chrome-dark bg-brand-bg border-t border-brand-border py-12 mt-auto">
   <div class="container mx-auto text-center px-4">
+    {#- One blue, as in the header, and for the same reason: this wordmark is on dark in both
+        themes now, and blue-700 on #0f172a is 2.7:1 against blue-400's 7.0:1. -#}
     <h2 class="text-2xl font-bold inline-block">
       <a href="{{ siteBase }}/"
-        class="bg-gradient-to-r from-brand-accent to-blue-700 dark:to-blue-400 bg-clip-text text-transparent inline-block hover:-translate-y-1 transition-transform duration-300">
+        class="bg-gradient-to-r from-brand-accent to-blue-400 bg-clip-text text-transparent inline-block hover:-translate-y-1 transition-transform duration-300">
         Stefanos Tzortzoglou
       </a>
     </h2>

@@ -203,7 +203,7 @@ function wireLocation(me) {
       li.setAttribute("aria-selected", "false");
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "w-full text-left rounded-lg border border-brand-muted/15 px-3 py-2 text-sm " +
+      btn.className = "w-full text-left rounded-lg border border-brand-border px-3 py-2 text-sm " +
         "text-brand-text hover:border-brand-accent hover:bg-brand-bg transition-colors duration-150";
       btn.textContent = placeLabel(p);
       btn.addEventListener("click", () => save({

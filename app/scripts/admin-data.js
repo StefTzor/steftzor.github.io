@@ -42,7 +42,7 @@ function renderPicker() {
   tables.forEach((t) => {
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "seg border border-brand-muted/20";
+    btn.className = "seg border border-brand-border";
     btn.setAttribute("aria-pressed", String(t.name === current));
     const name = document.createElement("span");
     name.className = "font-mono";

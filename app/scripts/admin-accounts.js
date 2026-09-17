@@ -179,7 +179,7 @@ function render() {
   cards.className = "sm:hidden space-y-3";
   rows.forEach((u) => {
     const li = document.createElement("li");
-    li.className = "rounded-lg border border-brand-muted/15 bg-brand-surface p-4";
+    li.className = "rounded-lg border border-brand-border bg-brand-surface p-4";
     const top = document.createElement("div");
     top.className = "flex items-start justify-between gap-3 mb-1";
     const who = document.createElement("div");
@@ -204,7 +204,7 @@ function render() {
   ["Name", "Status", "Actions"].forEach((h) => {
     const th = document.createElement("th");
     th.scope = "col";
-    th.className = "pb-2 font-semibold text-brand-text border-b border-brand-muted/20";
+    th.className = "pb-2 font-semibold text-brand-text border-b border-brand-border";
     th.textContent = h;
     hrow.appendChild(th);
   });
@@ -213,7 +213,7 @@ function render() {
   const tbody = document.createElement("tbody");
   rows.forEach((u) => {
     const tr = document.createElement("tr");
-    tr.className = "border-b border-brand-muted/10";
+    tr.className = "border-b border-brand-border";
 
     const who = document.createElement("td");
     who.className = "py-3 pr-4 align-top";

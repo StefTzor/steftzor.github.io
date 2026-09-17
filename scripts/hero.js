@@ -24,9 +24,27 @@ document.addEventListener('DOMContentLoaded', () => {
   // Parallax Config
   const profileSpeed = 0.03; 
   const titleSpeed = 0.015;
+  // The mesh mirrors the hero's own CSS gradient, which runs `from-brand-accent to-blue-500` on
+  // the name and on the glow behind the portrait. The green end is therefore read from the live
+  // --color-accent rather than hardcoded: the two themes use different greens, and painting dark
+  // mode's #10b981 on light mode's #eef2f7 page is what made the mesh nearly invisible there.
+  // Blue 500 stays a literal for the same reason it is one in the markup - it is not themed.
+  const ACCENT_FALLBACK = { r: 16, g: 185, b: 129 };
   const colors = {
-    start: { r: 16, g: 185, b: 129 }, // Green
-    end: { r: 59, g: 130, b: 246 }    // Blue
+    start: ACCENT_FALLBACK,
+    end: { r: 59, g: 130, b: 246 }
+  };
+
+  // The token holds space-separated RGB channels ("16 185 129") so that Tailwind can slot an
+  // alpha into it, which is not a form canvas accepts - hence the parse. Anything unexpected
+  // (a browser that hands back an empty string, a stylesheet that never loaded) falls back to
+  // the hardcoded green, so the hero still paints rather than painting nothing.
+  const readAccent = () => {
+    const raw = getComputedStyle(document.documentElement).getPropertyValue('--color-accent');
+    const ch = raw.split(/[\s,\/]+/).filter(Boolean).slice(0, 3).map(Number);
+    colors.start = (ch.length === 3 && ch.every((n) => Number.isFinite(n)))
+      ? { r: ch[0], g: ch[1], b: ch[2] }
+      : ACCENT_FALLBACK;
   };
 
   // --- RESIZE & INIT ---
@@ -205,7 +223,17 @@ document.addEventListener('DOMContentLoaded', () => {
     title.addEventListener('mouseleave', endWave);
   }
 
+  // scripts/chrome.js changes the theme by flipping `dark` on <html>, and a class change fires no
+  // event, so the canvas watches for it. Re-reading the token is all the running loop needs; under
+  // reduced motion the loop has already returned after its single frame, so that frame is painted
+  // again or the mesh would keep the old theme's green until the next resize.
+  new MutationObserver(() => {
+    readAccent();
+    if (reduceMotion.matches) animate();
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
   // Init
+  readAccent();
   resize();
   animate();
 });

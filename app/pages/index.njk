@@ -75,7 +75,7 @@ signOut: true
         {# Shown only when the browser has the API, and never prompting on its own: an
            unexplained permission dialog on page load is the one thing everybody refuses by
            reflex. The button says what it will do; the browser then asks. #}
-        <div id="geo" class="mt-5 border-t border-brand-muted/15 pt-4 hidden">
+        <div id="geo" class="mt-5 border-t border-brand-border pt-4 hidden">
           <p id="geoNote" class="text-xs text-brand-muted"></p>
           <button type="button" id="geoBtn" class="btn-secondary text-sm px-4 py-1.5 mt-3">Use my location</button>
         </div>
@@ -156,7 +156,7 @@ signOut: true
     <div class="card">
       {# The picker, closed until asked for. A search box that is always there would be the
          loudest thing on a card whose job is to be glanceable. #}
-      <form id="depPicker" method="get" class="hidden mb-4 border-b border-brand-muted/15 pb-4">
+      <form id="depPicker" method="get" class="hidden mb-4 border-b border-brand-border pb-4">
         <label for="depSearch" class="field-label text-sm">Search for a stop</label>
         <div class="flex flex-wrap gap-2">
           <input type="text" id="depSearch" name="depSearch" autocomplete="off" maxlength="80"
@@ -171,7 +171,7 @@ signOut: true
       {# Placeholder rows, in the markup rather than drawn by script: they have to exist at
          first paint, and a skeleton that waits for JavaScript reserves nothing during the wait
          it is there for. render() clears the list, so these disappear when the board arrives. #}
-      <ul id="depList" aria-busy="true" class="divide-y divide-brand-muted/10">
+      <ul id="depList" aria-busy="true" class="divide-y divide-brand-border">
         {%- for i in range(0, 5) %}
         <li class="skel-row" aria-hidden="true">
           <span class="skel h-6 w-7 shrink-0"></span>
@@ -209,7 +209,7 @@ signOut: true
         <span id="f1Sprint" class="hidden rounded-full bg-brand-accent/10 px-2 py-0.5 text-[11px] font-semibold text-brand-accent">Sprint weekend</span>
       </div>
       <p id="f1Countdown" class="mt-1 text-sm text-brand-muted">&nbsp;</p>
-      <ul id="f1Sessions" aria-busy="true" class="mt-4 divide-y divide-brand-muted/10">
+      <ul id="f1Sessions" aria-busy="true" class="mt-4 divide-y divide-brand-border">
         {%- for i in range(0, 5) %}
         <li class="skel-row" aria-hidden="true">
           <span class="skel h-5 flex-1"></span>

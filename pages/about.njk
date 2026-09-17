@@ -91,12 +91,16 @@ sitemapPriority: "0.8"
                     {% icon "fa-solid-briefcase", "text-brand-accent" %} Professional Experience
                 </h2>
 
-                <div class="bg-brand-surface rounded-xl shadow-sm border border-brand-muted/10 p-0 overflow-hidden">
+                <div class="bg-brand-surface rounded-xl shadow-sm border border-brand-border p-0 overflow-hidden">
 
-                    <div class="p-6 border-b border-brand-muted/10 bg-brand-muted/5 relative z-10">
+                    <div class="p-6 border-b border-brand-border bg-brand-muted/5 relative z-10">
                         <div class="flex items-start gap-4">
+                            {# The tile is the Data Talks mark, so it is white with dark letters in
+                               both themes rather than following the palette. Now that light-mode
+                               cards are white too it had disappeared into the one it sits on, so it
+                               carries the same border token every other edge on the page uses. #}
                             <div
-                                class="w-12 h-12 rounded bg-white flex items-center justify-center text-xl font-bold text-slate-900 shadow-sm shrink-0">
+                                class="w-12 h-12 rounded bg-white border border-brand-border flex items-center justify-center text-xl font-bold text-slate-900 shadow-sm shrink-0">
                                 DT
                             </div>
                             <div>
@@ -261,7 +265,7 @@ sitemapPriority: "0.8"
                     {% icon "fa-solid-graduation-cap", "text-brand-accent" %} Education
                 </h2>
                 <div
-                    class="bg-brand-surface p-6 rounded-xl shadow-sm border border-brand-muted/10 relative overflow-hidden group">
+                    class="bg-brand-surface p-6 rounded-xl shadow-sm border border-brand-border relative overflow-hidden group">
                     <div
                         class="absolute top-0 left-0 w-1 h-full bg-brand-accent opacity-0 group-hover:opacity-100 transition-opacity">
                     </div>
@@ -269,7 +273,7 @@ sitemapPriority: "0.8"
                     <h3 class="text-xl font-bold">University of Western Macedonia</h3>
                     <p class="text-brand-muted">Bachelor's degree, Computer Science</p>
 
-                    <div class="mt-6 pt-6 border-t border-brand-muted/20">
+                    <div class="mt-6 pt-6 border-t border-brand-border">
                         <h4 class="font-bold text-brand-text mb-2">Thesis: Automated Written Exam Management System
                         </h4>
                         <p class="text-sm text-brand-muted mb-3">
@@ -294,24 +298,31 @@ sitemapPriority: "0.8"
 
         <div class="lg:col-span-1 space-y-8">
 
-            <div class="bg-brand-surface p-6 rounded-xl border border-brand-muted/10 sticky top-24">
-                <h3 class="text-xl font-bold mb-6 border-b border-brand-muted/20 pb-2">Technical Skills</h3>
+            <div class="bg-brand-surface p-6 rounded-xl border border-brand-border sticky top-24">
+                <h3 class="text-xl font-bold mb-6 border-b border-brand-border pb-2">Technical Skills</h3>
+
+                {# These chips, and the matching ones on the home and portfolio pages, sit at 20%
+                   fill and 40% border. At the 10/20 they were picked for, they read as a pill on
+                   the old #e2e8f0 card and as nothing at all on the white one: 1.06:1 of fill
+                   against the surface. 40% puts the edge at 1.6:1, the same order as the 1.8:1 the
+                   border token settled on, so a chip reads as a chip without shouting. The label carries the meaning either
+                   way - Blue 700 on the stronger fill is still 5.3:1. #}
 
                 <div class="mb-6">
                     <h4 class="text-sm font-semibold text-brand-muted uppercase tracking-wider mb-3">Core Tech</h4>
                     <div class="flex flex-wrap gap-2">
                         <span
-                            class="px-3 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/20">SQL</span>
+                            class="px-3 py-1 bg-blue-500/20 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/40">SQL</span>
                         <span
-                            class="px-3 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/20">REST
+                            class="px-3 py-1 bg-blue-500/20 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/40">REST
                             APIs</span>
                         <span
-                            class="px-3 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/20">HTML/CSS</span>
+                            class="px-3 py-1 bg-blue-500/20 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/40">HTML/CSS</span>
                         <span
-                            class="px-3 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/20">Relational
+                            class="px-3 py-1 bg-blue-500/20 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/40">Relational
                             Databases</span>
                         <span
-                            class="px-3 py-1 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/20">Data
+                            class="px-3 py-1 bg-blue-500/20 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium border border-blue-500/40">Data
                             Mapping</span>
                     </div>
                 </div>
@@ -321,21 +332,21 @@ sitemapPriority: "0.8"
                     </h4>
                     <div class="flex flex-wrap gap-2">
                         <span
-                            class="px-3 py-1 bg-purple-500/10 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/20">SaaS
+                            class="px-3 py-1 bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/40">SaaS
                             Onboarding</span>
                         <span
-                            class="px-3 py-1 bg-purple-500/10 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/20">Ticketing
+                            class="px-3 py-1 bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/40">Ticketing
                             Systems</span>
                         <span
-                            class="px-3 py-1 bg-purple-500/10 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/20">E-Commerce</span>
+                            class="px-3 py-1 bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/40">E-Commerce</span>
                         <span
-                            class="px-3 py-1 bg-purple-500/10 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/20">CRM
+                            class="px-3 py-1 bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/40">CRM
                             & ERP</span>
                         <span
-                            class="px-3 py-1 bg-purple-500/10 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/20">B2B
+                            class="px-3 py-1 bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/40">B2B
                             Solutions</span>
                         <span
-                            class="px-3 py-1 bg-purple-500/10 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/20">Project
+                            class="px-3 py-1 bg-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full text-sm font-medium border border-purple-500/40">Project
                             Management</span>
                     </div>
                 </div>
@@ -345,18 +356,18 @@ sitemapPriority: "0.8"
                         Success</h4>
                     <div class="flex flex-wrap gap-2">
                         <span
-                            class="px-3 py-1 bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/20">Revenue
+                            class="px-3 py-1 bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/40">Revenue
                             Retention</span>
                         <span
-                            class="px-3 py-1 bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/20">Adoption
+                            class="px-3 py-1 bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/40">Adoption
                             Strategy</span>
                         <span
-                            class="px-3 py-1 bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/20">Technical
+                            class="px-3 py-1 bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/40">Technical
                             Leadership</span>
                         <span
-                            class="px-3 py-1 bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/20">Troubleshooting</span>
+                            class="px-3 py-1 bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/40">Troubleshooting</span>
                         <span
-                            class="px-3 py-1 bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/20">Stakeholder
+                            class="px-3 py-1 bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 rounded-full text-sm font-medium border border-emerald-500/40">Stakeholder
                             Management</span>
                     </div>
                 </div>

@@ -50,7 +50,7 @@ sitemapPriority: "0.8"
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
 
-        <div class="bg-brand-surface p-8 rounded-2xl border border-brand-muted/10">
+        <div class="bg-brand-surface p-8 rounded-2xl border border-brand-border">
             <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
                 {% icon "fa-solid-terminal", "text-brand-accent" %} Philosophy & Stack
             </h2>
@@ -125,14 +125,14 @@ sitemapPriority: "0.8"
         </div>
         <div class="space-y-8">
 
-            <div class="bg-brand-surface p-1 rounded-2xl border border-brand-muted/10 shadow-lg overflow-hidden">
+            <div class="bg-brand-surface p-1 rounded-2xl border border-brand-border shadow-lg overflow-hidden">
                 <img width="467" height="195" src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=0f172a&title_color=10b981&icon_color=3b82f6&text_color=94a3b8"
                     alt="GitHub statistics for steftzor: total stars, commits, pull requests, issues and contributions. Full detail on the GitHub profile linked below." class="hidden dark:block w-full h-auto">
                 <img width="467" height="195" src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=e2e8f0&title_color=059669&icon_color=3b82f6&text_color=334155"
                     alt="" role="presentation" class="block dark:hidden w-full h-auto">
             </div>
 
-            <div class="bg-brand-surface p-1 rounded-2xl border border-brand-muted/10 shadow-lg overflow-hidden">
+            <div class="bg-brand-surface p-1 rounded-2xl border border-brand-border shadow-lg overflow-hidden">
                 <img width="300" height="165" src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=0f172a&title_color=10b981&text_color=94a3b8&icon_color=3b82f6"
                     alt="Most-used programming languages across steftzor's public GitHub repositories, by share of code." class="hidden dark:block w-full h-auto">
                 <img width="300" height="165" src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=e2e8f0&title_color=059669&text_color=334155&icon_color=3b82f6"
@@ -151,7 +151,7 @@ sitemapPriority: "0.8"
             {% icon "fa-solid-network-wired", "text-brand-accent" %} A system I run end to end
         </h3>
 
-        <div class="bg-brand-surface border border-brand-muted/10 p-6 sm:p-8 rounded-xl">
+        <div class="bg-brand-surface border border-brand-border p-6 sm:p-8 rounded-xl">
             <p class="text-brand-muted leading-relaxed max-w-3xl">
                 The signed-in app on this domain authenticates people, proxies four third-party APIs,
                 writes to Postgres and deploys itself. I designed it, built it and keep it running. That is the same work as onboarding a customer onto a platform: making
@@ -218,7 +218,7 @@ sitemapPriority: "0.8"
             {% icon "fa-brands-github", "text-brand-accent" %} Live Code Activity
         </h3>
         {% if contributions %}
-<figure class="contrib bg-brand-surface border border-brand-muted/10 p-6 rounded-xl shadow-lg w-full overflow-x-auto">
+<figure class="contrib bg-brand-surface border border-brand-border p-6 rounded-xl shadow-lg w-full overflow-x-auto">
     <figcaption class="sr-only">
         {{ contributions.total }} GitHub contributions between {{ contributions.from }} and
         {{ contributions.to }}, shown as a grid of days shaded by how many contributions each holds.
@@ -248,7 +248,7 @@ sitemapPriority: "0.8"
     </p>
 </figure>
 {% else %}
-<p class="bg-brand-surface border border-brand-muted/10 p-6 rounded-xl text-brand-muted">
+<p class="bg-brand-surface border border-brand-border p-6 rounded-xl text-brand-muted">
     The contribution data could not be fetched for this build.
     <a href="https://github.com/steftzor" target="_blank" rel="noopener noreferrer"
         class="text-brand-accent underline hover:no-underline">See the profile on GitHub</a>.

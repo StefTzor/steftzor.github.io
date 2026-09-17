@@ -84,8 +84,10 @@
 
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="manifest" href="/site.webmanifest">
-  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
+  {# One value, not a pair. The browser's own chrome should match the top of the page, and the
+     top of the page is the header, which carries `chrome-dark` and is this navy in both themes.
+     A light-scheme value here would draw a pale strip directly above a dark bar. #}
+  <meta name="theme-color" content="#0f172a">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">

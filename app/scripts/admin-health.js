@@ -125,7 +125,7 @@ function render(data) {
     head.append(name, repo);
 
     const list = document.createElement("ul");
-    list.className = "divide-y divide-brand-muted/10";
+    list.className = "divide-y divide-brand-border";
     p.runs.forEach((r) => list.appendChild(runRow(r)));
 
     card.append(head, list);
@@ -170,7 +170,7 @@ async function loadBoots() {
       return;
     }
     const list = document.createElement("ul");
-    list.className = "divide-y divide-brand-muted/10";
+    list.className = "divide-y divide-brand-border";
     boots.forEach((b, i) => {
       const li = document.createElement("li");
       li.className = "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2 first:pt-0 last:pb-0";

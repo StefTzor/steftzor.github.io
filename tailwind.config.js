@@ -20,6 +20,11 @@ module.exports = {
           accent: 'rgb(var(--color-accent) / <alpha-value>)',
           hover: 'rgb(var(--color-hover) / <alpha-value>)',
           onaccent: 'rgb(var(--color-onaccent) / <alpha-value>)',
+          // The one border colour. It replaced ~80 hand-picked `border-brand-muted/10|15|20`
+          // hairlines, which worked in dark mode - muted is light there, so a 10% wash reads as
+          // a lighter edge - and disappeared in light mode, where muted is dark and the same
+          // wash is a smudge. One token per theme is the whole elevation system.
+          border: 'rgb(var(--color-border) / <alpha-value>)',
         },
       },
     },

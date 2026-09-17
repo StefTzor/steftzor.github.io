@@ -90,7 +90,13 @@ bodyScripts:
             aria-describedby="status" class="field">
           <button type="button" id="emailOpen" class="btn-secondary mt-4">Move this account…</button>
 
-          <div id="emailConfirm" class="hidden mt-4 rounded-lg border border-amber-600/40 bg-amber-600/5 p-4">
+          {# Amber rather than the accent green the reset confirmation uses, because handing the
+             account to another address is the one action on this page that cannot be undone from
+             here. It is a fixed amber in both themes: the warning should not change weight with
+             the palette. The alphas are pitched against a white card - at /40 the border came out
+             around 1.4:1, fainter than an ordinary hairline, which is the wrong way round for a
+             panel whose whole job is to be noticed. #}
+          <div id="emailConfirm" class="hidden mt-4 rounded-lg border border-amber-600/60 bg-amber-600/10 p-4">
             <p class="text-sm text-brand-text">
               Ask <span id="emailTarget" class="font-semibold"></span> to take over this account?
             </p>

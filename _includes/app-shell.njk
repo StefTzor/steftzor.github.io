@@ -60,8 +60,10 @@
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
+  {# One value, not a pair. The browser's own chrome should match the top of the page, and the
+     top of the page is the header, which carries `chrome-dark` and is this navy in both themes.
+     A light-scheme value here would draw a pale strip directly above a dark bar. #}
+  <meta name="theme-color" content="#0f172a">
 
   <link href="/dist/output.css" rel="stylesheet">
   {%- if pageStyle %}
@@ -96,7 +98,11 @@
        anything gated sits at the bottom, because a role-gated page is a destination you go to
        deliberately rather than a default. The profile is below them, being about you rather
        than about the app. #}
-    <aside id="appHeader" class="hidden lg:flex lg:w-60 lg:shrink-0 lg:flex-col lg:border-r border-brand-muted/15 bg-brand-surface">
+    {# `chrome-dark` for the same reason as the bar above it: the rail is chrome, so it keeps the
+       dark palette in both themes. On the light theme its surface is now white, which would put a
+       white column against a tinted page and leave the section links reading as page content
+       rather than as navigation. In dark mode the class changes nothing. #}
+    <aside id="appHeader" class="chrome-dark hidden lg:flex lg:w-60 lg:shrink-0 lg:flex-col lg:border-r border-brand-border bg-brand-surface">
       <div class="lg:sticky lg:top-[77px] lg:h-[calc(100vh-77px)] flex flex-col">
         {# The palette's only visible affordance. A keyboard shortcut nobody is told about is a
            feature nobody has, and this is the app-only rail rather than the shared bar - the
@@ -152,7 +158,7 @@
                   <span class="flex-1">Admin</span>
                   {% icon "fa-solid-chevron-down", "h-3 w-3 shrink-0 text-brand-muted transition-transform duration-150 group-open:rotate-180" %}
                 </summary>
-                <ul class="mt-1 ml-4 space-y-1 border-l border-brand-muted/15 pl-2">
+                <ul class="mt-1 ml-4 space-y-1 border-l border-brand-border pl-2">
                   {%- for s in adminSections %}
                   <li>
                     <a href="{{ s.href }}" data-nav="{{ s.navKey }}" class="side-link">
@@ -173,7 +179,7 @@
            at exactly the height of the real thing and hides the real thing rather than removing
            it, so nothing in the rail moves when the answer lands. The three fields used to be
            empty elements: the block was blank for about a second, then grew as it filled. #}
-        <div class="border-t border-brand-muted/15 p-3">
+        <div class="border-t border-brand-border p-3">
           <a href="/profile/" data-nav="profile" class="side-link min-h-[73px] items-start" data-profile="loading">
             {% icon "fa-solid-user-gear", "side-icon" %}
             <span class="min-w-0 flex-1">
@@ -260,7 +266,7 @@
      panel shifted the button 269px to the left, away from the pointer that had just pressed it.
      A control must not move because of what it opened. #}
   <div class="fixed bottom-4 right-4 z-40 flex flex-col items-end print:hidden">
-    <div id="cwPanel" class="hidden mb-3 w-[min(26rem,calc(100vw-2rem))] rounded-xl border border-brand-muted/15 bg-brand-surface p-5 shadow-xl"
+    <div id="cwPanel" class="hidden mb-3 w-[min(26rem,calc(100vw-2rem))] rounded-xl border border-brand-border bg-brand-surface p-5 shadow-xl"
       role="dialog" aria-modal="false" aria-labelledby="cw-title">
       <div class="flex items-start justify-between gap-4">
         <h2 id="cw-title" class="text-base font-bold text-brand-text">Send me a message</h2>
@@ -302,7 +308,7 @@
      gated by the API on its own, so the list is a courtesy rather than a boundary. #}
   <dialog id="palette" class="palette" aria-label="Command palette">
     <div class="palette-panel">
-      <div class="flex items-center gap-3 border-b border-brand-muted/15 px-4 py-3
+      <div class="flex items-center gap-3 border-b border-brand-border px-4 py-3
         focus-within:ring-2 focus-within:ring-inset focus-within:ring-brand-accent">
         {% icon "fa-solid-terminal", "h-4 w-4 shrink-0 text-brand-muted" %}
         {# The combobox pattern: focus stays in the text box and the highlighted row is named by

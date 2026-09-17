@@ -215,7 +215,7 @@ function hourStrip(hours) {
   // loses the later hours entirely. Snap points so it lands on an hour rather than between two.
   const row = node("ul", "flex gap-2 overflow-x-auto pb-1 snap-x");
   hours.forEach((h) => {
-    const li = node("li", "snap-start shrink-0 w-16 rounded-lg border border-brand-muted/15 p-2 text-center");
+    const li = node("li", "snap-start shrink-0 w-16 rounded-lg border border-brand-border p-2 text-center");
     li.appendChild(node("p", "text-xs text-brand-muted tabular-nums", clockOf(h.time)));
     const g = icon(describe(h.code).icon, "mx-auto my-1 h-5 w-5 text-brand-accent");
     li.appendChild(g);
@@ -234,7 +234,7 @@ function dayGrid(days) {
   wrap.appendChild(node("h3", "text-xs uppercase tracking-wide text-brand-muted mb-2", "Next days"));
   const list = node("ul", "grid grid-cols-3 sm:grid-cols-5 gap-2");
   days.forEach((d, i) => {
-    const item = node("li", "rounded-lg border border-brand-muted/15 p-3 text-center");
+    const item = node("li", "rounded-lg border border-brand-border p-3 text-center");
     item.appendChild(node("p", "text-xs font-semibold text-brand-text", dayName(d.date, i)));
     item.appendChild(icon(describe(d.code).icon, "mx-auto my-1.5 h-6 w-6 text-brand-accent"));
     item.appendChild(node("p", "text-sm text-brand-text tabular-nums", `${deg(d.max)} / ${deg(d.min)}`));

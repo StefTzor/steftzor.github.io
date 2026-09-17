@@ -33,17 +33,37 @@
   }
 
   :root {
-    /* Light Mode — contrast-audited against --color-bg / --color-surface (WCAG 2.1 AA) */
-    --color-bg: 203 213 225;      /* #cbd5e1 */
-    --color-surface: 226 232 240; /* #e2e8f0 */
-    --color-text: 2 6 23;         /* #020617 (Slate 950)  — 13.6:1 on bg */
-    --color-muted: 51 65 85;      /* #334155 (Slate 700)  — 6.97:1 on bg */
-    --color-accent: 6 95 70;      /* #065f46 (Emerald 800) — 5.18:1 on bg, 6.23:1 on surface */
-    --color-hover: 4 61 44;       /* #043d2c — darker accent for button hover */
-    --color-onaccent: 255 255 255;/* text that sits ON the accent — 7.68:1 */
+    /* Light Mode — contrast-audited against --color-bg / --color-surface (WCAG 2.1 AA).
+
+       The page is tinted and the card is white, in that order: light mode used to be #cbd5e1
+       page with an #e2e8f0 card, fourteen units of lightness apart, and that gap was doing the
+       entire job of separating a card from the page it sits on. Everything read as one wash of
+       slate. A white surface against a tinted page is the direction people already expect, and
+       it leaves the accent sitting on white where it is at its most legible. */
+    --color-bg: 238 242 247;      /* #eef2f7 */
+    --color-surface: 255 255 255; /* #ffffff */
+    --color-text: 2 6 23;         /* #020617 (Slate 950)  — 17.9:1 on bg, 20.2:1 on surface */
+    --color-muted: 71 85 105;     /* #475569 (Slate 600)  —  6.7:1 on bg,  7.6:1 on surface */
+    --color-accent: 6 95 70;      /* #065f46 (Emerald 800) —  6.8:1 on bg,  7.7:1 on surface */
+    --color-hover: 4 61 44;       /* #043d2c — darker accent for button hover, 10.9:1 on bg */
+    --color-onaccent: 255 255 255;/* text that sits ON the accent — 7.7:1 */
+    /* A boundary, not text, so the 4.5:1 rule does not apply and 1.8:1 against a white card is
+       deliberate: enough to read as an edge, not so much that every card looks boxed in. */
+    --color-border: 182 194 210;  /* #b6c2d2 — 1.6:1 on bg, 1.8:1 on surface */
   }
 
-  .dark {
+  /* `.dark` is the theme on <html>. `.chrome-dark` is the same palette applied to a SUBTREE, and
+     the two share one declaration block because they are one palette - a second copy would drift.
+
+     Light mode used to put the header, the footer and the app's rail on --color-bg, which is the
+     same colour as the page beneath them, separated by a shadow and a hairline. The navigation
+     did not read as a distinct surface, and the emerald that carries the brand in dark mode was
+     replaced by #065f46, which is dark enough to read as black. Keeping the chrome dark in both
+     themes gives light mode a structure it did not have and gives the accent somewhere to be
+     itself. In dark mode these declarations are identical to the inherited ones, so it is a
+     no-op there rather than a special case. */
+  .dark,
+  .chrome-dark {
     /* Dark Mode */
     --color-bg: 15 23 42;         /* Deep Navy */
     --color-surface: 30 41 59;    /* Lighter Navy */
@@ -52,6 +72,7 @@
     --color-accent: 16 185 129;   /* Emerald 500       — 7.04:1 on bg, 5.77:1 on surface */
     --color-hover: 52 211 153;    /* Emerald 400 — lighter accent for button hover */
     --color-onaccent: 15 23 42;   /* Deep Navy on accent — 7.04:1 */
+    --color-border: 51 65 85;     /* #334155 — 1.7:1 on bg, 1.4:1 on surface */
   }
 
   html {
@@ -249,7 +270,7 @@
      chip inside this card - 327px of a 366px panel, so hovering the chip produced a sliver.
      The clipping belongs to the thing that needs clipping, which is the sky, not the card. */
   .hero {
-    @apply relative rounded-2xl border border-brand-muted/15 bg-brand-surface;
+    @apply relative rounded-2xl border border-brand-border bg-brand-surface;
   }
 
   .hero-body {
@@ -267,26 +288,60 @@
 
   /* Clips itself to the card's corners, so the gradients stop where the border does without
      the card having to clip anything that sits on top of it. */
+  /* Every sky below is a translucent wash, and a wash is only as visible as the surface it sits
+     on. All seven were picked against navy, so they were all pale - which stopped working the
+     moment the card became white. Snow was the proof: near-white dots at 55% over #ffffff are
+     nothing at all.
+
+     The fork is the colour and nothing else. The geometry - where each gradient sits, how large
+     its stops are, which animation carries it - is the drawing, and it is identical in both
+     themes; only the ink changes, once, here. Light mode inks with the dark end of each hue so
+     the wash is something the white card can show; dark mode keeps exactly the values that were
+     tuned for navy. Doing it the other way round - a second copy of all seven rules scoped to
+     light - is the same information written twice, and the copies drift. */
   .hero-sky {
     @apply pointer-events-none absolute inset-0 overflow-hidden rounded-2xl;
+    --wx-sun: rgb(217 119 6 / 22%);          /* Amber 600 */
+    --wx-night: rgb(71 85 105 / 16%);        /* Slate 600 */
+    --wx-veil: rgb(100 116 139 / 15%);       /* Slate 500 */
+    --wx-rain-wash: rgb(2 132 199 / 12%);    /* Sky 600 */
+    --wx-rain-streak: rgb(29 78 216 / 30%);  /* Blue 700 */
+    --wx-storm-wash: rgb(67 56 202 / 14%);   /* Indigo 700 */
+    --wx-storm-streak: rgb(55 48 163 / 32%); /* Indigo 800 */
+    /* Channels rather than a finished colour: the three snowfall layers are one colour at three
+       opacities, and the opacities belong with the layer that uses them. On white the only speck
+       that reads as a speck is a dark one, so light mode falls the flakes in slate. */
+    --wx-snow: 100 116 139;                  /* Slate 500 */
+  }
+
+  .dark .hero-sky,
+  .chrome-dark .hero-sky {
+    --wx-sun: rgb(251 191 36 / 26%);
+    --wx-night: rgb(148 163 184 / 22%);
+    --wx-veil: rgb(148 163 184 / 16%);
+    --wx-rain-wash: rgb(56 189 248 / 10%);
+    --wx-rain-streak: rgb(148 197 255 / 22%);
+    --wx-storm-wash: rgb(129 140 248 / 16%);
+    --wx-storm-streak: rgb(191 210 255 / 26%);
+    --wx-snow: 226 232 240;
   }
 
   /* Clear and mostly clear: a warm low sun breathing at the top right. */
   .hero[data-wx="clear"] .hero-sky,
   .hero[data-wx="partly"] .hero-sky {
-    background: radial-gradient(60% 120% at 88% -20%, rgb(251 191 36 / 26%), transparent 70%);
+    background: radial-gradient(60% 120% at 88% -20%, var(--wx-sun), transparent 70%);
     animation: hero-breathe 9s ease-in-out infinite;
   }
 
   /* Night: cooler, higher, dimmer. */
   .hero[data-wx="night"] .hero-sky {
-    background: radial-gradient(50% 110% at 85% -25%, rgb(148 163 184 / 22%), transparent 72%);
+    background: radial-gradient(50% 110% at 85% -25%, var(--wx-night), transparent 72%);
     animation: hero-breathe 12s ease-in-out infinite;
   }
 
   .hero[data-wx="cloud"] .hero-sky,
   .hero[data-wx="fog"] .hero-sky {
-    background: linear-gradient(105deg, transparent 20%, rgb(148 163 184 / 16%) 50%, transparent 80%);
+    background: linear-gradient(105deg, transparent 20%, var(--wx-veil) 50%, transparent 80%);
     background-size: 220% 100%;
     animation: hero-drift 18s linear infinite;
   }
@@ -296,16 +351,16 @@
   .hero[data-wx="rain"] .hero-sky,
   .hero[data-wx="drizzle"] .hero-sky {
     background:
-      linear-gradient(180deg, rgb(56 189 248 / 10%), transparent 60%),
-      repeating-linear-gradient(74deg, rgb(148 197 255 / 22%) 0 1px, transparent 1px 9px);
+      linear-gradient(180deg, var(--wx-rain-wash), transparent 60%),
+      repeating-linear-gradient(74deg, var(--wx-rain-streak) 0 1px, transparent 1px 9px);
     background-size: 100% 100%, 100% 64px;
     animation: hero-rain 0.85s linear infinite;
   }
 
   .hero[data-wx="thunder"] .hero-sky {
     background:
-      linear-gradient(180deg, rgb(129 140 248 / 16%), transparent 60%),
-      repeating-linear-gradient(74deg, rgb(191 210 255 / 26%) 0 1px, transparent 1px 7px);
+      linear-gradient(180deg, var(--wx-storm-wash), transparent 60%),
+      repeating-linear-gradient(74deg, var(--wx-storm-streak) 0 1px, transparent 1px 7px);
     background-size: 100% 100%, 100% 64px;
     animation: hero-rain 0.6s linear infinite;
   }
@@ -313,9 +368,9 @@
   /* Snow: soft dots drifting down, slowly. */
   .hero[data-wx="snow"] .hero-sky {
     background:
-      radial-gradient(circle at 20% 20%, rgb(226 232 240 / 55%) 1.4px, transparent 1.6px),
-      radial-gradient(circle at 70% 60%, rgb(226 232 240 / 45%) 1.6px, transparent 1.8px),
-      radial-gradient(circle at 45% 85%, rgb(226 232 240 / 40%) 1.2px, transparent 1.4px);
+      radial-gradient(circle at 20% 20%, rgb(var(--wx-snow) / 55%) 1.4px, transparent 1.6px),
+      radial-gradient(circle at 70% 60%, rgb(var(--wx-snow) / 45%) 1.6px, transparent 1.8px),
+      radial-gradient(circle at 45% 85%, rgb(var(--wx-snow) / 40%) 1.2px, transparent 1.4px);
     background-size: 90px 90px, 130px 130px, 70px 70px;
     animation: hero-snow 14s linear infinite;
   }
@@ -389,15 +444,20 @@
     @apply fill-brand-muted text-[9px] font-semibold uppercase;
     letter-spacing: 0.08em;
   }
-  /* A key-carrying upstream, marked so the two that need a credential are visible at a glance. */
+  /* A key-carrying upstream, marked so the two that need a credential are visible at a glance.
+
+     The stroke is the marking, so it has to be the strongest edge in the drawing, and one amber
+     cannot do that on both surfaces: Amber 500 at 40% over a white card composites to a pale
+     #fbd89d, weaker than the plain .dg-box beside it - the box that needs a key would have been
+     the box that looked least drawn. Solid, and a step darker in light, a step lighter in dark. */
   .dg-box-key {
-    @apply fill-amber-500/10 stroke-amber-500/40;
+    @apply fill-amber-500/10 stroke-amber-600 dark:stroke-amber-400;
     stroke-width: 1;
   }
 
   /* One upstream, documented: what we call, how often, and how their field names become ours. */
   .map-row {
-    @apply grid grid-cols-[1fr_auto_1fr] items-baseline gap-x-2 border-b border-brand-muted/10
+    @apply grid grid-cols-[1fr_auto_1fr] items-baseline gap-x-2 border-b border-brand-border
            py-1.5 text-xs last:border-0;
   }
   .map-from { @apply truncate font-mono text-brand-muted; }
@@ -406,7 +466,7 @@
   /* A row of the endpoint and upstream tables. Grid rather than <table> so it can collapse to
      stacked rows on a phone without a horizontal scrollbar. */
   .doc-row {
-    @apply grid gap-x-4 gap-y-1 border-b border-brand-muted/10 py-2.5 last:border-0
+    @apply grid gap-x-4 gap-y-1 border-b border-brand-border py-2.5 last:border-0
            sm:grid-cols-[auto_1fr_auto] sm:items-baseline;
   }
   .doc-method {
@@ -414,7 +474,7 @@
            tracking-wide bg-brand-accent/10 text-brand-accent;
   }
   .doc-role {
-    @apply inline-flex h-5 shrink-0 items-center rounded-full border border-brand-muted/25 px-2
+    @apply inline-flex h-5 shrink-0 items-center rounded-full border border-brand-border px-2
            text-[10px] font-semibold text-brand-muted;
   }
 
@@ -457,7 +517,7 @@
      ::backdrop is the browser's own overlay - no extra element, and it is inert by definition,
      so nothing behind the dialog can be clicked or tabbed into while it is open. */
   .palette {
-    @apply w-[min(36rem,calc(100vw-2rem))] rounded-xl border border-brand-muted/20
+    @apply w-[min(36rem,calc(100vw-2rem))] rounded-xl border border-brand-border
            bg-brand-surface p-0 text-brand-text shadow-2xl;
     /* Near the top rather than centred: the list grows downward, and a centred dialog that
        changes height as you type moves the row under your eye while you are reading it. */
@@ -489,13 +549,13 @@
 
   /* The opener in the rail. Quiet - it is a hint that a shortcut exists, not a primary action. */
   .palette-opener {
-    @apply flex w-full items-center gap-2 rounded-lg border border-brand-muted/20 px-3 py-2
+    @apply flex w-full items-center gap-2 rounded-lg border border-brand-border px-3 py-2
            text-sm text-brand-muted transition-colors duration-150
            hover:border-brand-accent/40 hover:text-brand-text;
   }
 
   .palette-chord {
-    @apply shrink-0 rounded border border-brand-muted/30 px-1.5 py-0.5 text-[11px]
+    @apply shrink-0 rounded border border-brand-border px-1.5 py-0.5 text-[11px]
            font-sans text-brand-muted;
   }
 
@@ -514,7 +574,7 @@
      browser's job. Grid rather than flex: the columns line up down the list, which is what makes
      a list of rows scannable rather than a stack of differently-shaped lines. */
   .msg {
-    @apply border-b border-brand-muted/10;
+    @apply border-b border-brand-border;
   }
 
   .msg-row {
@@ -571,7 +631,7 @@
 
   /* A shortcut, with its own count when it has one. */
   .tile {
-    @apply flex h-full flex-col gap-1 rounded-lg border border-brand-muted/15 bg-brand-surface p-5
+    @apply flex h-full flex-col gap-1 rounded-lg border border-brand-border bg-brand-surface p-5
            transition-colors duration-200
            hover:border-brand-accent/40 focus-visible:border-brand-accent/40;
   }
@@ -623,8 +683,15 @@
   /* One day, on both properties. These used to live in pages/code.njk's inline style, which is
      also the only place they could be edited - and this grid wants exactly the same ramp. The
      layout stays with each grid because the two are genuinely different shapes; the colours are
-     the part that must never drift. */
-  .contrib-day { aspect-ratio: 1; border-radius: 2px; background: #cbd5e1; }
+     the part that must never drift.
+
+     Both ramps are tuned against the card the grid sits on, not the page: #ffffff in light,
+     #1e293b in dark. The empty day has to read as an absence, which is what broke when the page
+     was retinted - it was #cbd5e1, the old light background, so on a white card every empty day
+     read as a filled one and the year looked busier than it was. #e2e8f0 is the faintest step
+     that still shows the grid's shape (1.23:1 on the card), and the lightest green is well clear
+     of it (1.56:1), so "none" and "one" are never the same cell. */
+  .contrib-day { aspect-ratio: 1; border-radius: 2px; background: #e2e8f0; }
   .contrib-day[data-level="1"] { background: #34d399; }
   .contrib-day[data-level="2"] { background: #059669; }
   .contrib-day[data-level="3"] { background: #047857; }
@@ -639,7 +706,7 @@
      the number sits in a row of its own fixed height: the figure arrives a second after the
      page does, and a slot that grows when it lands moves everything below it. */
   .stat-card {
-    @apply grid gap-1 rounded-lg border border-brand-muted/15 bg-brand-surface p-5
+    @apply grid gap-1 rounded-lg border border-brand-border bg-brand-surface p-5
            transition-colors duration-200
            hover:border-brand-accent/40 focus-visible:border-brand-accent/40;
   }
@@ -767,7 +834,7 @@
      only exists once opened has to be laid out at the moment it appears, which is when the
      flicker would be most obvious. */
   .wx-chip {
-    @apply inline-flex items-center gap-3 rounded-xl border border-brand-muted/15 bg-brand-surface
+    @apply inline-flex items-center gap-3 rounded-xl border border-brand-border bg-brand-surface
            px-3 py-2 text-left transition-colors duration-200
            hover:border-brand-accent/40 hover:bg-brand-surface;
   }
@@ -777,7 +844,7 @@
   .wx-panel {
     @apply invisible opacity-0 absolute right-0 z-30 mt-2 w-[min(28rem,calc(100vw-2rem))]
            max-h-[min(70vh,34rem)] overflow-y-auto
-           rounded-xl border border-brand-muted/15 bg-brand-surface p-5 shadow-xl
+           rounded-xl border border-brand-border bg-brand-surface p-5 shadow-xl
            transition-opacity duration-150;
   }
 
@@ -810,7 +877,7 @@
      them had already drifted apart. One definition each, so a change to the look of a field is
      a change in one place - and so a new page cannot invent a slightly different field. */
   .card {
-    @apply bg-brand-surface rounded-lg border border-brand-muted/15 p-6;
+    @apply bg-brand-surface rounded-lg border border-brand-border p-6;
   }
 
   .field-label {
@@ -819,7 +886,7 @@
 
   .field {
     @apply w-full p-2 rounded bg-brand-bg text-brand-text
-           border border-brand-muted/40 focus:border-brand-accent
+           border border-brand-border focus:border-brand-accent
            aria-[invalid=true]:border-red-600 aria-[invalid=true]:border-2;
   }
 
@@ -849,8 +916,8 @@
   .legal a  { @apply text-brand-accent underline hover:no-underline; }
   .legal strong { @apply text-brand-text font-semibold; }
   .legal table  { @apply w-full text-left text-sm border-collapse mb-6; }
-  .legal th { @apply text-brand-text font-semibold p-3 border-b-2 border-brand-muted/30 align-top; }
-  .legal td { @apply text-brand-muted p-3 border-b border-brand-muted/15 align-top; }
+  .legal th { @apply text-brand-text font-semibold p-3 border-b-2 border-brand-border align-top; }
+  .legal td { @apply text-brand-muted p-3 border-b border-brand-border align-top; }
 
   /* Keyboard-only "skip to content" link (WCAG 2.4.1) */
   .skip-link {
@@ -863,10 +930,15 @@
 }
 
 @layer utilities {
-  .flashy {
-    @apply animate-pulse bg-gradient-to-r from-brand-accent to-[#3b82f6] text-transparent bg-clip-text;
-  }
+  /* Accent-tinted, not neutral, and that is the point in both themes. In dark mode the accent is
+     Emerald 500 and this reads as a glow under the card. In light mode it is #065f46, which is
+     dark enough to work as a shadow on its own: at 20% over the page it composites to #c0d5d4, a
+     soft shadow with the brand's cast rather than a grey one. The name describes the dark case
+     because that is where the effect is a glow; the light case is a shadow, deliberately.
 
+     If it ever needs to be neutral in light mode, fork it at the theme and not here - `.dark
+     .shadow-glow` would miss the `hover:shadow-glow` variant, which Tailwind emits as its own
+     class and which eight of the eleven uses are. */
   .shadow-glow {
     box-shadow: 0 10px 15px -3px rgb(var(--color-accent) / 0.2);
     transition: box-shadow 0.3s ease;

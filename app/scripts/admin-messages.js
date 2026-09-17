@@ -234,7 +234,7 @@ async function load() {
     paintEmpty(host);
   } else {
     const list = document.createElement("div");
-    list.className = "border-t border-brand-muted/10";
+    list.className = "border-t border-brand-border";
     messages.forEach((m) => list.appendChild(messageRow(m)));
     host.appendChild(list);
   }

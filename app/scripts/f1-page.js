@@ -44,7 +44,7 @@ function when(iso) {
 
 function sessionList(race) {
   const list = document.createElement("ul");
-  list.className = "card divide-y divide-brand-muted/10";
+  list.className = "card divide-y divide-brand-border";
   race.sessions.forEach((s) => {
     const li = document.createElement("li");
     li.className = "flex items-baseline justify-between gap-4 py-2 first:pt-0 last:pb-0";
@@ -69,7 +69,7 @@ function resultsTable(rows, caption, paged = true) {
   wrap.appendChild(text("h3", "font-semibold text-brand-text mb-3", caption));
 
   const list = document.createElement("ul");
-  list.className = "divide-y divide-brand-muted/10";
+  list.className = "divide-y divide-brand-border";
   const start = paged ? page * RESULTS_PER_PAGE : 0;
   (paged ? rows.slice(start, start + RESULTS_PER_PAGE) : rows).forEach((r) => {
     const li = document.createElement("li");
@@ -167,7 +167,7 @@ function renderRound(data) {
     still.className = "mt-4";
     still.appendChild(text("h3", "font-semibold text-brand-text mb-2", "Still to come"));
     const list = document.createElement("ul");
-    list.className = "card divide-y divide-brand-muted/10";
+    list.className = "card divide-y divide-brand-border";
     remaining.forEach((s) => {
       const li = document.createElement("li");
       li.className = "flex items-baseline justify-between gap-4 py-2 first:pt-0 last:pb-0";
@@ -190,7 +190,7 @@ function qualifyingTable(rows) {
   wrap.className = "card";
   wrap.appendChild(text("h3", "font-semibold text-brand-text mb-3", "Qualifying"));
   const list = document.createElement("ul");
-  list.className = "divide-y divide-brand-muted/10";
+  list.className = "divide-y divide-brand-border";
   rows.slice(0, 10).forEach((r) => {
     const li = document.createElement("li");
     li.className = "flex items-center gap-3 py-2 first:pt-0";

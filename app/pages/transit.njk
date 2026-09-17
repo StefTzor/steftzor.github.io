@@ -63,7 +63,7 @@ bodyScripts:
     {# Closed until asked for, the same as the card on the home view. Two ways in: a name, or
        where you are standing. Neither is offered as the default, because the browser asks for
        permission before the second one answers and a page must not spend that on page load. #}
-    <form id="trPicker" method="get" class="hidden mb-4 border-b border-brand-muted/15 pb-4">
+    <form id="trPicker" method="get" class="hidden mb-4 border-b border-brand-border pb-4">
       <label for="trSearch" class="field-label text-sm">Search for a stop</label>
       <div class="flex flex-wrap gap-2">
         <input type="text" id="trSearch" name="trSearch" autocomplete="off" maxlength="80"
@@ -82,7 +82,7 @@ bodyScripts:
        Reserving fewer would trade a large jump for a smaller one, which is not the point. Each
        placeholder is the two-line shape of a real row: line badge, destination over its
        scheduled time, and the countdown. renderBoard() clears the list. #}
-    <ul id="trList" aria-busy="true" class="divide-y divide-brand-muted/10">
+    <ul id="trList" aria-busy="true" class="divide-y divide-brand-border">
       {%- for i in range(0, 12) %}
       <li class="board-row" aria-hidden="true">
         <span class="skel h-6 w-7"></span>
