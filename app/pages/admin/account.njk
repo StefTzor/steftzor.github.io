@@ -1,0 +1,110 @@
+---
+permalink: /admin/account/
+title: "Account | Admin"
+bodyScripts:
+  - src: "/scripts/admin-account.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+---
+<section class="app-page">
+  <div class="app-prose">
+
+    {# Back to the list rather than a breadcrumb trail: there is exactly one place this page is
+       reached from, and naming it is more use than drawing the hierarchy. #}
+    <a href="/admin/accounts/" class="inline-flex items-center gap-2 text-sm text-brand-muted hover:text-brand-accent">
+      {% icon "fa-solid-arrow-right", "h-3 w-3 rotate-180" %}<span>All accounts</span>
+    </a>
+
+    {# The heading is the person. It is filled in by the script once the account is loaded, and
+       holds a non-breaking space until then so nothing below it moves when it arrives. #}
+    <h1 id="who" class="mt-4 text-3xl font-bold text-brand-text">&nbsp;</h1>
+    <p id="whoEmail" class="text-brand-muted"></p>
+    <div id="whoMeta" class="mt-3 flex flex-wrap items-center gap-2"></div>
+
+    <div id="status" role="status" aria-live="polite" class="mt-6 text-sm"></div>
+
+    <div id="panels" class="hidden">
+
+      <!-- Name -->
+      <section aria-labelledby="name-heading" class="card mt-8">
+        <h2 id="name-heading" class="text-lg font-bold text-brand-text">Name</h2>
+        <p class="hint mt-1">
+          Shown to them when they sign in, and to you in the accounts list. Clearing both leaves
+          the account with no name, which is what it had before anyone typed one.
+        </p>
+        <form id="nameForm" method="post" novalidate class="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <label for="accFirst" class="field-label">First name</label>
+            <input type="text" id="accFirst" name="accFirst" autocomplete="off" maxlength="60" class="field">
+          </div>
+          <div>
+            <label for="accLast" class="field-label">Last name</label>
+            <input type="text" id="accLast" name="accLast" autocomplete="off" maxlength="60" class="field">
+          </div>
+          <div class="sm:col-span-2">
+            <button type="submit" class="btn-primary">Save name</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Password reset -->
+      <section aria-labelledby="reset-heading" class="card mt-6">
+        <h2 id="reset-heading" class="text-lg font-bold text-brand-text">Password</h2>
+        <p class="hint mt-1">
+          Emails them a link to choose a new one. Their current password keeps working until they
+          use it, and the link works once.
+        </p>
+
+        {# The confirmation is a disclosure rather than a browser dialog: it names the address
+           the mail will go to, which is the fact worth checking before pressing anything, and a
+           confirm() cannot show it. Nothing is sent by opening it. #}
+        <div class="mt-4">
+          <button type="button" id="resetOpen" class="btn-secondary">Send a password reset…</button>
+          <div id="resetConfirm" class="hidden mt-4 rounded-lg border border-brand-accent/30 bg-brand-accent/5 p-4">
+            <p class="text-sm text-brand-text">
+              Email a password reset link to <span id="resetTarget" class="font-semibold"></span>?
+            </p>
+            <div class="mt-3 flex flex-wrap gap-3">
+              <button type="button" id="resetGo" class="btn-primary text-sm">Yes, send it</button>
+              <button type="button" id="resetCancel" class="btn-secondary text-sm">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Email address -->
+      <section aria-labelledby="email-heading" class="card mt-6">
+        <h2 id="email-heading" class="text-lg font-bold text-brand-text">Email address</h2>
+        <p class="hint mt-1">
+          This is how they sign in. Nothing changes when you press send: a confirmation goes to
+          the new address and the move happens only when somebody opens it. Their current address
+          keeps working until then, and is told that you asked.
+        </p>
+
+        <form id="emailForm" method="post" novalidate class="mt-4">
+          <label for="accEmail" class="field-label">New email address</label>
+          <input type="email" id="accEmail" name="accEmail" autocomplete="off" maxlength="254"
+            aria-describedby="status" class="field">
+          <button type="button" id="emailOpen" class="btn-secondary mt-4">Move this account…</button>
+
+          <div id="emailConfirm" class="hidden mt-4 rounded-lg border border-amber-600/40 bg-amber-600/5 p-4">
+            <p class="text-sm text-brand-text">
+              Ask <span id="emailTarget" class="font-semibold"></span> to take over this account?
+            </p>
+            <p class="hint mt-2">
+              If that address is wrong, whoever holds it can take the account by confirming. It
+              is worth reading twice.
+            </p>
+            <div class="mt-3 flex flex-wrap gap-3">
+              <button type="submit" class="btn-primary text-sm">Yes, send the confirmation</button>
+              <button type="button" id="emailCancel" class="btn-secondary text-sm">Cancel</button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+    </div>
+
+  </div>
+</section>

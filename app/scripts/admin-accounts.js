@@ -34,6 +34,22 @@ function statusPill(status) {
   return span;
 }
 
+/**
+ * The person's name, as a link to their own page.
+ *
+ * A link rather than a click handler on the row: the row also contains a select and three
+ * buttons, and a row-wide handler would fire when somebody meant to press one of those. A link
+ * around the name is also the thing a screen reader announces as a link, can be opened in a new
+ * tab, and shows its destination on hover.
+ */
+function nameLink(u, className) {
+  const a = document.createElement("a");
+  a.href = "/admin/account/?uid=" + encodeURIComponent(u.uid);
+  a.className = className + " hover:text-brand-accent hover:underline";
+  a.textContent = fullName(u) || u.email || u.uid;
+  return a;
+}
+
 /** The controls for one account, shared by both layouts so they cannot drift apart. */
 function controls(u) {
   const wrap = document.createElement("div");
@@ -169,8 +185,8 @@ function render() {
     const who = document.createElement("div");
     who.className = "min-w-0";
     const name = document.createElement("p");
-    name.className = "font-semibold text-brand-text truncate";
-    name.textContent = fullName(u) || u.email || u.uid;
+    name.className = "truncate";
+    name.appendChild(nameLink(u, "font-semibold text-brand-text"));
     const mail = document.createElement("p");
     mail.className = "text-xs text-brand-muted truncate";
     mail.textContent = u.email || "";
@@ -202,8 +218,7 @@ function render() {
     const who = document.createElement("td");
     who.className = "py-3 pr-4 align-top";
     const name = document.createElement("p");
-    name.className = "font-medium text-brand-text";
-    name.textContent = fullName(u) || "—";
+    name.appendChild(nameLink(u, "font-medium text-brand-text"));
     const mail = document.createElement("p");
     mail.className = "text-xs text-brand-muted";
     mail.textContent = u.email || u.uid;
