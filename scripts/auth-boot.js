@@ -24,7 +24,6 @@
 
   // Paint the header from the flag straight away. This used to wait on Firebase, so the
   // logged-in header now appears sooner than it did.
-  if (signedInBefore()) document.documentElement.classList.add("is-authed");
 
   var required = document.body && document.body.dataset.auth === "required";
   if (required || signedInBefore()) {

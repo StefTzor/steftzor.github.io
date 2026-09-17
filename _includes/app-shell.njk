@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+{#
+  Layout for app.tzortzoglou.eu.
+
+  This does NOT reuse _includes/base.njk, on purpose. That layout is three quarters SEO
+  contract - canonical, hreflang, Open Graph, Twitter, JSON-LD, the indexable collection -
+  and every page here is behind a login and must never be indexed at all. Parameterising
+  base.njk to switch off most of itself would couple two things that are diverging.
+
+  What genuinely must not drift is shared instead of copied: the stylesheet, the fonts and
+  the cache-busting and CSP transforms all come from eleventy.common.js.
+
+  Front matter:
+    title        the <title>
+    bodyClass    classes on <body>
+    redirectWhenAuthed  send an already-signed-in visitor to the app home
+    shell        render the app's section sidebar beneath the shared bar
+    navItems     [{label, href, navKey, minRole?}] for the shared bar's middle slot
+    crossLink    {label, href} - the way back to the public site
+    inlineScript end-of-body script
+    pageStyle    inline <style> for this page
+    bodyScripts  [{src, type, integrity, defer}] loaded at end of body
+#}
+<html lang="en" class="scroll-smooth dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  {# Must stay before the stylesheet, or the wrong theme paints first. Byte-identical to the
+     public site's copy so both pages hash to the same CSP value. #}
+  <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
+  <link rel="preload" href="/fonts/poppins-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/poppins-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {# Nothing here is for the public. The app is also excluded in robots.txt, but a header
+     that only applies to pages nobody can reach is not much of a defence - this is. #}
+  <meta name="robots" content="noindex, nofollow">
+  <title>{{ title }}</title>
+
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#cbd5e1" media="(prefers-color-scheme: light)">
+
+  <link href="/dist/output.css" rel="stylesheet">
+  {%- if pageStyle %}
+  {# Inline rather than a stylesheet: it is one page's worth of CSS, and the CSP transform
+     hashes it automatically, so there is nothing to keep in sync. #}
+  <style>
+{{ pageStyle | safe }}
+  </style>
+  {%- endif %}
+</head>
+
+<body{% if redirectWhenAuthed %} data-redirect-when-authed="1"{% endif %} class="{{ bodyClass | default('bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col') }}">
+
+  <a href="#main-content" class="skip-link">Skip to content</a>
+
+  {# The bar is the same file the public site uses, so the two properties cannot drift apart.
+     What differs is only which links it is given. #}
+  {% include "chrome/header.njk" %}
+
+  {%- if shell %}
+  {# The sidebar carries position *within* the app; the bar above carries identity and the way
+     across to the public site. It stays hidden until /me answers, so the nav never offers a
+     link the viewer cannot use. #}
+  <div class="lg:flex">
+    <aside id="appHeader" class="hidden lg:w-56 lg:shrink-0 lg:border-r border-brand-muted/15 bg-brand-surface">
+      <div class="lg:sticky lg:top-[73px]">
+        <nav aria-label="Application" class="p-3">
+          <p id="whoami" class="px-3 pb-2 text-xs text-brand-muted truncate"></p>
+          <ul class="space-y-1">
+            <li><a href="/" data-nav="home" class="block rounded px-3 py-2 text-sm text-brand-text hover:bg-brand-bg aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold">Home</a></li>
+            <li class="hidden" data-min-role="superuser"><a href="/private/" data-nav="private" class="block rounded px-3 py-2 text-sm text-brand-text hover:bg-brand-bg aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold">Private</a></li>
+            <li class="hidden" data-min-role="admin"><a href="/admin/" data-nav="admin" class="block rounded px-3 py-2 text-sm text-brand-text hover:bg-brand-bg aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold">Admin</a></li>
+          </ul>
+        </nav>
+      </div>
+    </aside>
+  {%- endif %}
+
+  {%- if shell %}
+    <main id="main-content" class="flex-grow min-w-0" aria-busy="true">
+      {{ content | safe }}
+    </main>
+  </div>
+  {%- else %}
+  <main id="main-content" class="flex-grow">
+    {{ content | safe }}
+  </main>
+  {%- endif %}
+
+  {% include "chrome/footer-slim.njk" %}
+
+  {# Presentation only, and imports nothing - see scripts/chrome.js for why that matters. #}
+  <script src="/scripts/chrome.js"></script>
+  {%- for s in bodyScripts %}
+  {# Literal src="..." with double quotes - the cachebust transform only versions that shape. #}
+  <script{% if s.type %} type="{{ s.type }}"{% endif %} src="{{ s.src }}"{% if s.integrity %} integrity="{{ s.integrity }}" crossorigin="anonymous" referrerpolicy="no-referrer"{% endif %}{% if s.defer %} defer{% endif %}></script>
+  {%- endfor %}
+  {%- if inlineScript %}
+  <script>
+{{ inlineScript | safe }}
+  </script>
+  {%- endif %}
+</body>
+
+</html>

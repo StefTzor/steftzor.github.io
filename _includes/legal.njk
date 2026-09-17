@@ -67,7 +67,7 @@
 
 <body class="bg-brand-bg text-brand-text antialiased transition-colors duration-300 flex flex-col min-h-screen">
 
-  {% include "_includes/header.html" %}
+  {% include "chrome/header.njk" %}
 
   <main id="main-content" class="flex-grow container mx-auto py-16 px-4">
     <div class="max-w-3xl mx-auto legal">
@@ -90,9 +90,10 @@
     </div>
   </main>
 
-  {% include "_includes/footer.html" %}
+  {% include "footer.html" %}
 
-  <script src="/scripts/main.js"></script>
+  {# The chrome both properties share; see scripts/chrome.js. #}
+  <script src="/scripts/chrome.js"></script>
   <script src="/scripts/auth-boot.js"></script>
   <script src="/scripts/consent.js"></script>
 </body>

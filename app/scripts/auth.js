@@ -329,7 +329,6 @@ function handleAuthStateChanged(user) {
     if (user) localStorage.setItem("auth-ui", "1");
     else localStorage.removeItem("auth-ui");
   } catch (err) { /* private mode: the hint is optional */ }
-  document.documentElement.classList.toggle("is-authed", !!user);
 
   // Someone already signed in has no reason to look at a sign-in form.
   if (user && document.body.dataset.redirectWhenAuthed === "1") window.location.href = "/";

@@ -1,5 +1,5 @@
 ---
-layout: app.njk
+layout: app-shell.njk
 permalink: /private/
 title: "For Your Eyes Only | Stefanos Tzortzoglou"
 shell: true
@@ -51,7 +51,24 @@ pageStyle: |
           transform: scale(1);
         }
       }
-
+navDrawerOnly: true
+crossLink:
+  label: "← tzortzoglou.eu"
+  href: "https://tzortzoglou.eu/"
+brandHref: "https://tzortzoglou.eu/"
+navItems:
+  - label: "Home"
+    href: "/"
+    navKey: "home"
+  - label: "Private"
+    href: "/private/"
+    navKey: "private"
+    minRole: "superuser"
+  - label: "Admin"
+    href: "/admin/"
+    navKey: "admin"
+    minRole: "admin"
+signOut: true
 ---
 <div class="container mx-auto py-12 px-4 flex items-center justify-center">
 <section id="authRequired" class="content-locked text-center max-w-lg mx-auto">

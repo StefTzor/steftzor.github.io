@@ -1,5 +1,5 @@
 ---
-layout: app.njk
+layout: app-shell.njk
 permalink: /
 title: "Home | Stefanos Tzortzoglou"
 bodyScripts:
@@ -7,6 +7,24 @@ bodyScripts:
     type: "module"
 bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
 shell: true
+navDrawerOnly: true
+crossLink:
+  label: "← tzortzoglou.eu"
+  href: "https://tzortzoglou.eu/"
+brandHref: "https://tzortzoglou.eu/"
+navItems:
+  - label: "Home"
+    href: "/"
+    navKey: "home"
+  - label: "Private"
+    href: "/private/"
+    navKey: "private"
+    minRole: "superuser"
+  - label: "Admin"
+    href: "/admin/"
+    navKey: "admin"
+    minRole: "admin"
+signOut: true
 ---
 <section class="container mx-auto px-4 py-10 max-w-3xl">
 

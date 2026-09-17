@@ -108,15 +108,16 @@
 
 <body{% if authRequired %} data-auth="required"{% endif %} class="bg-brand-bg text-brand-text antialiased transition-colors duration-300 flex flex-col min-h-screen">
 
-  {% include "_includes/header.html" %}
+  {% include "chrome/header.njk" %}
 
   <main id="main-content" class="{{ mainClass | default('flex-grow container mx-auto py-16 px-4') }}">
     {{ content | safe }}
   </main>
 
-  {% include "_includes/footer.html" %}
+  {% include "footer.html" %}
 
-  <script src="/scripts/main.js"></script>
+  {# The chrome both properties share; see scripts/chrome.js. #}
+  <script src="/scripts/chrome.js"></script>
   {# Loads Firebase only where it is needed; see scripts/auth-boot.js. #}
   <script src="/scripts/auth-boot.js"></script>
   <script src="/scripts/consent.js"></script>

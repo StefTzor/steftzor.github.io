@@ -221,108 +221,19 @@ async function handleLogout(e) {
 }
 
 // Handle auth state changes
-async function handleAuthStateChanged(user) {
-  // Tells scripts/auth-boot.js whether to load Firebase at all on the next page. A hint for
-  // fetching only - every real check is server-side.
+async /**
+ * Keeps the hint auth-boot.js reads, and nothing else.
+ *
+ * This used to drive the public site's signed-in header - #user-view, the logout button, the
+ * Exclusive dropdown. All of that is gone: sign-in moved to app.tzortzoglou.eu, so the public
+ * origin never sets the flag that would load this module, and every one of those branches was
+ * unreachable markup driving unreachable code.
+ */
+function handleAuthStateChanged(user) {
   try {
     if (user) localStorage.setItem("auth-ui", "1");
     else localStorage.removeItem("auth-ui");
-    document.documentElement.classList.toggle("is-authed", !!user);
-  } catch (e) { /* private mode: fall back to loading Firebase every time */ }
-
-  // --- DESKTOP ELEMENTS ---
-  const guestView = document.getElementById("guest-view");
-  const userView = document.getElementById("user-view");
-  const userDisplay = document.getElementById("user-display");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const exclusiveNavItem = document.getElementById("exclusive-nav-item");
-
-  // --- MOBILE ELEMENTS ---
-  const mobGuest = document.getElementById("mobile-guest-view");
-  const mobUser = document.getElementById("mobile-user-view");
-  const mobEmail = document.getElementById("mobile-user-email");
-  const mobLogout = document.getElementById("mobile-logout-btn");
-  const mobExclusive = document.getElementById("mobile-exclusive-item");
-
-  // --- PAGE CONTENT ELEMENTS ---
-  const loader = document.getElementById("authLoader"); // Optional: if you added the loader
-
-  // 1. ATTACH LOGOUT LISTENERS (Desktop & Mobile)
-  // We use cloneNode to safely remove old event listeners before adding new ones
-  if (logoutBtn) {
-    const newBtn = logoutBtn.cloneNode(true);
-    logoutBtn.parentNode.replaceChild(newBtn, logoutBtn);
-    newBtn.addEventListener("click", handleLogout);
-  }
-  if (mobLogout) {
-    const newMobBtn = mobLogout.cloneNode(true);
-    mobLogout.parentNode.replaceChild(newMobBtn, mobLogout);
-    newMobBtn.addEventListener("click", handleLogout);
-  }
-
-  // 2. MAIN AUTH LOGIC
-  if (user) {
-    // --- USER IS LOGGED IN ---
-
-    // A. Update Desktop UI
-    if (guestView) guestView.classList.add("hidden");
-    if (userView) userView.classList.remove("hidden");
-    if (userDisplay) userDisplay.textContent = user.email;
-
-    // B. Update Mobile UI
-    if (mobGuest) mobGuest.classList.add("hidden");
-    if (mobUser) mobUser.classList.remove("hidden");
-    if (mobEmail) mobEmail.textContent = user.email;
-
-    // C. Check Database for "Approved" Status
-    try {
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      const isApproved = userDoc.exists() && userDoc.data().status === "approved";
-
-      // Hide Loader if present
-      if (loader) loader.classList.add("hidden");
-
-      if (isApproved) {
-        // --- UNLOCK EVERYTHING ---
-        
-        // Show Nav Items
-        if (exclusiveNavItem) exclusiveNavItem.classList.remove("hidden");
-        if (mobExclusive) mobExclusive.classList.remove("hidden");
-        // Page content on /exclusive/ is owned by exclusive.js, which drives it from
-        // the API result. Touching it here raced that and could reveal empty shells.
-
-      } else {
-        // --- PENDING APPROVAL ---
-        // User is logged in, but not approved yet. Treat mostly like guest but show status.
-        
-        // Hide Nav Items
-        if (exclusiveNavItem) exclusiveNavItem.classList.add("hidden");
-        if (mobExclusive) mobExclusive.classList.add("hidden");
-        // Pending state on /exclusive/ is rendered by exclusive.js from the API's 403.
-      }
-    } catch (error) {
-      console.error("Auth check failed:", error);
-    }
-
-  } else {
-    // --- GUEST (NOT LOGGED IN) ---
-    
-    // Hide Loader
-    if (loader) loader.classList.add("hidden");
-
-    // A. Reset Desktop UI
-    if (guestView) guestView.classList.remove("hidden");
-    if (userView) userView.classList.add("hidden");
-
-    // B. Reset Mobile UI
-    if (mobGuest) mobGuest.classList.remove("hidden");
-    if (mobUser) mobUser.classList.add("hidden");
-
-    // C. Lock Everything
-    if (exclusiveNavItem) exclusiveNavItem.classList.add("hidden");
-    if (mobExclusive) mobExclusive.classList.add("hidden");
-    // Guest state on /exclusive/ is rendered by exclusive.js.
-  }
+  } catch (err) { /* private mode: the hint is optional */ }
 }
 
 // Handle user approval by admin

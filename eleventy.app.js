@@ -34,6 +34,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({
     "app/scripts/auth.js": "scripts/auth.js",
     "app/scripts/action.js": "scripts/action.js",
+    "scripts/chrome.js": "scripts/chrome.js",
     "app/scripts/shell.js": "scripts/shell.js",
     "app/scripts/forms.js": "scripts/forms.js",
     "app/scripts/app.js": "scripts/app.js",
@@ -47,10 +48,12 @@ module.exports = function (eleventyConfig) {
   return {
     dir: {
       input: "app/pages",
-      // Both resolve relative to dir.input, so both need to climb out of it. Getting this
-      // wrong fails silently - the layout is simply never found and the page renders bare.
-      includes: "../_includes",
-      layouts: "../_includes",
+      // Both resolve relative to dir.input, so both need to climb out of it - and they climb
+      // to the project root, not to app/, because the chrome is shared with the public site and
+      // there is one copy of it. Getting this wrong fails silently: the layout is simply never
+      // found and the page renders bare.
+      includes: "../../_includes",
+      layouts: "../../_includes",
       output: "_app",
     },
     pathPrefix: "/",

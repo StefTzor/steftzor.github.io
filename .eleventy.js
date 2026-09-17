@@ -6,7 +6,7 @@ module.exports = function(eleventyConfig) {
   // Copy auth.js and main.js, but NOT firebase-config.js
   eleventyConfig.addPassthroughCopy({
     "scripts/auth.js": "scripts/auth.js",
-    "scripts/main.js": "scripts/main.js",
+    "scripts/chrome.js": "scripts/chrome.js",
     "scripts/hero.js": "scripts/hero.js",
     "scripts/consent.js": "scripts/consent.js",
     "scripts/exclusive.js": "scripts/exclusive.js",
@@ -51,7 +51,10 @@ module.exports = function(eleventyConfig) {
   return {
     dir: {
       input: "pages",          // Source directory for pages
-      includes: "_includes", // Folder for partials like headers/footers
+      // Same place the layouts live, and the same place the app's config points at - the chrome
+      // is one set of files shared by both builds, so both must resolve includes identically.
+      // Like dir.layouts, this is relative to dir.input, hence the ../
+      includes: "../_includes",
       layouts: "../_includes", // Layouts live at the project root, not under pages/
       data: "../_data",        // Same again: dir.data is resolved relative to dir.input
       output: "_site",         // Build output folder (for GitHub Pages)

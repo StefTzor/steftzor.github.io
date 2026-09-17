@@ -1,0 +1,103 @@
+{#
+  The one top bar, used by tzortzoglou.eu and by app.tzortzoglou.eu.
+
+  It exists so that crossing between the two feels like moving inside one product rather than
+  leaving one and arriving at another. Everything structural - height, background, the sticky
+  hairline, the wordmark, the drawer, the icons - is identical because this is literally the
+  same file; only the links differ.
+
+  Front matter:
+    navItems  [{label, href, navKey, minRole?}]  the middle slot. The site passes its pages,
+              the app passes its sections, the auth pages pass nothing.
+    crossLink {label, href}                      the way to the other property.
+    minRole   on an item renders it hidden with data-min-role, which app/scripts/shell.js
+              unhides once /me says what the viewer may see.
+#}
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<header class="bg-brand-bg shadow-md sticky top-0 z-50 border-b border-brand-muted/10 transition-colors duration-300">
+  <div class="container mx-auto flex justify-between items-center p-4">
+
+    <div class="logo">
+      <a href="{{ brandHref | default('/') }}"
+        class="bg-gradient-to-r from-brand-accent to-blue-700 dark:to-blue-400 bg-clip-text text-transparent font-bold text-xl tracking-tight inline-block transition-transform duration-200 hover:-translate-y-1">
+        Stefanos Tzortzoglou
+      </a>
+    </div>
+
+    {#- navDrawerOnly means the links exist only in the drawer. The app sets it, because on a
+        wide screen its sections live in the sidebar - one list of links, two presentations,
+        rather than two lists that can disagree. -#}
+    {%- if navItems and not navDrawerOnly %}
+    <nav class="hidden md:flex space-x-6 items-center" aria-label="Main">
+      {%- for item in navItems %}
+      <li class="list-none{% if item.minRole %} hidden{% endif %}"{% if item.minRole %} data-min-role="{{ item.minRole }}"{% endif %}>
+        <a href="{{ item.href }}" data-nav="{{ item.navKey }}" class="nav-link">{{ item.label }}</a>
+      </li>
+      {%- endfor %}
+    </nav>
+    {%- endif %}
+
+    <div class="hidden md:flex items-center space-x-4">
+      {%- if crossLink %}
+      <a href="{{ crossLink.href }}" class="nav-link text-sm">{{ crossLink.label }}</a>
+      {%- endif %}
+      {%- if signOut %}
+      <button type="button" data-logout class="nav-link text-sm">Sign out</button>
+      {%- endif %}
+      <button id="theme-toggle" type="button" aria-pressed="false"
+        class="text-brand-text hover:text-brand-accent p-2 rounded-full hover:bg-brand-muted/10 transition-transform duration-200 hover:-translate-y-1 ml-2">
+        {% icon "fa-solid-adjust", "text-lg" %}
+        <span class="sr-only">Switch to light theme</span>
+      </button>
+    </div>
+
+    <div class="md:hidden flex items-center gap-4">
+      <button id="theme-toggle-mobile" type="button" aria-pressed="false" class="text-brand-text hover:text-brand-accent text-xl">
+        {% icon "fa-solid-adjust", "" %}<span class="sr-only">Switch to light theme</span>
+      </button>
+      {%- if navItems or crossLink %}
+      <button id="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav"
+        class="text-brand-text hover:text-brand-accent text-2xl">
+        {% icon "fa-solid-bars", "" %}<span class="sr-only">Open menu</span>
+      </button>
+      {%- endif %}
+    </div>
+
+  </div>
+</header>
+
+{%- if navItems or crossLink %}
+{# The drawer, and the reason it is this one rather than the app's simpler disclosure: it has a
+   scrim, it is `inert` while closed so nothing off-screen is tabbable, it restores focus on
+   close, and Escape shuts it. Two different mobile behaviours in one product is the
+   inconsistency this whole change exists to remove. #}
+<div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden transition-opacity duration-300" id="overlay" aria-hidden="true"></div>
+
+<nav id="mobile-nav" aria-label="Mobile" inert
+  class="fixed top-0 right-0 w-[80%] max-w-sm h-full bg-brand-bg z-50 transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto border-l border-brand-muted/20">
+  <div class="flex justify-between items-center p-5 border-b border-brand-muted/10">
+    <div class="text-xl font-bold text-brand-accent">Menu</div>
+    <button id="close-menu" type="button" class="text-brand-muted hover:text-brand-accent text-2xl">
+      {% icon "fa-solid-times", "" %}<span class="sr-only">Close menu</span>
+    </button>
+  </div>
+
+  <ul class="p-5 space-y-2">
+    {%- for item in navItems %}
+    <li{% if item.minRole %} class="hidden" data-min-role="{{ item.minRole }}"{% endif %}>
+      <a href="{{ item.href }}" data-nav="{{ item.navKey }}" class="nav-link-mobile">{{ item.label }}</a>
+    </li>
+    {%- endfor %}
+
+    {%- if crossLink %}
+    <li class="pt-6 mt-6 border-t border-brand-muted/20">
+      <a href="{{ crossLink.href }}" class="nav-link-mobile">{{ crossLink.label }}</a>
+    </li>
+    {%- endif %}
+    {%- if signOut %}
+    <li><button type="button" data-logout class="nav-link-mobile w-full text-left">Sign out</button></li>
+    {%- endif %}
+  </ul>
+</nav>
+{%- endif %}

@@ -67,6 +67,26 @@
            transform hover:scale-105;
   }
 
+  /* Navigation links. These were an inline utility string repeated per link across two files,
+     which is how the two properties ended up with different hover and active treatments. */
+  .nav-link {
+    @apply text-brand-text hover:text-brand-accent font-medium
+           transition-transform duration-200 hover:-translate-y-1;
+  }
+
+  .nav-link[aria-current="page"] {
+    @apply text-brand-accent font-bold;
+  }
+
+  .nav-link-mobile {
+    @apply block py-3 px-4 rounded-lg text-brand-text font-medium
+           hover:bg-brand-surface hover:text-brand-accent;
+  }
+
+  .nav-link-mobile[aria-current="page"] {
+    @apply bg-brand-accent/10 border-l-4 border-brand-accent text-brand-accent font-bold;
+  }
+
   /* The app's surfaces and form controls.
      These were twelve copies of the same class string across five pages, which is how two of
      them had already drifted apart. One definition each, so a change to the look of a field is

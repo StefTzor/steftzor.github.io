@@ -1,13 +1,19 @@
 ---
-layout: app.njk
+layout: app-shell.njk
 permalink: /register/
 title: "Request an account | Stefanos Tzortzoglou"
 bodyScripts:
   - src: "/scripts/auth.js"
     type: "module"
 bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
+crossLink:
+  label: "← tzortzoglou.eu"
+  href: "https://tzortzoglou.eu/"
+brandHref: "https://tzortzoglou.eu/"
 ---
-<section class="container mx-auto px-4 py-16 max-w-md">
+{# Centred in what is left of the viewport under the bar, rather than pinned to the top
+   with the rest of the screen empty beneath it. #}
+<section class="container mx-auto px-4 py-10 max-w-md min-h-[calc(100vh-12rem)] flex flex-col justify-center">
   <div class="card p-8 shadow-md">
     <h1 class="text-2xl font-bold mb-2 text-brand-text">Request an account</h1>
     <p class="text-sm text-brand-muted mb-6">
