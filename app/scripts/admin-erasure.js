@@ -109,7 +109,11 @@ function paintUnreachable(notified, countEl, noteEl) {
   el(countEl).textContent = notified.count
     ? `${plural(notified.count, "email")} about this address left this server.`
     : "No email about this address left this server.";
-  el(noteEl).textContent = notified.note || "";
+  // Falls back to this page's own sentence rather than to nothing. An empty string here would
+  // silently drop the one line that must not be dropped, leaving a count with no explanation.
+  el(noteEl).textContent = notified.note
+    || "Any of these that was emailed was copied to a mailbox and to the mail provider's log when "
+     + "it arrived. Nothing here reaches either one; they have to be deleted there by hand.";
 }
 
 /** Whether there is anything at all to erase, and what the confirmation should name. */
@@ -230,10 +234,15 @@ el("eraseGo").addEventListener("click", async () => {
   go.disabled = true;
   el("eraseCancel").disabled = true;
   say("Erasing…");
+  // The request is inside the try; drawing its answer is NOT. They used to share a block, which
+  // meant a throw while rendering - a missing element, a shape the API changed - was reported as
+  // "Nothing was erased" after the erasure had already happened. That is this feature's own
+  // honesty rule inverted, and it is the one failure it must never produce.
+  let res;
   try {
-    paintReceipt(await api("/admin/erasure", {
+    res = await api("/admin/erasure", {
       method: "POST", body: JSON.stringify({ email: target }),
-    }));
+    });
   } catch (err) {
     console.error("erasure: erase failed", err.status, err.code);
     // `partial_erasure` is the one failure that must not be reported as a failure. It means the
@@ -248,9 +257,11 @@ el("eraseGo").addEventListener("click", async () => {
       : err.status === 403 ? "This account may not run erasures."
       : "Nothing was erased — the request failed.", "error");
     go.disabled = false;
-  } finally {
     el("eraseCancel").disabled = false;
+    return;
   }
+  el("eraseCancel").disabled = false;
+  paintReceipt(res || {});
 });
 
 // --- the receipt --------------------------------------------------------------
@@ -264,11 +275,34 @@ el("eraseGo").addEventListener("click", async () => {
  * that did not happen.
  */
 function paintReceipt(res) {
-  const { erased, notified } = res;
-  el("receiptWho").textContent = res.email;
+  const { erased, notified } = res || {};
+  el("receiptWho").textContent = (res && res.email) || target || "";
 
   const lines = el("receiptLines");
   lines.textContent = "";
+
+  // A 2xx with no receipt in it. The erasure happened - the API would not have answered 2xx
+  // otherwise - so this may not read as a failure; but nothing is known about what went, so it
+  // may not itemise either. Saying both is the only honest answer, and the look-up is the screen
+  // that can settle it.
+  if (!erased) {
+    lines.append(line("The erasure was accepted, but the API did not say what it removed. "
+      + "Look the address up again to see what is left."));
+    paintUnreachable(notified || { count: 0 }, "leftCount", "leftNote");
+    const s = el("leftSearch");
+    s.textContent = "";
+    s.classList.add("hidden");
+    // The same replacement the itemised path does: the preview describes data that is gone, and
+    // it carries a button that would now act on an address already erased.
+    el("held").classList.add("hidden");
+    el("receipt").classList.remove("hidden");
+    target = "";
+    el("target").value = "";
+    say("The erasure was accepted, but the API did not say what it removed. Look the address up again.", "error");
+    el("receiptWho").scrollIntoView({ block: "center", behavior: "instant" });
+    return;
+  }
+
   lines.append(line(erased.messages
     ? `${plural(erased.messages, "contact message")} deleted.`
     : "No contact messages were deleted."));
@@ -279,11 +313,11 @@ function paintReceipt(res) {
     ? `The sign-in account was deleted${erased.uid ? ` (${erased.uid})` : ""}.`
     : "There was no sign-in account to delete."));
 
-  paintUnreachable(notified, "leftCount", "leftNote");
+  paintUnreachable(notified || { count: 0 }, "leftCount", "leftNote");
 
   const search = el("leftSearch");
   search.textContent = "";
-  if (notified.count > 0) {
+  if (notified && notified.count > 0) {
     // A prefilled search rather than instructions: finishing this is a manual job in a mailbox
     // nothing here can log into, and the smallest way to help is to hand over the query already
     // written. It opens Gmail; it deletes nothing.

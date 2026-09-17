@@ -297,7 +297,10 @@ function messageRow(m) {
     go.disabled = true;
     say("Deleting…");
     try {
-      const res = await api(`/admin/messages/${encodeURIComponent(m.id)}/delete`, { method: "POST" });
+      // `|| {}` because api() answers null to a 204. Without it the next line throws AFTER the
+      // row has been taken away, and the catch then says nothing was removed - the one sentence
+      // that must not follow a deletion that happened.
+      const res = (await api(`/admin/messages/${encodeURIComponent(m.id)}/delete`, { method: "POST" })) || {};
       remove();
       // The API's own sentence about the emailed copies, printed as it wrote it. Rewriting it
       // shorter here is how a receipt ends up describing a deletion wider than the one that
