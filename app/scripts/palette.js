@@ -85,6 +85,7 @@ const COMMANDS = [
   { label: "Your profile", hint: "Name, email address, home location", keywords: "account settings name password", run: go("/profile/") },
   { label: "Transit", hint: "Departures, arrivals and nearby stops", keywords: "bus ul departures stop board travel", run: go("/transit/") },
   { label: "Formula 1", hint: "The season, standings and results", keywords: "f1 race grand prix motorsport", run: go("/f1/") },
+  { label: "How this is built", hint: "Architecture, endpoints and where data lives", keywords: "docs documentation architecture api schema wiki reference", run: go("/docs/") },
   { label: "Private", hint: "For your eyes only", keywords: "exclusive", minRole: "SuperUser", run: go("/private/") },
 
   { label: "Admin · Overview", hint: "Queues and service health", keywords: "status services", minRole: "Admin", run: go("/admin/") },
@@ -92,6 +93,7 @@ const COMMANDS = [
   { label: "Admin · Messages", hint: "Everything sent through the contact form", keywords: "inbox contact", minRole: "Admin", run: go("/admin/messages/") },
   { label: "Unread messages", hint: "Messages you have not read", keywords: "inbox new", minRole: "Admin", run: go("/admin/messages/?unread=1") },
   { label: "Admin · Invites", hint: "Create an approved account", keywords: "invite new user", minRole: "Admin", run: go("/admin/invites/") },
+  { label: "Admin · Data", hint: "Browse the Postgres tables", keywords: "database sql postgres tables rows schema", minRole: "Admin", run: go("/admin/data/") },
   { label: "Admin · Analytics", hint: "Traffic to the public site", keywords: "stats visits goatcounter", minRole: "Admin", run: go("/admin/analytics/") },
 
   {

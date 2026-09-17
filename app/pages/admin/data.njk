@@ -1,0 +1,81 @@
+---
+permalink: /admin/data/
+title: "Data | Admin"
+bodyScripts:
+  - src: "/scripts/admin-data.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+  - src: "/scripts/palette.js"
+    type: "module"
+---
+<section class="app-page">
+
+  {% include "chrome/admin-sections.njk" %}
+
+  <h1 class="text-3xl font-bold text-brand-text mb-2">Data</h1>
+  <p class="text-brand-muted mb-6 max-w-prose">
+    What is actually in Postgres. Read-only, and narrower than the database —
+    <a href="/docs/" class="text-brand-accent underline hover:no-underline">the docs page</a>
+    explains which columns never leave the server and why.
+  </p>
+
+  <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
+
+  {# The tables, as a row of buttons rather than a dropdown: there are three, and a dropdown that
+     holds three things hides two of them for no reason. Row counts are on the buttons because
+     "which of these has anything in it" is the first question. #}
+  <div id="tablePick" class="flex flex-wrap gap-2 mb-6" role="group" aria-label="Which table"></div>
+
+  <div id="tableBody" class="hidden">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-1">
+      <h2 id="tableName" class="text-xl font-bold text-brand-text"></h2>
+      <p id="tableNote" class="text-sm text-brand-muted"></p>
+    </div>
+
+    {# Filtering. One column, one operator, one value - which covers "find the message from
+       that address" and stops short of being a query builder. #}
+    <form id="filterForm" method="get" class="card mb-4">
+      <div class="flex flex-wrap items-end gap-3">
+        <div>
+          <label for="filterColumn" class="field-label text-sm">Column</label>
+          <select id="filterColumn" class="field w-auto py-1.5 text-sm"></select>
+        </div>
+        <div>
+          <label for="filterOp" class="field-label text-sm">Match</label>
+          <select id="filterOp" class="field w-auto py-1.5 text-sm">
+            <option value="contains">contains</option>
+            <option value="equals">is exactly</option>
+          </select>
+        </div>
+        <div class="flex-1 min-w-[10rem]">
+          <label for="filterValue" class="field-label text-sm">Value</label>
+          <input type="text" id="filterValue" name="filterValue" autocomplete="off" maxlength="200"
+            class="field py-1.5 text-sm">
+        </div>
+        <button type="submit" class="btn-primary text-sm">Filter</button>
+        <button type="button" id="filterClear" class="btn-secondary text-sm">Clear</button>
+      </div>
+      <p class="hint mt-2">
+        The value is sent as a bound parameter, never as part of the statement. Column and match
+        are checked against this table's own columns before anything runs.
+      </p>
+    </form>
+
+    {# overflow-x-auto on the wrapper, not the page: a wide table scrolls sideways inside its card
+       rather than making the whole layout scroll. #}
+    <div class="card p-0 overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr id="gridHead"></tr></thead>
+        <tbody id="gridBody" class="divide-y divide-brand-muted/10"></tbody>
+      </table>
+    </div>
+
+    <nav class="mt-4 flex flex-wrap items-center justify-between gap-4" aria-label="Rows">
+      <button type="button" id="pageBack" class="btn-secondary text-sm">Back</button>
+      <p id="pageCount" class="text-sm text-brand-muted tabular-nums"></p>
+      <button type="button" id="pageNext" class="btn-secondary text-sm">More</button>
+    </nav>
+  </div>
+
+</section>

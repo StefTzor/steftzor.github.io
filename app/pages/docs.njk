@@ -1,0 +1,317 @@
+---
+layout: app-shell.njk
+permalink: /docs/
+title: "How this is built | Stefanos Tzortzoglou"
+shell: true
+bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
+navDrawerOnly: true
+signOut: true
+bodyScripts:
+  - src: "/scripts/docs.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+  - src: "/scripts/palette.js"
+    type: "module"
+---
+<section class="app-page">
+
+  <h1 class="flex items-center gap-3 text-3xl font-bold text-brand-text">
+    {% icon "fa-solid-network-wired", "h-7 w-7 text-brand-accent" %}
+    <span>How this is built</span>
+  </h1>
+  <p class="mt-2 max-w-prose text-brand-muted">
+    Three deployables, two databases and four upstreams. This page is the map — what runs where,
+    what holds which data, and what every endpoint is for.
+  </p>
+
+  {# --- the flow -----------------------------------------------------------
+     Drawn rather than described because the one thing people get wrong about this setup is which
+     box talks to which, and a list of hostnames does not answer that. #}
+  <section aria-labelledby="flow-heading" class="mt-10">
+    <h2 id="flow-heading" class="text-xl font-bold text-brand-text mb-1">Where a request goes</h2>
+    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+      The two sites are static files and hold no secrets. Everything that needs a key, a database
+      or an identity goes through the API.
+    </p>
+
+    <div class="card overflow-x-auto">
+      <svg viewBox="0 0 760 272" class="w-full min-w-[640px]" role="img"
+        aria-label="A browser talks to the public site and to the app. The app talks to the API. The API talks to Firebase, to Postgres and to four upstream services.">
+        <defs>
+          <marker id="flow-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" class="dg-arrow"/>
+          </marker>
+        </defs>
+
+        <g class="dg-line" marker-end="url(#flow-arrow)">
+          <path d="M130,150 C150,150 150,86 166,86"/>
+          <path d="M130,162 L166,162"/>
+          <path d="M340,162 L388,162"/>
+          <path d="M552,156 C575,156 575,86 598,86"/>
+          <path d="M552,162 L598,162"/>
+          <path d="M552,168 C575,168 575,232 598,232"/>
+        </g>
+
+        <g>
+          <rect x="8" y="132" width="122" height="48" rx="8" class="dg-box"/>
+          <text x="69" y="153" text-anchor="middle" class="dg-label">Browser</text>
+          <text x="69" y="168" text-anchor="middle" class="dg-sub">you, signed in</text>
+
+          <rect x="166" y="62" width="174" height="48" rx="8" class="dg-box"/>
+          <text x="253" y="83" text-anchor="middle" class="dg-label">tzortzoglou.eu</text>
+          <text x="253" y="98" text-anchor="middle" class="dg-sub">static · GitHub Pages</text>
+
+          <rect x="166" y="138" width="174" height="48" rx="8" class="dg-box"/>
+          <text x="253" y="159" text-anchor="middle" class="dg-label">app.tzortzoglou.eu</text>
+          <text x="253" y="174" text-anchor="middle" class="dg-sub">static · signs you in</text>
+
+          <rect x="388" y="138" width="164" height="48" rx="8" class="dg-box-accent"/>
+          <text x="470" y="159" text-anchor="middle" class="dg-label">api.tzortzoglou.eu</text>
+          <text x="470" y="174" text-anchor="middle" class="dg-sub">Express · every gate</text>
+
+          <rect x="598" y="62" width="154" height="48" rx="8" class="dg-box"/>
+          <text x="675" y="83" text-anchor="middle" class="dg-label">Firebase</text>
+          <text x="675" y="98" text-anchor="middle" class="dg-sub">auth · roles</text>
+
+          <rect x="598" y="138" width="154" height="48" rx="8" class="dg-box"/>
+          <text x="675" y="159" text-anchor="middle" class="dg-label">Postgres</text>
+          <text x="675" y="174" text-anchor="middle" class="dg-sub">messages · restarts</text>
+
+          <rect x="598" y="208" width="154" height="48" rx="8" class="dg-box"/>
+          <text x="675" y="229" text-anchor="middle" class="dg-label">Four upstreams</text>
+          <text x="675" y="244" text-anchor="middle" class="dg-sub">weather · transit · F1 · CI</text>
+        </g>
+      </svg>
+    </div>
+
+    <p class="hint mt-3 max-w-prose">
+      The browser never calls an upstream directly. Two of the four need a key, and a key in a
+      page is a key anyone can read with View Source.
+    </p>
+  </section>
+
+  {# --- the deployables ---------------------------------------------------- #}
+  <section aria-labelledby="deploy-heading" class="mt-10">
+    <h2 id="deploy-heading" class="text-xl font-bold text-brand-text mb-1">The three deployables</h2>
+    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+      Two of them are built from the same repository by two Eleventy configurations that share one
+      set of includes and one stylesheet, so the chrome cannot drift between them.
+    </p>
+    <div class="card">
+      <div class="doc-row">
+        <span class="doc-method">Site</span>
+        <span class="text-sm text-brand-text">
+          <strong>tzortzoglou.eu</strong> — the public portfolio. Eleventy, output to
+          <code>_site/</code>, served by GitHub Pages. Loads no Firebase at all.
+        </span>
+        <span class="doc-role">static</span>
+      </div>
+      <div class="doc-row">
+        <span class="doc-method">App</span>
+        <span class="text-sm text-brand-text">
+          <strong>app.tzortzoglou.eu</strong> — everything behind a sign-in. A second Eleventy
+          build of the same repository, output to <code>_app/</code>.
+        </span>
+        <span class="doc-role">static</span>
+      </div>
+      <div class="doc-row">
+        <span class="doc-method">API</span>
+        <span class="text-sm text-brand-text">
+          <strong>api.tzortzoglou.eu</strong> — Express, in its own private repository. Holds every
+          key and is the only thing that talks to a database.
+        </span>
+        <span class="doc-role">node</span>
+      </div>
+    </div>
+  </section>
+
+  {# --- where data lives ----------------------------------------------------
+     The section this page mostly exists for. "The database" sounds like one thing and is four,
+     and three of the four are not the one people mean. #}
+  <section aria-labelledby="data-heading" class="mt-10">
+    <h2 id="data-heading" class="text-xl font-bold text-brand-text mb-1">Where data lives</h2>
+    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+      Four stores, and they hold very different things. The distinction that matters most:
+      <strong class="text-brand-text">the weather, the departures and the Formula 1 data are not
+      stored anywhere.</strong>
+    </p>
+
+    <ul class="grid gap-4 sm:grid-cols-2">
+      <li class="card">
+        <h3 class="font-semibold text-brand-text">Firebase Authentication</h3>
+        <p class="hint mt-1">
+          Email addresses and password hashes. No password ever reaches the API — the browser
+          exchanges one for a signed token, and the API only ever verifies tokens.
+        </p>
+      </li>
+      <li class="card">
+        <h3 class="font-semibold text-brand-text">Firestore</h3>
+        <p class="hint mt-1">
+          One document per account: name, role, approval state, home location, home stop. The role
+          is read from here on <em>every single request</em> rather than trusted from the token.
+        </p>
+      </li>
+      <li class="card">
+        <h3 class="font-semibold text-brand-text">Postgres</h3>
+        <p class="hint mt-1">
+          Three tables and nothing else — contact submissions, a row per process start, and which
+          migrations have run. Browsable on
+          <a href="/admin/data/" class="text-brand-accent underline hover:no-underline">the data view</a>
+          if you are an admin.
+        </p>
+      </li>
+      <li class="card">
+        <h3 class="font-semibold text-brand-text">Memory, briefly</h3>
+        <p class="hint mt-1">
+          Every upstream answer is cached in the API process for between 45 seconds and six hours,
+          and lost on restart. Nothing about a bus or a race is ever written to disk, so there is
+          no history of either to browse.
+        </p>
+      </li>
+    </ul>
+  </section>
+
+  {# --- the tables ---------------------------------------------------------- #}
+  <section aria-labelledby="erd-heading" class="mt-10">
+    <h2 id="erd-heading" class="text-xl font-bold text-brand-text mb-1">The Postgres tables</h2>
+    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+      There are no foreign keys, because nothing references anything. Three independent tables
+      written by three unrelated parts of the API — which is worth saying out loud, since an
+      entity-relationship diagram normally implies relationships.
+    </p>
+
+    <div class="card overflow-x-auto">
+      <svg viewBox="0 0 560 208" class="w-full min-w-[520px]" role="img"
+        aria-label="Three independent tables. contact_submissions has id, name, email, message, consent_at, notified_at, read_at and created_at, plus ip and user_agent which are withheld from the browser. boots has id, started_at and version. schema_migrations has filename and applied_at.">
+        <g>
+          <rect x="6" y="8" width="244" height="192" rx="8" class="dg-box"/>
+          <rect x="6" y="8" width="244" height="26" rx="8" class="dg-box-accent"/>
+          <text x="18" y="26" class="dg-label">contact_submissions</text>
+          <text x="18" y="50" class="dg-sub">id · bigserial · PK</text>
+          <text x="18" y="66" class="dg-sub">name · text</text>
+          <text x="18" y="82" class="dg-sub">email · text</text>
+          <text x="18" y="98" class="dg-sub">message · text</text>
+          <text x="18" y="114" class="dg-sub">consent_at · timestamptz</text>
+          <text x="18" y="130" class="dg-sub">notified_at · timestamptz</text>
+          <text x="18" y="146" class="dg-sub">read_at · timestamptz</text>
+          <text x="18" y="162" class="dg-sub">created_at · timestamptz</text>
+          <text x="18" y="182" class="dg-sub">ip, user_agent — withheld</text>
+
+          <rect x="300" y="8" width="254" height="86" rx="8" class="dg-box"/>
+          <rect x="300" y="8" width="254" height="26" rx="8" class="dg-box-accent"/>
+          <text x="312" y="26" class="dg-label">boots</text>
+          <text x="312" y="50" class="dg-sub">id · bigserial · PK</text>
+          <text x="312" y="66" class="dg-sub">started_at · timestamptz</text>
+          <text x="312" y="82" class="dg-sub">version · text · nullable</text>
+
+          <rect x="300" y="114" width="254" height="70" rx="8" class="dg-box"/>
+          <rect x="300" y="114" width="254" height="26" rx="8" class="dg-box-accent"/>
+          <text x="312" y="132" class="dg-label">schema_migrations</text>
+          <text x="312" y="156" class="dg-sub">filename · text · PK</text>
+          <text x="312" y="172" class="dg-sub">applied_at · timestamptz</text>
+        </g>
+      </svg>
+    </div>
+
+    <p class="hint mt-3 max-w-prose">
+      <strong class="text-brand-text">ip</strong> and <strong class="text-brand-text">user_agent</strong>
+      exist in the table and are never sent to a browser by any endpoint, including the data view.
+      Reading a message does not require knowing where the person was sitting.
+    </p>
+  </section>
+
+  {# --- endpoints ----------------------------------------------------------- #}
+  <section aria-labelledby="api-heading" class="mt-10">
+    <h2 id="api-heading" class="text-xl font-bold text-brand-text mb-1">The endpoints</h2>
+    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+      Every route the API serves, and the lowest role that may call it. Each one re-reads your role
+      and approval from Firestore before doing anything — a token that was valid when it was issued
+      is not a claim about what you are allowed to do now.
+    </p>
+
+    {# Fetched rather than built into this page, and this is the reason:
+       app.tzortzoglou.eu is a directory of static files. Its sign-in is a redirect in
+       JavaScript, which decides what is drawn and guards nothing at all - every page here is
+       served in full to anyone who asks for the URL. A complete list of endpoints and the role
+       each one needs is the most useful thing on this page to somebody who has no account, so
+       it is the one part that is not in the HTML. It comes from the API, which asks who you are.
+
+       It also stopped being a hand-kept copy in the process. The list now lives beside the
+       router in the API repository, and that repository's test suite fails if the two disagree
+       in either direction. #}
+    <div id="endpoints" class="mt-4"></div>
+    <p id="endpointsNote" role="status" aria-live="polite" class="hint mt-4">Loading the endpoint list…</p>
+
+  </section>
+
+  {# --- upstreams ------------------------------------------------------------ #}
+  <section aria-labelledby="up-heading" class="mt-10">
+    <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-1">The four upstreams</h2>
+    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+      All four are proxied. Two need a credential, which is the hard reason; the other two are
+      proxied so one host is called once for everybody rather than once per open tab.
+    </p>
+    <div class="card">
+      <div class="doc-row">
+        <span class="text-sm font-semibold text-brand-text">Open-Meteo</span>
+        <span class="text-sm text-brand-muted">Forecast and air quality. No key. Cached per coordinate.</span>
+        <span class="doc-role">no key</span>
+      </div>
+      <div class="doc-row">
+        <span class="text-sm font-semibold text-brand-text">Trafiklab ResRobot</span>
+        <span class="text-sm text-brand-muted">Swedish departures, arrivals and stop search. Cached 45 seconds — a board older than that is a board that is wrong.</span>
+        <span class="doc-role">key</span>
+      </div>
+      <div class="doc-row">
+        <span class="text-sm font-semibold text-brand-text">Jolpica</span>
+        <span class="text-sm text-brand-muted">Formula 1 calendar, standings and results; the maintained successor to Ergast. Calendar cached six hours, results five minutes.</span>
+        <span class="doc-role">no key</span>
+      </div>
+      <div class="doc-row">
+        <span class="text-sm font-semibold text-brand-text">GitHub Actions</span>
+        <span class="text-sm text-brand-muted">Workflow runs for the Health page. The only source that knows about a deploy that <em>failed</em>.</span>
+        <span class="doc-role">key</span>
+      </div>
+    </div>
+    <p class="hint mt-3 max-w-prose">
+      The two credentials are read from the environment on the server and appear in no response, no
+      error message and no log line. Upstream errors are reported by status code only, because an
+      error body can echo the request back — and the request carries the key.
+    </p>
+  </section>
+
+  {# --- conventions ---------------------------------------------------------- #}
+  <section aria-labelledby="rules-heading" class="mt-10">
+    <h2 id="rules-heading" class="text-xl font-bold text-brand-text mb-1">Rules the code follows</h2>
+    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+      Each of these is here because breaking it caused a real bug in this codebase, not because it
+      reads well.
+    </p>
+    <ul class="card space-y-3 text-sm text-brand-text">
+      <li>
+        <strong>Check the type before coercing a number.</strong> <code>Number(null)</code> is
+        <code>0</code>, <code>Number([])</code> is <code>0</code>, and a query string can produce an
+        array without being asked. Every parser guards on <code>typeof</code> first.
+      </li>
+      <li>
+        <strong>An unknown role is the lowest role.</strong> Role names are an explicit list, not
+        case-folding. Anything unrecognised resolves to the most restrictive answer, never the
+        most permissive.
+      </li>
+      <li>
+        <strong>A comment may not claim a control the code does not have.</strong> If the code
+        cannot be made true, the comment changes in the same commit.
+      </li>
+      <li>
+        <strong>A signal that was never about the thing being checked proves nothing about it.</strong>
+        A green test suite that never loads a module says nothing about that module.
+      </li>
+      <li>
+        <strong>Never invent data on a dashboard.</strong> A panel with nothing behind it says it
+        has nothing behind it.
+      </li>
+    </ul>
+  </section>
+
+</section>

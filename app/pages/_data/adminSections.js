@@ -37,6 +37,12 @@ module.exports = [
     icon: "fa-solid-user-plus",
   },
   {
+    label: "Data",
+    href: "/admin/data/",
+    navKey: "admin-data",
+    icon: "fa-solid-database",
+  },
+  {
     label: "Health",
     href: "/admin/health/",
     navKey: "admin-health",
