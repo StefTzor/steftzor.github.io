@@ -117,7 +117,17 @@ function paint(me) {
   remember(me);
   document.documentElement.classList.remove("app-unknown");
   const name = el("whoamiName");
-  if (name) name.textContent = me.name || "";
+  if (name) {
+    // An account with no name left this line empty, so the block measured 53px filled against
+    // the skeleton's 73 and the rail shrank by the difference - the same jump as before, just
+    // in the other direction. The slot is always occupied now, and when there is nothing to put
+    // in it the prompt is useful: the whole block is already a link to /profile/, which is
+    // where you would go to fix it.
+    name.textContent = me.name || "Add your name";
+    name.classList.toggle("text-brand-muted", !me.name);
+    name.classList.toggle("font-normal", !me.name);
+    name.classList.toggle("font-semibold", !!me.name);
+  }
   const who = el("whoami");
   if (who) who.textContent = me.email || "";
   // Its own line rather than a suffix on the address: as a suffix it was the first thing the
