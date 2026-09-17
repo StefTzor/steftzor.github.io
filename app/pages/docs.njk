@@ -31,8 +31,8 @@ bodyScripts:
   <section aria-labelledby="flow-heading" class="mt-10">
     <h2 id="flow-heading" class="text-xl font-bold text-brand-text mb-1">Where a request goes</h2>
     <p class="text-sm text-brand-muted mb-4 max-w-prose">
-      The two sites are static files and hold no secrets. Everything that needs a key, a database
-      or an identity goes through the API.
+      The two sites are static files. Everything that needs a key, a database or a verified identity
+      goes through the API.
     </p>
 
     <div class="card overflow-x-auto">
@@ -96,7 +96,7 @@ bodyScripts:
     <h2 id="deploy-heading" class="text-xl font-bold text-brand-text mb-1">The three deployables</h2>
     <p class="text-sm text-brand-muted mb-4 max-w-prose">
       Two of them are built from the same repository by two Eleventy configurations that share one
-      set of includes and one stylesheet, so the chrome cannot drift between them.
+      set of includes and one stylesheet, so both draw their chrome from the same implementation.
     </p>
     <div class="card">
       <div class="doc-row">
@@ -110,8 +110,9 @@ bodyScripts:
       <div class="doc-row">
         <span class="doc-method">App</span>
         <span class="text-sm text-brand-text">
-          <strong>app.tzortzoglou.eu</strong> — everything behind a sign-in. A second Eleventy
-          build of the same repository, output to <code>_app/</code>.
+          <strong>app.tzortzoglou.eu</strong> — the signed-in app. A second Eleventy build of the
+          same repository, output to <code>_app/</code>. The pages are static; what they show
+          comes from the API, which is what checks who you are.
         </span>
         <span class="doc-role">static</span>
       </div>
@@ -140,8 +141,8 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">Firebase Authentication</h3>
         <p class="hint mt-1">
-          Email addresses and password hashes. No password reaches the API. The browser exchanges one
-          for a signed token, and the API only verifies tokens.
+          Email addresses and password hashes. The browser trades a password for a signed token, and
+          the API only ever sees the token.
         </p>
       </li>
       <li class="card">
@@ -164,7 +165,7 @@ bodyScripts:
         <h3 class="font-semibold text-brand-text">Memory</h3>
         <p class="hint mt-1">
           Every upstream answer is cached in the API process for between 45 seconds and six hours,
-          and lost on restart. Nothing about a bus or a race is written to disk, so there is no
+          and lost on restart. A bus or a race lives in memory and nowhere else, so there is no
           history of either to browse.
         </p>
       </li>
@@ -175,9 +176,8 @@ bodyScripts:
   <section aria-labelledby="erd-heading" class="mt-10">
     <h2 id="erd-heading" class="text-xl font-bold text-brand-text mb-1">The Postgres tables</h2>
     <p class="text-sm text-brand-muted mb-4 max-w-prose">
-      There are no foreign keys, because nothing references anything: three independent tables,
-      written by three unrelated parts of the API, where an entity-relationship diagram normally
-      implies relationships.
+      There are no foreign keys. These are three independent tables, written by three unrelated
+      parts of the API, though an entity-relationship diagram normally implies relationships.
     </p>
 
     <div class="card overflow-x-auto">
@@ -294,8 +294,7 @@ bodyScripts:
       </li>
       <li>
         <strong>An unknown role is the lowest role.</strong> Role names are an explicit list, not
-        case-folding. Anything unrecognised resolves to the most restrictive answer, never the
-        most permissive.
+        case-folding. Anything unrecognised resolves to the most restrictive answer.
       </li>
       <li>
         <strong>A comment may not claim a control the code does not have.</strong> If the code

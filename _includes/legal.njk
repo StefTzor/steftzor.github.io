@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+{#- `dark` is on <html> here for the same reason it is on base.njk, app-shell.njk and
+    redirect.njk: chrome/theme-boot.njk only ever REMOVES the class, when the stored theme is
+    light. It never adds it. A layout that starts without it is therefore light for everybody,
+    whatever they chose - which is what these four pages did, so a reader in dark mode clicking
+    Privacy got a white page. -#}
+<html lang="en" class="scroll-smooth dark">
 
 <head>
   <meta charset="UTF-8">
