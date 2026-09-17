@@ -30,9 +30,25 @@ module.exports = function (eleventyConfig) {
       // blob: because the private view fetches its photos over an authenticated request and
       // renders them from createObjectURL - a blob: URL is not covered by 'self', so without
       // this the images are blocked and the page looks broken for the one person it is for.
-      "img-src": ["'self'", "data:", "blob:"],
+      // The basemap host is here because map tiles ARE images, fetched one per tile as you pan.
+      "img-src": ["'self'", "data:", "blob:", "https://basemaps.cartocdn.com",
+        "https://a.basemaps.cartocdn.com", "https://b.basemaps.cartocdn.com",
+        "https://c.basemaps.cartocdn.com", "https://d.basemaps.cartocdn.com"],
+      // MapLibre renders in a Worker, and there was no worker-src directive at all before this -
+      // which means workers fell back to default-src 'self' and the blob: path was blocked.
+      // 'self' covers the module worker it loads as a sibling of /vendor/maplibre-gl.mjs; blob:
+      // covers the fallback it constructs when that URL is not usable. Both, because which one
+      // runs is the library's decision and not ours.
+      "worker-src": ["'self'", "blob:"],
     },
   });
+
+  // MapLibre, self-hosted, exactly as the fonts and the icons are. A CDN would put a third party
+  // in script-src on every page that draws a map, and this repo spent a whole pass removing the
+  // last of those. Copied as a directory because the four files must stay siblings: the library
+  // resolves its worker as `new URL('./maplibre-gl-worker.mjs', import.meta.url)`, so renaming or
+  // flattening any of them breaks it at runtime and not at build time.
+  eleventyConfig.addPassthroughCopy("vendor");
 
   eleventyConfig.addPassthroughCopy({
     "app/scripts/auth.js": "scripts/auth.js",
@@ -65,6 +81,7 @@ module.exports = function (eleventyConfig) {
     "app/scripts/admin-health.js": "scripts/admin-health.js",
     "app/scripts/admin-data.js": "scripts/admin-data.js",
     "app/scripts/admin-erasure.js": "scripts/admin-erasure.js",
+    "app/scripts/map.js": "scripts/map.js",
     "app/scripts/docs.js": "scripts/docs.js",
     "app/scripts/admin-messages.js": "scripts/admin-messages.js",
     "app/scripts/admin-invites.js": "scripts/admin-invites.js",
