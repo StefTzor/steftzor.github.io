@@ -21,8 +21,8 @@ bodyScripts:
     <span>How this is built</span>
   </h1>
   <p class="mt-2 max-w-prose text-brand-muted">
-    Three deployables, two databases and four upstreams. This page is the map — what runs where,
-    what holds which data, and what every endpoint is for.
+    Three deployables, four data stores and four upstreams. This page is the map of what runs
+    where, what holds which data, and what every endpoint is for.
   </p>
 
   {# --- the flow -----------------------------------------------------------
@@ -132,41 +132,40 @@ bodyScripts:
   <section aria-labelledby="data-heading" class="mt-10">
     <h2 id="data-heading" class="text-xl font-bold text-brand-text mb-1">Where data lives</h2>
     <p class="text-sm text-brand-muted mb-4 max-w-prose">
-      Four stores, and they hold very different things. The distinction that matters most:
-      <strong class="text-brand-text">the weather, the departures and the Formula 1 data are not
-      stored anywhere.</strong>
+      Four places, and they hold very different things. The weather, the departures and the
+      Formula 1 data are not stored anywhere.
     </p>
 
     <ul class="grid gap-4 sm:grid-cols-2">
       <li class="card">
         <h3 class="font-semibold text-brand-text">Firebase Authentication</h3>
         <p class="hint mt-1">
-          Email addresses and password hashes. No password ever reaches the API — the browser
-          exchanges one for a signed token, and the API only ever verifies tokens.
+          Email addresses and password hashes. No password reaches the API. The browser exchanges one
+          for a signed token, and the API only verifies tokens.
         </p>
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Firestore</h3>
         <p class="hint mt-1">
           One document per account: name, role, approval state, home location, home stop. The role
-          is read from here on <em>every single request</em> rather than trusted from the token.
+          is read from here on <em>every single request</em>.
         </p>
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Postgres</h3>
         <p class="hint mt-1">
-          Three tables and nothing else — contact submissions, a row per process start, and which
-          migrations have run. Browsable on
+          Three tables: contact submissions, a row per process start, and which migrations have run.
+          Browsable on
           <a href="/admin/data/" class="text-brand-accent underline hover:no-underline">the data view</a>
           if you are an admin.
         </p>
       </li>
       <li class="card">
-        <h3 class="font-semibold text-brand-text">Memory, briefly</h3>
+        <h3 class="font-semibold text-brand-text">Memory</h3>
         <p class="hint mt-1">
           Every upstream answer is cached in the API process for between 45 seconds and six hours,
-          and lost on restart. Nothing about a bus or a race is ever written to disk, so there is
-          no history of either to browse.
+          and lost on restart. Nothing about a bus or a race is written to disk, so there is no
+          history of either to browse.
         </p>
       </li>
     </ul>
@@ -176,9 +175,9 @@ bodyScripts:
   <section aria-labelledby="erd-heading" class="mt-10">
     <h2 id="erd-heading" class="text-xl font-bold text-brand-text mb-1">The Postgres tables</h2>
     <p class="text-sm text-brand-muted mb-4 max-w-prose">
-      There are no foreign keys, because nothing references anything. Three independent tables
-      written by three unrelated parts of the API — which is worth saying out loud, since an
-      entity-relationship diagram normally implies relationships.
+      There are no foreign keys, because nothing references anything: three independent tables,
+      written by three unrelated parts of the API, where an entity-relationship diagram normally
+      implies relationships.
     </p>
 
     <div class="card overflow-x-auto">
@@ -215,8 +214,8 @@ bodyScripts:
     </div>
 
     <p class="hint mt-3 max-w-prose">
-      <strong class="text-brand-text">ip</strong> and <strong class="text-brand-text">user_agent</strong>
-      exist in the table and are never sent to a browser by any endpoint, including the data view.
+      <code>ip</code> and <code>user_agent</code> exist in the table and are never sent to a
+      browser by any endpoint, including the data view.
       Reading a message does not require knowing where the person was sitting.
     </p>
   </section>
@@ -226,8 +225,8 @@ bodyScripts:
     <h2 id="api-heading" class="text-xl font-bold text-brand-text mb-1">The endpoints</h2>
     <p class="text-sm text-brand-muted mb-4 max-w-prose">
       Every route the API serves, and the lowest role that may call it. Each one re-reads your role
-      and approval from Firestore before doing anything — a token that was valid when it was issued
-      is not a claim about what you are allowed to do now.
+      and approval from Firestore before doing anything, because a token proves who signed in, not
+      what they may do now.
     </p>
 
     {# Fetched rather than built into this page, and this is the reason:
@@ -249,8 +248,8 @@ bodyScripts:
   <section aria-labelledby="up-heading" class="mt-10">
     <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-1">The four upstreams</h2>
     <p class="text-sm text-brand-muted mb-4 max-w-prose">
-      All four are proxied. Two need a credential, which is the hard reason; the other two are
-      proxied so one host is called once for everybody rather than once per open tab.
+      All four are proxied. Two need a credential, which has to stay on the server; the other two
+      so that one host is called once for everybody rather than once per open tab.
     </p>
     <div class="card">
       <div class="doc-row">
@@ -260,7 +259,7 @@ bodyScripts:
       </div>
       <div class="doc-row">
         <span class="text-sm font-semibold text-brand-text">Trafiklab ResRobot</span>
-        <span class="text-sm text-brand-muted">Swedish departures, arrivals and stop search. Cached 45 seconds — a board older than that is a board that is wrong.</span>
+        <span class="text-sm text-brand-muted">Swedish departures, arrivals and stop search. Cached 45 seconds, because a board older than that is wrong.</span>
         <span class="doc-role">key</span>
       </div>
       <div class="doc-row">
@@ -275,9 +274,9 @@ bodyScripts:
       </div>
     </div>
     <p class="hint mt-3 max-w-prose">
-      The two credentials are read from the environment on the server and appear in no response, no
-      error message and no log line. Upstream errors are reported by status code only, because an
-      error body can echo the request back — and the request carries the key.
+      The two credentials are read from the environment on the server and stay out of every
+      response, error message and log line. Upstream errors are reported by status code only,
+      because an error body can echo the request back, and the request carries the key.
     </p>
   </section>
 
@@ -285,8 +284,7 @@ bodyScripts:
   <section aria-labelledby="rules-heading" class="mt-10">
     <h2 id="rules-heading" class="text-xl font-bold text-brand-text mb-1">Rules the code follows</h2>
     <p class="text-sm text-brand-muted mb-4 max-w-prose">
-      Each of these is here because breaking it caused a real bug in this codebase, not because it
-      reads well.
+      Each of these is here because breaking it caused a real bug in this codebase.
     </p>
     <ul class="card space-y-3 text-sm text-brand-text">
       <li>
@@ -308,8 +306,7 @@ bodyScripts:
         A green test suite that never loads a module says nothing about that module.
       </li>
       <li>
-        <strong>Never invent data on a dashboard.</strong> A panel with nothing behind it says it
-        has nothing behind it.
+        <strong>Never invent data on a dashboard.</strong> A panel with no source behind it says so.
       </li>
     </ul>
   </section>

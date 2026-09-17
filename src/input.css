@@ -745,6 +745,17 @@
   }
 
   /* Help text under a field: the quiet explanation, never the error. */
+  /* Inline code.
+
+     Tailwind's preflight gives <code> a monospace face and nothing else, so it inherited its
+     colour from whatever it sat in - which on /docs/ meant identifiers like `ip` and
+     `user_agent` rendering in the muted grey of the sentence around them, lower contrast than
+     the surrounding prose rather than higher. An identifier is the part of a sentence a reader
+     is scanning for. */
+  code {
+    @apply rounded bg-brand-muted/10 px-1 py-0.5 text-[0.9em] text-brand-text;
+  }
+
   .hint {
     @apply mt-1 text-xs text-brand-muted;
   }
