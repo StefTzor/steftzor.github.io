@@ -191,8 +191,11 @@
 
      Left-aligned with a ceiling rather than flush, so a very wide screen does not stretch a
      line of prose past the point of being readable. */
+  /* max-w-6xl, not 5xl: at 1440 the card stopped 208px short of the right edge and the space
+     did nothing. Pages whose content is prose rather than data narrow themselves by adding a
+     max-w-* utility, which wins over this because utilities come after components. */
   .app-page {
-    @apply px-4 py-10 sm:px-6 lg:px-8 max-w-5xl;
+    @apply px-4 py-10 sm:px-6 lg:px-8 max-w-6xl;
   }
 
   /* The home hero.
@@ -204,8 +207,12 @@
 
      All of it is one absolutely-positioned layer behind the text, so nothing in here can affect
      the layout or push the greeting around as conditions change. */
+  /* No overflow-hidden here, and that is the whole point. It was here to keep the sky layer
+     inside the rounded corners, and it also clipped the forecast popover that opens from the
+     chip inside this card - 327px of a 366px panel, so hovering the chip produced a sliver.
+     The clipping belongs to the thing that needs clipping, which is the sky, not the card. */
   .hero {
-    @apply relative overflow-hidden rounded-2xl border border-brand-muted/15 bg-brand-surface;
+    @apply relative rounded-2xl border border-brand-muted/15 bg-brand-surface;
   }
 
   .hero-body {
@@ -221,8 +228,10 @@
            hover:decoration-brand-accent;
   }
 
+  /* Clips itself to the card's corners, so the gradients stop where the border does without
+     the card having to clip anything that sits on top of it. */
   .hero-sky {
-    @apply pointer-events-none absolute inset-0;
+    @apply pointer-events-none absolute inset-0 overflow-hidden rounded-2xl;
   }
 
   /* Clear and mostly clear: a warm low sun breathing at the top right. */
