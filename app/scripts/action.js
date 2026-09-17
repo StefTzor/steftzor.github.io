@@ -108,6 +108,27 @@ async function start() {
     return;
   }
 
+  if (mode === "verifyAndChangeEmail") {
+    try {
+      // checkActionCode first, so an expired link says so rather than failing mid-change.
+      // info.data.email is the NEW address; info.data.previousEmail is the one being left.
+      const info = await checkActionCode(auth, oobCode);
+      await applyActionCode(auth, oobCode);
+      scrubUrl();
+      // Firebase revokes existing tokens when the sign-in address changes, so whoever opened
+      // this is now signed out - which is what the "Go to sign in" button below is for. Saying
+      // so is the difference between a completed action and an apparently random logout.
+      result("Email address changed",
+        "You now sign in with " + (info.data.email || "your new address") +
+        ". Your other devices have been signed out, so sign in again with the new address.");
+    } catch (error) {
+      scrubUrl();
+      console.error("action: change-email code rejected", error.code || "unknown");
+      result("This link no longer works", EXPIRED);
+    }
+    return;
+  }
+
   result("Unsupported link", "This kind of link is not handled here.");
 }
 
