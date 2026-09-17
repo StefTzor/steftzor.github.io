@@ -1,0 +1,57 @@
+---
+permalink: /admin/health/
+title: "Health | Admin"
+bodyScripts:
+  - src: "/scripts/admin-health.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+  - src: "/scripts/palette.js"
+    type: "module"
+---
+<section class="app-page">
+
+  {% include "chrome/admin-sections.njk" %}
+
+  <h1 class="text-3xl font-bold text-brand-text mb-2">Health</h1>
+  <p class="text-brand-muted mb-8 max-w-prose">
+    What is running now, and how the last few deploys of each pipeline went.
+  </p>
+
+  <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
+
+  {# --- live -------------------------------------------------------------
+     The same two checks the overview makes, because "is it up right now" is the first question
+     and deploy history does not answer it. #}
+  <h2 class="text-xl font-bold text-brand-text mb-1">Right now</h2>
+  <p class="text-sm text-brand-muted mb-4">Checked when this page loaded.</p>
+
+  <ul class="grid gap-4 sm:grid-cols-2 mb-10">
+    <li class="card">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="font-semibold text-brand-text">API</h3>
+        <span id="apiState" class="status-pill status-pill--unknown">Checking…</span>
+      </div>
+      <p class="hint">api.tzortzoglou.eu</p>
+      <p id="apiDetail" class="mt-3 text-sm text-brand-muted">&nbsp;</p>
+    </li>
+    <li class="card">
+      <div class="flex items-center justify-between gap-3">
+        <h3 class="font-semibold text-brand-text">App</h3>
+        <span id="appState" class="status-pill status-pill--unknown">Checking…</span>
+      </div>
+      <p class="hint">app.tzortzoglou.eu</p>
+      <p id="appDetail" class="mt-3 text-sm text-brand-muted">&nbsp;</p>
+    </li>
+  </ul>
+
+  {# --- deploys ----------------------------------------------------------
+     Rendered by admin-health.js: one block per workflow, newest first. A failed run names the
+     step that failed, because that is the one thing worth knowing before opening the log. #}
+  <h2 class="text-xl font-bold text-brand-text mb-1">Deploys</h2>
+  <p id="deployAge" class="text-sm text-brand-muted mb-4"></p>
+  <div id="deploys">
+    <p class="text-sm text-brand-muted">Loading…</p>
+  </div>
+
+</section>

@@ -51,7 +51,11 @@ bodyScripts:
      Both of these are things this page can actually find out: the API answers /health with the
      time it started, and the app serves its own /build.txt. Nothing here is inferred. #}
   <h2 class="text-xl font-bold text-brand-text mb-1">Services</h2>
-  <p class="text-sm text-brand-muted mb-4">Checked when this page loaded.</p>
+  <p class="text-sm text-brand-muted mb-4">
+    Checked when this page loaded.
+    <a href="/admin/health/" class="text-brand-accent underline hover:no-underline">Deploy history</a>
+    is on the Health page.
+  </p>
 
   <ul class="grid gap-4 sm:grid-cols-2 mb-10">
     <li class="card">

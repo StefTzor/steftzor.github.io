@@ -37,6 +37,12 @@ module.exports = [
     icon: "fa-solid-user-plus",
   },
   {
+    label: "Health",
+    href: "/admin/health/",
+    navKey: "admin-health",
+    icon: "fa-solid-shield-alt",
+  },
+  {
     label: "Analytics",
     href: "/admin/analytics/",
     navKey: "admin-analytics",

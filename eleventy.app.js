@@ -53,6 +53,7 @@ module.exports = function (eleventyConfig) {
     "app/scripts/admin-account.js": "scripts/admin-account.js",
     "app/scripts/admin-overview.js": "scripts/admin-overview.js",
     "app/scripts/admin-analytics.js": "scripts/admin-analytics.js",
+    "app/scripts/admin-health.js": "scripts/admin-health.js",
     "app/scripts/admin-messages.js": "scripts/admin-messages.js",
     "app/scripts/admin-invites.js": "scripts/admin-invites.js",
   });
