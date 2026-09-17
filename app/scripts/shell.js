@@ -56,10 +56,23 @@ export const profile = new Promise((resolve) => {
       me = await api("/me");
     } catch (err) {
       if (err.status === 403) { forget(); showPending(); return; }
-      console.error("shell: /me failed", err.message);
-      forget();
-      await signOut(auth).catch(() => {});
-      location.replace("/login/");
+      // 401 is the only answer that means this session is genuinely no longer valid - the token
+      // was rejected - and the only one worth signing out for.
+      //
+      // Everything else is the server having a moment: a 429, a 502, a dropped connection. Those
+      // used to end the session too, which meant a rate limit or a thirty-second outage logged
+      // you out and bounced you to the form, and signing in again immediately failed the same
+      // way. Nothing is protected by that: the API re-reads role and approval on every single
+      // request, so a browser holding a session it cannot currently use gains nothing at all.
+      if (err.status === 401) {
+        console.error("shell: the session was rejected");
+        forget();
+        await signOut(auth).catch(() => {});
+        location.replace("/login/");
+        return;
+      }
+      console.error("shell: /me failed", err.status, err.message);
+      showUnreachable(err.status);
       return;
     }
     paint(me);
@@ -83,6 +96,37 @@ function showPending() {
   p.className = "text-brand-muted";
   p.textContent = "Your account has been created. You will be able to use the app once it is approved.";
   wrap.append(h, p);
+  document.body.appendChild(wrap);
+}
+
+/**
+ * The server could not be reached, or refused to answer.
+ *
+ * Deliberately not a sign-out. The session is still good; the API is the thing that is not
+ * answering, and the honest thing is to say so and offer to try again rather than to take the
+ * account away from somebody because a proxy hiccuped.
+ */
+function showUnreachable(status) {
+  const main = el("main-content");
+  if (main) main.setAttribute("aria-busy", "false");
+  document.documentElement.classList.remove("app-unknown");
+  document.body.textContent = "";
+  const wrap = document.createElement("main");
+  wrap.className = "container mx-auto px-4 py-16 max-w-md text-center";
+  const h = document.createElement("h1");
+  h.className = "text-2xl font-bold mb-3 text-brand-text";
+  h.textContent = status === 429 ? "Too many requests" : "Cannot reach the server";
+  const p = document.createElement("p");
+  p.className = "text-brand-muted";
+  p.textContent = status === 429
+    ? "The API is rate-limiting this address. You are still signed in — wait a minute and try again."
+    : "You are still signed in. The API did not answer, which is usually brief.";
+  const again = document.createElement("button");
+  again.type = "button";
+  again.className = "btn-primary mt-6";
+  again.textContent = "Try again";
+  again.addEventListener("click", () => location.reload());
+  wrap.append(h, p, again);
   document.body.appendChild(wrap);
 }
 
