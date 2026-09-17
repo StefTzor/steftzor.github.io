@@ -1,0 +1,122 @@
+---
+layout: app-shell.njk
+permalink: /profile/
+title: "Your profile | Stefanos Tzortzoglou"
+bodyScripts:
+  - src: "/scripts/profile.js"
+    type: "module"
+bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
+shell: true
+navDrawerOnly: true
+navItems:
+  - label: "Home"
+    href: "/"
+    navKey: "home"
+  - label: "Private"
+    href: "/private/"
+    navKey: "private"
+    minRole: "SuperUser"
+  - label: "Admin"
+    href: "/admin/"
+    navKey: "admin"
+    minRole: "Admin"
+signOut: true
+---
+<section class="container mx-auto px-4 py-10 max-w-2xl">
+
+  <h1 class="text-3xl font-bold mb-2 text-brand-text">Your profile</h1>
+  <p class="text-sm text-brand-muted mb-8">Everything here is about you rather than about the app.</p>
+
+  {# One live region for the whole page, the same rule the Admin page states: a screen reader
+     should hear the result of an action once, not once per section. #}
+  <p id="status" class="mb-6 text-sm" role="status" aria-live="polite"></p>
+
+  <!-- Name -->
+  <section aria-labelledby="name-heading" class="card">
+    <h2 id="name-heading" class="text-lg font-bold text-brand-text">Name</h2>
+    <p class="hint mt-1">Shown when you sign in, and to the administrator in the accounts list.</p>
+    <form id="nameForm" method="post" novalidate class="mt-4 grid gap-4 sm:grid-cols-2">
+      <div>
+        <label for="firstName" class="field-label">First name</label>
+        <input id="firstName" name="firstName" type="text" autocomplete="given-name" maxlength="60" class="field">
+      </div>
+      <div>
+        <label for="lastName" class="field-label">Last name</label>
+        <input id="lastName" name="lastName" type="text" autocomplete="family-name" maxlength="60" class="field">
+      </div>
+      <div class="sm:col-span-2">
+        <button type="submit" class="btn-primary">Save name</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Email -->
+  <section aria-labelledby="email-heading" class="card mt-6">
+    <h2 id="email-heading" class="text-lg font-bold text-brand-text">Email address</h2>
+    <p class="mt-1 text-sm text-brand-text">
+      You sign in with <span id="currentEmail" class="font-semibold"></span>
+    </p>
+
+    {# A disclosure rather than a form sitting open. Changing the address you sign in with is the
+       one change on this page that can lose you the account, so it should take a deliberate act
+       to start, not a stray keystroke in a field that was already there. #}
+    <button type="button" id="emailToggle" class="btn-secondary mt-4 text-sm"
+      aria-expanded="false" aria-controls="emailForm">Change email…</button>
+
+    <form id="emailForm" method="post" novalidate class="mt-5 hidden grid gap-4">
+      <p class="hint">
+        We will send a link to the new address. Nothing changes until you open it, and your
+        current address keeps working until then.
+      </p>
+      <div>
+        <label for="newEmail" class="field-label">New email address</label>
+        <input id="newEmail" name="newEmail" type="email" autocomplete="email" maxlength="254" class="field">
+      </div>
+      <div>
+        <label for="currentPassword" class="field-label">Your current password</label>
+        <input id="currentPassword" name="currentPassword" type="password"
+          autocomplete="current-password" class="field">
+        <p class="hint mt-1">Asked for because this change moves where sign-in mail goes.</p>
+      </div>
+      <div>
+        <button type="submit" class="btn-primary">Send the confirmation link</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Preferences -->
+  <section aria-labelledby="prefs-heading" class="card mt-6">
+    <h2 id="prefs-heading" class="text-lg font-bold text-brand-text">Preferences</h2>
+
+    <div class="mt-4 flex items-center justify-between gap-4">
+      <div>
+        <p class="text-sm font-semibold text-brand-text">Theme</p>
+        <p class="hint">Stored in this browser, so it does not follow you to another device.</p>
+      </div>
+      <button type="button" id="themeBtn" class="btn-secondary text-sm shrink-0">
+        <span id="themeValue">Dark</span>
+      </button>
+    </div>
+
+    <div class="mt-6 border-t border-brand-muted/15 pt-5">
+      <label for="placeSearch" class="field-label">Home location</label>
+      <p class="hint mt-1 mb-3">
+        The weather shows this wherever you are. Search for a town and pick it from the list —
+        there are three Uppsalas and a Stockholm in Maine, so the region matters.
+      </p>
+
+      <p id="homeCurrent" class="mb-3 text-sm text-brand-text"></p>
+
+      <input id="placeSearch" type="search" autocomplete="off" maxlength="80" class="field"
+        placeholder="Start typing a town…" aria-describedby="placeHint"
+        role="combobox" aria-expanded="false" aria-controls="placeResults" aria-autocomplete="list">
+      <p id="placeHint" class="sr-only">Results appear below as you type.</p>
+      <ul id="placeResults" class="mt-2 space-y-1" role="listbox" aria-label="Matching places"></ul>
+
+      <button type="button" id="clearHome" class="btn-secondary mt-4 text-sm hidden">
+        Use the default location instead
+      </button>
+    </div>
+  </section>
+
+</section>

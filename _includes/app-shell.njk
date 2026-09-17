@@ -122,31 +122,16 @@
           </ul>
         </nav>
 
-        {# You, and the two preferences that are yours rather than the app's. Both are stored in
-           this browser and nowhere else, which is why they can be changed here without a round
-           trip - and why they do not follow you to another device. Editing your name or address
-           is a different kind of change and is not here yet; it needs the server. #}
+        {# You. The preferences that used to sit here moved to /profile/ - a sidebar is
+           navigation, and a control that changes your account is not navigation. #}
         <div class="border-t border-brand-muted/15 p-3">
-          <div class="flex items-center gap-2 px-2 pb-2">
-            {% icon "fa-solid-user-gear", "h-4 w-4 shrink-0 text-brand-muted" %}
-            <div class="min-w-0">
-              <p id="whoamiName" class="truncate text-sm font-semibold text-brand-text"></p>
-              <p id="whoami" class="truncate text-xs text-brand-muted"></p>
-            </div>
-          </div>
-
-          <div class="mt-1 space-y-1">
-            <button type="button" id="prefTheme" class="side-pref">
-              {% icon "fa-solid-adjust", "side-icon" %}
-              <span class="flex-1 text-left">Theme</span>
-              <span id="prefThemeValue" class="text-xs font-semibold text-brand-accent"></span>
-            </button>
-            <button type="button" id="prefLocation" class="side-pref">
-              {% icon "fa-solid-location-dot", "side-icon" %}
-              <span class="flex-1 text-left">Location</span>
-              <span id="prefLocationValue" class="text-xs font-semibold text-brand-accent"></span>
-            </button>
-          </div>
+          <a href="/profile/" data-nav="profile" class="side-link">
+            {% icon "fa-solid-user-gear", "side-icon" %}
+            <span class="min-w-0">
+              <span id="whoamiName" class="block truncate font-semibold"></span>
+              <span id="whoami" class="block truncate text-xs text-brand-muted"></span>
+            </span>
+          </a>
         </div>
       </div>
     </aside>

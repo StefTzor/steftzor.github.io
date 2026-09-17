@@ -179,7 +179,7 @@ function renderChip(data) {
   }
   el("wxChipTemp").textContent = deg(now.temperature);
   el("wxChipWhat").textContent = what.text ? ` · ${what.text}` : "";
-  el("wxChipPlace").textContent = data.precise ? "Your location" : (data.place || "");
+  el("wxChipPlace").textContent = label || (data.precise ? "Your location" : (data.place || ""));
   startClock(data.timezone);
 }
 
@@ -258,7 +258,18 @@ function position() {
  */
 const coarse = (n) => Number(n.toFixed(2));
 
-async function load(coords) {
+/**
+ * Where the forecast is for, and what to call it.
+ *
+ * The server names only its own configured location - `place: precise ? '' : place` in
+ * weather.js, which will not invent a name for a coordinate a caller sent. So when we asked for
+ * somewhere, we are the ones who know what it is called, and we carry the label rather than
+ * expecting one back.
+ */
+let label = null;
+
+async function load(coords, name) {
+  label = name || null;
   const q = coords
     ? `?lat=${encodeURIComponent(coarse(coords.lat))}&lon=${encodeURIComponent(coarse(coords.lon))}`
     : "";
@@ -272,21 +283,22 @@ async function load(coords) {
  * returning to the fixed location also re-ran the "use my location" branch. One handler that
  * reads the current mode cannot drift like that.
  */
-function setupGeo(usingMine) {
+function setupGeo(usingMine, home) {
   const panel = el("geo");
   const btn = el("geoBtn");
   const note = el("geoNote");
   if (!panel || !btn || !navigator.geolocation) return;
   panel.classList.remove("hidden");
 
-  const FIXED_NOTE = "Showing a fixed location. Use your device's location for one nearer to you " +
-    "\u2014 it is rounded to about a kilometre before it is sent, and never stored.";
+  const back = home ? home.name : "the default location";
+  const FIXED_NOTE = `Showing ${back}. Use your device's location for this visit \u2014 it is ` +
+    "rounded to about a kilometre before it is sent, never stored, and your saved home is not changed.";
   const MINE_NOTE = "Showing the forecast for your device's location, rounded to about a kilometre.";
 
   let mine = !!usingMine;
 
   function show() {
-    btn.textContent = mine ? "Use the fixed location" : "Use my location";
+    btn.textContent = mine ? `Show ${back} again` : "Use my location";
     note.textContent = mine ? MINE_NOTE : FIXED_NOTE;
   }
   show();
@@ -297,7 +309,9 @@ function setupGeo(usingMine) {
       mine = false;
       show();
       btn.disabled = true;
-      try { await load(null); } catch (e) { unavailable(); }
+      try {
+        await load(home ? { lat: home.lat, lon: home.lon } : null, home ? home.name : null);
+      } catch (e) { unavailable(); }
       btn.disabled = false;
       return;
     }
@@ -306,7 +320,7 @@ function setupGeo(usingMine) {
     try {
       const pos = await position();
       setGeo(true);
-      await load({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+      await load({ lat: pos.coords.latitude, lon: pos.coords.longitude }, null);
       mine = true;
       show();
     } catch (err) {
@@ -377,19 +391,28 @@ profile.then(async (me) => {
   greet(me);
   setupPanel();
 
+  // Your saved home wins. It is a setting; the button in the panel is a one-off for this
+  // session and deliberately does not overwrite it. That is the entire difference between the
+  // two, and it is why travelling does not silently move where "home" is.
+  const home = me.homeLocation || null;
+
   let coords = null;
+  let name = null;
   if (wantsGeo() && navigator.geolocation) {
-    // Already granted on a previous visit: use it without asking again. A refusal or a slow fix
-    // must not hold up the forecast, so it falls through to the fixed location.
+    // Asked for, this session. A refusal or a slow fix must not hold up the forecast.
     try {
       const pos = await position();
       coords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
     } catch (e) { setGeo(false); }
   }
+  if (!coords && home) {
+    coords = { lat: home.lat, lon: home.lon };
+    name = home.name;
+  }
 
-  setupGeo(!!coords);
+  setupGeo(Boolean(coords) && !name, home);
   try {
-    await load(coords);
+    await load(coords, name);
   } catch (err) {
     // A missing forecast must not take the page with it.
     console.error("app: weather failed", err.message);
