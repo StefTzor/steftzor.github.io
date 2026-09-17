@@ -291,21 +291,37 @@ function draw() {
       features: located.map((r) => ({
         type: "Feature",
         geometry: { type: "Point", coordinates: at(r) },
-        properties: { round: Number(r.round) },
+        // `over` is the calendar's own answer to "has this weekend finished", the same flag the
+        // round selector puts a tick against. Carried into the source so the dots can say which
+        // part of the season they belong to rather than all reading as one undifferentiated set.
+        properties: { round: Number(r.round), over: Boolean(r.over) },
       })),
     },
   });
-  // A ring of surface colour around each dot, because a bare dot disappears into a city on the
+  // **Three states, because a season has three.** A round that has been raced, a round still to
+  // come, and the one being looked at. They used to be two - one grey dot for everything that was
+  // not selected - which threw away a fact the calendar was already telling us and made the globe
+  // a picture of twenty-four identical places.
+  //
+  // Past is muted and slightly transparent: done, and not what anyone is scanning for. Future is
+  // the accent at full strength. The chosen one is `hover`, a token that exists precisely because
+  // it has to stand out from `accent`, and it is nearly twice the radius - colour alone would be
+  // a poor way to answer "which one am I looking at", and is no answer at all to a reader who
+  // cannot separate those two hues.
+  //
+  // A ring of surface colour around every dot, because a bare dot disappears into a city on the
   // light basemap and into the sea on the dark one.
   globe.addLayer({
     id: ALL,
     type: "circle",
     source: SOURCE,
     paint: {
-      "circle-radius": 4,
-      "circle-color": ink("muted"),
-      "circle-stroke-width": 1,
+      "circle-radius": 4.5,
+      "circle-color": ["case", ["get", "over"], ink("muted"), ink("accent")],
+      "circle-opacity": ["case", ["get", "over"], 0.7, 1],
+      "circle-stroke-width": 1.5,
       "circle-stroke-color": ink("surface"),
+      "circle-stroke-opacity": ["case", ["get", "over"], 0.7, 1],
     },
   });
   globe.addLayer({
@@ -313,9 +329,9 @@ function draw() {
     type: "circle",
     source: SOURCE,
     paint: {
-      "circle-radius": 7,
-      "circle-color": ink("accent"),
-      "circle-stroke-width": 2,
+      "circle-radius": 8,
+      "circle-color": ink("hover"),
+      "circle-stroke-width": 3,
       "circle-stroke-color": ink("surface"),
     },
   });

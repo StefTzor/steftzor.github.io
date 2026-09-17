@@ -62,6 +62,25 @@ bodyScripts:
     </div>
     <div class="card p-3">
       <div id="f1Map" class="h-72 w-full overflow-hidden rounded-lg sm:h-96"></div>
+
+      {# The key. The dots are drawn inside a canvas no screen reader can enter, so this is not a
+         decoration of the picture - it is the picture's text, and it says the same three things
+         the colours do. Static markup rather than drawn by the script: it describes a scheme that
+         is fixed, and a legend that only appears once a map has loaded is missing exactly when
+         somebody is trying to work out why the map has not. #}
+      <ul class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 px-2 pb-1 text-xs text-brand-muted">
+        <li class="flex items-center gap-2">
+          <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-hover ring-2 ring-brand-surface"
+            aria-hidden="true"></span>the round shown here
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="h-2 w-2 shrink-0 rounded-full bg-brand-accent" aria-hidden="true"></span>still to come
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="h-2 w-2 shrink-0 rounded-full bg-brand-muted opacity-70" aria-hidden="true"></span>already raced
+        </li>
+      </ul>
+
       <p id="mapNote" class="hint mt-3 px-2 pb-1" hidden></p>
     </div>
   </section>

@@ -34,7 +34,12 @@ const STYLESHEET = "/vendor/maplibre-gl.css";
 // changes nothing else.
 const STYLE = {
   light: "https://tiles.openfreemap.org/styles/positron",
-  dark: "https://tiles.openfreemap.org/styles/dark",
+  // `fiord`, not `dark`. The dark style's background is rgb(12,12,12) - darker than this
+  // app's own page at #0f172a - so a map drawn in it reads as a hole punched through the
+  // layout rather than as a card sitting on it. Fiord is #45516E, a slate blue a little
+  // lighter than the surface it sits on, which is the direction every other raised thing
+  // here goes.
+  dark: "https://tiles.openfreemap.org/styles/fiord",
 };
 
 const isDark = () => document.documentElement.classList.contains("dark");
@@ -81,18 +86,26 @@ export async function createMap(container, { globe = false, center = [0, 0], zoo
     style: STYLE[isDark() ? "dark" : "light"],
     center,
     zoom,
-    // Nothing here is a navigation surface. The F1 globe is a picture of where a race is and the
-    // transit map is a picture of where a stop is; both are read at a glance and neither is
-    // explored, so the controls that invite exploring are off and the keyboard is left alone.
     attributionControl: { compact: true },
-    // A map that scrolls the page past it must not swallow the scroll. Dragging still works, so
-    // it can be moved deliberately - it simply does not grab a gesture aimed at the document.
-    scrollZoom: false,
-    // The globe has no business being tilted or spun by a stray two-finger drag.
+    // **Zoom has to be reachable, and the page's scroll has to stay the page's.** The first cut of
+    // this turned scroll-zoom off and added no controls, which left a map nobody could zoom at
+    // all. `cooperativeGestures` is the setting that serves both: an ordinary wheel scrolls the
+    // document past the map, ctrl/cmd + wheel zooms it, and MapLibre shows that instruction over
+    // the map the first time somebody tries. On touch, one finger pans the page and two zoom the
+    // map.
+    cooperativeGestures: true,
+    // Tilting and spinning are not useful for either of these and a stray two-finger twist is an
+    // easy way to end up looking at a horizon nobody asked for. Zoom survives; rotation does not.
     pitchWithRotate: false,
     dragRotate: false,
-    touchZoomRotate: globe ? false : undefined,
   });
+
+  // Buttons as well as gestures, because a gesture nobody discovers is not a control. Compass off
+  // for the same reason rotation is: there is no bearing here worth resetting.
+  map.addControl(new maplibregl.NavigationControl({ showCompass: false, visualizePitch: false }),
+    "top-right");
+  // Pinch to zoom, but never to rotate.
+  map.touchZoomRotate.disableRotation();
 
   // The projection is set after the style rather than in it: these styles are fetched from the
   // provider and say nothing about one, and setting it before the style lands is overwritten when
