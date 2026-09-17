@@ -16,18 +16,6 @@ bodyScripts:
 bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
 shell: true
 navDrawerOnly: true
-navItems:
-  - label: "Home"
-    href: "/"
-    navKey: "home"
-  - label: "Private"
-    href: "/private/"
-    navKey: "private"
-    minRole: "SuperUser"
-  - label: "Admin"
-    href: "/admin/"
-    navKey: "admin"
-    minRole: "Admin"
 signOut: true
 ---
 <section class="app-page">
@@ -133,11 +121,18 @@ signOut: true
      It refreshes when you come back to the tab and the numbers have gone stale, and when asked. #}
   <section id="departures" aria-labelledby="dep-heading" class="mt-8 hidden">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-1">
-      <h2 id="dep-heading" class="text-xl font-bold text-brand-text">Next departures</h2>
+      {# The badge is filled in from the board's own `operator` field, not written here: this
+         card is pointed at whichever stop you chose, and hardcoding "UL" would keep saying UL
+         after you pointed it at a stop in Stockholm. Empty until the data says otherwise. #}
+      <h2 id="dep-heading" class="flex items-center gap-2 text-xl font-bold text-brand-text">
+        <span id="depOperator" class="card-badge hidden" aria-hidden="true"></span>
+        <span>Next departures</span>
+      </h2>
       <p class="text-sm text-brand-muted">
         <span id="depStop"></span><span id="depAge" class="tabular-nums"></span>
         <button type="button" id="depChange" class="ml-2 underline hover:text-brand-accent">Change stop</button>
         <button type="button" id="depRefresh" class="ml-2 underline hover:text-brand-accent">Refresh</button>
+        <a href="/transit/" class="ml-2 text-brand-accent underline hover:no-underline">Full board</a>
       </p>
     </div>
     <div class="card">
@@ -165,7 +160,10 @@ signOut: true
      own timezone by the browser, which is the only thing that knows what that is. #}
   <section id="f1" aria-labelledby="f1-heading" class="mt-8 hidden">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-1">
-      <h2 id="f1-heading" class="text-xl font-bold text-brand-text">Next race weekend</h2>
+      <h2 id="f1-heading" class="flex items-center gap-2 text-xl font-bold text-brand-text">
+        <span class="card-badge" aria-hidden="true">F1</span>
+        <span>Next race weekend</span>
+      </h2>
       <p class="text-sm text-brand-muted">
         <span id="f1Where"></span>
         <a href="/f1/" class="ml-2 text-brand-accent underline hover:no-underline">The season</a>

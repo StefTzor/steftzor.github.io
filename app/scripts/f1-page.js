@@ -55,16 +55,23 @@ function sessionList(race) {
   return list;
 }
 
-/** One results table, paginated. `rows` is already in finishing order. */
-function resultsTable(rows, caption) {
+/**
+ * One results table. `rows` is already in finishing order.
+ *
+ * `paged` is a parameter rather than something read from the module, because two tables use this
+ * and only one of them pages. It used to be read from the module-level `page`, and the sprint
+ * table worked around that by setting it to 0 and putting it back afterwards - which left the
+ * sprint showing its first ten finishers under a pager whose buttons moved the RACE table.
+ */
+function resultsTable(rows, caption, paged = true) {
   const wrap = document.createElement("div");
   wrap.className = "card";
   wrap.appendChild(text("h3", "font-semibold text-brand-text mb-3", caption));
 
   const list = document.createElement("ul");
   list.className = "divide-y divide-brand-muted/10";
-  const start = page * RESULTS_PER_PAGE;
-  rows.slice(start, start + RESULTS_PER_PAGE).forEach((r) => {
+  const start = paged ? page * RESULTS_PER_PAGE : 0;
+  (paged ? rows.slice(start, start + RESULTS_PER_PAGE) : rows).forEach((r) => {
     const li = document.createElement("li");
     li.className = "flex items-center gap-3 py-2 first:pt-0";
 
@@ -97,7 +104,7 @@ function resultsTable(rows, caption) {
   });
   wrap.appendChild(list);
 
-  if (rows.length > RESULTS_PER_PAGE) {
+  if (paged && rows.length > RESULTS_PER_PAGE) {
     const nav = document.createElement("nav");
     nav.className = "mt-4 flex items-center justify-between gap-4";
     nav.setAttribute("aria-label", "Results pages");
@@ -175,15 +182,8 @@ function renderRound(data) {
 
 const withSpacing = (node) => { node.classList.add("mb-4"); return node; };
 
-/** A short result table, shown whole: a sprint is ten rows and paginating it would be silly. */
-function resultsTableWhole(rows, caption) {
-  const saved = page;
-  page = 0;
-  const all = RESULTS_PER_PAGE;
-  const wrap = resultsTable(rows.slice(0, Math.max(rows.length, all)), caption);
-  page = saved;
-  return wrap;
-}
+/** A sprint, shown whole: it is one short table and a second pager on the page would confuse. */
+const resultsTableWhole = (rows, caption) => resultsTable(rows, caption, false);
 
 function qualifyingTable(rows) {
   const wrap = document.createElement("div");

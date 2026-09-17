@@ -81,6 +81,23 @@ for (const file of scripts) {
     assert.ok(!(node.type === 'ExpressionStatement' && node.expression.type === 'Identifier'),
       `${where} has a statement that is only the name \`${node.expression && node.expression.name}\` — ` +
       'it does nothing, and at module scope it throws a ReferenceError that kills the whole file');
+
+    // A relative import must land on a file that was actually copied into the build. This is the
+    // missing-chrome.js hole one rung up: these modules import each other, so a module left out
+    // of the passthrough list is referenced by no markup at all and every check above passes
+    // while the browser 404s the import and runs none of the importing file.
+    const from = node.source && node.source.value;
+    if ((node.type === 'ImportDeclaration' || node.type === 'ExportNamedDeclaration'
+        || node.type === 'ExportAllDeclaration') && typeof from === 'string' && from.startsWith('.')) {
+      // firebase-config.js is the one file that is legitimately absent here: it holds the real
+      // Firebase keys and is written into the build by CI AFTER this runs, from GitHub Secrets.
+      // The committed copy is placeholders and is kept out of the build on purpose.
+      if (!from.endsWith('firebase-config.js')) {
+        assert.ok(fs.existsSync(path.resolve(path.dirname(file), from)),
+          `${where} imports ${from}, which is not in the build — the import would 404`);
+        checked++;
+      }
+    }
   }
 }
 

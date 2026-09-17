@@ -92,9 +92,10 @@
        page beside it jumped sideways twice. The rail is part of the shell; only the two
        role-gated items are unknown at first paint, and the script below usually knows those too. #}
     {# Full height and anchored: `sticky` under the bar with its own scroll, so moving between
-       sections never moves it. Home at the top because it is where you start; Private and Admin
-       at the bottom because they are destinations you go to deliberately, not defaults; the
-       profile below them because it is about you rather than about the app. #}
+       sections never moves it. The order and the split come from app/pages/_data/appNav.js:
+       anything gated sits at the bottom, because a role-gated page is a destination you go to
+       deliberately rather than a default. The profile is below them, being about you rather
+       than about the app. #}
     <aside id="appHeader" class="hidden lg:flex lg:w-60 lg:shrink-0 lg:flex-col lg:border-r border-brand-muted/15 bg-brand-surface">
       <div class="lg:sticky lg:top-[77px] lg:h-[calc(100vh-77px)] flex flex-col">
         {# The palette's only visible affordance. A keyboard shortcut nobody is told about is a
@@ -110,26 +111,27 @@
 
         <nav aria-label="Application" class="flex flex-1 flex-col min-h-0 p-3">
           <ul class="space-y-1">
+            {%- for item in appNav %}{%- if not item.minRole %}
             <li>
-              <a href="/" data-nav="home" class="side-link">
-                {% icon "fa-solid-house", "side-icon" %}<span>Home</span>
+              <a href="{{ item.href }}" data-nav="{{ item.navKey }}" class="side-link">
+                {% icon item.icon, "side-icon" %}<span>{{ item.label }}</span>
               </a>
             </li>
-            <li>
-              <a href="/f1/" data-nav="f1" class="side-link">
-                {% icon "fa-solid-flag-checkered", "side-icon" %}<span>Formula 1</span>
-              </a>
-            </li>
+            {%- endif %}{%- endfor %}
           </ul>
 
           {# Pushed to the bottom rather than spaced apart, so the gap grows with the viewport
              instead of the items drifting down it. #}
           <ul class="mt-auto space-y-1 pt-6">
-            <li class="hidden" data-min-role="SuperUser">
-              <a href="/private/" data-nav="private" class="side-link">
-                {% icon "fa-solid-heart-lock", "side-icon" %}<span>Private</span>
+            {#- The gated items, except Admin: Admin is a disclosure rather than a link and is
+                written out below. #}
+            {%- for item in appNav %}{%- if item.minRole and item.navKey != "admin" %}
+            <li class="hidden" data-min-role="{{ item.minRole }}">
+              <a href="{{ item.href }}" data-nav="{{ item.navKey }}" class="side-link">
+                {% icon item.icon, "side-icon" %}<span>{{ item.label }}</span>
               </a>
             </li>
+            {%- endif %}{%- endfor %}
             {# Admin is not one page any more, so it is not one link any more. A <details> rather
                than a scripted menu: the browser already knows how to open and close a disclosure,
                announce its state and move focus through it, and this needs no JavaScript at all -

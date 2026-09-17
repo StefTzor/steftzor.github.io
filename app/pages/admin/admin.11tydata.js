@@ -8,10 +8,10 @@
  * `layout` is safe to set here, unlike in app/pages/pages.11tydata.js: nothing in this
  * directory emits anything but HTML.
  *
- * navItems is the drawer's list on narrow screens. It keeps ONE Admin entry, pointing at
- * Accounts - the sections themselves are reached from the row that admin pages render under
- * their heading, because a drawer listing "Home, Private, Admin, Accounts, Messages, Invites"
- * as one flat column says nothing about which of those live inside which.
+ * The drawer's list on narrow screens is app/pages/_data/appNav.js, shared with every other
+ * page. It keeps ONE Admin entry - the sections themselves are reached from the row that admin
+ * pages render under their heading, because a drawer listing "Home, Transit, Formula 1, Admin,
+ * Accounts, Messages, Invites" as one flat column says nothing about which live inside which.
  */
 module.exports = {
   layout: "app-shell.njk",
@@ -19,9 +19,4 @@ module.exports = {
   signOut: true,
   navDrawerOnly: true,
   bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col",
-  navItems: [
-    { label: "Home", href: "/", navKey: "home" },
-    { label: "Private", href: "/private/", navKey: "private", minRole: "SuperUser" },
-    { label: "Admin", href: "/admin/", navKey: "admin", minRole: "Admin" },
-  ],
 };

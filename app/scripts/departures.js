@@ -1,4 +1,5 @@
 import { api, profile } from "./shell.js";
+import { inWords, shortStop, towardsOf } from "./stop-format.js";
 
 /**
  * The next few buses from home, on the home view.
@@ -17,30 +18,6 @@ const STALE_AFTER_MS = 2 * 60 * 1000;
 const SHOW = 5;
 
 let fetchedAt = 0;
-
-/** "now", "1 min", "12 min" - the only three shapes a departure board needs. */
-function inWords(minutes) {
-  if (minutes <= 0) return "now";
-  return `${minutes} min`;
-}
-
-/** ResRobot repeats the municipality: "Portalgatan (Uppsala) (Uppsala kn)". Once is enough. */
-function shortStop(name) {
-  return String(name || "").replace(/\s*\([^)]*kn\)\s*$/i, "").trim();
-}
-
-/**
- * The destination, exactly as ResRobot gives it.
- *
- * This used to strip a leading "Uppsala ", which made "Uppsala Hågavägen" read as "Hågavägen"
- * and lost information for no gain. What ResRobot calls `direction` is documented as "name of
- * the last stop on the vehicle's trip" - so it is a stop name, not the destination an operator
- * puts on the front of the bus. UL's own app shows "Eriksberg Håga" because that is UL's
- * headsign, which this upstream does not carry at all.
- */
-function towardsOf(towards) {
-  return String(towards || "").trim();
-}
 
 function render(data) {
   const list = el("depList");
@@ -91,6 +68,15 @@ function render(data) {
   });
 
   el("depStop").textContent = shortStop(data.stop);
+
+  // Whoever is actually running these buses, from the board rather than from a constant: the
+  // stop is yours to change, and a badge that still said UL at a stop in Skåne would be a lie
+  // the card told confidently. Hidden when the upstream did not say.
+  const operator = next.map((d) => d.operator).find(Boolean);
+  const badge = el("depOperator");
+  badge.textContent = operator || "";
+  badge.classList.toggle("hidden", !operator);
+
   // Stale is said, not hidden: a departure board that is two minutes old is a departure board
   // that is wrong, and the reader is the one who should decide whether that matters.
   el("depAge").textContent = data.stale ? " · last known" : "";

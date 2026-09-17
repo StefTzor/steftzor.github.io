@@ -22,6 +22,11 @@
 <header class="bg-brand-bg shadow-md sticky top-0 z-50 border-b border-brand-muted/10 transition-colors duration-300">
   <div class="container mx-auto flex justify-between items-center p-4">
 
+    {#- The app's pages come from app/pages/_data/appNav.js and the public site's from its own
+        front matter. One name below either way, so the two loops need no idea which they are
+        drawing. -#}
+    {%- set navList = appNav if shell else navItems -%}
+
     <div class="logo">
       <a href="{{ brandHref | default('/') }}"
         class="bg-gradient-to-r from-brand-accent to-blue-700 dark:to-blue-400 bg-clip-text text-transparent font-bold text-xl tracking-tight inline-block transition-transform duration-200 hover:-translate-y-1">
@@ -32,9 +37,9 @@
     {#- navDrawerOnly means the links exist only in the drawer. The app sets it, because on a
         wide screen its sections live in the sidebar - one list of links, two presentations,
         rather than two lists that can disagree. -#}
-    {%- if navItems and not navDrawerOnly %}
+    {%- if navList and not navDrawerOnly %}
     <nav class="hidden md:flex space-x-6 items-center" aria-label="Main">
-      {%- for item in navItems %}
+      {%- for item in navList %}
       <li class="list-none{% if item.minRole %} hidden{% endif %}"{% if item.minRole %} data-min-role="{{ item.minRole }}"{% endif %}>
         <a href="{{ item.href }}" data-nav="{{ item.navKey }}" class="nav-link">{{ item.label }}</a>
       </li>
@@ -101,7 +106,7 @@
   </div>
 
   <ul class="p-5 space-y-2">
-    {%- for item in navItems %}
+    {%- for item in navList %}
     <li{% if item.minRole %} class="hidden" data-min-role="{{ item.minRole }}"{% endif %}>
       <a href="{{ item.href }}" data-nav="{{ item.navKey }}" class="nav-link-mobile">{{ item.label }}</a>
     </li>

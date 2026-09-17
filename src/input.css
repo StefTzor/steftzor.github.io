@@ -325,6 +325,24 @@
   }
 
   /* A bus line number. Fixed width so a 1 and a 155 leave the destinations aligned. */
+  /* The badge before a card's heading: "UL", "F1".
+
+     A word rather than a logo, because an operator's mark is theirs and a portfolio has no
+     licence to print it. It is `aria-hidden` wherever it is used - the heading beside it already
+     says "Next departures", and a screen reader announcing "U L Next departures" is worse than
+     one that does not mention the badge at all. */
+  .card-badge {
+    @apply inline-flex h-6 shrink-0 items-center rounded bg-brand-accent/10 px-1.5
+           text-[11px] font-bold uppercase tracking-wide text-brand-accent;
+  }
+
+  /* A row of the full board on /transit/. Grid, so the clock times line up down the page and
+     the destination is the only column that flexes. */
+  .board-row {
+    @apply grid grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-1 py-2.5
+           first:pt-0 last:pb-0;
+  }
+
   .dep-line {
     @apply inline-flex h-6 min-w-[1.75rem] shrink-0 items-center justify-center rounded
            bg-brand-accent/10 px-1.5 text-xs font-bold tabular-nums text-brand-accent;
