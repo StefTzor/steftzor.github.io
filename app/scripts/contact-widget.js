@@ -69,6 +69,14 @@ profile.then((me) => {
     if (panel.classList.contains("hidden")) open(); else close(true);
   });
   if (closeBtn) closeBtn.addEventListener("click", () => close(true));
+
+  // Something else on the page deliberately opened and would sit on top of this. Closing only
+  // hides the panel - the textarea keeps its value, so reopening restores a half-written
+  // message rather than losing it. `false`, because focus belongs to whatever the person just
+  // pressed, not back here.
+  document.addEventListener("app:collapse", () => {
+    if (!panel.classList.contains("hidden")) close(false);
+  });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !panel.classList.contains("hidden")) close(true);
   });

@@ -127,6 +127,11 @@ function paint(me) {
     badge.textContent = me.role || "";
     badge.classList.toggle("hidden", !me.role);
   }
+  // The skeleton goes and the real block appears, in the space the skeleton was already
+  // holding. Set after the three fields above rather than before, or the block is revealed
+  // empty for a frame and the flash this replaced comes back a hundredth of the length.
+  document.querySelectorAll('[data-profile="loading"]')
+    .forEach((box) => box.setAttribute("data-profile", "ready"));
 
   const rank = RANK.get(me.role) ?? 1;
   document.querySelectorAll("[data-min-role]").forEach((item) => {

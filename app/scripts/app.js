@@ -365,12 +365,35 @@ function setupPanel() {
     chip.setAttribute("aria-expanded", String(open));
   };
 
-  chip.addEventListener("click", () => set(wrap.dataset.open !== "true"));
+  /**
+   * Is the message form open? These two panels are the only floating things in the app and
+   * they share the right-hand side of the screen, so one has to give way.
+   *
+   * Read from the DOM rather than mirrored in a variable here: the class IS the state, and a
+   * copy of it in this file is a copy that can be wrong.
+   */
+  const contactOpen = () => {
+    const panel = document.getElementById("cwPanel");
+    return !!panel && !panel.classList.contains("hidden");
+  };
+
+  chip.addEventListener("click", () => {
+    const opening = wrap.dataset.open !== "true";
+    // A click is a decision, so it wins - but it takes the form down with it rather than
+    // landing on top of it. The draft survives; the panel is only hidden.
+    if (opening && contactOpen()) document.dispatchEvent(new CustomEvent("app:collapse"));
+    set(opening);
+  });
 
   // Pointer devices only. On a touch screen `pointerenter` fires on tap, which would fight the
   // click handler and leave the panel toggling twice.
   const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
-  wrap.addEventListener("pointerenter", () => { if (fine.matches) set(true); });
+  wrap.addEventListener("pointerenter", () => {
+    // Not while the message form is open. A pointer crossing the chip on its way somewhere else
+    // is an accident, and an accident must not shut a form somebody is typing into - which is
+    // what the two panels overlapping came down to.
+    if (fine.matches && !contactOpen()) set(true);
+  });
   wrap.addEventListener("pointerleave", () => {
     // A grace period, because the gap between the chip and the panel is a place the pointer
     // passes through on the way to the panel, not a decision to leave.

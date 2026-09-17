@@ -181,6 +181,70 @@
            aria-[current=page]:text-brand-accent;
   }
 
+  /* The app's page container.
+
+     It was `container mx-auto max-w-3xl`, which centres the column inside the area left over
+     beside the rail - so on a 1440px screen the heading began 209px from the sidebar and the
+     weather chip stopped 239px short of the right edge, with the dead space split evenly
+     between them. A dashboard reads left-to-right from its rail; the content should start near
+     it, not float in the middle of what is left.
+
+     Left-aligned with a ceiling rather than flush, so a very wide screen does not stretch a
+     line of prose past the point of being readable. */
+  .app-page {
+    @apply px-4 py-10 sm:px-6 lg:px-8 max-w-5xl;
+  }
+
+  /* A number worth acting on, wrapped in the link that acts on it. Grid rather than flex so
+     the number sits in a row of its own fixed height: the figure arrives a second after the
+     page does, and a slot that grows when it lands moves everything below it. */
+  .stat-card {
+    @apply grid gap-1 rounded-lg border border-brand-muted/15 bg-brand-surface p-5
+           transition-colors duration-200
+           hover:border-brand-accent/40 focus-visible:border-brand-accent/40;
+  }
+
+  .stat-label {
+    @apply flex items-center gap-2 text-sm font-medium text-brand-muted;
+  }
+
+  .stat-number {
+    @apply text-3xl font-bold leading-[1.2] text-brand-text tabular-nums;
+  }
+
+  /* The placeholder state of a figure still being fetched. Dimmed rather than replaced by a
+     shimmer bar, because the em dash already occupies the line: there is nothing to reserve. */
+  .stat-number[data-loading] {
+    @apply text-brand-muted/40;
+  }
+
+  .stat-note {
+    @apply text-sm text-brand-muted;
+  }
+
+  .stat-card:hover .stat-note,
+  .stat-card:focus-visible .stat-note {
+    @apply text-brand-accent;
+  }
+
+  /* Service state. Three tones and a word - never the colour alone, which says nothing to
+     anyone who cannot distinguish it and nothing at all when the page is printed. */
+  .status-pill {
+    @apply inline-block shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+
+  .status-pill--up {
+    @apply bg-emerald-600/15 text-emerald-700 dark:text-emerald-300;
+  }
+
+  .status-pill--down {
+    @apply bg-red-600/15 text-red-700 dark:text-red-300;
+  }
+
+  .status-pill--unknown {
+    @apply bg-brand-muted/15 text-brand-muted;
+  }
+
   .side-pref {
     @apply flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-brand-text
            hover:bg-brand-bg transition-colors duration-150;
@@ -188,6 +252,49 @@
 
   .side-icon {
     @apply h-4 w-4 shrink-0 text-brand-muted;
+  }
+
+  /* The section you are inside, on the disclosure that contains the page you are on.
+
+     Quieter than aria-current by design: weight and a rule down the left, but no accent colour
+     and no filled background, so "Admin contains where you are" and "this is where you are"
+     are never mistakable for each other at a glance. */
+  .side-link[data-section="current"] {
+    @apply font-semibold text-brand-text;
+    box-shadow: inset 2px 0 0 0 theme('colors.brand.accent' / 45%);
+  }
+
+  /* The profile block at the foot of the rail.
+
+     The name, address and role arrive only after /me answers - roughly a second after the page
+     paints - and before this they were three empty elements, so the block was a blank space
+     that suddenly filled. Worse, it filled with content taller than nothing, and the whole
+     block grew.
+
+     The skeleton reserves the exact height the real thing occupies and gives the second a
+     visible reason. The address deliberately does NOT come from localStorage the way the role
+     does: a lapsed session would paint the last person's email address for whoever opened the
+     app next, which is a trade this rail already refused once. */
+  .skel {
+    @apply block rounded bg-brand-muted/20;
+    animation: skel-pulse 1.6s ease-in-out infinite;
+  }
+
+  [data-profile="ready"] .skel { display: none; }
+  /* display:none, not visibility:hidden. Hidden-but-present reserved the height of three EMPTY
+     spans, which is no height at all - the skeleton below has to be the thing holding the
+     space, so the real block must be out of the flow entirely until it has something in it. */
+  [data-profile="loading"] .profile-real { display: none; }
+
+  @keyframes skel-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+  }
+
+  /* Someone who asked not to be moved is not asking for a slower pulse, they are asking for
+     none. The skeleton still reserves the space; it simply sits still. */
+  @media (prefers-reduced-motion: reduce) {
+    .skel { animation: none; }
   }
 
   .side-link[aria-current="page"] .side-icon,
@@ -206,8 +313,11 @@
            hover:border-brand-accent/40 hover:bg-brand-surface;
   }
 
+  /* Capped and scrollable. It was 698px tall on a 950px screen - a forecast that reached most
+     of the way down the page and into the corner the message button lives in. */
   .wx-panel {
     @apply invisible opacity-0 absolute right-0 z-30 mt-2 w-[min(28rem,calc(100vw-2rem))]
+           max-h-[min(70vh,34rem)] overflow-y-auto
            rounded-xl border border-brand-muted/15 bg-brand-surface p-5 shadow-xl
            transition-opacity duration-150;
   }

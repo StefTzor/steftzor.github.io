@@ -1,0 +1,32 @@
+---
+permalink: /admin/accounts/
+title: "Accounts | Admin"
+bodyScripts:
+  - src: "/scripts/admin-accounts.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+---
+<section class="app-page">
+
+  {% include "chrome/admin-sections.njk" %}
+
+  <div class="flex items-baseline justify-between gap-4 mb-2">
+    <h1 class="text-3xl font-bold text-brand-text">Accounts</h1>
+    <p id="count" class="text-sm text-brand-muted"></p>
+  </div>
+  <p class="text-brand-muted mb-8">
+    Approve who may sign in, and decide what each account can see.
+  </p>
+
+  {# One live region for every outcome. Actions here change what people can reach, so none of
+     them may succeed silently - and a screen reader should hear the result once, not per row. #}
+  <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
+
+  {# Rendered by admin-accounts.js: a table at sm and above, stacked cards below it. A wide table
+     on a phone either overflows or becomes unreadable, and this one carries actions. #}
+  <div id="accounts">
+    <p class="text-sm text-brand-muted">Loading accounts…</p>
+  </div>
+
+</section>

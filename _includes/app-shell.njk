@@ -124,7 +124,8 @@
                then opening. The sections themselves come from app/pages/_data/adminSections.js. #}
             <li class="hidden" data-min-role="Admin">
               <details class="group"{% if "/admin/" in page.url %} open{% endif %}>
-                <summary class="side-link cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
+                <summary class="side-link cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden"
+                  {%- if "/admin/" in page.url %} data-section="current"{% endif %}>
                   {% icon "fa-solid-users", "side-icon" %}
                   <span class="flex-1">Admin</span>
                   {% icon "fa-solid-chevron-down", "h-3 w-3 shrink-0 text-brand-muted transition-transform duration-150 group-open:rotate-180" %}
@@ -144,18 +145,37 @@
         </nav>
 
         {# You. The preferences that used to sit here moved to /profile/ - a sidebar is
-           navigation, and a control that changes your account is not navigation. #}
+           navigation, and a control that changes your account is not navigation.
+
+           `data-profile="loading"` until shell.js has heard back from /me. It shows a skeleton
+           at exactly the height of the real thing and hides the real thing rather than removing
+           it, so nothing in the rail moves when the answer lands. The three fields used to be
+           empty elements: the block was blank for about a second, then grew as it filled. #}
         <div class="border-t border-brand-muted/15 p-3">
-          <a href="/profile/" data-nav="profile" class="side-link">
+          <a href="/profile/" data-nav="profile" class="side-link" data-profile="loading">
             {% icon "fa-solid-user-gear", "side-icon" %}
-            <span class="min-w-0">
-              <span id="whoamiName" class="block truncate font-semibold"></span>
-              <span id="whoami" class="block truncate text-xs text-brand-muted"></span>
-              {# The role on its own line, not appended to the address. It used to be
-                 "email · Role" on one truncated line, which made the role the first thing to be
-                 clipped - the one part of that line short enough to always fit. #}
-              <span id="whoamiRole"
-                class="mt-1 hidden w-fit rounded-full bg-brand-accent/10 px-2 py-0.5 text-[11px] font-semibold text-brand-accent"></span>
+            <span class="min-w-0 flex-1">
+              <span class="profile-real block">
+                <span id="whoamiName" class="block truncate font-semibold"></span>
+                <span id="whoami" class="block truncate text-xs text-brand-muted"></span>
+                {# The role on its own line, not appended to the address. It used to be
+                   "email · Role" on one truncated line, which made the role the first thing to
+                   be clipped - the one part of that line short enough to always fit. #}
+                <span id="whoamiRole"
+                  class="mt-1 hidden w-fit rounded-full bg-brand-accent/10 px-2 py-0.5 text-[11px] font-semibold text-brand-accent"></span>
+              </span>
+              {# In the flow, not positioned over it. Absolute bars contribute no height, and the
+                 three real fields are empty until /me answers - so the block measured 32px while
+                 loading and 73px once filled, and the rail jumped by the 41px difference. That
+                 was the whole bug; a skeleton that does not reserve the space is decoration.
+
+                 The margins add up to the real block: 3+14 + 5+12 + 5+18 = 57px of content,
+                 which with the link's py-2 is the 73px the filled version measures.
+                 aria-hidden because a screen reader should hear the name when there is one,
+                 not "loading" first and the name a second later. #}
+              <span class="skel mt-[3px] h-[14px] w-24" aria-hidden="true"></span>
+              <span class="skel mt-[5px] h-[12px] w-36" aria-hidden="true"></span>
+              <span class="skel mt-[5px] h-[18px] w-14 rounded-full" aria-hidden="true"></span>
             </span>
           </a>
         </div>
@@ -190,7 +210,11 @@
   {%- if shell %}
   {# A way to reach me from inside the app. Bottom right, out of the way of everything, and only
      on the pages a signed-in person actually uses - the auth pages have their own job. #}
-  <div class="fixed bottom-4 right-4 z-40 print:hidden">
+  {# `items-end` is load-bearing. Without it the wrapper is as wide as the widest child, which
+     is the panel, and the button - being narrower - sat at the left of that box: opening the
+     panel shifted the button 269px to the left, away from the pointer that had just pressed it.
+     A control must not move because of what it opened. #}
+  <div class="fixed bottom-4 right-4 z-40 flex flex-col items-end print:hidden">
     <div id="cwPanel" class="hidden mb-3 w-[min(26rem,calc(100vw-2rem))] rounded-xl border border-brand-muted/15 bg-brand-surface p-5 shadow-xl"
       role="dialog" aria-modal="false" aria-labelledby="cw-title">
       <div class="flex items-start justify-between gap-4">

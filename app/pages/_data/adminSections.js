@@ -13,9 +13,15 @@
  */
 module.exports = [
   {
-    label: "Accounts",
+    label: "Overview",
     href: "/admin/",
     navKey: "admin",
+    icon: "fa-solid-layer-group",
+  },
+  {
+    label: "Accounts",
+    href: "/admin/accounts/",
+    navKey: "admin-accounts",
     icon: "fa-solid-users",
   },
   {
@@ -29,5 +35,11 @@ module.exports = [
     href: "/admin/invites/",
     navKey: "admin-invites",
     icon: "fa-solid-user-plus",
+  },
+  {
+    label: "Analytics",
+    href: "/admin/analytics/",
+    navKey: "admin-analytics",
+    icon: "fa-solid-chart-line",
   },
 ];
