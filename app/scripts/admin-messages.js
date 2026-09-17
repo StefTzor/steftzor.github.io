@@ -145,7 +145,11 @@ function messageRow(m) {
     ? "text-brand-accent underline hover:no-underline break-all"
     : "text-brand-muted break-all";
   if (href) addr.href = href;
-  who.append(document.createTextNode(m.name ? m.name + " — " : ""), addr);
+  // The name only when it is one. Messages sent from the in-app widget carry the sender's
+  // profile name, which falls back to their address when they have not set one - so this read
+  // "someone@example.com — someone@example.com" for anybody without a name.
+  const named = m.name && m.name !== m.email;
+  who.append(document.createTextNode(named ? m.name + " — " : ""), addr);
 
   const text = document.createElement("p");
   // A measure, not the width of the page: this is prose somebody wrote.
