@@ -109,11 +109,14 @@ function paintUnreachable(notified, countEl, noteEl) {
   el(countEl).textContent = notified.count
     ? `${plural(notified.count, "email")} about this address left this server.`
     : "No email about this address left this server.";
-  // Falls back to this page's own sentence rather than to nothing. An empty string here would
-  // silently drop the one line that must not be dropped, leaving a count with no explanation.
-  el(noteEl).textContent = notified.note
-    || "Any of these that was emailed was copied to a mailbox and to the mail provider's log when "
-     + "it arrived. Nothing here reaches either one; they have to be deleted there by hand.";
+  // The note belongs to a count above zero: it is a claim about specific copies, and the API
+  // stopped sending it when there are none. The fallback exists for the other case - a count that
+  // IS above zero arriving without its sentence - because an empty string there would silently
+  // drop the one line this feature exists to print, leaving a number with no explanation.
+  el(noteEl).textContent = !notified.count ? ""
+    : notified.note
+      || "Each of these was emailed when it arrived, so a copy is in a mailbox and in the mail "
+       + "provider's delivery log. Nothing here reaches either one; they must be deleted by hand.";
 }
 
 /** Whether there is anything at all to erase, and what the confirmation should name. */
@@ -245,12 +248,19 @@ el("eraseGo").addEventListener("click", async () => {
     });
   } catch (err) {
     console.error("erasure: erase failed", err.status, err.code);
-    // `partial_erasure` is the one failure that must not be reported as a failure. It means the
-    // contact rows are already gone and the account steps did not finish, so "nothing was erased"
-    // would be the opposite of the truth. The API does not send the partial receipt through
-    // api(), which keeps only the code - and it does not need to, because the look-up reports the
-    // leftover state exactly: an account whose document is missing. So say what is known and send
-    // the reader back to the one screen that can tell them the rest.
+    // `partial_erasure` is the one failure that must not be reported as a failure: the contact
+    // rows are already gone and only the account steps did not finish, so "nothing was erased"
+    // would be the opposite of the truth. The API sends the receipt for the half that DID happen
+    // in the error body, so it is drawn exactly like a whole one rather than summarised into a
+    // sentence - the receipt is the honest artefact here, and a partial one is still a receipt.
+    if (err.code === "partial_erasure" && err.body && err.body.receipt) {
+      paintReceipt(err.body.receipt);
+      say("Partly done. The messages were deleted; the account was not fully removed. "
+        + "Look the address up again, then erase it again — running it twice is safe.", "error");
+      go.disabled = false;
+      el("eraseCancel").disabled = false;
+      return;
+    }
     say(err.code === "self_target" ? "An administrator may not erase their own account. Ask another one."
       : err.code === "invalid_email" ? "The API would not accept that address."
       : err.code === "partial_erasure" ? "Partly done. The stored messages were deleted; the account was not fully removed. Look the address up again to see what is left, then erase it again — running it twice is safe."

@@ -42,7 +42,14 @@ export async function api(path, options = {}) {
   });
   if (!res.ok) {
     const err = Object.assign(new Error("api " + res.status), { status: res.status });
-    try { err.code = (await res.json()).code; } catch (e) { /* non-JSON error body */ }
+    // The body as well as the code. Some failures are not empty: an erasure that deleted the
+    // contact rows and then could not finish answers 500 with the receipt for the half that DID
+    // happen, and a caller that only had the code would have to report that as nothing happening.
+    try {
+      const body = await res.json();
+      err.code = body.code;
+      err.body = body;
+    } catch (e) { /* non-JSON error body */ }
     throw err;
   }
   return res.status === 204 ? null : res.json();
