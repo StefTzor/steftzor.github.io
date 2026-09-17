@@ -53,6 +53,22 @@ for (const root of ROOTS) {
     }
   }
 }
+// Weather glyphs are pointed at by id from app.js and defined as <symbol> in the sprite. A
+// mismatch renders an empty box - visible instantly to a person, invisible to every other check
+// here, which is the same shape as the missing chrome.js that this file was written for.
+for (const root of ROOTS) {
+  const appJs = path.join(root, 'scripts', 'app.js');
+  const home = path.join(root, 'index.html');
+  if (!fs.existsSync(appJs) || !fs.existsSync(home)) continue;
+  const wanted = [...fs.readFileSync(appJs, 'utf8').matchAll(/icon:\s*"([a-z]+)"/g)].map((m) => m[1]);
+  const have = new Set([...fs.readFileSync(home, 'utf8').matchAll(/<symbol id="wx-([a-z]+)"/g)].map((m) => m[1]));
+  assert.ok(wanted.length, `${path.basename(root)}: app.js names no weather icons — the regex has rotted`);
+  for (const name of new Set(wanted)) {
+    assert.ok(have.has(name), `app.js asks for #wx-${name}, which the sprite does not define`);
+  }
+  checked += wanted.length;
+}
+
 for (const file of scripts) {
   const where = path.relative(path.join(__dirname, '..'), file);
   let ast;

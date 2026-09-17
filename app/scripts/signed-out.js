@@ -9,7 +9,7 @@
  * time limit to be cancellable, so the countdown is visible, announced, and stoppable - and
  * cancelling is sticky rather than restarting the moment they look away.
  */
-const SECONDS = 15;
+const SECONDS = 10;
 
 const countdown = document.getElementById('countdown');
 const secs = document.getElementById('secs');

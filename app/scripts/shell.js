@@ -23,7 +23,7 @@ export const API_BASE = (location.hostname === "localhost" || location.hostname 
 // revealing them, and gate() has already normalised the role to one of three strings, so this
 // is consistency rather than a fix - but the shape that caused a real escalation should not
 // survive anywhere in the codebase.
-const RANK = new Map([["user", 1], ["superuser", 2], ["admin", 3]]);
+const RANK = new Map([["User", 1], ["SuperUser", 2], ["Admin", 3]]);
 const el = (id) => document.getElementById(id);
 
 /** Every call carries a fresh ID token; getIdToken refreshes it when it is near expiry. */
@@ -49,13 +49,14 @@ export async function api(path, options = {}) {
 /** Resolves with the signed-in profile, or never resolves because the page is leaving. */
 export const profile = new Promise((resolve) => {
   onAuthStateChanged(auth, async (user) => {
-    if (!user) { location.replace("/login/"); return; }
+    if (!user) { forget(); location.replace("/login/"); return; }
     let me;
     try {
       me = await api("/me");
     } catch (err) {
-      if (err.status === 403) { showPending(); return; }
+      if (err.status === 403) { forget(); showPending(); return; }
       console.error("shell: /me failed", err.message);
+      forget();
       await signOut(auth).catch(() => {});
       location.replace("/login/");
       return;
@@ -84,15 +85,36 @@ function showPending() {
   document.body.appendChild(wrap);
 }
 
+/**
+ * Remembers who you were, so the next page can draw the rail before it has asked anyone.
+ *
+ * A hint for rendering only, exactly like the `auth-ui` flag on the public site. Anyone can
+ * write "Admin" into their own localStorage and the API will still refuse them, because it
+ * re-reads role and approval from Firestore on every single request.
+ */
+function remember(me) {
+  try {
+    localStorage.setItem("app-profile", JSON.stringify({ email: me.email, role: me.role }));
+  } catch (e) { /* private mode: the next page just paints a moment later */ }
+}
+
+function forget() {
+  try { localStorage.removeItem("app-profile"); } catch (e) { /* nothing to do */ }
+}
+
 function paint(me) {
+  remember(me);
   const who = el("whoami");
-  if (who) who.textContent = me.email + (me.role === "user" ? "" : ` · ${me.role}`);
+  if (who) who.textContent = me.email + (me.role === "User" ? "" : ` · ${me.role}`);
 
   const rank = RANK.get(me.role) ?? 1;
   document.querySelectorAll("[data-min-role]").forEach((item) => {
     // An unknown requirement hides the link: an item asking for a level this file does not
     // define is a mistake, and the safe reading of a mistake is the strict one.
-    if (rank >= (RANK.get(item.dataset.minRole) ?? Infinity)) item.classList.remove("hidden");
+    // Toggled rather than only revealed, because the early script in app-shell.njk may already
+    // have drawn this from a stale cached role - a demotion has to take the link away again.
+    const allowed = rank >= (RANK.get(item.dataset.minRole) ?? Infinity);
+    item.classList.toggle("hidden", !allowed);
   });
 
   const key = location.pathname === "/" ? "home" : location.pathname.replace(/\//g, "");
@@ -102,8 +124,6 @@ function paint(me) {
     here.setAttribute("aria-current", "page");
   }
 
-  const header = el("appHeader");
-  if (header) header.classList.remove("hidden");
   const main = el("main-content");
   if (main) main.setAttribute("aria-busy", "false");
 }
@@ -122,6 +142,7 @@ document.querySelectorAll("[data-logout]").forEach((btn) =>
       // Must never trap someone in a signed-in state: log it and sign out anyway.
       console.warn("sign-out: revoke failed", err.message);
     }
+    forget();
     await signOut(auth).catch(() => {});
     // Not /login/: arriving back at the sign-in form is indistinguishable from a failed attempt.
     // /signed-out/ says the thing happened, and offers signing in again or leaving.

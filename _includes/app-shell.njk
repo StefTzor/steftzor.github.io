@@ -66,18 +66,36 @@
      across to the public site. It stays hidden until /me answers, so the nav never offers a
      link the viewer cannot use. #}
   <div class="lg:flex">
-    <aside id="appHeader" class="hidden lg:w-56 lg:shrink-0 lg:border-r border-brand-muted/15 bg-brand-surface">
-      <div class="lg:sticky lg:top-[73px]">
+    {# Not hidden, and not waiting for anything. It used to carry `hidden` until paint() ran,
+       which is after the Firebase SDK loads from gstatic, after onAuthStateChanged fires, and
+       after /me returns - so on every single navigation the rail vanished and came back, and the
+       page beside it jumped sideways twice. The rail is part of the shell; only the two
+       role-gated items are unknown at first paint, and the script below usually knows those too. #}
+    <aside id="appHeader" class="hidden lg:block lg:w-56 lg:shrink-0 lg:border-r border-brand-muted/15 bg-brand-surface">
+      <div class="lg:sticky lg:top-[77px]">
         <nav aria-label="Application" class="p-3">
           <p id="whoami" class="px-3 pb-2 text-xs text-brand-muted truncate"></p>
           <ul class="space-y-1">
             <li><a href="/" data-nav="home" class="block rounded px-3 py-2 text-sm text-brand-text hover:bg-brand-bg aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold">Home</a></li>
-            <li class="hidden" data-min-role="superuser"><a href="/private/" data-nav="private" class="block rounded px-3 py-2 text-sm text-brand-text hover:bg-brand-bg aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold">Private</a></li>
-            <li class="hidden" data-min-role="admin"><a href="/admin/" data-nav="admin" class="block rounded px-3 py-2 text-sm text-brand-text hover:bg-brand-bg aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold">Admin</a></li>
+            <li class="hidden" data-min-role="SuperUser"><a href="/private/" data-nav="private" class="block rounded px-3 py-2 text-sm text-brand-text hover:bg-brand-bg aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold">Private</a></li>
+            <li class="hidden" data-min-role="Admin"><a href="/admin/" data-nav="admin" class="block rounded px-3 py-2 text-sm text-brand-text hover:bg-brand-bg aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold">Admin</a></li>
           </ul>
         </nav>
       </div>
     </aside>
+    {# Paints the role-gated items from the last known profile, before any network call. Without
+       it, Private and Admin pop in a few hundred milliseconds into every page.
+
+       It decides only what is DRAWN. The role here came from this browser's own storage and is
+       worth exactly nothing as a claim: every byte that matters is refused by the API, which
+       re-reads role and approval from Firestore on each request. Anyone can put "Admin" in their
+       own localStorage and reach a page that tells them no.
+
+       ORDER is an array and the lookup is indexOf, not an object literal. `RANK['constructor']`
+       being a function rather than undefined is what let a role of "constructor" clear every
+       gate on the server once; that shape does not get to exist again, even somewhere it could
+       only mis-draw a link. #}
+    <script>(function(){try{var p=JSON.parse(localStorage.getItem("app-profile")||"null");if(!p||typeof p.role!=="string")return;var ORDER=["User","SuperUser","Admin"];var have=ORDER.indexOf(p.role)+1;if(!have)return;document.querySelectorAll("[data-min-role]").forEach(function(i){var n=ORDER.indexOf(i.getAttribute("data-min-role"))+1;if(n&&have>=n)i.classList.remove("hidden");});var w=document.getElementById("whoami");if(w&&typeof p.email==="string")w.textContent=p.email+(p.role==="User"?"":" \u00b7 "+p.role);}catch(e){}})();</script>
   {%- endif %}
 
   {%- if shell %}

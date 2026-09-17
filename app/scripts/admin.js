@@ -13,7 +13,8 @@ import { api, profile } from "./shell.js";
  */
 
 const el = (id) => document.getElementById(id);
-const ROLES = ["user", "superuser", "admin"];
+// Must match the server's canonical spellings in tzortzoglou-api/src/gate.js.
+const ROLES = ["User", "SuperUser", "Admin"];
 const STATUS_LABEL = { pending: "Pending", approved: "Approved", rejected: "Rejected", suspended: "Suspended" };
 
 let me = null;
@@ -72,9 +73,29 @@ function controls(u) {
     if (r === u.role) opt.selected = true;
     select.appendChild(opt);
   });
-  select.addEventListener("change", () => change(u, { role: select.value }, select));
+  // A confirmation step, not a change on `change`. Selecting from a dropdown is how people read
+  // a list of options - the old binding turned reading into doing, so brushing a trackpad or
+  // arrowing through the options to see them demoted somebody. Now the select only proposes,
+  // and nothing is sent until Apply is pressed.
+  const apply = document.createElement("button");
+  apply.type = "button";
+  apply.className = "btn-primary text-sm px-3 py-1.5 hidden";
+  apply.textContent = "Apply";
 
-  wrap.append(label, select);
+  const sync = () => {
+    const changed = select.value !== u.role;
+    apply.classList.toggle("hidden", !changed);
+    // Named for what it will do, because "Apply" alone is a mystery to a screen reader that has
+    // not just watched the dropdown move.
+    apply.setAttribute("aria-label", `Change ${u.email || u.uid} to ${select.value}`);
+    select.classList.toggle("ring-2", changed);
+    select.classList.toggle("ring-brand-accent", changed);
+  };
+  select.addEventListener("change", sync);
+  apply.addEventListener("click", () => change(u, { role: select.value }, apply));
+  sync();
+
+  wrap.append(label, select, apply);
 
   const action = (text, patch, className) => {
     const b = document.createElement("button");
