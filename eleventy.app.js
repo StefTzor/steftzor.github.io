@@ -41,6 +41,7 @@ module.exports = function (eleventyConfig) {
     "app/scripts/departures.js": "scripts/departures.js",
     "app/scripts/transit.js": "scripts/transit.js",
     "app/scripts/stop-format.js": "scripts/stop-format.js",
+    "app/scripts/rows.js": "scripts/rows.js",
     "app/scripts/f1.js": "scripts/f1.js",
     "app/scripts/f1-page.js": "scripts/f1-page.js",
     "app/scripts/f1-teams.js": "scripts/f1-teams.js",

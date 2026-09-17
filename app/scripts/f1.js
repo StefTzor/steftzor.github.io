@@ -1,4 +1,5 @@
 import { api, profile } from "./shell.js";
+import { remember } from "./rows.js";
 
 /**
  * The next Formula 1 weekend, in the reader's own timezone.
@@ -76,6 +77,7 @@ function render(data) {
   });
 
   el("f1").dataset.card = "ready";
+  remember("f1Sessions", race.sessions.length);
 }
 
 profile.then(async () => {

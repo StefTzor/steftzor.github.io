@@ -222,6 +222,29 @@
     <main id="main-content" class="flex-grow min-w-0" aria-busy="true">
       {{ content | safe }}
     </main>
+
+    {# Trim the placeholder lists to however many rows they held last time.
+
+       The markup reserves the most a list can hold, because that is the only count knowable at
+       build time. It is right at eight in the morning and 228px too tall at half past ten at
+       night, when four fewer buses are running - which was the whole of the shift left on
+       /transit/ once the panels themselves were reserved.
+
+       Parser-blocking, and placed after the content rather than in the head: it has to run
+       before the first paint to be worth anything, and the lists have to exist for it to trim
+       them. The build hashes it into the CSP like every other inline block here.
+
+       Anything wrong with the stored value - absent, not an object, a string where a number
+       should be - just leaves the markup's own count in place. The list of ids is fixed here
+       rather than taken from the stored object: the id decides which element gets hidden, and a
+       seeded value should not be able to blank the rail or the page and have it survive a
+       reload. It can only ever hide, and writing the key at all needs script on this origin, so
+       this is a bound on the damage rather than a gate. #}
+    <script>(function(){try{var r=JSON.parse(localStorage.getItem("app-rows")||"null");
+    if(!r||typeof r!=="object")return;var OK=["depList","f1Sessions","trList","trLines"];
+    Object.keys(r).forEach(function(id){if(OK.indexOf(id)<0)return;var u=document.getElementById(id);
+    if(!u)return;var n=r[id];if(typeof n!=="number"||n<0)return;
+    for(var i=n;i<u.children.length;i++)u.children[i].style.display="none";});}catch(e){}})();</script>
   </div>
   {%- else %}
   <main id="main-content" class="flex-grow">

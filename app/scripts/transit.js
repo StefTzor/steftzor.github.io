@@ -1,5 +1,6 @@
 import { api, profile } from "./shell.js";
 import { inWords, shortStop, towardsOf } from "./stop-format.js";
+import { remember } from "./rows.js";
 
 /**
  * The full board for one stop: departures, arrivals, what lines turn up, and what else is
@@ -112,6 +113,9 @@ function renderBoard(data) {
   });
 
   renderLines(data.departures);
+  // Twelve at eight in the morning, eight at half past ten at night. This is the number
+  // the markup could not know.
+  remember("trList", data.departures.length);
 }
 
 /**
@@ -145,6 +149,8 @@ function renderLines(rows) {
     list.appendChild(li);
     return;
   }
+
+  remember("trLines", byLine.size);
 
   [...byLine.entries()]
     // Numerically where the line is a number, alphabetically where it is not: "2" before "11"

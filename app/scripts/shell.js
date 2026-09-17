@@ -17,6 +17,7 @@ import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/
 // where nobody is signed in - see the note in that file.
 export { API_BASE } from "./api-base.js";
 import { API_BASE } from "./api-base.js";
+import { forgetRows } from "./rows.js";
 
 // A Map, not an object literal - the same reason as the server's gate. An object inherits
 // Object.prototype, so RANK['constructor'] is a function rather than undefined, and comparing a
@@ -150,6 +151,7 @@ function remember(me) {
 
 function forget() {
   try { localStorage.removeItem("app-profile"); } catch (e) { /* nothing to do */ }
+  forgetRows();
 }
 
 /**

@@ -1,5 +1,6 @@
 import { api, profile } from "./shell.js";
 import { inWords, shortStop, towardsOf } from "./stop-format.js";
+import { remember } from "./rows.js";
 
 /**
  * The next few buses from home, on the home view.
@@ -93,6 +94,9 @@ function render(data) {
   // that is wrong, and the reader is the one who should decide whether that matters.
   el("depAge").textContent = data.stale ? " · last known" : "";
   el("departures").dataset.card = "ready";
+  // What to reserve next time. Written after a successful draw, so a failed load never
+  // teaches the page a smaller board than the stop really has.
+  remember("depList", next.length);
 }
 
 async function load(refreshButton) {
