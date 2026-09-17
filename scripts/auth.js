@@ -220,8 +220,7 @@ async function handleLogout(e) {
   window.location.href = "/login/";
 }
 
-// Handle auth state changes
-async /**
+/**
  * Keeps the hint auth-boot.js reads, and nothing else.
  *
  * This used to drive the public site's signed-in header - #user-view, the logout button, the

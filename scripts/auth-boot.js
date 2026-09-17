@@ -8,7 +8,12 @@
  *
  * So it loads in two cases only:
  *   1. the page actually has auth UI (login, register, the gated area), or
- *   2. this browser has signed in before, so the header has something to show.
+ *   2. this browser has signed in before.
+ *
+ * Case 2 no longer earns its keep. This file ships only to tzortzoglou.eu, and since sign-in
+ * moved to app.tzortzoglou.eu the module it loads does nothing there but maintain the very flag
+ * that loaded it. A returning visitor still pays ~175 KB of Firebase SDK from gstatic for that.
+ * Kept for now because removing it also narrows the CSP, which deserves its own change.
  *
  * Case 2 is a hint, not a permission. It only decides whether to fetch a script. The gate
  * itself is server-side: /exclusive/ content comes from an API that verifies a Firebase ID
@@ -21,9 +26,6 @@
   function signedInBefore() {
     try { return localStorage.getItem(FLAG) === "1"; } catch (e) { return false; }
   }
-
-  // Paint the header from the flag straight away. This used to wait on Firebase, so the
-  // logged-in header now appears sooner than it did.
 
   var required = document.body && document.body.dataset.auth === "required";
   if (required || signedInBefore()) {
