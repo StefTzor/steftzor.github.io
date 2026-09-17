@@ -91,16 +91,63 @@
        after /me returns - so on every single navigation the rail vanished and came back, and the
        page beside it jumped sideways twice. The rail is part of the shell; only the two
        role-gated items are unknown at first paint, and the script below usually knows those too. #}
-    <aside id="appHeader" class="hidden lg:block lg:w-56 lg:shrink-0 lg:border-r border-brand-muted/15 bg-brand-surface">
-      <div class="lg:sticky lg:top-[77px]">
-        <nav aria-label="Application" class="p-3">
-          <p id="whoami" class="px-3 pb-2 text-xs text-brand-muted truncate"></p>
+    {# Full height and anchored: `sticky` under the bar with its own scroll, so moving between
+       sections never moves it. Home at the top because it is where you start; Private and Admin
+       at the bottom because they are destinations you go to deliberately, not defaults; the
+       profile below them because it is about you rather than about the app. #}
+    <aside id="appHeader" class="hidden lg:flex lg:w-60 lg:shrink-0 lg:flex-col lg:border-r border-brand-muted/15 bg-brand-surface">
+      <div class="lg:sticky lg:top-[77px] lg:h-[calc(100vh-77px)] flex flex-col">
+        <nav aria-label="Application" class="flex flex-1 flex-col min-h-0 p-3">
           <ul class="space-y-1">
-            <li><a href="/" data-nav="home" class="block rounded px-3 py-2 text-sm text-brand-text hover:bg-brand-bg aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold">Home</a></li>
-            <li class="hidden" data-min-role="SuperUser"><a href="/private/" data-nav="private" class="block rounded px-3 py-2 text-sm text-brand-text hover:bg-brand-bg aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold">Private</a></li>
-            <li class="hidden" data-min-role="Admin"><a href="/admin/" data-nav="admin" class="block rounded px-3 py-2 text-sm text-brand-text hover:bg-brand-bg aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold">Admin</a></li>
+            <li>
+              <a href="/" data-nav="home" class="side-link">
+                {% icon "fa-solid-house", "side-icon" %}<span>Home</span>
+              </a>
+            </li>
+          </ul>
+
+          {# Pushed to the bottom rather than spaced apart, so the gap grows with the viewport
+             instead of the items drifting down it. #}
+          <ul class="mt-auto space-y-1 pt-6">
+            <li class="hidden" data-min-role="SuperUser">
+              <a href="/private/" data-nav="private" class="side-link">
+                {% icon "fa-solid-heart-lock", "side-icon" %}<span>Private</span>
+              </a>
+            </li>
+            <li class="hidden" data-min-role="Admin">
+              <a href="/admin/" data-nav="admin" class="side-link">
+                {% icon "fa-solid-users", "side-icon" %}<span>Admin</span>
+              </a>
+            </li>
           </ul>
         </nav>
+
+        {# You, and the two preferences that are yours rather than the app's. Both are stored in
+           this browser and nowhere else, which is why they can be changed here without a round
+           trip - and why they do not follow you to another device. Editing your name or address
+           is a different kind of change and is not here yet; it needs the server. #}
+        <div class="border-t border-brand-muted/15 p-3">
+          <div class="flex items-center gap-2 px-2 pb-2">
+            {% icon "fa-solid-user-gear", "h-4 w-4 shrink-0 text-brand-muted" %}
+            <div class="min-w-0">
+              <p id="whoamiName" class="truncate text-sm font-semibold text-brand-text"></p>
+              <p id="whoami" class="truncate text-xs text-brand-muted"></p>
+            </div>
+          </div>
+
+          <div class="mt-1 space-y-1">
+            <button type="button" id="prefTheme" class="side-pref">
+              {% icon "fa-solid-adjust", "side-icon" %}
+              <span class="flex-1 text-left">Theme</span>
+              <span id="prefThemeValue" class="text-xs font-semibold text-brand-accent"></span>
+            </button>
+            <button type="button" id="prefLocation" class="side-pref">
+              {% icon "fa-solid-location-dot", "side-icon" %}
+              <span class="flex-1 text-left">Location</span>
+              <span id="prefLocationValue" class="text-xs font-semibold text-brand-accent"></span>
+            </button>
+          </div>
+        </div>
       </div>
     </aside>
     {# Paints the role-gated items from the last known profile, before any network call. Without

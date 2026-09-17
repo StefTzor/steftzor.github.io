@@ -1,4 +1,4 @@
-import { api, profile } from "./shell.js";
+import { api, profile, GEO_KEY } from "./shell.js";
 
 /**
  * The home view. The shell owns identity, navigation and signing out; this owns the greeting
@@ -234,7 +234,6 @@ function unavailable() {
  * keeps the grant, and re-asking on every page load would be the nagging this avoids.
  * The coordinates themselves are never stored, only the fact that you chose to share them.
  */
-const GEO_KEY = "weather-geo";
 const wantsGeo = () => { try { return localStorage.getItem(GEO_KEY) === "1"; } catch (e) { return false; } };
 const setGeo = (on) => { try { on ? localStorage.setItem(GEO_KEY, "1") : localStorage.removeItem(GEO_KEY); } catch (e) { /* private mode */ } };
 

@@ -5,6 +5,14 @@
 @tailwind utilities;
 
 @layer base {
+  /* Always reserve the scrollbar's width, on both properties.
+     Without it a page that scrolls is 1425px wide and one that does not is 1440px, so every
+     centred container - the header's, the footer's, the page's - jumps 7.5px sideways when you
+     move between a long page and a short one. Measured: the wordmark sat at left 88.5 on the
+     site and 96 on the app's home view, which is the "slight change when navigating". It got
+     worse the moment the weather card became a chip and made that page short. */
+  html { scrollbar-gutter: stable; }
+
   :root {
     /* Light Mode — contrast-audited against --color-bg / --color-surface (WCAG 2.1 AA) */
     --color-bg: 203 213 225;      /* #cbd5e1 */
@@ -161,6 +169,30 @@
     @apply flex items-center justify-center gap-2 rounded-full border border-brand-accent/40
            px-4 py-3 font-semibold text-brand-accent
            hover:bg-brand-accent hover:text-brand-onaccent transition-colors duration-200;
+  }
+
+  /* The app's sidebar. One definition for the links and one for the preference rows, because
+     the difference between them should be what they do, not how many utility classes each
+     happened to be given. */
+  .side-link {
+    @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-brand-text
+           hover:bg-brand-bg transition-colors duration-150
+           aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold
+           aria-[current=page]:text-brand-accent;
+  }
+
+  .side-pref {
+    @apply flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-brand-text
+           hover:bg-brand-bg transition-colors duration-150;
+  }
+
+  .side-icon {
+    @apply h-4 w-4 shrink-0 text-brand-muted;
+  }
+
+  .side-link[aria-current="page"] .side-icon,
+  .side-pref:hover .side-icon {
+    @apply text-brand-accent;
   }
 
   /* The compact forecast on the app's home view, and the panel it opens.

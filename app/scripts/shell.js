@@ -107,11 +107,65 @@ function forget() {
   try { localStorage.removeItem("app-profile"); } catch (e) { /* nothing to do */ }
 }
 
+/**
+ * The two preferences in the sidebar.
+ *
+ * Both live in this browser and nowhere else, which is why they can be changed without a round
+ * trip - and why they do not follow you to another device. The theme is the same `theme` key the
+ * header toggle writes, so the two controls cannot disagree; changing it here goes through the
+ * same click so the cross-property handoff timestamp is written too.
+ */
+export const GEO_KEY = "weather-geo";
+
+function paintPrefs() {
+  const themeValue = el("prefThemeValue");
+  if (themeValue) {
+    themeValue.textContent = document.documentElement.classList.contains("dark") ? "Dark" : "Light";
+  }
+  const locValue = el("prefLocationValue");
+  if (locValue) {
+    let on = false;
+    try { on = localStorage.getItem(GEO_KEY) === "1"; } catch (e) { /* private mode */ }
+    locValue.textContent = on ? "This device" : "Fixed";
+  }
+}
+
+function wirePrefs() {
+  const theme = el("prefTheme");
+  if (theme) {
+    // Delegated to the header's own toggle rather than reimplemented: one writer for `theme`
+    // and `theme-at`, so the sidebar cannot drift from the bar or break the handoff.
+    theme.addEventListener("click", () => {
+      const toggle = document.getElementById("theme-toggle") || document.getElementById("theme-toggle-mobile");
+      if (toggle) toggle.click();
+      paintPrefs();
+    });
+  }
+  const loc = el("prefLocation");
+  if (loc) {
+    loc.addEventListener("click", () => {
+      let on = false;
+      try { on = localStorage.getItem(GEO_KEY) === "1"; } catch (e) { /* private mode */ }
+      try {
+        if (on) localStorage.removeItem(GEO_KEY); else localStorage.setItem(GEO_KEY, "1");
+      } catch (e) { /* private mode: the preference just does not stick */ }
+      paintPrefs();
+      // The weather card reads this at load; reloading is the honest way to show the change
+      // rather than two places disagreeing about where the forecast is for.
+      if (location.pathname === "/") location.reload();
+    });
+  }
+  paintPrefs();
+}
+
 function paint(me) {
   remember(me);
   document.documentElement.classList.remove("app-unknown");
+  const name = el("whoamiName");
+  if (name) name.textContent = me.name || "";
   const who = el("whoami");
   if (who) who.textContent = me.email + (me.role === "User" ? "" : ` · ${me.role}`);
+  wirePrefs();
 
   const rank = RANK.get(me.role) ?? 1;
   document.querySelectorAll("[data-min-role]").forEach((item) => {
