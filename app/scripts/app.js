@@ -36,9 +36,13 @@ function paintDigest() {
 
   const parts = [];
   if (lastWeather && lastWeather.temp !== null && lastWeather.temp !== undefined) {
+    // Temperature first, condition second: describe() returns nouns ("Drizzle", "Mostly clear",
+    // "Thunderstorm"), and a noun after "It is" reads as a verb that is missing - "it is drizzle
+    // and 16°C". Putting the number first makes the noun a complement, which every one of them
+    // fits: "It is 16°C and drizzle", "and mostly clear", "and thunderstorm".
     const where = lastWeather.place ? ` in ${lastWeather.place}` : "";
-    const what = lastWeather.text ? `${lastWeather.text.toLowerCase()} and ` : "";
-    parts.push({ text: `It is ${what}${Math.round(lastWeather.temp)}°C${where}.` });
+    const what = lastWeather.text ? ` and ${lastWeather.text.toLowerCase()}` : "";
+    parts.push({ text: `It is ${Math.round(lastWeather.temp)}°C${what}${where}.` });
   }
   if (lastQueues) {
     const { pending, unread } = lastQueues;
