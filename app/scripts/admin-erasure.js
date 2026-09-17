@@ -36,6 +36,14 @@ import { isEmail } from "./email.js";
  */
 let target = "";
 
+// Said twice each: once beside a receipt, once without one. They were two near-copies that had
+// already drifted ("the messages" against "the stored messages"), so they are one string now.
+const PARTLY_DONE = "Partly done. The stored messages were deleted; the account was not fully "
+  + "removed. Look the address up again to see what is left, then erase it again: running it "
+  + "twice is safe.";
+const ACCEPTED_UNSAID = "The erasure was accepted, but the API did not say what it removed. "
+  + "Look the address up again to see what is left.";
+
 const plural = (n, one) => `${n} ${one}${n === 1 ? "" : "s"}`;
 
 /** "a, b and c" - a list read aloud the way a person would say it. */
@@ -97,7 +105,7 @@ function paintAccount(account) {
     // The state an interrupted erasure leaves: the sign-in survived and the profile did not. Worth
     // saying in words, because otherwise the preview simply shows blanks where a name should be
     // and reads as a bug in this page rather than as unfinished work on the account.
-    const half = line("There is no stored profile for this account — only the sign-in survives. " +
+    const half = line("There is no stored profile for this account: only the sign-in survives. " +
       "That is what an erasure that stopped half-way leaves behind, and running it again finishes it.");
     half.className = "text-amber-700 dark:text-amber-300";
     facts.appendChild(half);
@@ -198,7 +206,7 @@ el("lookupForm").addEventListener("submit", async (e) => {
     el("held").classList.add("hidden");
     target = "";
     say(err.code === "invalid_email" ? "That is not a valid email address."
-      : err.status === 403 ? "This account may not run erasures."
+      : err.status === 403 ? "This account is not allowed to run erasures."
       : "That address could not be looked up.", "error");
   } finally {
     btn.disabled = false;
@@ -255,17 +263,16 @@ el("eraseGo").addEventListener("click", async () => {
     // sentence - the receipt is the honest artefact here, and a partial one is still a receipt.
     if (err.code === "partial_erasure" && err.body && err.body.receipt) {
       paintReceipt(err.body.receipt);
-      say("Partly done. The messages were deleted; the account was not fully removed. "
-        + "Look the address up again, then erase it again — running it twice is safe.", "error");
+      say(PARTLY_DONE, "error");
       go.disabled = false;
       el("eraseCancel").disabled = false;
       return;
     }
     say(err.code === "self_target" ? "An administrator may not erase their own account. Ask another one."
       : err.code === "invalid_email" ? "The API would not accept that address."
-      : err.code === "partial_erasure" ? "Partly done. The stored messages were deleted; the account was not fully removed. Look the address up again to see what is left, then erase it again — running it twice is safe."
-      : err.status === 403 ? "This account may not run erasures."
-      : "Nothing was erased — the request failed.", "error");
+      : err.code === "partial_erasure" ? PARTLY_DONE
+      : err.status === 403 ? "This account is not allowed to run erasures."
+      : "Nothing was erased. The request failed.", "error");
     go.disabled = false;
     el("eraseCancel").disabled = false;
     return;
@@ -296,8 +303,7 @@ function paintReceipt(res) {
   // may not itemise either. Saying both is the only honest answer, and the look-up is the screen
   // that can settle it.
   if (!erased) {
-    lines.append(line("The erasure was accepted, but the API did not say what it removed. "
-      + "Look the address up again to see what is left."));
+    lines.append(line(ACCEPTED_UNSAID));
     paintUnreachable(notified || { count: 0 }, "leftCount", "leftNote");
     const s = el("leftSearch");
     s.textContent = "";
@@ -308,7 +314,7 @@ function paintReceipt(res) {
     el("receipt").classList.remove("hidden");
     target = "";
     el("target").value = "";
-    say("The erasure was accepted, but the API did not say what it removed. Look the address up again.", "error");
+    say(ACCEPTED_UNSAID, "error");
     el("receiptWho").scrollIntoView({ block: "center", behavior: "instant" });
     return;
   }

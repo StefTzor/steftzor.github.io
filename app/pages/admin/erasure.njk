@@ -19,15 +19,14 @@ bodyScripts:
       Everything held for one email address, and the one way to remove it. The contact form
       promises a message can be deleted on request and
       <a href="https://tzortzoglou.eu/privacy/" class="text-brand-accent underline hover:no-underline">the privacy
-      notice</a> promises Article 17; this is where that gets carried out rather than remembered.
+      notice</a> promises Article 17; this is where that gets carried out.
     </p>
     {# Said on the page and not only in the results, because it is the thing an operator needs to
        know BEFORE they promise somebody their data is gone. A contact message is stored and also
        emailed: this screen reaches the database, and nothing reaches the copy that was sent. #}
     <p class="text-brand-muted mb-6">
       It cannot reach the copies that were emailed. Those are shown on every answer below, because
-      an erasure that reported "done" while a copy sat in a mailbox would be a lie the rest of this
-      codebase is written to avoid.
+      an erasure that reported "done" while a copy sat in a mailbox would be a lie.
     </p>
 
     <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
@@ -39,7 +38,7 @@ bodyScripts:
         maxlength="254" aria-describedby="lookupHint" class="field">
       <p id="lookupHint" class="hint">
         Reads only. Nothing is deleted by looking, and the address is matched the way the API
-        matches it — trimmed, and ignoring case.
+        matches it: trimmed, and ignoring case.
       </p>
       <button type="submit" class="btn-primary mt-4">Look up</button>
     </form>
@@ -80,7 +79,7 @@ bodyScripts:
         <h2 id="erase-heading" class="text-lg font-bold text-brand-text">Erase</h2>
         <p class="hint">
           Removes the messages, the stored profile and the sign-in account. It crosses three
-          stores, there is no undo, and nothing here restores an account afterwards.
+          stores, there is no undo, and nothing here can recreate the account.
         </p>
 
         <button type="button" id="eraseOpen" class="btn-secondary mt-4">Erase what is held…</button>

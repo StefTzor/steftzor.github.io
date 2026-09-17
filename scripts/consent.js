@@ -100,9 +100,9 @@
     var out = document.getElementById('consent-state');
     if (!out) return;
     var v = read();
-    out.textContent = v === 'granted' ? 'Analytics is ON — you accepted.'
-                    : v === 'denied'  ? 'Analytics is OFF — you declined.'
-                    : 'Analytics is OFF — you have not chosen yet.';
+    out.textContent = v === 'granted' ? 'Analytics is ON. You accepted.'
+                    : v === 'denied'  ? 'Analytics is OFF. You declined.'
+                    : 'Analytics is OFF. You have not chosen yet.';
     var btn = document.getElementById('consent-withdraw');
     if (btn) btn.textContent = v === 'granted' ? 'Turn analytics off' : 'Turn analytics on';
   }
@@ -118,11 +118,11 @@
     el.innerHTML =
       '<div class="container mx-auto max-w-4xl flex flex-col sm:flex-row sm:items-center gap-4">' +
         '<div class="flex-grow">' +
-          '<h2 id="consent-title" class="font-bold text-brand-text mb-1">Analytics cookies? There aren’t any.</h2>' +
+          '<h2 id="consent-title" class="font-bold text-brand-text mb-1">May I count this page view?</h2>' +
           '<p class="text-sm text-brand-muted leading-relaxed">' +
             'This site sets <strong class="text-brand-text">no cookies</strong> and runs no advertising. ' +
-            'May I count this page view <strong class="text-brand-text">on my own server</strong>? ' +
-            'No third party, no cookie, nothing that identifies you. ' +
+            'The count goes to <strong class="text-brand-text">my own server</strong>: ' +
+            'no third party, no cookie, nothing that identifies you. ' +
             'Declining changes nothing about how the site works. ' +
             '<a href="/cookies/" class="text-brand-accent underline hover:no-underline">Details</a>.' +
           '</p>' +
@@ -151,7 +151,7 @@
         var note = document.getElementById('consent-note');
         if (note) {
           note.textContent = !saved
-            ? 'Applied to this page only — your browser is blocking site storage, so this choice cannot be remembered.'
+            ? 'Applied to this page only. Your browser is blocking site storage, so this choice cannot be remembered.'
             : next === 'denied'
               ? 'Saved. Nothing further you visit will be counted.'
               : 'Saved. Analytics is now enabled.';

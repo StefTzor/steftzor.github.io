@@ -388,7 +388,7 @@ async function go(fn, replaceUrl) {
   } catch (err) {
     console.error("messages: load failed", err.status);
     el("messages").textContent = "";
-    say(err.status === 404 ? "Messages are unavailable — the database is not configured."
+    say(err.status === 404 ? "Messages are unavailable: the database is not configured."
       : err.status === 403 ? "This account is not allowed to read messages."
       : "Messages could not be loaded.", "error");
   }

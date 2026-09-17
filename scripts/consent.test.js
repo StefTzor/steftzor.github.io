@@ -168,7 +168,7 @@ assert.ok(t.banner(), 'blocked storage must still be asked');
 assert.deepStrictEqual(t.sent, [], 'nothing may be sent before a choice, storage or no storage');
 t.click('consent-accept');
 assert.strictEqual(t.sent.length, 1, 'accepting counts even when the choice cannot be persisted');
-assert.strictEqual(t.text('consent-state'), 'Analytics is ON — you accepted.',
+assert.strictEqual(t.text('consent-state'), 'Analytics is ON. You accepted.',
   'the in-memory fallback must hold the choice for the page it was made on');
 
 console.log('consent.js: all 8 checks passed — counting is opt-in, refusal sticks, one page load is one view, and the beacon carries no identifier');
