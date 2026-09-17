@@ -1,0 +1,74 @@
+{#- The architecture drawing, shared by /docs/ in the app and /code/ on the public site.
+
+    One copy, because two copies of a diagram is two diagrams that disagree about the system a
+    few months from now. It is inline SVG rather than a rendering library: the app's CSP allows
+    scripts from 'self' and gstatic only, so a diagram from a CDN could not run, and a hundred
+    kilobytes of renderer to draw a dozen boxes would be the wrong trade if it could.
+
+    The lanes group by what a thing is FOR rather than by which file it lives in, which is the
+    question somebody looking at an architecture picture is actually asking. -#}
+      <svg viewBox="0 0 700 430" class="w-full min-w-[560px]" role="img"
+        aria-label="Four layers. You, in a browser. Two static sites that hold no secrets. One API that verifies the token, re-reads the role and holds every key. Below it Firebase for identity, Postgres for the two things worth keeping, and four upstream services, two of which need a credential.">
+        <defs>
+          <marker id="flow-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" class="dg-arrow"/>
+          </marker>
+        </defs>
+
+        {# Lanes first, so every box sits on top of its band. #}
+        <g>
+          <rect x="6" y="6" width="688" height="62" rx="10" class="dg-lane"/>
+          <text x="18" y="24" class="dg-lane-label">In your hands</text>
+
+          <rect x="6" y="84" width="688" height="86" rx="10" class="dg-lane"/>
+          <text x="18" y="102" class="dg-lane-label">Served as files · no secret is in them</text>
+
+          <rect x="6" y="186" width="688" height="96" rx="10" class="dg-lane"/>
+          <text x="18" y="204" class="dg-lane-label">The only thing that decides</text>
+
+          <rect x="6" y="298" width="688" height="126" rx="10" class="dg-lane"/>
+          <text x="18" y="316" class="dg-lane-label">What it asks, on your behalf</text>
+        </g>
+
+        <g class="dg-line" marker-end="url(#flow-arrow)">
+          <path d="M350,50 L350,80"/>
+          <path d="M470,166 L470,182"/>
+          <path d="M170,166 L170,182"/>
+          <path d="M350,278 L350,294"/>
+          <path d="M180,278 C180,286 180,286 180,294"/>
+          <path d="M540,278 C540,286 540,286 540,294"/>
+        </g>
+
+        <g>
+          <rect x="290" y="28" width="120" height="36" rx="8" class="dg-box-accent"/>
+          <text x="350" y="51" text-anchor="middle" class="dg-label">Your browser</text>
+
+          <rect x="70" y="112" width="200" height="50" rx="8" class="dg-box"/>
+          <text x="170" y="133" text-anchor="middle" class="dg-label">tzortzoglou.eu</text>
+          <text x="170" y="149" text-anchor="middle" class="dg-sub">the portfolio · one call: the contact form</text>
+
+          <rect x="370" y="112" width="200" height="50" rx="8" class="dg-box"/>
+          <text x="470" y="133" text-anchor="middle" class="dg-label">app.tzortzoglou.eu</text>
+          <text x="470" y="149" text-anchor="middle" class="dg-sub">signed in · pages only</text>
+
+          <rect x="120" y="212" width="460" height="62" rx="8" class="dg-box-accent"/>
+          <text x="350" y="233" text-anchor="middle" class="dg-label">api.tzortzoglou.eu</text>
+          <text x="350" y="249" text-anchor="middle" class="dg-sub">checks the token · re-reads your role · holds every key</text>
+          <text x="350" y="264" text-anchor="middle" class="dg-sub">nothing below this line is reachable without it</text>
+
+          <rect x="110" y="326" width="140" height="46" rx="8" class="dg-box"/>
+          <text x="180" y="345" text-anchor="middle" class="dg-label">Firebase</text>
+          <text x="180" y="360" text-anchor="middle" class="dg-sub">who you are</text>
+
+          <rect x="280" y="326" width="140" height="46" rx="8" class="dg-box"/>
+          <text x="350" y="345" text-anchor="middle" class="dg-label">Postgres</text>
+          <text x="350" y="360" text-anchor="middle" class="dg-sub">messages · restarts</text>
+
+          <rect x="450" y="326" width="140" height="46" rx="8" class="dg-box-key"/>
+          <text x="520" y="345" text-anchor="middle" class="dg-label">Four upstreams</text>
+          <text x="520" y="360" text-anchor="middle" class="dg-sub">two need a key</text>
+
+          <text x="350" y="396" text-anchor="middle" class="dg-sub">Open-Meteo · Trafiklab ResRobot · Jolpica · GitHub Actions</text>
+          <text x="350" y="411" text-anchor="middle" class="dg-sub">none of them is ever called from your browser</text>
+        </g>
+      </svg>

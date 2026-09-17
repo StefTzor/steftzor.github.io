@@ -355,6 +355,32 @@
     @apply fill-brand-muted/60;
   }
 
+  /* Lanes on the architecture diagram: a soft panel per layer, so the drawing reads as four
+     bands rather than fifteen boxes. gitdiagram groups by file; this groups by what a thing is
+     for, which is the question somebody looking at an architecture picture is actually asking. */
+  .dg-lane {
+    @apply fill-brand-muted/[0.06] stroke-brand-muted/20;
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+  }
+  .dg-lane-label {
+    @apply fill-brand-muted text-[9px] font-semibold uppercase;
+    letter-spacing: 0.08em;
+  }
+  /* A key-carrying upstream, marked so the two that need a credential are visible at a glance. */
+  .dg-box-key {
+    @apply fill-amber-500/10 stroke-amber-500/40;
+    stroke-width: 1;
+  }
+
+  /* One upstream, documented: what we call, how often, and how their field names become ours. */
+  .map-row {
+    @apply grid grid-cols-[1fr_auto_1fr] items-baseline gap-x-2 border-b border-brand-muted/10
+           py-1.5 text-xs last:border-0;
+  }
+  .map-from { @apply truncate font-mono text-brand-muted; }
+  .map-to { @apply truncate font-mono text-brand-text; }
+
   /* A row of the endpoint and upstream tables. Grid rather than <table> so it can collapse to
      stacked rows on a phone without a horizontal scrollbar. */
   .doc-row {

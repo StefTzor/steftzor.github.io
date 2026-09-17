@@ -5,8 +5,9 @@ import { api, profile } from "./shell.js";
  *
  * What this deliberately is not: a query box. The API accepts no SQL from anywhere, so there is
  * nothing here to type one into. That is a decision about blast radius rather than about effort —
- * a stolen Admin session should be worth a read of three tables, not a psql prompt against
- * production.
+ * losing this screen to a stolen session should cost a read of three tables, not a psql
+ * prompt against production. An Admin session is worth plenty more than this screen; what is
+ * bounded here is this screen.
  *
  * Everything the grid can do, the server decides it may do. The column list, what may be sorted,
  * what may be filtered and how many rows come back are all checked there against the real catalog;

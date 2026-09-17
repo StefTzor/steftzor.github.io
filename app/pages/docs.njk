@@ -36,53 +36,7 @@ bodyScripts:
     </p>
 
     <div class="card overflow-x-auto">
-      <svg viewBox="0 0 760 272" class="w-full min-w-[640px]" role="img"
-        aria-label="A browser talks to the public site and to the app. The app talks to the API. The API talks to Firebase, to Postgres and to four upstream services.">
-        <defs>
-          <marker id="flow-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M0,0 L8,4 L0,8 z" class="dg-arrow"/>
-          </marker>
-        </defs>
-
-        <g class="dg-line" marker-end="url(#flow-arrow)">
-          <path d="M130,150 C150,150 150,86 166,86"/>
-          <path d="M130,162 L166,162"/>
-          <path d="M340,162 L388,162"/>
-          <path d="M552,156 C575,156 575,86 598,86"/>
-          <path d="M552,162 L598,162"/>
-          <path d="M552,168 C575,168 575,232 598,232"/>
-        </g>
-
-        <g>
-          <rect x="8" y="132" width="122" height="48" rx="8" class="dg-box"/>
-          <text x="69" y="153" text-anchor="middle" class="dg-label">Browser</text>
-          <text x="69" y="168" text-anchor="middle" class="dg-sub">you, signed in</text>
-
-          <rect x="166" y="62" width="174" height="48" rx="8" class="dg-box"/>
-          <text x="253" y="83" text-anchor="middle" class="dg-label">tzortzoglou.eu</text>
-          <text x="253" y="98" text-anchor="middle" class="dg-sub">static · GitHub Pages</text>
-
-          <rect x="166" y="138" width="174" height="48" rx="8" class="dg-box"/>
-          <text x="253" y="159" text-anchor="middle" class="dg-label">app.tzortzoglou.eu</text>
-          <text x="253" y="174" text-anchor="middle" class="dg-sub">static · signs you in</text>
-
-          <rect x="388" y="138" width="164" height="48" rx="8" class="dg-box-accent"/>
-          <text x="470" y="159" text-anchor="middle" class="dg-label">api.tzortzoglou.eu</text>
-          <text x="470" y="174" text-anchor="middle" class="dg-sub">Express · every gate</text>
-
-          <rect x="598" y="62" width="154" height="48" rx="8" class="dg-box"/>
-          <text x="675" y="83" text-anchor="middle" class="dg-label">Firebase</text>
-          <text x="675" y="98" text-anchor="middle" class="dg-sub">auth · roles</text>
-
-          <rect x="598" y="138" width="154" height="48" rx="8" class="dg-box"/>
-          <text x="675" y="159" text-anchor="middle" class="dg-label">Postgres</text>
-          <text x="675" y="174" text-anchor="middle" class="dg-sub">messages · restarts</text>
-
-          <rect x="598" y="208" width="154" height="48" rx="8" class="dg-box"/>
-          <text x="675" y="229" text-anchor="middle" class="dg-label">Four upstreams</text>
-          <text x="675" y="244" text-anchor="middle" class="dg-sub">weather · transit · F1 · CI</text>
-        </g>
-      </svg>
+      {% include "chrome/architecture.njk" %}
     </div>
 
     <p class="hint mt-3 max-w-prose">
@@ -172,54 +126,6 @@ bodyScripts:
     </ul>
   </section>
 
-  {# --- the tables ---------------------------------------------------------- #}
-  <section aria-labelledby="erd-heading" class="mt-10">
-    <h2 id="erd-heading" class="text-xl font-bold text-brand-text mb-1">The Postgres tables</h2>
-    <p class="text-sm text-brand-muted mb-4 max-w-prose">
-      There are no foreign keys. These are three independent tables, written by three unrelated
-      parts of the API, though an entity-relationship diagram normally implies relationships.
-    </p>
-
-    <div class="card overflow-x-auto">
-      <svg viewBox="0 0 560 208" class="w-full min-w-[520px]" role="img"
-        aria-label="Three independent tables. contact_submissions has id, name, email, message, consent_at, notified_at, read_at and created_at, plus ip and user_agent which are withheld from the browser. boots has id, started_at and version. schema_migrations has filename and applied_at.">
-        <g>
-          <rect x="6" y="8" width="244" height="192" rx="8" class="dg-box"/>
-          <rect x="6" y="8" width="244" height="26" rx="8" class="dg-box-accent"/>
-          <text x="18" y="26" class="dg-label">contact_submissions</text>
-          <text x="18" y="50" class="dg-sub">id · bigserial · PK</text>
-          <text x="18" y="66" class="dg-sub">name · text</text>
-          <text x="18" y="82" class="dg-sub">email · text</text>
-          <text x="18" y="98" class="dg-sub">message · text</text>
-          <text x="18" y="114" class="dg-sub">consent_at · timestamptz</text>
-          <text x="18" y="130" class="dg-sub">notified_at · timestamptz</text>
-          <text x="18" y="146" class="dg-sub">read_at · timestamptz</text>
-          <text x="18" y="162" class="dg-sub">created_at · timestamptz</text>
-          <text x="18" y="182" class="dg-sub">ip, user_agent — withheld</text>
-
-          <rect x="300" y="8" width="254" height="86" rx="8" class="dg-box"/>
-          <rect x="300" y="8" width="254" height="26" rx="8" class="dg-box-accent"/>
-          <text x="312" y="26" class="dg-label">boots</text>
-          <text x="312" y="50" class="dg-sub">id · bigserial · PK</text>
-          <text x="312" y="66" class="dg-sub">started_at · timestamptz</text>
-          <text x="312" y="82" class="dg-sub">version · text · nullable</text>
-
-          <rect x="300" y="114" width="254" height="70" rx="8" class="dg-box"/>
-          <rect x="300" y="114" width="254" height="26" rx="8" class="dg-box-accent"/>
-          <text x="312" y="132" class="dg-label">schema_migrations</text>
-          <text x="312" y="156" class="dg-sub">filename · text · PK</text>
-          <text x="312" y="172" class="dg-sub">applied_at · timestamptz</text>
-        </g>
-      </svg>
-    </div>
-
-    <p class="hint mt-3 max-w-prose">
-      <code>ip</code> and <code>user_agent</code> exist in the table and are never sent to a
-      browser by any endpoint, including the data view.
-      Reading a message does not require knowing where the person was sitting.
-    </p>
-  </section>
-
   {# --- endpoints ----------------------------------------------------------- #}
   <section aria-labelledby="api-heading" class="mt-10">
     <h2 id="api-heading" class="text-xl font-bold text-brand-text mb-1">The endpoints</h2>
@@ -245,36 +151,72 @@ bodyScripts:
 
   </section>
 
-  {# --- upstreams ------------------------------------------------------------ #}
+  {# --- upstreams ------------------------------------------------------------
+     The section that replaced an entity-relationship diagram of three tables nobody stores
+     anything interesting in. "We call an API" describes nothing; which endpoint, how often it
+     may be called, and whose field became which of ours is where the work actually is. #}
   <section aria-labelledby="up-heading" class="mt-10">
-    <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-1">The four upstreams</h2>
-    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+    <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-1">The four upstreams, in detail</h2>
+    <p class="text-sm text-brand-muted mb-6 max-w-prose">
       All four are proxied. Two need a credential, which has to stay on the server; the other two
-      so that one host is called once for everybody rather than once per open tab.
+      so that one call serves every reader. Each one below lists what is called, how long an
+      answer is held, and how their field names become ours.
     </p>
-    <div class="card">
-      <div class="doc-row">
-        <span class="text-sm font-semibold text-brand-text">Open-Meteo</span>
-        <span class="text-sm text-brand-muted">Forecast and air quality. No key. Cached per coordinate.</span>
-        <span class="doc-role">no key</span>
+    <p class="text-sm text-brand-muted mb-6 max-w-prose">
+      In the mapping tables, theirs is on the left and ours on the right. A row marked
+      <em>derived</em> is something nobody sent: it is worked out here, and those rows are the
+      decisions rather than the transport.
+    </p>
+
+    {%- for up in upstreams %}
+    <details class="group card mb-4" {% if loop.first %}open{% endif %}>
+      <summary class="flex cursor-pointer select-none flex-wrap items-center gap-x-3 gap-y-1
+        list-none [&::-webkit-details-marker]:hidden focus-visible:outline-none
+        focus-visible:ring-2 focus-visible:ring-brand-accent rounded">
+        <span class="text-base font-bold text-brand-text">{{ up.name }}</span>
+        <span class="doc-role">{% if up.key %}key{% else %}no key{% endif %}</span>
+        <span class="flex-1 text-xs text-brand-muted">held {{ up.cache }}</span>
+        <span class="text-sm text-brand-muted transition-transform duration-150 group-open:rotate-180" aria-hidden="true">▾</span>
+      </summary>
+
+      <p class="hint mt-2 max-w-prose">{{ up.what }}</p>
+
+      <h3 class="mt-5 text-xs font-semibold uppercase tracking-wide text-brand-muted">What is called</h3>
+      <div class="mt-2">
+        {%- for call in up.calls %}
+        <div class="doc-row">
+          <code class="text-xs text-brand-text">{{ call.path }}</code>
+          <span class="text-sm text-brand-muted">{{ call.note }}</span>
+        </div>
+        {%- endfor %}
       </div>
-      <div class="doc-row">
-        <span class="text-sm font-semibold text-brand-text">Trafiklab ResRobot</span>
-        <span class="text-sm text-brand-muted">Swedish departures, arrivals and stop search. Cached 45 seconds, because a board older than that is wrong.</span>
-        <span class="doc-role">key</span>
+
+      <h3 class="mt-5 text-xs font-semibold uppercase tracking-wide text-brand-muted">
+        How it is mapped
+      </h3>
+      <div class="mt-2">
+        {%- for row in up.mapping %}
+        <div class="map-row">
+          <span class="map-from">{{ row[0] }}</span>
+          <span class="shrink-0 text-brand-muted" aria-hidden="true">→</span>
+          <span class="map-to">
+            {{ row[1] }}{% if row[2] %} <span class="text-[10px] font-sans uppercase tracking-wide text-brand-accent">derived</span>{% endif %}
+          </span>
+        </div>
+        {%- endfor %}
       </div>
-      <div class="doc-row">
-        <span class="text-sm font-semibold text-brand-text">Jolpica</span>
-        <span class="text-sm text-brand-muted">Formula 1 calendar, standings and results; the maintained successor to Ergast. Calendar cached six hours, results five minutes.</span>
-        <span class="doc-role">no key</span>
-      </div>
-      <div class="doc-row">
-        <span class="text-sm font-semibold text-brand-text">GitHub Actions</span>
-        <span class="text-sm text-brand-muted">Workflow runs for the Health page. The only source that knows about a deploy that <em>failed</em>.</span>
-        <span class="doc-role">key</span>
-      </div>
-    </div>
-    <p class="hint mt-3 max-w-prose">
+
+      <h3 class="mt-5 text-xs font-semibold uppercase tracking-wide text-brand-muted">Worth knowing</h3>
+      <p class="hint mt-1 max-w-prose">{{ up.why }}</p>
+      <ul class="mt-2 space-y-2">
+        {%- for note in up.notes %}
+        <li class="text-sm text-brand-muted max-w-prose">{{ note }}</li>
+        {%- endfor %}
+      </ul>
+    </details>
+    {%- endfor %}
+
+    <p class="hint mt-4 max-w-prose">
       The two credentials are read from the environment on the server and stay out of every
       response, error message and log line. Upstream errors are reported by status code only,
       because an error body can echo the request back, and the request carries the key.

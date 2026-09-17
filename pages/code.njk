@@ -142,6 +142,77 @@ sitemapPriority: "0.8"
         </div>
 
     </div>
+    {# --- what the portfolio actually runs -------------------------------------
+       The app behind app.tzortzoglou.eu is the strongest technical evidence on this site, and
+       until now it was only visible to people with an account. The drawing is shared with the
+       app's own /docs/ page rather than copied. #}
+    <div class="mt-16 max-w-6xl mx-auto w-full">
+        <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-brand-text">
+            {% icon "fa-solid-network-wired", "text-brand-accent" %} A system I run end to end
+        </h3>
+
+        <div class="bg-brand-surface border border-brand-muted/10 p-6 sm:p-8 rounded-xl">
+            <p class="text-brand-muted leading-relaxed max-w-3xl">
+                The signed-in app on this domain authenticates people, proxies four third-party APIs,
+                writes to Postgres and deploys itself. I designed it, built it and keep it running. That is the same work as onboarding a customer onto a platform: making
+                systems that were never built for each other agree on what a field means.
+            </p>
+
+            <div class="mt-8 overflow-x-auto">
+                {% include "chrome/architecture.njk" %}
+            </div>
+
+            <div class="mt-10 grid gap-6 md:grid-cols-2">
+                <div>
+                    <h4 class="font-bold text-brand-text">Four APIs, twenty-six fields, one shape</h4>
+                    <p class="mt-2 text-sm text-brand-muted leading-relaxed">
+                        Weather, Swedish transit, Formula 1 and GitHub Actions each answer in their own
+                        vocabulary. Twenty-six fields are mapped into one internal shape. The calculated
+                        ones (a delay in minutes, a position gained, which step of a build failed) are
+                        labelled as calculated, so nobody reads a derivation as a measurement.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-brand-text">A two-hour error that was not the vendor's fault</h4>
+                    <p class="mt-2 text-sm text-brand-muted leading-relaxed">
+                        Every bus departure showed two hours out. The transit feed sends Swedish
+                        wall-clock time with no offset and the container runs in UTC, so the times
+                        parsed as the wrong instant. They are resolved against Europe/Stockholm now,
+                        with tests across both daylight-saving changeovers. The vendor's data was
+                        correct the whole time.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-brand-text">Authorisation that does not trust its own token</h4>
+                    <p class="mt-2 text-sm text-brand-muted leading-relaxed">
+                        A signed token proves who signed in. It does not prove what they may do now, so
+                        every request re-reads the role and approval state from the database before
+                        anything happens. Withdrawing someone's access takes effect on their next
+                        request rather than whenever their token happens to expire.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-brand-text">A database browser with no query box</h4>
+                    <p class="mt-2 text-sm text-brand-muted leading-relaxed">
+                        Administrators can read the tables. There is nowhere to type SQL, the readable
+                        tables are an allowlist rather than whatever the catalogue reports, and the
+                        columns holding a sender's IP address are never selected at all. Losing this screen to a
+                        stolen session costs a read, not a prompt.
+                    </p>
+                </div>
+            </div>
+
+            <p class="mt-8 text-sm text-brand-muted">
+                The full reference lives inside the app: every endpoint, every field mapping, and why
+                each cache window is the length it is. It is at
+                <a href="https://app.tzortzoglou.eu/docs/" class="text-brand-accent underline hover:no-underline">app.tzortzoglou.eu/docs</a>.
+            </p>
+        </div>
+    </div>
+
     <div class="mt-16 max-w-6xl mx-auto w-full">
         <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-brand-text">
             {% icon "fa-brands-github", "text-brand-accent" %} Live Code Activity
