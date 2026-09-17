@@ -83,6 +83,7 @@ async function approveOldest() {
 const COMMANDS = [
   { label: "Home", hint: "The forecast and what is waiting", keywords: "start dashboard", run: go("/") },
   { label: "Your profile", hint: "Name, email address, home location", keywords: "account settings name password", run: go("/profile/") },
+  { label: "Formula 1", hint: "The season, standings and results", keywords: "f1 race grand prix motorsport", run: go("/f1/") },
   { label: "Private", hint: "For your eyes only", keywords: "exclusive", minRole: "SuperUser", run: go("/private/") },
 
   { label: "Admin · Overview", hint: "Queues and service health", keywords: "status services", minRole: "Admin", run: go("/admin/") },
