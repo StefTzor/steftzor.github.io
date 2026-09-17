@@ -9,7 +9,9 @@
   Front matter:
     navItems  [{label, href, navKey, minRole?}]  the middle slot. The site passes its pages,
               the app passes its sections, the auth pages pass nothing.
-    crossLink {label, href}                      the way to the other property.
+    crossLink {label, href}                      the way to the other property. Both copies of
+              it carry data-cross, which scripts/chrome.js uses to hand the current theme over
+              to the other origin - see _includes/chrome/theme-boot.njk.
     minRole   on an item renders it hidden with data-min-role, which app/scripts/shell.js
               unhides once /me says what the viewer may see.
 #}
@@ -40,7 +42,7 @@
 
     <div class="hidden md:flex items-center space-x-4">
       {%- if crossLink %}
-      <a href="{{ crossLink.href }}" class="nav-link text-sm">{{ crossLink.label }}</a>
+      <a href="{{ crossLink.href }}" data-cross class="nav-link text-sm">{{ crossLink.label }}</a>
       {%- endif %}
       {%- if signOut %}
       <button type="button" data-logout class="nav-link text-sm">Sign out</button>
@@ -92,7 +94,7 @@
 
     {%- if crossLink %}
     <li class="pt-6 mt-6 border-t border-brand-muted/20">
-      <a href="{{ crossLink.href }}" class="nav-link-mobile">{{ crossLink.label }}</a>
+      <a href="{{ crossLink.href }}" data-cross class="nav-link-mobile">{{ crossLink.label }}</a>
     </li>
     {%- endif %}
     {%- if signOut %}

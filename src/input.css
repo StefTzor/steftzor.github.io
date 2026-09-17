@@ -52,6 +52,41 @@
       scroll-behavior: auto !important;
     }
   }
+
+  /* The chrome is the same element on the page you came from and the page you land on, so name
+     it and the browser carries it across instead of cross-fading it with everything else. This
+     is what keeps the bar from flickering during a navigation - the same continuity the shared
+     header gives structurally, made visible. Both are unique per document; the selectors would
+     silently do nothing if a page ever grew a second one. */
+  header { view-transition-name: site-header; }
+  footer { view-transition-name: site-footer; }
+}
+
+/* --- cross-document view transitions -------------------------------------------------------
+   Navigations within one property fade the content while the chrome holds still. It is CSS
+   only: no router, no JavaScript, no dependency, and a browser without support simply navigates
+   the way it does today.
+
+   It deliberately does nothing for tzortzoglou.eu <-> app.tzortzoglou.eu. Cross-document view
+   transitions are same-origin by specification, and those are two origins - measured, not
+   assumed: pagereveal fires with viewTransition null on that hop. The continuity across it comes
+   from the shared header and the theme handoff instead. */
+@view-transition { navigation: auto; }
+
+::view-transition-group(site-header),
+::view-transition-group(site-footer) {
+  animation: none;
+}
+
+/* The blanket rule above cannot reach these: ::view-transition-* pseudo-elements live outside
+   the document tree, so `*` never matches them and reduced motion would have been ignored on
+   exactly the animation this file just added. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }
 
 @layer components {

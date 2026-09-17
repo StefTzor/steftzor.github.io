@@ -28,7 +28,7 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   {# Must stay here, before the stylesheet, or the wrong theme paints first. #}
-  <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
+  {% include "chrome/theme-boot.njk" %}
   {# The two weights used above the fold. Without these the fallback paints first and Poppins
      swaps in with different metrics, reflowing the headings and pushing everything below them
      down - which was almost all of this site's layout shift. #}

@@ -28,7 +28,7 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   {# Must stay before the stylesheet, or the wrong theme paints first. Byte-identical to the
      public site's copy so both pages hash to the same CSP value. #}
-  <script>(function(){try{var t=localStorage.getItem('theme');document.documentElement.classList[t==='light'?'remove':'add']('dark');}catch(e){}})();</script>
+  {% include "chrome/theme-boot.njk" %}
   <link rel="preload" href="/fonts/poppins-400-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/poppins-700-latin.woff2" as="font" type="font/woff2" crossorigin>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

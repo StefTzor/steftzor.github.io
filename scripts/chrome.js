@@ -29,10 +29,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const isDark = document.documentElement.classList.toggle('dark');
     try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch (e) { /* blocked */ }
     syncThemeButtons();
+    syncCrossLinks();
+  }
+
+  // --- handing the theme to the other property --------------------------
+  // localStorage is per-origin, so the choice made here is invisible on the other side and
+  // crossing over used to flip you back to dark. The link carries the answer instead; the
+  // receiving end adopts it only if it has no preference of its own, and strips it below.
+  // Written on load and after every toggle rather than on click, so that opening the link in
+  // a new tab or copying its address carries the theme too.
+  function syncCrossLinks() {
+    const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    document.querySelectorAll('a[data-cross]').forEach((a) => {
+      try {
+        const url = new URL(a.href);
+        url.searchParams.set('theme', theme);
+        a.href = url.toString();
+      } catch (e) { /* a relative or malformed href is not ours to fix */ }
+    });
   }
 
   themeButtons.forEach((btn) => btn.addEventListener('click', toggleTheme));
   syncThemeButtons();
+  syncCrossLinks();
 
   // --- mobile drawer -------------------------------------------------------
   const menuToggle = document.getElementById('menu-toggle');
