@@ -123,5 +123,7 @@ document.querySelectorAll("[data-logout]").forEach((btn) =>
       console.warn("sign-out: revoke failed", err.message);
     }
     await signOut(auth).catch(() => {});
-    location.replace("/login/");
+    // Not /login/: arriving back at the sign-in form is indistinguishable from a failed attempt.
+    // /signed-out/ says the thing happened, and offers signing in again or leaving.
+    location.replace("/signed-out/");
   }));

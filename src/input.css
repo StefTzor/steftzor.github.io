@@ -122,6 +122,32 @@
     @apply bg-brand-accent/10 border-l-4 border-brand-accent text-brand-accent font-bold;
   }
 
+  /* The way across to the other property. It was a plain nav link, which put the single most
+     important control in the bar - the one that moves you between the two halves of the product
+     - at exactly the same visual weight as "About". A pill reads as a destination rather than
+     another item in the list, without shouting like a filled primary button would. */
+  .nav-cta {
+    @apply inline-flex items-center gap-2 rounded-full border border-brand-accent/40
+           px-4 py-1.5 text-sm font-semibold text-brand-accent
+           hover:bg-brand-accent hover:text-brand-onaccent hover:border-brand-accent
+           transition-colors duration-200;
+  }
+
+  .nav-cta-mobile {
+    @apply flex items-center justify-center gap-2 rounded-full border border-brand-accent/40
+           px-4 py-3 font-semibold text-brand-accent
+           hover:bg-brand-accent hover:text-brand-onaccent transition-colors duration-200;
+  }
+
+  /* Icon-only controls in the bar: the theme toggle and sign out. Same footprint, so the right
+     hand side of the header is a row of equals rather than a word next to two glyphs. Each one
+     carries an .sr-only label; an icon button without a name is unusable in a screen reader. */
+  .icon-btn {
+    @apply inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full
+           text-brand-text hover:text-brand-accent hover:bg-brand-muted/10
+           transition-transform duration-200 hover:-translate-y-1;
+  }
+
   /* The app's surfaces and form controls.
      These were twelve copies of the same class string across five pages, which is how two of
      them had already drifted apart. One definition each, so a change to the look of a field is

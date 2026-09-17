@@ -1,0 +1,39 @@
+---
+layout: app-shell.njk
+permalink: /signed-out/
+title: "Signed out | Stefanos Tzortzoglou"
+bodyScripts:
+  - src: "/scripts/signed-out.js"
+    type: "module"
+bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
+---
+{# Sign-out used to drop you straight back on the sign-in form, which reads as a failed login
+   rather than a completed action - the same screen you would see if the password had been
+   wrong. This says what happened, then offers the two things anyone actually wants next. #}
+<section class="container mx-auto px-4 py-10 max-w-md min-h-[calc(100vh-12rem)] flex flex-col justify-center">
+  <div class="card p-8 shadow-md text-center">
+    <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-brand-accent/10 text-brand-accent">
+      {% icon "fa-solid-sign-out-alt", "text-2xl" %}
+    </div>
+
+    <h1 class="text-2xl font-bold text-brand-text">You are signed out</h1>
+    <p class="mt-3 text-brand-muted">
+      Your session has been ended on this device and revoked on the server, so it is closed
+      everywhere you were signed in.
+    </p>
+
+    <div class="mt-8 flex flex-col gap-3">
+      <a href="/login/" class="btn-primary text-center">Sign in again</a>
+      <a href="https://tzortzoglou.eu/" id="leave" class="btn-secondary text-center">Back to tzortzoglou.eu</a>
+    </div>
+
+    {# WCAG 2.2.1: a time limit has to be cancellable, and the countdown has to be visible rather
+       than something that simply happens to you. aria-live so it is announced, but polite and
+       only on the whole sentence, not once per tick. #}
+    <p class="mt-6 text-sm text-brand-muted">
+      <span id="countdown" hidden>Returning to tzortzoglou.eu in <span id="secs">15</span> seconds.</span>
+      <button type="button" id="stay" class="underline hover:text-brand-accent" hidden>Stay here</button>
+    </p>
+    <p id="status" class="sr-only" role="status"></p>
+  </div>
+</section>

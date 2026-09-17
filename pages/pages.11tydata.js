@@ -15,5 +15,8 @@ module.exports = {
     { label: "Code", href: "/code/", navKey: "code" },
     { label: "Contact", href: "/contact/", navKey: "contact" },
   ],
-  crossLink: { label: "Open the app \u2192", href: "https://app.tzortzoglou.eu/" },
+  crossLink: { label: "Open the app", href: "https://app.tzortzoglou.eu/" },
+  // Empty because every footer link is already local here. The app sets it to the absolute
+  // origin, so one footer file serves both. See _includes/chrome/footer.njk.
+  siteBase: "",
 };

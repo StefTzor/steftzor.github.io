@@ -9,6 +9,8 @@
   Front matter:
     navItems  [{label, href, navKey, minRole?}]  the middle slot. The site passes its pages,
               the app passes its sections, the auth pages pass nothing.
+    crossBack true                               points the arrow back rather than forward; the
+              app sets it, because its cross-link goes back to the site rather than onward.
     crossLink {label, href}                      the way to the other property. Both copies of
               it carry data-cross, which scripts/chrome.js uses to hand the current theme over
               to the other origin - see _includes/chrome/theme-boot.njk.
@@ -40,27 +42,40 @@
     </nav>
     {%- endif %}
 
-    <div class="hidden md:flex items-center space-x-4">
+    <div class="hidden md:flex items-center gap-2">
       {%- if crossLink %}
-      <a href="{{ crossLink.href }}" data-cross class="nav-link text-sm">{{ crossLink.label }}</a>
+      <a href="{{ crossLink.href }}" data-cross class="nav-cta">
+        {%- if crossBack %}{% icon "fa-solid-arrow-right", "text-xs rotate-180" %}{% endif %}
+        <span>{{ crossLink.label }}</span>
+        {%- if not crossBack %}{% icon "fa-solid-arrow-right", "text-xs" %}{% endif %}
+      </a>
       {%- endif %}
       {%- if signOut %}
-      <button type="button" data-logout class="nav-link text-sm">Sign out</button>
+      {# An icon, not the word. It sits beside the theme toggle at the same weight, which is what
+         the right-hand cluster looked like before sign-in moved off the public site. #}
+      <button type="button" data-logout class="icon-btn" title="Sign out">
+        {% icon "fa-solid-sign-out-alt", "text-lg" %}
+        <span class="sr-only">Sign out</span>
+      </button>
       {%- endif %}
-      <button id="theme-toggle" type="button" aria-pressed="false"
-        class="text-brand-text hover:text-brand-accent p-2 rounded-full hover:bg-brand-muted/10 transition-transform duration-200 hover:-translate-y-1 ml-2">
+      <button id="theme-toggle" type="button" aria-pressed="false" class="icon-btn" title="Switch theme">
         {% icon "fa-solid-adjust", "text-lg" %}
         <span class="sr-only">Switch to light theme</span>
       </button>
     </div>
 
-    <div class="md:hidden flex items-center gap-4">
-      <button id="theme-toggle-mobile" type="button" aria-pressed="false" class="text-brand-text hover:text-brand-accent text-xl">
+    <div class="md:hidden flex items-center gap-1">
+      <button id="theme-toggle-mobile" type="button" aria-pressed="false" class="icon-btn text-xl">
         {% icon "fa-solid-adjust", "" %}<span class="sr-only">Switch to light theme</span>
       </button>
+      {%- if signOut %}
+      <button type="button" data-logout class="icon-btn text-xl">
+        {% icon "fa-solid-sign-out-alt", "" %}<span class="sr-only">Sign out</span>
+      </button>
+      {%- endif %}
       {%- if navItems or crossLink %}
       <button id="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav"
-        class="text-brand-text hover:text-brand-accent text-2xl">
+        class="icon-btn text-2xl">
         {% icon "fa-solid-bars", "" %}<span class="sr-only">Open menu</span>
       </button>
       {%- endif %}
@@ -80,7 +95,7 @@
   class="fixed top-0 right-0 w-[80%] max-w-sm h-full bg-brand-bg z-50 transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto border-l border-brand-muted/20">
   <div class="flex justify-between items-center p-5 border-b border-brand-muted/10">
     <div class="text-xl font-bold text-brand-accent">Menu</div>
-    <button id="close-menu" type="button" class="text-brand-muted hover:text-brand-accent text-2xl">
+    <button id="close-menu" type="button" class="icon-btn text-2xl">
       {% icon "fa-solid-times", "" %}<span class="sr-only">Close menu</span>
     </button>
   </div>
@@ -94,11 +109,12 @@
 
     {%- if crossLink %}
     <li class="pt-6 mt-6 border-t border-brand-muted/20">
-      <a href="{{ crossLink.href }}" data-cross class="nav-link-mobile">{{ crossLink.label }}</a>
+      <a href="{{ crossLink.href }}" data-cross class="nav-cta-mobile">
+        {%- if crossBack %}{% icon "fa-solid-arrow-right", "text-xs rotate-180" %}{% endif %}
+        <span>{{ crossLink.label }}</span>
+        {%- if not crossBack %}{% icon "fa-solid-arrow-right", "text-xs" %}{% endif %}
+      </a>
     </li>
-    {%- endif %}
-    {%- if signOut %}
-    <li><button type="button" data-logout class="nav-link-mobile w-full text-left">Sign out</button></li>
     {%- endif %}
   </ul>
 </nav>

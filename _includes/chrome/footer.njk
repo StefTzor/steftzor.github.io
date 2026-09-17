@@ -1,8 +1,24 @@
-<footer class="bg-brand-bg border-t border-brand-muted/10 py-12">
+{#
+  The one footer, used by tzortzoglou.eu and by app.tzortzoglou.eu.
+
+  The app used to get a cut-down version of this - wordmark, four legal links, copyright - on the
+  theory that a signed-in area has no use for a marketing footer. That was the wrong theory: it
+  made the bottom of the page announce which of the two properties you were on, right after the
+  top of the page had been made to stop doing exactly that. Same footer, both places.
+
+  Front matter:
+    siteBase  "" on tzortzoglou.eu, "https://tzortzoglou.eu" on the app. Everything here points
+              at the public site, which is where all of it lives, so the app needs absolute URLs
+              and the site must not have them - a same-origin link that goes out and comes back
+              is a needless round trip and breaks the view transition.
+#}
+<footer class="bg-brand-bg border-t border-brand-muted/10 py-12 mt-auto">
   <div class="container mx-auto text-center px-4">
-    <h2
-      class="bg-gradient-to-r from-brand-accent to-blue-700 dark:to-blue-400 bg-clip-text text-transparent text-2xl font-bold inline-block hover:-translate-y-1 transition-transform duration-300">
-      Stefanos Tzortzoglou
+    <h2 class="text-2xl font-bold inline-block">
+      <a href="{{ siteBase }}/"
+        class="bg-gradient-to-r from-brand-accent to-blue-700 dark:to-blue-400 bg-clip-text text-transparent inline-block hover:-translate-y-1 transition-transform duration-300">
+        Stefanos Tzortzoglou
+      </a>
     </h2>
     <p lang="el" class="mt-1 text-sm font-light tracking-wide text-brand-muted max-w-md mx-auto">Στέφανος
       Τζώρτζογλου</p>
@@ -29,15 +45,16 @@
 
     <nav aria-label="Legal" class="mt-8">
       <ul class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
-        <li><a href="/privacy/" class="text-brand-muted hover:text-brand-accent underline">Privacy Policy</a></li>
-        <li><a href="/cookies/" class="text-brand-muted hover:text-brand-accent underline">Cookies &amp; Local
+        <li><a href="{{ siteBase }}/privacy/" class="text-brand-muted hover:text-brand-accent underline">Privacy Policy</a></li>
+        <li><a href="{{ siteBase }}/cookies/" class="text-brand-muted hover:text-brand-accent underline">Cookies &amp; Local
             Storage</a></li>
-        <li><a href="/terms/" class="text-brand-muted hover:text-brand-accent underline">Terms of Use</a></li>
-        <li><a href="/accessibility/" class="text-brand-muted hover:text-brand-accent underline">Accessibility</a></li>
+        <li><a href="{{ siteBase }}/terms/" class="text-brand-muted hover:text-brand-accent underline">Terms of Use</a></li>
+        <li><a href="{{ siteBase }}/accessibility/" class="text-brand-muted hover:text-brand-accent underline">Accessibility</a></li>
       </ul>
     </nav>
 
-    <!-- Site operator / data controller identity (GDPR Art. 13(1)(a)) -->
+    {# Site operator / data controller identity (GDPR Art. 13(1)(a)). It belongs on the app at
+       least as much as on the site: the app is where the personal data actually is. #}
     <address class="mt-6 text-xs text-brand-muted not-italic leading-relaxed">
       Operated as a personal portfolio by <strong>Stefanos Tzortzoglou</strong>, a private individual based in
       Uppsala, Sweden.<br>
@@ -50,5 +67,3 @@
       Stefanos Tzortzoglou. All rights reserved.</p>
   </div>
 </footer>
-
-<!-- Analytics is loaded by /scripts/consent.js only after the visitor accepts. -->
