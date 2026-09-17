@@ -6,7 +6,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
-import { fieldError, clearAll, focusFirstError, check, validateOnBlur, busy as setBusy } from "./forms.js";
+import { fieldError, clearAll, check, validateOnBlur, busy as setBusy } from "./forms.js";
 
 /**
  * Auth for app.tzortzoglou.eu.

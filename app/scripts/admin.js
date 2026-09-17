@@ -95,6 +95,16 @@ function controls(u) {
   return wrap;
 }
 
+/** Re-read the list; a failure here is about the view, not about the change that just landed. */
+async function reload() {
+  try {
+    await load();
+  } catch (err) {
+    console.error("admin: reload failed", err.status);
+    say("The change was saved, but the list could not be refreshed. Reload the page to see it.", "error");
+  }
+}
+
 /** Apply a change, then re-render from the server's answer rather than from an assumption. */
 async function change(u, patch, control) {
   const what = patch.status ? `${patch.status} ${u.email || u.uid}` : `set ${u.email || u.uid} to ${patch.role}`;
@@ -108,7 +118,10 @@ async function change(u, patch, control) {
     say(res.sessionsRevoked
       ? `Done — ${what}. Their sessions were ended immediately.`
       : `Done — ${what}.`, "ok");
-    await load();
+    // Refresh outside the try. The change is already committed by this point, and a hiccup on
+    // the reload would otherwise be reported as the change having failed - leaving the admin
+    // looking at a stale row, believing the opposite of what happened.
+    reload();
   } catch (err) {
     console.error("admin: change failed", err.status, err.code);
     say(err.code === "self_target"
@@ -238,7 +251,7 @@ function wireInvite() {
         : `Account created for ${email} as ${res.role}, but the email could not be sent. Use Reset password to try again.`,
         res.sent ? "ok" : "error");
       form.reset();
-      await load();
+      reload();
     } catch (err) {
       console.error("admin: invite failed", err.status, err.code);
       field.setAttribute("aria-invalid", "true");

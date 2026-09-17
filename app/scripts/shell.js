@@ -17,7 +17,13 @@ export const API_BASE = (location.hostname === "localhost" || location.hostname 
   ? "http://localhost:3000"
   : "https://api.tzortzoglou.eu";
 
-const RANK = { user: 1, superuser: 2, admin: 3 };
+// A Map, not an object literal - the same reason as the server's gate. An object inherits
+// Object.prototype, so RANK['constructor'] is a function rather than undefined, and comparing a
+// function to a number gives NaN. Here it would fail closed by hiding links rather than
+// revealing them, and gate() has already normalised the role to one of three strings, so this
+// is consistency rather than a fix - but the shape that caused a real escalation should not
+// survive anywhere in the codebase.
+const RANK = new Map([["user", 1], ["superuser", 2], ["admin", 3]]);
 const el = (id) => document.getElementById(id);
 
 /** Every call carries a fresh ID token; getIdToken refreshes it when it is near expiry. */
@@ -82,9 +88,11 @@ function paint(me) {
   const who = el("whoami");
   if (who) who.textContent = me.email + (me.role === "user" ? "" : ` · ${me.role}`);
 
-  const rank = RANK[me.role] || 1;
+  const rank = RANK.get(me.role) ?? 1;
   document.querySelectorAll("[data-min-role]").forEach((item) => {
-    if (rank >= (RANK[item.dataset.minRole] || 99)) item.classList.remove("hidden");
+    // An unknown requirement hides the link: an item asking for a level this file does not
+    // define is a mistake, and the safe reading of a mistake is the strict one.
+    if (rank >= (RANK.get(item.dataset.minRole) ?? Infinity)) item.classList.remove("hidden");
   });
 
   const key = location.pathname === "/" ? "home" : location.pathname.replace(/\//g, "");

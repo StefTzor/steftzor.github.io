@@ -53,7 +53,9 @@ export function clearField(input) {
 
 /** Clear every field in a form, at the start of an attempt. */
 export function clearAll(form) {
-  form.querySelectorAll("input").forEach(clearField);
+  // Not just inputs: a select or textarea would otherwise keep an aria-invalid from a previous
+  // attempt and go on announcing itself as wrong after it had been fixed.
+  form.querySelectorAll("input, select, textarea").forEach(clearField);
 }
 
 /** The first field with a problem, focused - so the fix is where the cursor lands. */
