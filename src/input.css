@@ -13,6 +13,25 @@
      worse the moment the weather card became a chip and made that page short. */
   html { scrollbar-gutter: stable; }
 
+  /* An anchor target must clear the sticky header.
+
+     The header is `sticky top-0` and 77px tall, so following /privacy/#rights put the heading it
+     named underneath it: you landed on the section and could not see its title. 5rem leaves a
+     little air above the heading rather than butting it against the bar. */
+  :where(h1, h2, h3, h4, [id]) { scroll-margin-top: 5rem; }
+
+  /* Removes the 300ms delay browsers keep for double-tap-to-zoom on anything tappable. Pinch
+     zoom is untouched - this is the double-tap gesture only, which no control here uses. */
+  :where(a, button, summary, label, input, select, textarea, [role="button"]) {
+    touch-action: manipulation;
+  }
+
+  /* The default grey flash on tap is a system colour that ignores the theme and lands as a pale
+     box on dark surfaces. The controls here already have their own :active and hover states. */
+  :where(a, button, summary, [role="button"]) {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   :root {
     /* Light Mode — contrast-audited against --color-bg / --color-surface (WCAG 2.1 AA) */
     --color-bg: 203 213 225;      /* #cbd5e1 */
@@ -122,16 +141,19 @@
 }
 
 @layer components {
+  /* A press looks pressed. This matters more since -webkit-tap-highlight-color went to
+     transparent: on touch, the emulated hover is sticky and slightly late, so without this
+     a tap has no immediate acknowledgement. */
   .btn-primary {
     @apply bg-brand-accent text-brand-onaccent font-bold px-6 py-2 rounded
            hover:bg-brand-hover transition duration-300
-           transform hover:scale-105;
+           transform hover:scale-105 active:scale-95;
   }
 
   .btn-secondary {
     @apply border-2 border-brand-accent text-brand-accent px-6 py-2 rounded
            hover:bg-brand-accent hover:text-brand-onaccent transition duration-300
-           transform hover:scale-105;
+           transform hover:scale-105 active:scale-95;
   }
 
   /* Navigation links. These were an inline utility string repeated per link across two files,
@@ -452,6 +474,7 @@
   }
 
   .palette-item {
+    scroll-margin-top: 0;
     @apply flex cursor-pointer items-baseline justify-between gap-4 px-4 py-2.5 text-sm;
   }
 
@@ -760,7 +783,7 @@
   .icon-btn {
     @apply inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full
            text-brand-text hover:text-brand-accent hover:bg-brand-muted/10
-           transition-transform duration-200 hover:-translate-y-1;
+           transition-transform duration-200 hover:-translate-y-1 active:scale-95;
   }
 
   /* The app's surfaces and form controls.

@@ -39,7 +39,7 @@ function render(data) {
     line.textContent = d.line;
 
     const towards = document.createElement("span");
-    towards.className = "flex-1 truncate text-sm text-brand-text";
+    towards.className = "min-w-0 flex-1 truncate text-sm text-brand-text";
     towards.textContent = towardsOf(d.towards);
 
     const when = document.createElement("span");
