@@ -376,6 +376,17 @@
      licence to print it. It is `aria-hidden` wherever it is used - the heading beside it already
      says "Next departures", and a screen reader announcing "U L Next departures" is worse than
      one that does not mention the badge at all. */
+  /* A text control sitting in a line of prose - "Change stop", "Refresh", "Full board".
+
+     They were bare underlined words 20px tall, which is under the 24px minimum this site claims
+     (WCAG 2.2 AA, 2.5.8) and awkward to hit on a phone besides. The negative margin keeps the
+     visual position unchanged while the box around it grows. */
+  .link-action {
+    @apply inline-flex min-h-[32px] items-center rounded px-1.5 -mx-0.5 underline
+           hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-brand-accent;
+  }
+
   .card-badge {
     @apply inline-flex h-6 shrink-0 items-center rounded bg-brand-accent/10 px-1.5
            text-[11px] font-bold uppercase tracking-wide text-brand-accent;

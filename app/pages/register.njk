@@ -18,7 +18,11 @@ bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
     </p>
 
     <form id="registerForm" method="post" novalidate>
-      <div class="grid grid-cols-2 gap-3 mb-4">
+      {# Stacked on a phone. Two columns at 390px gives each name field about 135px, and at
+         320px about 110px - narrow enough that a long surname scrolls inside its own box while
+         the row beside it sits half empty. Every other grid in the app already starts at one
+         column; this was the only one that did not. #}
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
         <div>
           <label for="firstName" class="field-label">First name</label>
           <input type="text" id="firstName" name="firstName" required autocomplete="given-name" maxlength="60"

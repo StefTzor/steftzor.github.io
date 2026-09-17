@@ -55,10 +55,36 @@ function render(reference) {
   const wrap = el("endpoints");
   wrap.textContent = "";
 
+  // Open on a wide screen, closed on a phone. Thirty endpoints in five tables is seven screens
+  // of scrolling on a 390px viewport, and nobody arrives here wanting all five at once - they
+  // want one. <details> rather than a scripted accordion: the browser already handles the
+  // toggle, the keyboard, and announcing the state.
+  const roomy = window.matchMedia("(min-width: 640px)");
+  const wide = roomy.matches;
+
   reference.groups.forEach((group) => {
-    const h3 = document.createElement("h3");
-    h3.className = "font-semibold text-brand-text mt-6 mb-1 first:mt-0";
-    h3.textContent = group.name;
+    const box = document.createElement("details");
+    box.className = "group mt-4 first:mt-0";
+    box.open = wide;
+
+    const head = document.createElement("summary");
+    head.className = "flex cursor-pointer select-none items-center gap-2 rounded py-2 " +
+      "font-semibold text-brand-text list-none [&::-webkit-details-marker]:hidden " +
+      "hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2 " +
+      "focus-visible:ring-brand-accent";
+
+    const name = document.createElement("span");
+    name.className = "flex-1";
+    name.textContent = group.name;
+    const count = document.createElement("span");
+    count.className = "text-xs font-normal text-brand-muted tabular-nums";
+    count.textContent = group.routes.length + (group.routes.length === 1 ? " endpoint" : " endpoints");
+    const chevron = document.createElement("span");
+    chevron.className = "text-[10px] text-brand-muted transition-transform duration-150 " +
+      "group-open:rotate-180";
+    chevron.textContent = "▾";
+    chevron.setAttribute("aria-hidden", "true");
+    head.append(name, count, chevron);
 
     const blurb = document.createElement("p");
     blurb.className = "hint mb-3 max-w-prose";
@@ -68,7 +94,23 @@ function render(reference) {
     card.className = "card";
     group.routes.forEach((r) => card.appendChild(row(r)));
 
-    wrap.append(h3, blurb, card);
+    // Turning the phone sideways makes room, and the groups should use it. Only for the ones
+    // nobody has touched: once you open or close a section by hand, that is your decision and a
+    // rotation is not an instruction to undo it.
+    //
+    // "Touched" is a click on the summary, NOT the `toggle` event. `toggle` also fires when this
+    // code sets `open` itself, so listening to it would mark the group as chosen the first time
+    // a rotation opened it - the feature would work exactly once and then stop. It is no use
+    // guarding with a flag either, because the spec queues `toggle` as a task: the flag would be
+    // back to false by the time it ran. A click on the summary is unambiguous, and covers the
+    // keyboard too, since Enter and Space on a <summary> dispatch one.
+    head.addEventListener("click", () => { box.dataset.chosen = "1"; });
+    roomy.addEventListener("change", (e) => {
+      if (!box.dataset.chosen) box.open = e.matches;
+    });
+
+    box.append(head, blurb, card);
+    wrap.appendChild(box);
   });
 
   const total = reference.groups.reduce((n, g) => n + g.routes.length, 0);

@@ -28,12 +28,34 @@ bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
     </div>
 
     {# WCAG 2.2.1: a time limit has to be cancellable, and the countdown has to be visible rather
-       than something that simply happens to you. aria-live so it is announced, but polite and
-       only on the whole sentence, not once per tick. #}
-    <p class="mt-6 text-sm text-brand-muted">
-      <span id="countdown" hidden>Returning to tzortzoglou.eu in <span id="secs">10</span> seconds.</span>
-      <button type="button" id="stay" class="underline hover:text-brand-accent" hidden>Stay here</button>
-    </p>
+       than something that simply happens to you.
+
+       The sentence and the button are separate blocks, not two inline children of one <p>. As
+       siblings they reflowed: "10 seconds" is wider than "9 seconds", so at some counts the
+       button fitted on the sentence's line and at others it wrapped below - a control moving
+       under the pointer once a second, which is the one thing a cancel button must not do.
+
+       The digit sits in a fixed slot for the same reason, so the sentence itself does not
+       change width as it counts down.
+
+       Nothing here is aria-live. A sentence containing a number that changes every second would
+       be re-announced every second; signed-out.js announces the offer once, through #status. #}
+    <div class="mt-6 text-sm text-brand-muted">
+      <p id="countdown" hidden>
+        Returning to tzortzoglou.eu in
+        {# The number and its unit stay on one line: "8" alone at the end of a line reads as a
+           stray digit until your eye finds "seconds" on the next one. #}
+        <span class="whitespace-nowrap"><span id="secs"
+          class="inline-block min-w-[2ch] text-center tabular-nums font-semibold text-brand-text">10</span>
+          seconds.</span>
+      </p>
+      {# A real target, not a word. 44px tall so it can be hit on a phone by someone who is
+         trying to stop a timer. #}
+      <button type="button" id="stay" hidden
+        class="mt-1 inline-flex min-h-[44px] items-center justify-center rounded px-3 underline
+               hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2
+               focus-visible:ring-brand-accent">Stay here</button>
+    </div>
     <p id="status" class="sr-only" role="status"></p>
   </div>
 </section>

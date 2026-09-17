@@ -78,7 +78,7 @@
         {% icon "fa-solid-sign-out-alt", "" %}<span class="sr-only">Sign out</span>
       </button>
       {%- endif %}
-      {%- if navItems or crossLink %}
+      {%- if navList or crossLink %}
       <button id="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav"
         class="icon-btn text-2xl">
         {% icon "fa-solid-bars", "" %}<span class="sr-only">Open menu</span>
@@ -89,7 +89,7 @@
   </div>
 </header>
 
-{%- if navItems or crossLink %}
+{%- if navList or crossLink %}
 {# The drawer, and the reason it is this one rather than the app's simpler disclosure: it has a
    scrim, it is `inert` while closed so nothing off-screen is tabbable, it restores focus on
    close, and Escape shuts it. Two different mobile behaviours in one product is the
@@ -111,6 +111,12 @@
       <a href="{{ item.href }}" data-nav="{{ item.navKey }}" class="nav-link-mobile">{{ item.label }}</a>
     </li>
     {%- endfor %}
+
+    {%- if shell %}
+    <li class="pt-3 mt-3 border-t border-brand-muted/20">
+      <a href="/profile/" data-nav="profile" class="nav-link-mobile">Your profile</a>
+    </li>
+    {%- endif %}
 
     {%- if crossLink %}
     <li class="pt-6 mt-6 border-t border-brand-muted/20">

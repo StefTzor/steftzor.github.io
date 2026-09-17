@@ -24,6 +24,11 @@ if (countdown && secs && stay && leave) {
   countdown.hidden = false;
   stay.hidden = false;
   secs.textContent = String(left);
+  // Announced once, when the offer appears. The visible sentence is not a live region: it
+  // contains a number that changes every second, and a screen reader would read the whole
+  // sentence again on every tick.
+  if (status) status.textContent =
+    `Returning to tzortzoglou.eu in ${SECONDS} seconds. Select "Stay here" to cancel.`;
 
   const tick = setInterval(() => {
     left -= 1;
