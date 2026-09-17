@@ -3,23 +3,18 @@ const shared = require("./eleventy.common");
 module.exports = function(eleventyConfig) {
   shared(eleventyConfig);
 
-  // Copy auth.js and main.js, but NOT firebase-config.js
+  // Every script the public site ships. There is no Firebase here: sign-in, the gated areas
+  // and the SDK that serves them all live on app.tzortzoglou.eu and are built by eleventy.app.js.
   eleventyConfig.addPassthroughCopy({
-    "scripts/auth.js": "scripts/auth.js",
     "scripts/chrome.js": "scripts/chrome.js",
     "scripts/hero.js": "scripts/hero.js",
     "scripts/consent.js": "scripts/consent.js",
-    "scripts/exclusive.js": "scripts/exclusive.js",
-    "scripts/contact.js": "scripts/contact.js",
-    "scripts/auth-boot.js": "scripts/auth-boot.js"
+    "scripts/contact.js": "scripts/contact.js"
   });
   eleventyConfig.addPassthroughCopy({ "CNAME": "CNAME" });
   eleventyConfig.addPassthroughCopy("robots.txt");
   // IndexNow ownership key file (served at site root)
   eleventyConfig.addPassthroughCopy("4fd3d9a15a8ed562e65c15e73e6682df.txt");
-
-   // Prevent firebase-config.js from being copied
-   eleventyConfig.ignores.add("scripts/firebase-config.js");
 
 
   /**

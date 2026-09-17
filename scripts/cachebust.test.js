@@ -23,9 +23,6 @@ const pages = [];
 
 assert.ok(pages.length > 5, `expected the built site, found ${pages.length} pages`);
 
-// firebase-config.js is deliberately unversioned — CI overwrites it after the build, so a
-// hash here would be of the {{PLACEHOLDER}} copy and would never change. See .eleventy.js.
-const EXEMPT = '/scripts/firebase-config.js';
 let versioned = 0;
 
 for (const page of pages) {
@@ -34,17 +31,17 @@ for (const page of pages) {
 
   for (const m of html.matchAll(/(?:href|src)="(\/(?:dist|scripts)\/[^"]+\.(?:css|js))(\?v=([a-f0-9]+))?"/g)) {
     const [, url, , version] = m;
-    if (url === EXEMPT) {
-      assert.ok(!version, `${rel}: ${EXEMPT} must stay unversioned — a hash of the placeholder copy never changes`);
-      continue;
-    }
     assert.ok(version, `${rel}: ${url} is not cache-busted — a deploy could leave a visitor on a stale copy`);
     assert.strictEqual(version.length, 8, `${rel}: ${url} has an odd version string "${version}"`);
     versioned++;
   }
 }
 
-assert.ok(versioned >= 40, `expected most asset references to be versioned, got ${versioned}`);
+// Tied to the page count rather than a hand-tuned constant: every page loads the stylesheet, so
+// this cannot pass while the transform is doing nothing, and it does not have to be re-tuned
+// every time a script is added or - as when the public site shed Firebase - removed.
+assert.ok(versioned >= pages.length,
+  `expected at least one versioned reference per page, got ${versioned} across ${pages.length} pages`);
 
 // The versions must be real content hashes, not one shared build id: two different files
 // sharing a version would mean the transform stopped reading file contents.

@@ -35,8 +35,8 @@ for (const root of ROOTS) {
       const full = path.join(dir, e.name);
       if (e.isDirectory()) walk(full);
       else if (e.name.endsWith('.html')) pages.push(full);
-      // Every script in the build, not only the ones a page names in a src attribute:
-      // auth.js is reached by a dynamic import() from auth-boot.js and appears in no markup.
+      // Every script in the build, not only the ones a page names in a src attribute: the app's
+      // modules import each other, so most of them appear in no markup at all.
       else if (e.name.endsWith('.js')) scripts.add(full);
     }
   })(root);

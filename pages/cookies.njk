@@ -50,15 +50,18 @@ sitemapPriority: "0.3"
       <td><code>firebaseLocalStorageDb</code></td>
       <td><code>IndexedDB</code></td>
       <td>Holds your sign-in session token so you stay logged in between pages. Written only if you create an account
-        and log in.</td>
+        and log in, and only under <code>app.tzortzoglou.eu</code> &mdash; this site itself loads nothing from
+        Firebase.</td>
       <td>Until you log out or the token expires.</td>
     </tr>
   </tbody>
 </table>
 
 <p>
-  You can delete both at any time by clearing site data for tzortzoglou.eu in your browser settings. Clearing the theme
-  key simply resets the site to its default appearance; clearing the Firebase entry logs you out.
+  You can delete any of these at any time by clearing site data in your browser settings. Browser storage is
+  per-site, so the first two are cleared under <code>tzortzoglou.eu</code> and the third under
+  <code>app.tzortzoglou.eu</code>. Clearing the theme key simply resets that site to its default appearance;
+  clearing the Firebase entry logs you out.
 </p>
 
 <h2 id="choice">3. Your analytics choice</h2>

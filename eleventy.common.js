@@ -5,16 +5,16 @@ const path = require("path");
 /**
  * `scripts/firebase-config.js` is deliberately NOT versioned.
  *
- * The committed copy holds only {{PLACEHOLDER}} values; CI overwrites it with the real
- * config from GitHub Secrets *after* the build. Hashing it here would therefore hash the
- * placeholders and produce a version that never changes, which is worse than no version
- * at all - it would look busted while being permanently stale.
+ * It exists only in the app build now - the public site carries no Firebase at all. The
+ * committed copy holds only {{PLACEHOLDER}} values; the container build overwrites it with the
+ * real config *after* Eleventy runs. Hashing it here would therefore hash the placeholders and
+ * produce a version that never changes, which is worse than no version at all - it would look
+ * busted while being permanently stale.
  *
- * Versioning it on build time instead would only half-work: auth.js and exclusive.js
- * reach it through `import "./firebase-config.js"`, and a query string on the <script>
- * tag does not reach that import. So one of the two fetch paths would stay unversioned
- * either way. GitHub Pages serves it with max-age=600, which bounds the staleness to ten
- * minutes - acceptable for a file that only changes when Firebase secrets are rotated.
+ * Versioning it at build time instead would only half-work: shell.js, auth.js, action.js and
+ * private.js all reach it through `import "./firebase-config.js"`, and a query string on the
+ * <script> tag does not reach that import. So one of the two fetch paths would stay unversioned
+ * either way.
  */
 const UNVERSIONED = new Set(["/scripts/firebase-config.js"]);
 const versionCache = new Map();
@@ -132,9 +132,10 @@ module.exports = function (eleventyConfig, { cspOverrides = {} } = {}) {
 
     const policy = {
       "default-src": ["'self'"],
-      // gstatic serves the Firebase SDK modules that scripts/auth.js imports; gc.zgo.at is
-      // GoatCounter, injected by consent.js after consent, so no hash can ever cover it.
-      "script-src": ["'self'", "https://www.gstatic.com", "https://gc.zgo.at"],
+      // gc.zgo.at is GoatCounter, injected by consent.js after consent, so no hash can ever
+      // cover it. No gstatic: the public site loads no Firebase. The app needs both the SDK
+      // and the identity endpoints, and says so in its own cspOverrides.
+      "script-src": ["'self'", "https://gc.zgo.at"],
       // style-src-elem and -attr are what current browsers honour; the plain style-src is the
       // fallback for those that do not know them. The attribute source has to stay
       // 'unsafe-inline': the inlined Font Awesome icons carry style="display:inline-block"
@@ -144,10 +145,8 @@ module.exports = function (eleventyConfig, { cspOverrides = {} } = {}) {
       "style-src-attr": ["'unsafe-inline'"],
       "img-src": ["'self'", "data:"],
       "font-src": ["'self'"],
-      // Firebase Auth and Firestore, the contact form and the auth gate, and GoatCounter's beacon.
-      "connect-src": ["'self'", "https://api.tzortzoglou.eu", "https://identitytoolkit.googleapis.com",
-        "https://securetoken.googleapis.com", "https://firestore.googleapis.com",
-        "https://steftzor.goatcounter.com"],
+      // The contact form, and GoatCounter's beacon.
+      "connect-src": ["'self'", "https://api.tzortzoglou.eu", "https://steftzor.goatcounter.com"],
       "form-action": ["'self'"],
       "frame-src": ["'none'"],
       "object-src": ["'none'"],

@@ -7,14 +7,11 @@ const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
 
-// Both copies: the public site's, and the app's - which is where sign-in is moving. One test
-// rather than two, because two copies of a regression guard drift and the drift is invisible
-// until the invariant it was protecting is already gone.
-const COPIES = [
-  path.join(__dirname, 'auth.js'),
-  path.join(__dirname, '..', 'app', 'scripts', 'auth.js'),
-].filter(fs.existsSync);
-assert.ok(COPIES.length, 'no auth.js found to check');
+// There is one copy now. There were two while sign-in lived on both origins; the public site's
+// went when it stopped having any auth at all. Listed explicitly rather than discovered, so that
+// a moved or renamed file fails this test instead of quietly leaving it with nothing to check.
+const COPIES = [path.join(__dirname, '..', 'app', 'scripts', 'auth.js')];
+for (const file of COPIES) assert.ok(fs.existsSync(file), `${file} is missing - this test would check nothing`);
 
 for (const file of COPIES) {
 const where = path.relative(path.join(__dirname, '..'), file);

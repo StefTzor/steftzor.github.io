@@ -20,7 +20,6 @@
     pageStyle            inline <style> for this page
     headScripts: []      synchronous head scripts, each {src, integrity}
     bodyScripts: []      extra end-of-body scripts, each {src, type, integrity}
-    authRequired: true   page has auth UI, so Firebase loads unconditionally
     mainClass            classes on <main>
 #}
 <html lang="en" class="scroll-smooth dark">
@@ -106,7 +105,7 @@
   {%- endif %}
 </head>
 
-<body{% if authRequired %} data-auth="required"{% endif %} class="bg-brand-bg text-brand-text antialiased transition-colors duration-300 flex flex-col min-h-screen">
+<body class="bg-brand-bg text-brand-text antialiased transition-colors duration-300 flex flex-col min-h-screen">
 
   {% include "chrome/header.njk" %}
 
@@ -118,8 +117,6 @@
 
   {# The chrome both properties share; see scripts/chrome.js. #}
   <script src="/scripts/chrome.js"></script>
-  {# Loads Firebase only where it is needed; see scripts/auth-boot.js. #}
-  <script src="/scripts/auth-boot.js"></script>
   <script src="/scripts/consent.js"></script>
   {%- for s in bodyScripts %}
   {# Literal src="..." with double quotes - the cachebust transform in .eleventy.js
