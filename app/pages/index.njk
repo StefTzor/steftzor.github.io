@@ -129,12 +129,25 @@ signOut: true
         <span id="depOperator" class="card-badge hidden" aria-hidden="true"></span>
         <span>Next departures</span>
       </h2>
-      <p class="text-sm text-brand-muted">
-        <span id="depStop"></span><span id="depAge" class="tabular-nums"></span>
-        <button type="button" id="depChange" class="link-action ml-1">Change stop</button>
-        <button type="button" id="depRefresh" class="link-action ml-1">Refresh</button>
-        <a href="/transit/" class="link-action ml-1 text-brand-accent">Full board</a>
-      </p>
+      {# The stop name and the controls are two lines rather than one wrapping line.
+
+         As one line they fitted beside the heading while the name was empty and wrapped the
+         moment it arrived, so the three controls dropped a row under the reader's pointer - 32px
+         of the home view's remaining shift. Two lines are two lines whatever the stop is called,
+         which is the point: Portalgatan and Stockholm Centralstation now cost the same height.
+
+         The name's own line is held open by a placeholder bar, because an empty span reserves
+         nothing. setting textContent replaces it, the same way the lists work. #}
+      <div class="text-sm text-brand-muted sm:flex sm:items-baseline sm:gap-x-2">
+        <p>
+          <span id="depStop"><span class="skel inline-block h-4 w-40 align-middle" aria-hidden="true"></span></span><span id="depAge" class="tabular-nums"></span>
+        </p>
+        <p class="-ml-1.5 sm:ml-0">
+          <button type="button" id="depChange" class="link-action">Change stop</button>
+          <button type="button" id="depRefresh" class="link-action ml-1">Refresh</button>
+          <a href="/transit/" class="link-action ml-1 text-brand-accent">Full board</a>
+        </p>
+      </div>
     </div>
     <div class="card">
       {# The picker, closed until asked for. A search box that is always there would be the

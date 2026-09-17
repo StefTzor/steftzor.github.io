@@ -16,7 +16,17 @@ bodyScripts:
 ---
 <section class="app-page">
 
-  <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
+  {# The heading and the board switch are stacked rather than set against each other.
+
+     Sharing a justify-between row, they fitted side by side until the operator badge arrived in
+     the heading, at which point the switch dropped to its own line - 52px of movement caused by
+     a 24px badge. Stacked, the switch is on its own line from the first paint and the badge can
+     appear without moving anything.
+
+     Only where the room is tight, though. From `sm` up the two sit against each other again the
+     way they did: the badge has space to appear there without wrapping anything, so the stability
+     costs nothing and the composition is worth keeping. #}
+  <div class="mb-2 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
     <h1 class="flex items-center gap-3 text-3xl font-bold text-brand-text">
       {% icon "fa-solid-bus", "h-7 w-7 text-brand-accent" %}
       <span>Transit</span>
@@ -27,7 +37,7 @@ bodyScripts:
     {# Departures and arrivals are two boards for one stop, so they are one control with two
        states rather than two links. aria-pressed rather than a radio group: these are buttons
        that change what is below them, not a value being submitted anywhere. #}
-    <div class="inline-flex rounded-lg bg-brand-bg p-1" role="group" aria-label="Which board">
+    <div class="mt-3 sm:mt-0 inline-flex rounded-lg bg-brand-bg p-1" role="group" aria-label="Which board">
       <button type="button" id="trDep" class="seg" aria-pressed="true">Departures</button>
       <button type="button" id="trArr" class="seg" aria-pressed="false">Arrivals</button>
     </div>

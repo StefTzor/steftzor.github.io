@@ -106,14 +106,31 @@
   </div>
 
   <ul class="p-5 space-y-2">
-    {%- for item in navList %}
+    {#- What you came to look at. The public site marks nothing `foot`, so its list is unchanged. -#}
+    {%- for item in navList %}{%- if not item.foot and not item.minRole %}
+    <li>
+      <a href="{{ item.href }}" data-nav="{{ item.navKey }}" class="nav-link-mobile">{{ item.label }}</a>
+    </li>
+    {%- endif %}{%- endfor %}
+
+    {#- The foot cluster: the places you go on purpose, and you. The rail groups these the same
+        way, and one list drawn two ways should not disagree about which things belong together.
+
+        The rule is its own list item rather than a wrapper around the four links, so each link
+        keeps an <li> to itself. Wrapped, the list announced five items instead of eight and rotor
+        navigation landed on the cluster and then had to arrow through it. aria-hidden keeps the
+        separator itself out of the count. -#}
+    {%- if shell %}
+    <li class="mt-3 border-t border-brand-muted/20" aria-hidden="true"></li>
+
+    {#- Array order puts reference before role, the same as the rail. -#}
+    {%- for item in navList %}{%- if item.foot or item.minRole %}
     <li{% if item.minRole %} class="hidden" data-min-role="{{ item.minRole }}"{% endif %}>
       <a href="{{ item.href }}" data-nav="{{ item.navKey }}" class="nav-link-mobile">{{ item.label }}</a>
     </li>
-    {%- endfor %}
+    {%- endif %}{%- endfor %}
 
-    {%- if shell %}
-    <li class="pt-3 mt-3 border-t border-brand-muted/20">
+    <li>
       <a href="/profile/" data-nav="profile" class="nav-link-mobile">Your profile</a>
     </li>
     {%- endif %}

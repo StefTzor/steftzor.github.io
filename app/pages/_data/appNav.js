@@ -9,11 +9,17 @@
  * Two templates read it: the rail in _includes/app-shell.njk on wide screens, and the drawer in
  * _includes/chrome/header.njk on narrow ones.
  *
- * ORDER is the order it is shown in, and it is deliberate: Home first because it is where you
- * start, then the two things you came to look at, then the role-gated destinations you go to on
- * purpose. Anything with a `minRole` is drawn at the bottom of the rail and hidden until the
- * profile says otherwise - which decides what is DRAWN and nothing else. The API re-reads the
- * role from Firestore on every request.
+ * ORDER is the order it is shown in, and it is deliberate. The first three answer "what is
+ * happening now" - live data you check again tomorrow. The rest are places you go on purpose and
+ * rarely twice, so they sit at the foot of the rail: reference, then whatever your role opens.
+ *
+ * `foot` puts an item in that lower group without gating it. The group was originally "anything
+ * with a minRole", but gating was only ever a proxy for the real property, which is that you go
+ * there deliberately rather than landing there. Documentation is deliberate and ungated, and it
+ * is what made the difference worth naming.
+ *
+ * `minRole` still decides what is DRAWN and nothing else. The API re-reads the role from
+ * Firestore on every request.
  *
  * `icon` names a file in _includes/icons. `navKey` must equal the page's path with the slashes
  * turned into hyphens; app/scripts/shell.js matches it to mark the current link.
@@ -22,7 +28,7 @@ module.exports = [
   { label: "Home", href: "/", navKey: "home", icon: "fa-solid-house" },
   { label: "Transit", href: "/transit/", navKey: "transit", icon: "fa-solid-bus" },
   { label: "Formula 1", href: "/f1/", navKey: "f1", icon: "fa-solid-flag-checkered" },
-  { label: "How this is built", href: "/docs/", navKey: "docs", icon: "fa-solid-network-wired" },
+  { label: "How this is built", href: "/docs/", navKey: "docs", icon: "fa-solid-network-wired", foot: true },
   { label: "Private", href: "/private/", navKey: "private", icon: "fa-solid-heart-lock", minRole: "SuperUser" },
   { label: "Admin", href: "/admin/", navKey: "admin", icon: "fa-solid-layer-group", minRole: "Admin" },
 ];
