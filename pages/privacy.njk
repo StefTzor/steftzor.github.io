@@ -5,8 +5,8 @@ title: "Privacy Policy | Stefanos Tzortzoglou"
 heading: "Privacy Policy"
 description: "How tzortzoglou.eu handles personal data: what is collected, why, the legal basis under GDPR, who processes it, and how to exercise your rights."
 summary: "This site is a personal portfolio. It sets no cookies, runs no advertising, and does no profiling. The only personal data it stores is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form."
-updated: "2026-09-17"
-updatedLabel: "17 September 2026"
+updated: "2026-09-18"
+updatedLabel: "18 September 2026"
 sitemapOrder: 60
 sitemapChangefreq: yearly
 sitemapPriority: "0.3"
@@ -94,16 +94,18 @@ sitemapPriority: "0.3"
 
 <h3>2.3 Third-party files loaded by your browser</h3>
 <p>
-  Some fonts, icons and widgets are loaded directly from other providers rather than from this domain. When your browser
-  fetches those files, it connects to those providers directly, and they necessarily receive your
+  Some files are loaded directly from other providers rather than from this domain. When your browser fetches those
+  files, it connects to those providers directly, and they necessarily receive your
   <strong>IP address</strong>, your user-agent, and the page you were on. This happens on page load, before you
-  interact with anything. The full list is in the
+  interact with anything. On these public pages that is now one provider on one page: the rendered GitHub statistics
+  images on the <a href="/code/">Code</a> page. The typeface and every icon are served from this domain. The full list is in the
   <a href="/cookies/">Cookies &amp; Local Storage</a> page.
 </p>
 <p>
   I do not control what those providers do with that connection data. If you would rather not connect to them, a
-  content-blocking browser extension will prevent the requests; the site remains readable, though some icons and the
-  GitHub activity graph will not render.
+  content-blocking browser extension will prevent the requests; the site remains readable, though those statistics
+  images will not render. The application behind the sign-in loads more from elsewhere than these
+  pages do, including a map, which <a href="#map-tiles">section 3.3</a> is about.
 </p>
 
 <h2 id="account">3. If you create an account</h2>
@@ -204,6 +206,47 @@ sitemapPriority: "0.3"
   <li><strong>Object to it:</strong> you can, under Art. 21 (see <a href="#rights">section 6</a>). Since the record
     holds nothing that identifies you, the honest remedy is to say so and I will stop counting the application
     entirely rather than pretend to filter you out of it.</li>
+</ul>
+
+<h3 id="map-tiles">3.3 Map tiles inside the application</h3>
+<p>
+  Two pages in the application draw a map: the race location on <strong>/f1/</strong> and the stops on
+  <strong>/transit/</strong>. The map software is served from my own domain, but the map picture is not. Your browser
+  fetches it a square at a time, as you pan and zoom, straight from <strong>tiles.openfreemap.org</strong> —
+  <strong>OpenFreeMap</strong>, a free map-tile service built on OpenStreetMap data. It asks for no account, no key
+  and no payment, which is the only reason your browser can be the one asking rather than my server.
+  Your browser already fetches a couple of other files from outside this domain — the sign-in libraries, and on one
+  page an animation — and those are listed on the <a href="/cookies/">Cookies &amp; Local Storage</a> page. Tiles are
+  worth their own section because they are not a file. The same script is fetched once and is the same for everybody;
+  which tiles you ask for depends on what you are looking at, and you ask for more of them the longer you look.
+</p>
+<ul>
+  <li><strong>What they receive:</strong> your <strong>IP address</strong>, your user-agent, and which tiles you asked
+    for. Those tile numbers are themselves a location — not where you are, but which part of the world the map is
+    showing you and how closely you are looking at it. Nothing about your account goes with the request: it carries no
+    token, no name and no email address, because it is an ordinary image request and there is nowhere in one to put
+    them.</li>
+  <li><strong>When:</strong> only on those two pages, only once a map is actually drawn there, and only for someone
+    signed in — no page on the public site contacts them at all.</li>
+  <li><strong>Why it is not proxied like everything else:</strong> every outside service this application takes data
+    from — the weather, the departures, the Formula 1 results — is called by my server, so your browser never meets
+    it. Map tiles are the exception because they are images, a few
+    hundred of them in a session of panning around, and putting my server in front of those would mean running a tile
+    service rather than passing a message along. I chose a map over that, and this paragraph is the price of choosing
+    it.</li>
+  <li><strong>A request I have no record of:</strong> it goes from your browser to them and never passes through
+    anything I run, so I have no log of it, no count of it, and no way to tell you what they did with it afterwards.
+    What I can tell you is exactly what the code asks for, which is above, and that they are not my processor: there is
+    no contract between us, so whatever they receive they hold as their own controller, under their own terms and
+    wherever their network serves you from, which may be outside the EEA.</li>
+  <li><strong>Legal basis:</strong> legitimate interests, Art. 6(1)(f) GDPR — the same basis as the rest of the
+    application in <a href="#app-analytics">section 3.2</a>: showing a departure board or a race weekend on a map is
+    part of the service you signed in to use. Your right to object under Art. 21 applies here too (see
+    <a href="#rights">section 6</a>).</li>
+  <li><strong>If you would rather not:</strong> a content-blocking extension, or a browser in strict tracking-protection
+    mode, will stop the requests, and both pages carry on working — the departures and the race details come from my
+    own server and do not depend on the map. A map that cannot load says so instead of showing you an empty rectangle.
+  </li>
 </ul>
 
 <h2 id="contact">4. If you contact me</h2>
@@ -336,6 +379,7 @@ sitemapPriority: "0.3"
   If the site starts doing something new with personal data — a newsletter, embedded third-party media, a change of
   provider — this policy will be updated before that goes live, and the "last updated" date above will change.
   The contact form in <a href="#contact-form">section 4.2</a> was added this way, and so were the move from
-  GoatCounter to my own counter in <a href="#analytics">section 2.2</a> and the application's own counting in
-  <a href="#app-analytics">section 3.2</a>.
+  GoatCounter to my own counter in <a href="#analytics">section 2.2</a>, the application's own counting in
+  <a href="#app-analytics">section 3.2</a>, and the maps in <a href="#map-tiles">section 3.3</a> — which put a new
+  outside host in front of two pages, and so got a section of its own rather than a line in a table.
 </p>

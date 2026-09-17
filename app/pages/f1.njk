@@ -44,6 +44,28 @@ bodyScripts:
     <div id="roundBody"></div>
   </section>
 
+  {# --- where in the world -------------------------------------------------
+     A globe rather than a place name, because the thing worth seeing about a calendar is how far
+     it throws itself around the world between one round and the next. Every round of the season
+     is a dot and the chosen one is lit; changing the round turns the globe to it.
+
+     The dots are drawn into a canvas and no screen reader can reach them, so the canvas is hidden
+     from one and the round selector at the top of the page is their text alternative - it names
+     every round of the season, which is exactly what the dots are.
+
+     The height is explicit because MapLibre measures its container: without one it renders a
+     canvas zero pixels tall, which looks like a map that failed rather than a map with no room. #}
+  <section aria-labelledby="map-heading" class="mb-10">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-3">
+      <h2 id="map-heading" class="text-xl font-bold text-brand-text">Where it is raced</h2>
+      <p id="circuitName" class="text-sm text-brand-muted"></p>
+    </div>
+    <div class="card p-3">
+      <div id="f1Map" class="h-72 w-full overflow-hidden rounded-lg sm:h-96"></div>
+      <p id="mapNote" class="hint mt-3 px-2 pb-1" hidden></p>
+    </div>
+  </section>
+
   {# --- championships ------------------------------------------------------ #}
   <section aria-labelledby="standings-heading">
     <h2 id="standings-heading" class="text-xl font-bold text-brand-text mb-1">Championships</h2>

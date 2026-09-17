@@ -123,16 +123,48 @@ bodyScripts:
     </ul>
   </section>
 
-  {# --- nearby --------------------------------------------------------------
-     Only appears once you have asked. An empty "Nearby stops" heading on a page that has never
-     been given a location is a section that exists to be disappointed by. #}
-  <section id="trNearby" aria-labelledby="nearby-heading" class="mt-10 hidden">
-    <h2 id="nearby-heading" class="text-xl font-bold text-brand-text mb-1">Stops near you</h2>
+  {# --- around this stop ----------------------------------------------------
+     A picture of where the stop is, and of the stops around you once you have shared a location.
+
+     The map is centred from the board's own coordinate, so it needs no permission - which is the
+     whole reason this section is no longer hidden until one is granted. A map of the stop you are
+     watching should not depend on being willing to say where you are standing. The nearby stops
+     still do, because finding them needs a coordinate to search around.
+
+     It deliberately draws no lines between the dots. ResRobot's departure board carries no
+     geometry and no stop sequence, so a line from this stop towards anywhere would be a straight
+     line across whatever is in between - a claim about a path the bus does not take. "Lines on
+     this board" above is the honest version of that question and stays exactly as it is. #}
+  <section aria-labelledby="around-heading" class="mt-10">
+    <h2 id="around-heading" class="text-xl font-bold text-brand-text mb-1">Around this stop</h2>
     <p class="text-sm text-brand-muted mb-4">
-      Straight-line distance, as ResRobot measures it. Choosing one makes it your stop
-      everywhere, including the card on the home view.
+      Where the stop is, not how to get anywhere from it: the dots are places, and nothing
+      between two of them is drawn.
     </p>
-    <ul id="trNearList" class="grid gap-3 sm:grid-cols-2"></ul>
+
+    {# Hidden until there is a coordinate to centre it on and a library to draw it with; the note
+       below says which of the two is missing. An explicit height because a map has no content of
+       its own to be the height of, and `p-0` because a card's padding would leave the tiles
+       floating inside a frame. #}
+    <div id="trMap" class="card hidden h-64 overflow-hidden p-0 sm:h-80"></div>
+    {# Not a live region, unlike the notes above it. It is rewritten on every board load, mostly
+       with the sentence it already had, and three announcements a refresh is how a live region
+       stops being read. #}
+    <p id="trMapNote" class="hint"></p>
+
+    {# The list survives the map rather than being replaced by it: it carries the distance in
+       metres, and "how far away is it" is a question a number answers better than a picture.
+       Still revealed only once a location has been shared, for the reason it always was - an
+       empty "Stops near you" on a page that has never been given one is a section that exists
+       to be disappointed by. #}
+    <div id="trNearby" class="hidden mt-6">
+      <h3 class="text-lg font-bold text-brand-text mb-1">Stops near you</h3>
+      <p class="text-sm text-brand-muted mb-4">
+        Straight-line distance, as ResRobot measures it. Choosing one makes it your stop
+        everywhere, including the card on the home view.
+      </p>
+      <ul id="trNearList" class="grid gap-3 sm:grid-cols-2"></ul>
+    </div>
   </section>
 
 </section>

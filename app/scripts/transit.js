@@ -1,6 +1,7 @@
 import { api, profile } from "./shell.js";
 import { inWords, shortStop, towardsOf } from "./stop-format.js";
 import { remember } from "./rows.js";
+import { createMap, goTo } from "./map.js";
 
 /**
  * The full board for one stop: departures, arrivals, what lines turn up, and what else is
@@ -173,6 +174,223 @@ function renderLines(rows) {
     });
 }
 
+// --- the map ------------------------------------------------------------------
+
+/**
+ * The stop, as a place.
+ *
+ * Drawn after the board and never before it. MapLibre is bigger than the rest of this app put
+ * together, and a departure board that waited on a map library before showing the next bus would
+ * have the priorities backwards - so showMap() is called from load() once renderBoard() has
+ * finished, and is never awaited by anything the board depends on. Every way it can fail ends in
+ * a sentence where the map would have been, with everything above it untouched.
+ *
+ * There are no lines on it, deliberately. ResRobot's departure board carries no geometry and no
+ * stop sequence, so a line from this stop towards a destination would be a straight line across
+ * whatever is actually in between - a claim about a path the bus does not take. "Lines on this
+ * board" above is the honest version of that question.
+ */
+
+// Close enough to see which corner of which street the stop is on, wide enough that the next
+// stop along is usually on screen with it.
+const ZOOM = 15;
+
+// map.js keeps MapLibre off the critical path and hands back a Map; it deliberately re-exports
+// nothing else, so the one other class this page needs comes from a second import of the same
+// module. By the time anything here asks, the module registry has already resolved it - this
+// costs a promise, not a second 300 KB download.
+const marker = () => import("/vendor/maplibre-gl.mjs").then((m) => m.Marker);
+
+let map = null;
+let here = null;     // the single marker for the stop on the board, moved rather than replaced
+let around = [];     // a marker per nearby stop, once this browser has said where it is
+let nearby = [];     // and the stops themselves, for a "Near me" that beat the board back
+let at = null;       // the centre currently drawn, so a refresh is told apart from a new stop
+let drawing = false; // a createMap() in flight, so a refresh underneath it cannot start a second
+let want = null;     // the newest board, which gets the last word if the stop changed mid-import
+let blocked = false; // the library refused once, so it is missing or blocked rather than slow
+
+// The board is what this page is for and it is already on screen, so a map that will not load is
+// a sentence rather than a hole where a map was going to be.
+const FAILED = "The map could not be loaded. Everything above it is unaffected.";
+
+function mapNote(text) { el("trMapNote").textContent = text || ""; }
+
+/**
+ * Both are attributes rather than markup, so a stop name from an upstream stays text.
+ *
+ * `role="img"` is what makes the aria-label real. MapLibre sets a role on its OWN default marker
+ * and returns early for a custom element, so without this these are plain divs - and an aria-label
+ * on a generic element is not exposed at all, which is worse than no label because the code reads
+ * as though it has one.
+ */
+function nameDot(node, text) {
+  node.title = text;
+  node.setAttribute("role", "img");
+  node.setAttribute("aria-label", text);
+}
+
+/**
+ * A dot.
+ *
+ * Tailwind classes on an element of our own rather than MapLibre's `color` option, which takes a
+ * fixed string: the accent is Emerald 800 in light and Emerald 500 in dark, so a colour read once
+ * at draw time would still be the light one on the dark basemap after a theme toggle. A class
+ * follows the theme for nothing, the same way the basemap under it does.
+ */
+function dot(classes, label) {
+  const node = document.createElement("div");
+  node.className = classes;
+  nameDot(node, label);
+  return node;
+}
+
+/** What the picture underneath is of. It never claims a dot that is not drawn. */
+function caption() {
+  mapNote(around.length
+    ? `This stop, and the ${around.length} nearest to you. The distances are in the list below.`
+    : "This stop. Change stop, then Near me, puts the stops around you on it as well.");
+}
+
+/**
+ * A different stop: move the map, move its marker, and drop the dots that were around the old one.
+ *
+ * Those were found around YOU rather than around the stop, for the purpose of choosing one. Once
+ * one is chosen the map is a picture of it, and keeping them would caption a picture of one place
+ * with a count belonging to another.
+ */
+function moveTo(center, label) {
+  around.forEach((m) => m.remove());
+  around = [];
+  nearby = [];
+  goTo(map, center, ZOOM);
+  if (here) {
+    here.setLngLat(center);
+    nameDot(here.getElement(), label);
+  }
+  caption();
+}
+
+async function showMap(data) {
+  const box = el("trMap");
+  if (!box) return;
+  want = data;
+  const label = shortStop(data.stop) || "This stop";
+
+  // [lon, lat] - MapLibre's order, which is the reverse of the order anybody says a coordinate
+  // out loud in. The API leaves both keys ABSENT rather than null when the coordinate did not
+  // resolve, so this asks whether they are finite rather than whether they are there: latitude 0
+  // is the equator and a perfectly good value, and 0,0 is a real place in the Gulf of Guinea that
+  // no bus stop in this app is at.
+  const center = [data.lon, data.lat];
+  if (!center.every(Number.isFinite)) {
+    box.classList.add("hidden");
+    // A dashboard does not invent what it was not given, and an empty ocean at 0,0 is the
+    // invented version of this.
+    mapNote("There is no coordinate for this stop, so there is no map of it.");
+    return;
+  }
+
+  // Asked once and refused. Trying again on every refresh and on every board toggle would only
+  // rewrite this sentence over itself every two minutes for a library that is not coming.
+  if (blocked) {
+    box.classList.add("hidden");
+    mapNote(FAILED);
+    return;
+  }
+
+  box.classList.remove("hidden");
+  const key = center.join(",");
+
+  if (map) {
+    // The box may have been hidden since the map was built, by a stop that had no coordinate,
+    // and MapLibre measures its container when it is told to and not otherwise.
+    map.resize();
+    if (key !== at) {
+      at = key;
+      moveTo(center, label);
+    } else {
+      // The same stop as last time, so nothing moves - but the note underneath may still be the
+      // one a DIFFERENT stop left behind. Coming back to a stop that has a coordinate, from one
+      // that did not, showed the map again under "There is no coordinate for this stop". The
+      // caption belongs to whether a map is visible, not to whether it just changed.
+      caption();
+    }
+    return;
+  }
+  if (drawing) return;
+
+  drawing = true;
+  mapNote("Drawing the map…");
+  try {
+    map = await createMap(box, { center, zoom: ZOOM });
+    const Marker = await marker();
+    here = new Marker({
+      element: dot("h-4 w-4 rounded-full border-2 border-brand-surface bg-brand-accent", label),
+    }).setLngLat(center).addTo(map);
+    at = key;
+    // Anyone who asked for nearby stops before the board came back has them waiting here; with
+    // nothing waiting this is just the caption.
+    await drawNearby(nearby);
+  } catch (err) {
+    console.error("transit: the map could not be drawn", err);
+    blocked = true;
+    box.classList.add("hidden");
+    mapNote(FAILED);
+  } finally {
+    drawing = false;
+    // The stop changed while the library was in the air: that board was turned away by the guard
+    // above, and the map it would have drawn was built around a board that is no longer showing.
+    if (want !== data) showMap(want);
+  }
+}
+
+/**
+ * The stops around this browser, as dots on the same map.
+ *
+ * Drawn from the response the list beside it is drawn from, so the two cannot disagree. The list
+ * stays rather than being replaced by this: it carries the distance in metres, and "how far away
+ * is it" is a question a number answers better than a picture.
+ */
+async function drawNearby(stops) {
+  around.forEach((m) => m.remove());
+  around = [];
+  // Not just "is there a map" but "is it being shown". A board whose stop has no coordinate hides
+  // the box and keeps the map object; without this, sharing a location then wrote "This stop, and
+  // the 6 nearest to you" underneath a map nobody could see.
+  if (!map || el("trMap").classList.contains("hidden")) return;
+
+  const Marker = await marker();
+  around = stops
+    // Same rule as the board's own coordinate: absent rather than null, so finite rather than
+    // truthy. A stop ResRobot could not place is in the list with its distance and not on the map.
+    .filter((s) => Number.isFinite(s.lat) && Number.isFinite(s.lon))
+    .map((s) => new Marker({
+      element: dot("h-3 w-3 rounded-full border-2 border-brand-surface bg-brand-muted", shortStop(s.name)),
+    }).setLngLat([s.lon, s.lat]).addTo(map));
+  caption();
+
+  // Widen to hold what was just drawn AND the stop itself. These stops are near YOU, so somebody
+  // watching a stop on the other side of town would otherwise be told there are four of them and
+  // shown none of them.
+  const points = around.map((m) => m.getLngLat().toArray());
+  if (here) points.push(here.getLngLat().toArray());
+  if (points.length < 2) return;
+
+  const lons = points.map((p) => p[0]);
+  const lats = points.map((p) => p[1]);
+  map.fitBounds(
+    [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
+    {
+      padding: 48,
+      // Or two stops a few metres apart would zoom to the pavement between them.
+      maxZoom: ZOOM,
+      // Pressing Near me asked for this, so the movement is not unprovoked - but somebody who has
+      // asked not to be moved still means it.
+      animate: !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    });
+}
+
 async function load(button) {
   if (button) button.disabled = true;
   say("Loading the board…");
@@ -181,6 +399,9 @@ async function load(button) {
     fetchedAt = Date.now();
     say("");
     renderBoard(data);
+    // Not awaited. The map is an addition to this page, and Refresh must come back the moment
+    // the board does rather than when a 300 KB library has finished arriving.
+    showMap(data);
   } catch (err) {
     console.error("transit:", err.status, err.code);
     // Both lists are filled by renderBoard() and by nothing else, so a first load that never
@@ -286,6 +507,11 @@ function near() {
         list.appendChild(li);
       });
       el("trNearby").classList.toggle("hidden", !stops.length);
+
+      // The same stops as dots, best effort. The list above is already right and does not depend
+      // on this; a map that could not be drawn has already said so underneath itself.
+      nearby = stops;
+      drawNearby(stops).catch((err) => console.error("transit: nearby markers", err));
     } catch (err) {
       console.error("transit: nearby failed", err.status, err.code);
       pickNote("Nearby stops could not be loaded.");

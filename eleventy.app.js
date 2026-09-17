@@ -24,16 +24,19 @@ module.exports = function (eleventyConfig) {
       // unchanged. The rule that kept GoatCounter out was never "do not count"; it was "do not
       // let a page behind a login report to a host that has no other business with it".
       "script-src": ["'self'", "https://www.gstatic.com"],
+      // tiles.openfreemap.org is the basemap: the style document, the vector tiles, the glyph
+      // ranges and the sprite metadata all come from that one origin, and all of them are fetched
+      // rather than loaded as elements. It is the only third party either property talks to, and
+      // the only one the browser reaches directly rather than through the API - because tiles are
+      // requested one per tile as you pan, and proxying them would mean serving them.
       "connect-src": ["'self'", "https://api.tzortzoglou.eu",
         "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com",
-        "https://firestore.googleapis.com"],
+        "https://firestore.googleapis.com", "https://tiles.openfreemap.org"],
       // blob: because the private view fetches its photos over an authenticated request and
       // renders them from createObjectURL - a blob: URL is not covered by 'self', so without
       // this the images are blocked and the page looks broken for the one person it is for.
-      // The basemap host is here because map tiles ARE images, fetched one per tile as you pan.
-      "img-src": ["'self'", "data:", "blob:", "https://basemaps.cartocdn.com",
-        "https://a.basemaps.cartocdn.com", "https://b.basemaps.cartocdn.com",
-        "https://c.basemaps.cartocdn.com", "https://d.basemaps.cartocdn.com"],
+      // The basemap host serves the sprite sheet and a shaded-relief raster layer as images.
+      "img-src": ["'self'", "data:", "blob:", "https://tiles.openfreemap.org"],
       // MapLibre renders in a Worker, and there was no worker-src directive at all before this -
       // which means workers fell back to default-src 'self' and the blob: path was blocked.
       // 'self' covers the module worker it loads as a sibling of /vendor/maplibre-gl.mjs; blob:

@@ -1,13 +1,18 @@
 /**
- * The four services the API proxies, and how each one's answer becomes ours.
+ * The five services this system reads from, and how each one's answer becomes ours.
  *
  * Written out because "we call an API" is not a description of anything. What is worth knowing
  * is which endpoint, how often it is allowed to be called, and which of their field names became
  * which of ours - the mapping is where the work is, and it is the part that breaks when an
  * upstream changes shape.
  *
+ * Four of them are proxied by the API, which is what keeps them off the browser's network tab
+ * entirely. The fifth, the basemap, is not, and that difference is the most interesting fact in
+ * this file - so it is stated in the entry rather than left for a reader to notice.
+ *
  * `derived` marks a field nobody sent us. Those are the interesting ones: they are decisions,
- * not transport.
+ * not transport. An entry with no mapping at all carries `mappingNote` instead, because an empty
+ * table dressed up to look like the other four would be padding.
  */
 module.exports = [
   {
@@ -40,7 +45,7 @@ module.exports = [
     what: "Swedish departures, arrivals, stop search and stops near a point.",
     key: true,
     cache: "45 seconds",
-    why: "A departure board is wrong the moment it is stale, so this is the shortest window of the four. Departures and arrivals for the same stop are cached apart, because they are two answers.",
+    why: "A departure board is wrong the moment it is stale, so this is the shortest window here. Departures and arrivals for the same stop are cached apart, because they are two answers.",
     calls: [
       { path: "/v2.1/departureBoard", note: "the board for one stop id" },
       { path: "/v2.1/arrivalBoard", note: "same shape, opposite direction" },
@@ -106,8 +111,31 @@ module.exports = [
       ["the first failing step of the first failing job", "failedStep", true],
     ],
     notes: [
-      "This is the only one of the four that knows about a deploy that FAILED. Anything read from the running service — a restart time, a build stamp — can only describe deploys that worked, which is the half nobody needs telling about.",
+      "This is the only upstream that knows about a deploy that FAILED. Anything read from the running service — a restart time, a build stamp — can only describe deploys that worked, which is the half nobody needs telling about.",
       "Errors from it carry the status code and never the body. A GitHub error body can echo the request back, and the request carries the token.",
+    ],
+  },
+  {
+    name: "OpenFreeMap",
+    what: "The map under the circuit on /f1/ and under the stops on /transit/: vector tiles cut to the OpenMapTiles schema, from OpenStreetMap's data, in a light and a dark palette.",
+    key: false,
+    cache: "by your browser, never by the API",
+    why: "The one upstream that is not proxied, and so the only one of the five a browser talks to itself. The other four are proxied precisely so that it never has to; this one is the exception because tiles are images, fetched one per tile as you pan and zoom, and standing in front of a few hundred images a session would not be forwarding a call — it would be running a tile server. What that trade costs belongs here rather than in a footnote: the request carries the reader's IP address and, in the tile numbers themselves, roughly which part of the world they are looking at and how closely, to a service neither they nor this site has any relationship with. It is also the only entry on this list this code never sees happen, because nothing of it passes through the API — which is why it is written down here, on the privacy notice and on the cookies page rather than left to a network tab.",
+    calls: [
+      { path: "/styles/{positron|dark}", note: "the style document, chosen from the theme" },
+      { path: "/planet/{version}/{z}/{x}/{y}.pbf", note: "one vector tile per square, as you pan" },
+      { path: "/fonts/{fontstack}/{range}.pbf", note: "glyph ranges, only for the labels actually drawn" },
+      { path: "/sprites/…", note: "one sheet of icons for the whole style" },
+    ],
+    mapping: [],
+    mappingNote:
+      "Nothing is mapped, because nothing arrives to be mapped. A tile is geometry to be drawn, not a document with fields, so there is no field of theirs that became a field of ours - the only decision here is which of the two styles to ask for, and that is read off the theme. The coordinates these maps are pointed AT come from the Trafiklab and Jolpica entries above, never from here.",
+    notes: [
+      "Only the picture is theirs. MapLibre itself is served from /vendor, so no third party is in script-src on any page — which is the distinction that gets lost the moment somebody says \u201ca third-party map\u201d, and it is the half that would actually matter.",
+      "Needing no key is the only reason a browser can be the one asking. The two keyless upstreams above are still proxied, because one call there serves every reader; a tile fetched by one browser serves that browser and nobody else, so proxying would buy nothing and cost a tile server.",
+      "The provider was chosen by rendering one, which is the only way this particular thing can be checked. CARTO answers without a key and then prints \u201cAPI KEY REQUIRED\u201d across every tile - a 200 to curl and a ruined map to a person. OpenStreetMap\u2019s own tiles are clean and keyless, but their usage policy says plainly they are not for an app\u2019s basemap, and testing against them was throttled within minutes, which is that policy working rather than failing. This one asks for no key and sets no limit, and says so as its purpose.",
+      "Both maps are an addition to a page that already works without one. Blocked, missing or failing, the library takes nothing down with it: the departures and the results still draw, and a place whose coordinate did not resolve says it has none rather than drawing an empty ocean at 0,0.",
+      "This is written down twice more on purpose — the privacy notice and the cookies page both name the host. A request this code cannot see is one a reader can only learn about by being told, so being told is the whole control they have.",
     ],
   },
 ];

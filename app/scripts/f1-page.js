@@ -1,6 +1,7 @@
 import { api, profile } from "./shell.js";
 import { el, say } from "./admin-status.js";
 import { teamColour } from "./f1-teams.js";
+import { createMap, goTo } from "./map.js";
 
 /**
  * The Formula 1 page: pick a round, see its sessions or its results, and both championships.
@@ -128,6 +129,10 @@ function renderRound(data) {
   el("round-heading").textContent = `${race.round}. ${race.name}`;
   el("roundWhere").textContent = [race.locality, race.country].filter(Boolean).join(", ") +
     (race.sprint ? " · sprint weekend" : "");
+  // Wrapped, and the results are built below regardless. The map is an addition to this page and
+  // the results are what it is for, so a throw from the globe - a layer that is not there yet, a
+  // style mid-swap - must not be able to leave somebody with a heading and an empty body.
+  try { showOnMap(race); } catch (err) { console.error("f1: the globe could not be moved", err); }
 
   const body = el("roundBody");
   body.textContent = "";
@@ -210,6 +215,193 @@ function qualifyingTable(rows) {
   return wrap;
 }
 
+// --- the globe ---------------------------------------------------------------
+
+/**
+ * A globe that turns to the chosen circuit, with every round of the season on it.
+ *
+ * The whole of this section is written so that a MapLibre that is missing, blocked or broken
+ * costs the page its globe and nothing else: the results, the sessions and the championships are
+ * what the page is for and none of them is downstream of a map.
+ *
+ * **The markers are a GeoJSON source and two circle layers, not `maplibregl.Marker` elements.**
+ * map.js deliberately does not export the library object, and a DOM marker needs it - but the
+ * deeper reason is that a DOM marker is a div that has to be re-projected by hand on every frame
+ * of the flight and on every frame of a drag, whereas a layer inside the style is drawn by the
+ * same renderer that is already drawing the tiles. The cost is that the dots live in a canvas
+ * where no screen reader can reach them, so the canvas is hidden from one outright and the round
+ * selector is their text alternative; see the comment on the card in f1.njk.
+ */
+const SOURCE = "rounds";
+const ALL = "round-dots";
+const HERE = "round-chosen";
+
+// Close enough to place a circuit in its country, far enough that the globe still reads as one.
+const CIRCUIT_ZOOM = 4;
+
+let globe = null;     // the map itself, once it exists and only if it ever does
+let located = [];     // the calendar rounds that came back with a coordinate
+let chosen = null;    // the round number currently shown, as a number
+let target = null;    // its [lon, lat], or null when the round has no coordinate
+
+/**
+ * A round's position, or null.
+ *
+ * `[lon, lat]` - MapLibre's order, which is the reverse of how anyone says a coordinate out loud.
+ * The API leaves both keys ABSENT rather than null when it could not resolve a circuit, so this
+ * tests for a finite number: latitude 0 is the equator and 0,0 is a real place in the Gulf of
+ * Guinea that no race has ever been held at.
+ */
+const at = (r) => (Number.isFinite(r.lat) && Number.isFinite(r.lon) ? [r.lon, r.lat] : null);
+
+/** A brand token as a colour MapLibre will parse; the tokens are stored as bare RGB channels. */
+function ink(token) {
+  const channels = getComputedStyle(document.documentElement)
+    .getPropertyValue(`--color-${token}`).trim();
+  return `rgb(${channels.split(/\s+/).join(",")})`;
+}
+
+/** Named for the element it writes, because `note` is already a local in resultsTable. */
+function mapNote(message) {
+  const n = el("mapNote");
+  n.textContent = message || "";
+  n.hidden = !message;
+}
+
+/**
+ * Put the season on the map, and put it back after a theme change.
+ *
+ * map.js re-inks the basemap by calling setStyle, and a style carries its own sources and layers -
+ * so everything added here is thrown away every time the theme is toggled. Listening to
+ * `styledata` and re-adding what is missing covers both that and the first style load, and
+ * re-reading the tokens each time is what keeps the dots in the palette they are drawn on.
+ *
+ * **It has to do nothing at all once the season is already there.** Every change to a style fires
+ * `styledata` on the next frame, setFilter included - so a handler that reached for setFilter
+ * unconditionally would filter, wake itself, filter again, and repaint for as long as the tab
+ * was open. Bailing out on the source it just added is what stops that, and it is why the round
+ * is re-marked from aim() rather than from here.
+ */
+function draw() {
+  if (!globe.isStyleLoaded() || globe.getSource(SOURCE)) return;
+  globe.addSource(SOURCE, {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: located.map((r) => ({
+        type: "Feature",
+        geometry: { type: "Point", coordinates: at(r) },
+        properties: { round: Number(r.round) },
+      })),
+    },
+  });
+  // A ring of surface colour around each dot, because a bare dot disappears into a city on the
+  // light basemap and into the sea on the dark one.
+  globe.addLayer({
+    id: ALL,
+    type: "circle",
+    source: SOURCE,
+    paint: {
+      "circle-radius": 4,
+      "circle-color": ink("muted"),
+      "circle-stroke-width": 1,
+      "circle-stroke-color": ink("surface"),
+    },
+  });
+  globe.addLayer({
+    id: HERE,
+    type: "circle",
+    source: SOURCE,
+    paint: {
+      "circle-radius": 7,
+      "circle-color": ink("accent"),
+      "circle-stroke-width": 2,
+      "circle-stroke-color": ink("surface"),
+    },
+  });
+  mark();
+}
+
+/** The chosen round is lit and drawn out of the crowd, by filtering one source into two layers. */
+function mark() {
+  if (!globe || !globe.getLayer(HERE)) return;
+  // -1 is no round at all, which is the right answer while nothing is chosen and also the right
+  // answer for a round the calendar has no coordinate for: nothing is lit, rather than the
+  // previous round staying lit as though it were this one.
+  const here = ["==", ["get", "round"], chosen === null ? -1 : chosen];
+  globe.setFilter(ALL, ["!", here]);
+  globe.setFilter(HERE, here);
+}
+
+/**
+ * Turn to the chosen round, or say why the globe is not turning.
+ *
+ * Every path that changes the round ends here, including the one where the map finished loading
+ * after the round did - so there is one description of what the globe should be showing rather
+ * than one per caller. goTo does the moving: the flight is the point of the globe and it is also
+ * the only motion on this page nobody asked for, so honouring prefers-reduced-motion is its job
+ * and not something to reimplement with a flag.
+ */
+function aim() {
+  if (!globe) return;  // Either still loading or gone for good; whichever, it aims when it lands.
+  mark();
+  if (!target) {
+    return mapNote("This round came back without a location, so the globe has not turned to it.");
+  }
+  mapNote("");
+  goTo(globe, target, CIRCUIT_ZOOM);
+}
+
+/**
+ * The map card follows the chosen round. The circuit's own name is rendered nowhere else on the
+ * page - the header beside it says only the locality and the country.
+ */
+function showOnMap(race) {
+  chosen = Number(race.round);
+  target = at(race);
+  el("circuitName").textContent = race.circuit || "";
+  aim();
+}
+
+/**
+ * Build the map, once.
+ *
+ * Called when the calendar has arrived and the chosen round has already been rendered, rather
+ * than from an IntersectionObserver: the map's content IS the calendar, so there is nothing for
+ * an observer to reveal any earlier than this except an empty globe - and by this point the page
+ * has already painted the round and its results, which is what it is actually for. The ~300 KB
+ * import therefore never competes with the two fetches that answer the reader's question.
+ */
+async function startGlobe(rounds) {
+  located = rounds.filter(at);
+  try {
+    globe = await createMap(el("f1Map"), {
+      globe: true,
+      center: target || [0, 0],
+      zoom: target ? CIRCUIT_ZOOM : 1,
+    });
+  } catch (err) {
+    console.error("f1: map", err);
+    // An empty bordered box is a map that looks broken; say so instead and take the box away.
+    el("f1Map").hidden = true;
+    mapNote("The map could not be loaded. Nothing else on this page depends on it.");
+    return;
+  }
+
+  // The dots are unreachable inside the canvas, so the canvas is hidden from assistive technology
+  // rather than left as an unlabelled graphic - and untabbable with it, since a focus stop that
+  // lands on something a screen reader has been told to ignore is the worst of both. MapLibre's
+  // attribution control is a sibling of the canvas and stays reachable, which is the one part of
+  // this map that has to be.
+  const canvas = globe.getCanvas();
+  canvas.setAttribute("aria-hidden", "true");
+  canvas.tabIndex = -1;
+
+  globe.on("styledata", draw);
+  if (globe.isStyleLoaded()) draw();
+  aim();
+}
+
 // --- championships -----------------------------------------------------------
 
 function renderStandings(data) {
@@ -282,9 +474,17 @@ profile.then(async () => {
     const start = cal.currentRound || cal.rounds[cal.rounds.length - 1]?.round;
     if (start) { pick.value = String(start); await loadRound(start); }
     pick.addEventListener("change", (e) => loadRound(e.target.value));
+
+    // Deliberately not awaited: the standings below are a fetch this page was going to make
+    // anyway, and they have no business queueing behind a map library.
+    startGlobe(cal.rounds);
   } catch (err) {
     console.error("f1: calendar", err.status, err.code);
     say("The season could not be loaded.", "error");
+    // The globe is plotted from the calendar, so without one there is nothing to draw. An empty
+    // rectangle would be the page inventing a view of a season it never got.
+    el("f1Map").hidden = true;
+    mapNote("The season did not load, so there is nothing to put on the map.");
   }
 
   try {

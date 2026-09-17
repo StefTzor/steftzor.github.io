@@ -21,7 +21,7 @@ bodyScripts:
     <span>How this is built</span>
   </h1>
   <p class="mt-2 max-w-prose text-brand-muted">
-    Three deployables, four data stores and four upstreams. This page is the map of what runs
+    Three deployables, four data stores and five upstreams. This page is the map of what runs
     where, what holds which data, and what every endpoint is for.
   </p>
 
@@ -39,9 +39,20 @@ bodyScripts:
       {% include "chrome/architecture.njk" %}
     </div>
 
+    {# This paragraph used to read "the browser never calls an upstream directly", which was a
+       rule rather than a description until the maps arrived, and then it was simply false. A page
+       that states its own rules has to change them in the same commit as the code, so here is the
+       narrower claim that is still true, and the exception said out loud rather than hidden by a
+       word like "generally". #}
     <p class="hint mt-3 max-w-prose">
-      The browser never calls an upstream directly. Two of the four need a key, and a key in a
-      page is a key anyone can read with View Source.
+      Everything that needs a key, a database or an identity goes through the API: two of the five
+      upstreams need a credential, and a key in a page is a key anyone can read with View Source.
+      The one thing that does not is the basemap. Map tiles are fetched one per square as you pan,
+      so your browser asks OpenFreeMap for them directly — proxying a few hundred of them a session
+      would mean running a tile server rather than forwarding a call. It is the only upstream your
+      browser contacts itself — which is why the diagram names it as an exception rather than drawing
+      it: the arrow would leave from the top of the picture rather than the bottom. The upstream list
+      below says what that costs.
     </p>
   </section>
 
@@ -214,11 +225,13 @@ bodyScripts:
      anything interesting in. "We call an API" describes nothing; which endpoint, how often it
      may be called, and whose field became which of ours is where the work actually is. #}
   <section aria-labelledby="up-heading" class="mt-10">
-    <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-1">The four upstreams, in detail</h2>
+    <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-1">The five upstreams, in detail</h2>
     <p class="text-sm text-brand-muted mb-6 max-w-prose">
-      All four are proxied. Two need a credential, which has to stay on the server; the other two
-      so that one call serves every reader. Each one below lists what is called, how long an
-      answer is held, and how their field names become ours.
+      Four of them are proxied. Two of those need a credential, which has to stay on the server;
+      the other two so that one call serves every reader. The fifth is the basemap, and it is not
+      proxied at all — your browser fetches its tiles itself, which makes it the only one of
+      the five your browser has ever heard of. Each one below lists what is called, how long an answer
+      is held, and how their field names become ours.
     </p>
     <p class="text-sm text-brand-muted mb-6 max-w-prose">
       In the mapping tables, theirs is on the left and ours on the right. A row marked
@@ -261,6 +274,10 @@ bodyScripts:
             {{ row[1] }}{% if row[2] %} <span class="text-[10px] font-sans uppercase tracking-wide text-brand-accent">derived</span>{% endif %}
           </span>
         </div>
+        {#- An upstream that answers with images has no field names to rename, and a table with no
+            rows in it under a heading that promises one is worse than a sentence. #}
+        {%- else %}
+        <p class="hint max-w-prose">{{ up.mappingNote }}</p>
         {%- endfor %}
       </div>
 

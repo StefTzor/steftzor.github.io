@@ -12,59 +12,33 @@
  *
  * **The basemap follows the theme, because a map that does not is the one thing on the page that
  * looks broken.** A single-tone basemap under a dark page is a white rectangle with a hole in the
- * middle of the layout; the two CARTO styles are the same cartography in two palettes, so
- * switching between them changes nothing but the ink - which is the same trick the weather skies
- * in input.css use.
+ * middle of the layout. The two styles below are one cartography in two palettes, so switching
+ * between them changes nothing but the ink - the same trick the weather skies in input.css use.
  */
 
 const MAPLIBRE = "/vendor/maplibre-gl.mjs";
 const STYLESHEET = "/vendor/maplibre-gl.css";
 
-// Both required by the tile terms, and both true: CARTO draws these from OpenStreetMap's data.
-// Rendered by MapLibre's own attribution control rather than written into the page, so it cannot
-// be left behind when a map moves.
-const ATTRIBUTION =
-  '<a href="https://www.openstreetmap.org/copyright" rel="noopener">© OpenStreetMap</a> · ' +
-  '<a href="https://carto.com/attributions" rel="noopener">© CARTO</a>';
+// Required by the tile terms, and all three are true: OpenFreeMap serves the tiles, OpenMapTiles
+// is the schema they are cut to, and OpenStreetMap is whose data it all is. MapLibre's own
+// attribution control renders whatever the style declares, so this cannot be left behind when a
+// map moves - which is why it is not written into the page.
 
-const BASEMAP = {
-  // Subdomains because a browser limits connections per host and a map asks for a lot of tiles at
-  // once. `{ratio}` is MapLibre's hook for a retina tile; CARTO serves @2x at the same paths.
-  light: "https://{a-d}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{ratio}.png",
-  dark: "https://{a-d}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{ratio}.png",
+// **Why this provider and not the two obvious ones.** CARTO's basemaps answer without a key and
+// then stamp "API KEY REQUIRED" across every tile - a 200 that looks fine to curl and wrong to a
+// person, which is exactly the kind of thing only a rendered screenshot catches. OpenStreetMap's
+// own tiles are clean and keyless, but their usage policy is explicit that they are not for use
+// as an app's basemap, and testing against them here was throttled within a few minutes, which is
+// that policy working rather than failing. OpenFreeMap asks for no key, sets no limit, and exists
+// for this; positron and dark are one cartography in two palettes, so a theme change re-inks and
+// changes nothing else.
+const STYLE = {
+  light: "https://tiles.openfreemap.org/styles/positron",
+  dark: "https://tiles.openfreemap.org/styles/dark",
 };
 
 const isDark = () => document.documentElement.classList.contains("dark");
 const stillness = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-/** Expands MapLibre's {a-d} into the four URLs it wants, since the spec takes a list. */
-function tiles(template) {
-  const ratio = window.devicePixelRatio > 1.5 ? "@2x" : "";
-  return ["a", "b", "c", "d"].map((sub) =>
-    template.replace("{a-d}", sub).replace("{ratio}", ratio));
-}
-
-function styleFor(theme, { globe }) {
-  return {
-    version: 8,
-    // A raster basemap rather than vector: vector needs a style server or a bundled glyph and
-    // sprite set, and this draws a circuit and a bus stop - the cartography is a backdrop, not
-    // the content. Raster also means the tiles are plain images, which is one CSP directive.
-    sources: {
-      basemap: {
-        type: "raster",
-        tiles: tiles(BASEMAP[theme]),
-        tileSize: 256,
-        attribution: ATTRIBUTION,
-      },
-    },
-    layers: [{ id: "basemap", type: "raster", source: "basemap" }],
-    // The globe is the whole reason the F1 page has a map rather than a place name. Flat
-    // everywhere else: a globe is the right projection for "which corner of the world is this
-    // race in" and the wrong one for "which bus stops are within a kilometre of me".
-    projection: { type: globe ? "globe" : "mercator" },
-  };
-}
 
 // The stylesheet is injected once per document rather than declared in each page's front matter,
 // so a page pays for it only if it draws a map. Local, so style-src-elem 'self' covers it; a
@@ -104,7 +78,7 @@ export async function createMap(container, { globe = false, center = [0, 0], zoo
 
   const map = new maplibregl.Map({
     container,
-    style: styleFor(isDark() ? "dark" : "light", { globe }),
+    style: STYLE[isDark() ? "dark" : "light"],
     center,
     zoom,
     // Nothing here is a navigation surface. The F1 globe is a picture of where a race is and the
@@ -120,6 +94,13 @@ export async function createMap(container, { globe = false, center = [0, 0], zoo
     touchZoomRotate: globe ? false : undefined,
   });
 
+  // The projection is set after the style rather than in it: these styles are fetched from the
+  // provider and say nothing about one, and setting it before the style lands is overwritten when
+  // the style does. The globe is the whole reason /f1/ has a map instead of a place name; flat
+  // everywhere else, because a globe is right for "which corner of the world is this race in" and
+  // wrong for "which stops are within a kilometre of me".
+  if (globe) map.on("style.load", () => map.setProjection({ type: "globe" }));
+
   // Re-ink on a theme change. The theme is a class on <html> toggled by scripts/chrome.js, so
   // there is no event to listen for - an observer on that one attribute is the whole mechanism.
   // setStyle replaces the basemap and keeps the camera, so the map does not jump.
@@ -128,10 +109,42 @@ export async function createMap(container, { globe = false, center = [0, 0], zoo
     const next = isDark() ? "dark" : "light";
     if (next === theme) return;
     theme = next;
-    map.setStyle(styleFor(theme, { globe }));
+    map.setStyle(STYLE[theme]);
   });
   watch.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
   map.once("remove", () => watch.disconnect());
+
+  // **Do not hand back a map whose basemap never arrived.** Importing the library only proves the
+  // library loaded, and it is served from this origin, so it succeeds in exactly the cases the
+  // basemap does not: a content blocker, a proxy that allows first-party requests and no others,
+  // a reader offline after /vendor has been cached. `new Map()` still returns an object and
+  // `createMap` still resolved, so both callers' catch blocks sat idle while the page showed an
+  // empty rectangle where a map was announced - which is the thing /docs/ names as a rule.
+  //
+  // Waiting for `style.load` moves that into the throw the callers already handle. It is the
+  // style specifically and not every error: a single tile failing to arrive is a gap in a picture
+  // that is otherwise correct, while a style that never loads means there is no picture at all.
+  await new Promise((resolve, reject) => {
+    if (map.isStyleLoaded()) return resolve();
+    // Long enough that a slow connection is not called a failure, short enough that nobody is
+    // left watching a blank card decide. A reader on a bad train connection sees the message and
+    // still has the board, which is the trade this whole file is built around.
+    const giveUp = setTimeout(() => finish(new Error("the basemap did not load in time")), 15000);
+    function finish(err) {
+      clearTimeout(giveUp);
+      map.off("style.load", ok);
+      map.off("error", bad);
+      if (!err) return resolve();
+      // The half-built map is torn down rather than left holding a WebGL context and a worker for
+      // a picture nobody will see.
+      try { map.remove(); } catch (e) { /* already gone */ }
+      reject(err);
+    }
+    const ok = () => finish(null);
+    const bad = (e) => finish((e && e.error) || new Error("the basemap could not be loaded"));
+    map.once("style.load", ok);
+    map.once("error", bad);
+  });
 
   return map;
 }
