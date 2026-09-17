@@ -19,16 +19,9 @@ pageStyle: |
   .contrib-grid { display: grid; grid-auto-flow: column;
     grid-template-columns: repeat(53, minmax(var(--min-cell), 1fr));
     grid-template-rows: repeat(7, auto); gap: var(--gap); }
-  .contrib-day { aspect-ratio: 1; border-radius: 2px; background: #cbd5e1; }
-  .contrib-day[data-level="1"] { background: #34d399; }
-  .contrib-day[data-level="2"] { background: #059669; }
-  .contrib-day[data-level="3"] { background: #047857; }
-  .contrib-day[data-level="4"] { background: #064e3b; }
-  .dark .contrib-day { background: #334155; }
-  .dark .contrib-day[data-level="1"] { background: #065f46; }
-  .dark .contrib-day[data-level="2"] { background: #059669; }
-  .dark .contrib-day[data-level="3"] { background: #34d399; }
-  .dark .contrib-day[data-level="4"] { background: #a7f3d0; }
+  /* The day colours moved to src/input.css: the app's home view draws the same ramp in a
+     twelve-week grid, and two copies of a colour scale is one copy too many. The layout below
+     stays here, because a year with axes and a twelve-week strip are different shapes. */
   /* Seven equal tracks over the same height as the grid beside it, so each label sits on the
      weekday it names whatever size the cells end up. Sticky keeps the axis readable when the
      grid is wider than the card. */

@@ -28,16 +28,28 @@ signOut: true
 
   {% include "chrome/weather-icons.njk" %}
 
-  <div class="flex items-start justify-between gap-4 flex-wrap">
-    <h1 id="greeting" class="text-3xl font-bold text-brand-text">&nbsp;</h1>
+  {# The hero.
 
-    {# The forecast, small. Everything else is one interaction away.
+     `data-wx` is set by app.js from the same describe() call that picks the chip's icon, so the
+     card's weather and the chip's weather are the same fact rendered twice rather than two
+     guesses. Until the forecast lands it is "unknown", which draws the plain surface - a card
+     that guesses sunshine and corrects itself to rain is worse than one that simply waits. #}
+  <div id="hero" class="hero" data-wx="unknown">
+    <div class="hero-sky" aria-hidden="true"></div>
 
-       It opens on hover, which is what was asked for, and ALSO on click, tap and keyboard -
-       hover alone is unreachable on a phone, and this is the only route to the location
-       control. The chip is a real <button> with aria-expanded so that is not a claim, it is
-       the element's own state. #}
-    <div id="wx" class="relative w-full sm:w-auto" data-open="false">
+    <div class="hero-body">
+      <div class="min-w-0 flex-1">
+        {# Non-breaking space so the line exists before the name does and nothing below it
+           moves when the greeting arrives. #}
+        <h1 id="greeting" class="text-3xl font-bold text-brand-text">&nbsp;</h1>
+
+        {# One sentence composed from what the app already knows. Each clause that refers to a
+           queue is a link to the queue, because a number you cannot act on is decoration.
+           Empty until there is something true to say. #}
+        <p id="digest" class="hero-digest"></p>
+      </div>
+
+<div id="wx" class="relative w-full sm:w-auto" data-open="false">
       <button id="wxChip" type="button" aria-expanded="false" aria-controls="wxPanel"
         class="wx-chip w-full sm:w-auto">
         <svg id="wxChipIcon" class="h-8 w-8 shrink-0 text-brand-accent" aria-hidden="true" focusable="false">
@@ -73,8 +85,80 @@ signOut: true
           <p id="geoNote" class="text-xs text-brand-muted"></p>
           <button type="button" id="geoBtn" class="btn-secondary text-sm px-4 py-1.5 mt-3">Use my location</button>
         </div>
-      </div>
+      </div>{# /#wxPanel #}
+    </div>{# /#wx #}
+    </div>{# /.hero-body #}
+  </div>{# /.hero #}
+
+  {# --- the way to everything -------------------------------------------
+     The two admin tiles carry data-min-role and are hidden until shell.js confirms the role,
+     exactly like the rail - so the grid never offers a tile that answers 403. #}
+  <h2 class="sr-only">Shortcuts</h2>
+  <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <li class="hidden" data-min-role="Admin">
+      <a href="/admin/accounts/" class="tile">
+        {% icon "fa-solid-users", "tile-icon" %}
+        <span class="tile-count" id="tilePending" data-loading="1">—</span>
+        <span class="tile-label">Awaiting approval</span>
+      </a>
+    </li>
+    <li class="hidden" data-min-role="Admin">
+      <a href="/admin/messages/" class="tile">
+        {% icon "fa-solid-envelope-open-text", "tile-icon" %}
+        <span class="tile-count" id="tileUnread" data-loading="1">—</span>
+        <span class="tile-label">Unread messages</span>
+      </a>
+    </li>
+    <li>
+      <a href="/profile/" class="tile">
+        {% icon "fa-solid-user-gear", "tile-icon" %}
+        <span class="tile-count tile-count--none" aria-hidden="true">&nbsp;</span>
+        <span class="tile-label">Your profile</span>
+      </a>
+    </li>
+    <li>
+      <a href="https://tzortzoglou.eu/" data-cross class="tile">
+        {% icon "fa-solid-arrow-right", "tile-icon" %}
+        <span class="tile-count tile-count--none" aria-hidden="true">&nbsp;</span>
+        <span class="tile-label">The public site</span>
+      </a>
+    </li>
+  </ul>
+
+  {# --- recent activity ---------------------------------------------------
+     The last twelve weeks of the same build-time GitHub fetch the public /code/ page uses. A
+     year of it belongs on that page, which is about the work; twelve weeks is what fits here
+     and what you would actually glance at.
+
+     `contributions` is null when the fetch failed, and a failed fetch must never fail a build -
+     so this renders nothing at all rather than an empty grid claiming no activity. #}
+  {%- if contributions %}
+  {#- Nunjucks' `last` returns the last item, not the last n - `.slice` is the one that
+     takes a count, and Nunjucks will call a real array method. #}
+  {%- set recent = contributions.weeks.slice(-12) %}
+  <h2 class="mt-10 mb-1 text-xl font-bold text-brand-text">Recent activity</h2>
+  <p class="text-sm text-brand-muted mb-4">
+    The last twelve weeks on GitHub, as of this deploy.
+  </p>
+  <figure class="card">
+    <figcaption class="sr-only">
+      A grid of the last twelve weeks, one square per day, shaded by how many contributions that
+      day holds. {{ contributions.total }} contributions in total between
+      {{ contributions.from }} and {{ contributions.to }}.
+    </figcaption>
+    <div class="heat" aria-hidden="true">
+      {%- for week in recent %}{% for day in week %}
+      {%- if day %}<div class="contrib-day" data-level="{{ day.level }}" title="{{ day.label }}"></div>
+      {%- else %}<div></div>
+      {%- endif %}
+      {%- endfor %}{% endfor %}
     </div>
-  </div>
+    <p class="mt-4 text-sm text-brand-muted">
+      {{ contributions.total }} contributions in the last year.
+      <a href="https://tzortzoglou.eu/code/" data-cross
+        class="text-brand-accent underline hover:no-underline">See the full year</a>.
+    </p>
+  </figure>
+  {%- endif %}
 
 </section>

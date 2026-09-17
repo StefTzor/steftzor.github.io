@@ -1,4 +1,5 @@
 import { api, profile, GEO_KEY } from "./shell.js";
+import { pendingAccounts, unreadMessages } from "./queues.js";
 
 /**
  * The home view. The shell owns identity, navigation and signing out; this owns the greeting
@@ -12,6 +13,97 @@ function firstName(me) {
   if (me.name) return me.name.split(" ")[0];
   const local = (me.email || "").split("@")[0].split(/[.+_-]/)[0];
   return local ? local.charAt(0).toUpperCase() + local.slice(1) : "there";
+}
+
+/**
+ * The sentence under the greeting.
+ *
+ * Composed from whatever is known at the moment it runs, and rebuilt whenever another piece
+ * arrives - the weather and the two queue counts land at different times, and waiting for the
+ * slowest would leave the line empty for as long as the slowest takes.
+ *
+ * Every clause is dropped rather than guessed. No weather yet means no weather clause, not
+ * "loading"; a queue that failed is simply not mentioned, because the alternative is a sentence
+ * that says "0 people are waiting" when the truth is "I could not find out".
+ */
+let lastWeather = null;
+let lastQueues = null;
+
+function paintDigest() {
+  const box = el("digest");
+  if (!box) return;
+  box.textContent = "";
+
+  const parts = [];
+  if (lastWeather && lastWeather.temp !== null && lastWeather.temp !== undefined) {
+    const where = lastWeather.place ? ` in ${lastWeather.place}` : "";
+    const what = lastWeather.text ? `${lastWeather.text.toLowerCase()} and ` : "";
+    parts.push({ text: `It is ${what}${Math.round(lastWeather.temp)}°C${where}.` });
+  }
+  if (lastQueues) {
+    const { pending, unread } = lastQueues;
+    if (pending > 0) {
+      parts.push({
+        text: pending === 1 ? "1 account is waiting for you" : `${pending} accounts are waiting for you`,
+        href: "/admin/accounts/",
+        tail: unread > 0 ? " and " : ".",
+      });
+    }
+    if (unread > 0) {
+      parts.push({
+        text: unread === 1 ? "1 message is unread" : `${unread} messages are unread`,
+        href: "/admin/messages/",
+        tail: ".",
+      });
+    }
+    if (pending === 0 && unread === 0) parts.push({ text: "Nothing is waiting for you." });
+  }
+
+  // createElement and textContent, like everywhere else that composes a line out of values
+  // that came back from the network.
+  parts.forEach((part, i) => {
+    if (i > 0 && !parts[i - 1].tail) box.appendChild(document.createTextNode(" "));
+    if (part.href) {
+      const a = document.createElement("a");
+      a.href = part.href;
+      a.textContent = part.text;
+      box.appendChild(a);
+    } else {
+      box.appendChild(document.createTextNode(part.text));
+    }
+    if (part.tail) box.appendChild(document.createTextNode(part.tail + (part.tail === "." ? " " : "")));
+  });
+}
+
+/** A count on a tile, landing in a slot that was already the right size. */
+function setTile(id, value) {
+  const box = el(id);
+  if (!box) return;
+  box.textContent = String(value);
+  box.removeAttribute("data-loading");
+}
+
+/**
+ * The two queues, for the tiles and for the sentence.
+ *
+ * Only for an admin: the endpoints answer 403 to everyone else, and asking anyway would put a
+ * guaranteed failure in the console of every ordinary sign-in. The tiles that show them are
+ * hidden from those roles by the same data-min-role the rail uses.
+ */
+async function loadQueues(me) {
+  if (me.role !== "Admin") return;
+  const [pending, unread] = await Promise.allSettled([pendingAccounts(), unreadMessages()]);
+  if (pending.status === "fulfilled") setTile("tilePending", pending.value);
+  if (unread.status === "fulfilled") setTile("tileUnread", unread.value.count);
+  // The sentence needs both to be sure of what it is saying. One of them failing means the
+  // line keeps to the weather rather than half-reporting.
+  if (pending.status === "fulfilled" && unread.status === "fulfilled") {
+    lastQueues = { pending: pending.value, unread: unread.value.count };
+    paintDigest();
+  } else {
+    console.error("home: queue counts failed",
+      pending.status === "rejected" ? pending.reason?.status : unread.reason?.status);
+  }
 }
 
 function greet(me) {
@@ -177,6 +269,13 @@ function renderChip(data) {
     use.setAttribute("href", `#wx-${what.icon}`);
     use.setAttributeNS(XLINK, "xlink:href", `#wx-${what.icon}`);
   }
+  // The hero's sky, from the same describe() result that just chose the icon. One fact drawn
+  // twice rather than two guesses that can disagree.
+  const hero = el("hero");
+  if (hero) hero.dataset.wx = what.icon;
+  lastWeather = { temp: now.temperature, text: what.text, place: label ? label.split(",")[0].trim()
+    : (data.precise ? "your location" : (data.place || "")) };
+  paintDigest();
   el("wxChipTemp").textContent = deg(now.temperature);
   el("wxChipWhat").textContent = what.text ? ` · ${what.text}` : "";
   // The chip gets the town, not the whole label. The region and country are saved because the
@@ -420,6 +519,9 @@ function setupPanel() {
 profile.then(async (me) => {
   greet(me);
   setupPanel();
+  // Not awaited: the forecast below is the slow part and must not queue behind this, nor this
+  // behind it. Each paints the moment it has something to say.
+  loadQueues(me);
 
   // Your saved home wins. It is a setting; the button in the panel is a one-off for this
   // session and deliberately does not overwrite it. That is the entire difference between the

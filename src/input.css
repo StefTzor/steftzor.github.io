@@ -195,6 +195,177 @@
     @apply px-4 py-10 sm:px-6 lg:px-8 max-w-5xl;
   }
 
+  /* The home hero.
+
+     The background reacts to the forecast the page has already fetched - `data-wx` carries the
+     same describe() result that picks the chip's icon, so the card and the chip cannot disagree
+     about the weather. Nothing here invents a condition: `unknown` is the state until the
+     forecast lands, and it draws the plain surface.
+
+     All of it is one absolutely-positioned layer behind the text, so nothing in here can affect
+     the layout or push the greeting around as conditions change. */
+  .hero {
+    @apply relative overflow-hidden rounded-2xl border border-brand-muted/15 bg-brand-surface;
+  }
+
+  .hero-body {
+    @apply relative flex flex-wrap items-start justify-between gap-4 p-6 sm:p-8;
+  }
+
+  .hero-digest {
+    @apply mt-2 max-w-prose text-brand-muted;
+  }
+
+  .hero-digest a {
+    @apply font-semibold text-brand-accent underline decoration-brand-accent/40 underline-offset-2
+           hover:decoration-brand-accent;
+  }
+
+  .hero-sky {
+    @apply pointer-events-none absolute inset-0;
+  }
+
+  /* Clear and mostly clear: a warm low sun breathing at the top right. */
+  .hero[data-wx="clear"] .hero-sky,
+  .hero[data-wx="partly"] .hero-sky {
+    background: radial-gradient(60% 120% at 88% -20%, rgb(251 191 36 / 26%), transparent 70%);
+    animation: hero-breathe 9s ease-in-out infinite;
+  }
+
+  /* Night: cooler, higher, dimmer. */
+  .hero[data-wx="night"] .hero-sky {
+    background: radial-gradient(50% 110% at 85% -25%, rgb(148 163 184 / 22%), transparent 72%);
+    animation: hero-breathe 12s ease-in-out infinite;
+  }
+
+  .hero[data-wx="cloud"] .hero-sky,
+  .hero[data-wx="fog"] .hero-sky {
+    background: linear-gradient(105deg, transparent 20%, rgb(148 163 184 / 16%) 50%, transparent 80%);
+    background-size: 220% 100%;
+    animation: hero-drift 18s linear infinite;
+  }
+
+  /* Rain and drizzle: fine diagonal streaks falling. repeating-linear-gradient rather than
+     elements, so this is one painted layer however hard it is raining. */
+  .hero[data-wx="rain"] .hero-sky,
+  .hero[data-wx="drizzle"] .hero-sky {
+    background:
+      linear-gradient(180deg, rgb(56 189 248 / 10%), transparent 60%),
+      repeating-linear-gradient(74deg, rgb(148 197 255 / 22%) 0 1px, transparent 1px 9px);
+    background-size: 100% 100%, 100% 64px;
+    animation: hero-rain 0.85s linear infinite;
+  }
+
+  .hero[data-wx="thunder"] .hero-sky {
+    background:
+      linear-gradient(180deg, rgb(129 140 248 / 16%), transparent 60%),
+      repeating-linear-gradient(74deg, rgb(191 210 255 / 26%) 0 1px, transparent 1px 7px);
+    background-size: 100% 100%, 100% 64px;
+    animation: hero-rain 0.6s linear infinite;
+  }
+
+  /* Snow: soft dots drifting down, slowly. */
+  .hero[data-wx="snow"] .hero-sky {
+    background:
+      radial-gradient(circle at 20% 20%, rgb(226 232 240 / 55%) 1.4px, transparent 1.6px),
+      radial-gradient(circle at 70% 60%, rgb(226 232 240 / 45%) 1.6px, transparent 1.8px),
+      radial-gradient(circle at 45% 85%, rgb(226 232 240 / 40%) 1.2px, transparent 1.4px);
+    background-size: 90px 90px, 130px 130px, 70px 70px;
+    animation: hero-snow 14s linear infinite;
+  }
+
+  @keyframes hero-breathe {
+    0%, 100% { opacity: 0.75; }
+    50%      { opacity: 1; }
+  }
+
+  @keyframes hero-drift {
+    from { background-position: 0 0; }
+    to   { background-position: 220% 0; }
+  }
+
+  @keyframes hero-rain {
+    from { background-position: 0 0, 0 0; }
+    to   { background-position: 0 0, 0 64px; }
+  }
+
+  @keyframes hero-snow {
+    from { background-position: 0 0, 0 0, 0 0; }
+    to   { background-position: 0 90px, 0 130px, 0 70px; }
+  }
+
+  /* Weather is decoration here - the chip beside it states the condition in words. Somebody who
+     asked not to be moved keeps the tint and loses the motion entirely. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-sky { animation: none !important; }
+  }
+
+  /* A shortcut, with its own count when it has one. */
+  .tile {
+    @apply flex h-full flex-col gap-1 rounded-lg border border-brand-muted/15 bg-brand-surface p-5
+           transition-colors duration-200
+           hover:border-brand-accent/40 focus-visible:border-brand-accent/40;
+  }
+
+  .tile-icon {
+    @apply h-5 w-5 text-brand-muted;
+  }
+
+  .tile:hover .tile-icon,
+  .tile:focus-visible .tile-icon {
+    @apply text-brand-accent;
+  }
+
+  .tile-count {
+    @apply mt-2 text-2xl font-bold leading-[1.2] text-brand-text tabular-nums;
+  }
+
+  .tile-count[data-loading] {
+    @apply text-brand-muted/40;
+  }
+
+  /* The tiles without a number keep the line anyway, so a row of four is a row of four rather
+     than two tall ones and two short ones. */
+  /* Hidden while the tiles are stacked, where an empty line is only a gap, and present from sm
+     up, where they sit side by side and a missing line would make one tile shorter. */
+  .tile-count--none {
+    @apply hidden select-none sm:block;
+  }
+
+  .tile-label {
+    @apply text-sm text-brand-muted;
+  }
+
+  /* Twelve weeks of days. The full year, with its month and weekday axes, lives on the public
+     /code/ page; this is the glanceable version and needs neither. The day colours themselves
+     are shared - see .contrib-day below. */
+  .heat {
+    @apply grid w-fit gap-[3px];
+    grid-auto-flow: column;
+    /* A ceiling on the cell, not a fraction of the card. The public /code/ grid divides its
+       width by 53 weeks and lands on something small; twelve weeks across the same card lands
+       on 78px squares, which is a chessboard rather than a heatmap. */
+    grid-template-columns: repeat(12, minmax(0, 15px));
+    grid-template-rows: repeat(7, 15px);
+  }
+
+  .heat .contrib-day { aspect-ratio: auto; }
+
+  /* One day, on both properties. These used to live in pages/code.njk's inline style, which is
+     also the only place they could be edited - and this grid wants exactly the same ramp. The
+     layout stays with each grid because the two are genuinely different shapes; the colours are
+     the part that must never drift. */
+  .contrib-day { aspect-ratio: 1; border-radius: 2px; background: #cbd5e1; }
+  .contrib-day[data-level="1"] { background: #34d399; }
+  .contrib-day[data-level="2"] { background: #059669; }
+  .contrib-day[data-level="3"] { background: #047857; }
+  .contrib-day[data-level="4"] { background: #064e3b; }
+  .dark .contrib-day { background: #334155; }
+  .dark .contrib-day[data-level="1"] { background: #065f46; }
+  .dark .contrib-day[data-level="2"] { background: #059669; }
+  .dark .contrib-day[data-level="3"] { background: #34d399; }
+  .dark .contrib-day[data-level="4"] { background: #a7f3d0; }
+
   /* A number worth acting on, wrapped in the link that acts on it. Grid rather than flex so
      the number sits in a row of its own fixed height: the figure arrives a second after the
      page does, and a slot that grows when it lands moves everything below it. */

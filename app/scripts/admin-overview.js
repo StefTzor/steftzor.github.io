@@ -1,5 +1,6 @@
-import { api, profile, API_BASE } from "./shell.js";
+import { profile, API_BASE } from "./shell.js";
 import { el, say } from "./admin-status.js";
+import { pendingAccounts, unreadMessages } from "./queues.js";
 
 /**
  * Admin -> Overview: what is waiting for you, and what is running.
@@ -31,8 +32,7 @@ function setUnavailable(id, noteId, why) {
 /** Waiting for approval. The link goes to the queue; the number says whether to bother. */
 async function loadPending() {
   try {
-    const { users } = await api("/admin/users");
-    const pending = users.filter((u) => u.status === "pending").length;
+    const pending = await pendingAccounts();
     setCount("pendingCount", "pendingNote", String(pending),
       pending === 0 ? "Nothing to approve"
         : pending === 1 ? "1 account is waiting"
@@ -53,10 +53,9 @@ async function loadPending() {
  */
 async function loadUnread() {
   try {
-    const { messages, nextBefore } = await api("/admin/messages");
-    const unread = messages.filter((m) => !m.read).length;
+    const { count: unread, more } = await unreadMessages();
     setCount("unreadCount", "unreadNote", String(unread),
-      nextBefore ? "On the most recent page"
+      more ? "On the most recent page"
         : unread === 0 ? "Nothing unread"
         : unread === 1 ? "1 message to read"
         : `${unread} messages to read`);
