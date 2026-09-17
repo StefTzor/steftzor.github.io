@@ -136,10 +136,25 @@ signOut: true
       <h2 id="dep-heading" class="text-xl font-bold text-brand-text">Next departures</h2>
       <p class="text-sm text-brand-muted">
         <span id="depStop"></span><span id="depAge" class="tabular-nums"></span>
+        <button type="button" id="depChange" class="ml-2 underline hover:text-brand-accent">Change stop</button>
         <button type="button" id="depRefresh" class="ml-2 underline hover:text-brand-accent">Refresh</button>
       </p>
     </div>
     <div class="card">
+      {# The picker, closed until asked for. A search box that is always there would be the
+         loudest thing on a card whose job is to be glanceable. #}
+      <form id="depPicker" method="get" class="hidden mb-4 border-b border-brand-muted/15 pb-4">
+        <label for="depSearch" class="field-label text-sm">Search for a stop</label>
+        <div class="flex flex-wrap gap-2">
+          <input type="text" id="depSearch" name="depSearch" autocomplete="off" maxlength="80"
+            placeholder="Portalgatan" class="field flex-1 min-w-[12rem]">
+          <button type="submit" class="btn-primary text-sm">Search</button>
+          <button type="button" id="depCancel" class="btn-secondary text-sm">Cancel</button>
+        </div>
+        <ul id="depResults" class="mt-3 space-y-1"></ul>
+        <p id="depPickNote" role="status" aria-live="polite" class="hint mt-2"></p>
+      </form>
+
       <ul id="depList" class="divide-y divide-brand-muted/10"></ul>
       <p id="depNote" class="text-sm text-brand-muted"></p>
     </div>

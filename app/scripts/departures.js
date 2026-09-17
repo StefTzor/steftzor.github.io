@@ -29,9 +29,17 @@ function shortStop(name) {
   return String(name || "").replace(/\s*\([^)]*kn\)\s*$/i, "").trim();
 }
 
-/** The destination, without the city it is already obvious we are in. */
-function shortTowards(towards) {
-  return String(towards || "").replace(/^Uppsala\s+/i, "");
+/**
+ * The destination, exactly as ResRobot gives it.
+ *
+ * This used to strip a leading "Uppsala ", which made "Uppsala Hågavägen" read as "Hågavägen"
+ * and lost information for no gain. What ResRobot calls `direction` is documented as "name of
+ * the last stop on the vehicle's trip" - so it is a stop name, not the destination an operator
+ * puts on the front of the bus. UL's own app shows "Eriksberg Håga" because that is UL's
+ * headsign, which this upstream does not carry at all.
+ */
+function towardsOf(towards) {
+  return String(towards || "").trim();
 }
 
 function render(data) {
@@ -55,7 +63,7 @@ function render(data) {
 
     const towards = document.createElement("span");
     towards.className = "flex-1 truncate text-sm text-brand-text";
-    towards.textContent = shortTowards(d.towards);
+    towards.textContent = towardsOf(d.towards);
 
     const when = document.createElement("span");
     when.className = "shrink-0 text-sm font-semibold tabular-nums text-brand-text";
@@ -108,9 +116,82 @@ async function load(refreshButton) {
   }
 }
 
+// --- choosing a stop ----------------------------------------------------------
+
+function pickNote(text) { el("depPickNote").textContent = text || ""; }
+
+/** The search results, as buttons. createElement and textContent: these names come from upstream. */
+function renderResults(stops) {
+  const list = el("depResults");
+  list.textContent = "";
+  if (!stops.length) { pickNote("No stop matches that."); return; }
+  pickNote("");
+  stops.forEach((stop) => {
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "w-full rounded px-2 py-1.5 text-left text-sm text-brand-text hover:bg-brand-bg";
+    btn.textContent = stop.name;
+    btn.addEventListener("click", () => choose(stop));
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+}
+
+/**
+ * Save the stop, then reload the board.
+ *
+ * Saved to the profile rather than to this browser, because the board is drawn from the profile
+ * on the server - storing the choice locally would mean the page and the API disagreed about
+ * which stop this is.
+ */
+async function choose(stop) {
+  pickNote("Saving…");
+  try {
+    await api("/me/profile", {
+      method: "POST",
+      body: JSON.stringify({ homeStop: { id: stop.id, name: stop.name } }),
+    });
+    closePicker();
+    await load();
+  } catch (err) {
+    console.error("departures: could not save the stop", err.status, err.code);
+    pickNote(err.code === "bad_stop" ? "That stop could not be saved." : "That could not be saved.");
+  }
+}
+
+function openPicker() {
+  el("depPicker").classList.remove("hidden");
+  el("depResults").textContent = "";
+  pickNote("");
+  el("depSearch").focus();
+}
+
+function closePicker() {
+  el("depPicker").classList.add("hidden");
+  el("depSearch").value = "";
+  el("depChange").focus();
+}
+
 profile.then(() => {
   if (!el("departures")) return;
   el("depRefresh").addEventListener("click", (e) => load(e.currentTarget));
+  el("depChange").addEventListener("click", openPicker);
+  el("depCancel").addEventListener("click", closePicker);
+
+  el("depPicker").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const q = el("depSearch").value.trim();
+    if (!q) return;
+    pickNote("Searching…");
+    try {
+      const { stops } = await api("/departures/stops?q=" + encodeURIComponent(q));
+      renderResults(stops);
+    } catch (err) {
+      console.error("departures: search failed", err.status, err.code);
+      pickNote("The search could not be run.");
+    }
+  });
 
   // Coming back to the tab with something stale on screen is the one moment a refresh is
   // obviously wanted and obviously cheap.
