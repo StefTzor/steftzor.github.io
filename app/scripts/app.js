@@ -289,6 +289,39 @@ function renderChip(data) {
   startClock(data.timezone);
 }
 
+/**
+ * The European AQI, as a word.
+ *
+ * The bands are the ones the index itself defines, so "Fair" here means what it means in every
+ * other European report of the same number. Said in words beside the figure, never as a colour
+ * alone - a coloured dot tells somebody who cannot distinguish it precisely nothing.
+ */
+function aqiBand(aqi) {
+  if (aqi <= 20) return "Good";
+  if (aqi <= 40) return "Fair";
+  if (aqi <= 60) return "Moderate";
+  if (aqi <= 80) return "Poor";
+  if (aqi <= 100) return "Very poor";
+  return "Extremely poor";
+}
+
+/**
+ * How much daylight is left, or when it comes back.
+ *
+ * Both halves matter in Uppsala, where in December the honest answer is usually the second one.
+ * Returns null when the times are unreadable rather than guessing at a duration.
+ */
+function daylight(sunrise, sunset, now = Date.now()) {
+  const up = Date.parse(sunrise);
+  const down = Date.parse(sunset);
+  if (!Number.isFinite(up) || !Number.isFinite(down)) return null;
+  if (now < up) return `dark until ${clockOf(sunrise)}`;
+  if (now >= down) return "dark now";
+  const mins = Math.round((down - now) / 60000);
+  const h = Math.floor(mins / 60);
+  return (h ? `${h} h ${mins % 60} m` : `${mins} m`) + " of daylight left";
+}
+
 function renderWeather(data) {
   renderChip(data);
 
@@ -315,12 +348,18 @@ function renderWeather(data) {
   head.appendChild(headText);
   box.appendChild(head);
 
-  box.appendChild(stats([
+  const figures = [
     ["Feels like", deg(now.feelsLike)],
     ["Humidity", round(now.humidity) === null ? "—" : `${round(now.humidity)}%`],
     ["Wind", round(now.windSpeed) === null ? "—" : `${round(now.windSpeed)} km/h ${bearing(now.windDirection)}`.trim()],
     ["UV index", round(today.uv) === null ? "—" : String(round(today.uv))],
-  ]));
+  ];
+  // Only when there is one. Air quality is fetched alongside the forecast and allowed to fail on
+  // its own, so an empty slot here is a normal state rather than an error to report.
+  if (data.air && typeof data.air.aqi === "number") {
+    figures.push(["Air quality", `${Math.round(data.air.aqi)} · ${aqiBand(data.air.aqi)}`]);
+  }
+  box.appendChild(stats(figures));
 
   if (data.hourly && data.hourly.length) box.appendChild(hourStrip(data.hourly));
   if (data.daily && data.daily.length) box.appendChild(dayGrid(data.daily.slice(0, 5)));
@@ -328,6 +367,8 @@ function renderWeather(data) {
   const sun = [];
   if (today.sunrise) sun.push(`Sunrise ${clockOf(today.sunrise)}`);
   if (today.sunset) sun.push(`Sunset ${clockOf(today.sunset)}`);
+  const left = daylight(today.sunrise, today.sunset);
+  if (left) sun.push(left);
   if (sun.length) {
     box.appendChild(node("p", "mt-5 text-xs text-brand-muted tabular-nums", sun.join(" · ")));
   }
