@@ -324,6 +324,76 @@
     .hero-sky { animation: none !important; }
   }
 
+  /* A segmented control. aria-pressed carries the state; the styling follows it rather than a
+     class, so the two cannot disagree about which segment is active. */
+  .seg {
+    @apply rounded-md px-3 py-1.5 text-sm font-medium text-brand-muted transition-colors duration-150
+           hover:text-brand-text
+           aria-[pressed=true]:bg-brand-accent/10 aria-[pressed=true]:text-brand-accent
+           aria-[pressed=true]:font-semibold;
+  }
+
+  /* One message, collapsed to a row.
+
+     The row is a <summary>, so opening and closing, the keyboard and the announcement are the
+     browser's job. Grid rather than flex: the columns line up down the list, which is what makes
+     a list of rows scannable rather than a stack of differently-shaped lines. */
+  .msg {
+    @apply border-b border-brand-muted/10;
+  }
+
+  .msg-row {
+    @apply grid cursor-pointer list-none items-baseline gap-x-3 gap-y-0.5 px-2 py-3
+           transition-colors duration-150 hover:bg-brand-surface
+           focus-visible:outline-none focus-visible:bg-brand-surface
+           focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-accent
+           [&::-webkit-details-marker]:hidden;
+    grid-template-columns: auto minmax(0, 12rem) minmax(0, 1fr) auto;
+  }
+
+  /* Below sm the preview and the date drop to a second line under the name: four columns in
+     360px is four columns nobody can read. */
+  @media (max-width: 639px) {
+    /* Every cell placed explicitly. Auto-placement sent the date to a row of its own, because
+       the preview spans to the end and pushes whatever follows it onto the next line - so the
+       rows came out ragged, each a different height. */
+    .msg-row { grid-template-columns: auto minmax(0, 1fr) auto; }
+    .msg-dot { grid-column: 1; grid-row: 1; }
+    .msg-from { grid-column: 2; grid-row: 1; }
+    .msg-when { grid-column: 3; grid-row: 1; }
+    .msg-preview { grid-column: 2 / -1; grid-row: 2; }
+  }
+
+  /* Unread is weight plus a dot, never the dot alone - a single coloured dot is exactly the
+     kind of meaning that disappears for anyone who cannot distinguish it. */
+  .msg-dot {
+    @apply mt-1.5 h-2 w-2 shrink-0 rounded-full bg-transparent;
+  }
+
+  .msg[data-read="false"] .msg-dot {
+    @apply bg-brand-accent;
+  }
+
+  .msg[data-read="false"] .msg-from {
+    @apply font-semibold text-brand-text;
+  }
+
+  .msg-from {
+    @apply truncate text-sm text-brand-muted;
+  }
+
+  .msg-preview {
+    @apply truncate text-sm text-brand-muted;
+  }
+
+  .msg-when {
+    @apply shrink-0 text-xs text-brand-muted tabular-nums;
+  }
+
+  .msg-body {
+    @apply px-2 pb-4 pl-7;
+  }
+
   /* A shortcut, with its own count when it has one. */
   .tile {
     @apply flex h-full flex-col gap-1 rounded-lg border border-brand-muted/15 bg-brand-surface p-5

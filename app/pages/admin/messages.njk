@@ -8,31 +8,54 @@ bodyScripts:
     type: "module"
 ---
 <section class="app-page">
-  <div class="app-prose">
-
+  {# Wider than the other reading pages: this one is a list to scan, not prose to read. The
+     message bodies are constrained individually when they open. #}
   {% include "chrome/admin-sections.njk" %}
 
-  <div class="flex items-baseline justify-between gap-4 mb-2">
+  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-2">
     <h1 class="text-3xl font-bold text-brand-text">Messages</h1>
     <p id="messageCount" class="text-sm text-brand-muted"></p>
   </div>
-  <p class="text-brand-muted mb-8">
+  <p class="text-brand-muted mb-6 max-w-prose">
     Sent through the contact form, on either site. Replying happens in your email.
   </p>
 
-  {# Same single live region the accounts page uses, for the same reason. #}
-  <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
+  <div id="status" role="status" aria-live="polite" class="mb-4 text-sm"></div>
 
-  {# Narrower than the accounts page on purpose: this is prose written by a stranger, and a line
-     of it running the full width of a desktop window is a line nobody finishes reading. #}
+  {# --- controls ---------------------------------------------------------
+     Filter and page size, both reflected in the URL so a view can be linked, bookmarked and
+     returned to with the back button.
+
+     There is no sort control, deliberately. The API returns newest first and pages by a cursor,
+     so a control here could only reorder the page already fetched - which would look like
+     sorting the inbox and would not be. Oldest-first would need the server to order the other
+     way and hand back a cursor for it. #}
+  <div class="flex flex-wrap items-end justify-between gap-4 mb-4">
+    <div role="group" aria-label="Filter" class="inline-flex rounded-lg border border-brand-muted/20 p-1">
+      <button type="button" id="filterAll" class="seg" aria-pressed="true">All</button>
+      <button type="button" id="filterUnread" class="seg" aria-pressed="false">Unread</button>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <label for="pageSize" class="text-sm text-brand-muted">Per page</label>
+      <select id="pageSize" class="field w-auto py-1.5 text-sm">
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+    </div>
+  </div>
+
+  {# One row per message, each a native disclosure. The list holds one page and is replaced
+     rather than appended to, so the page does not grow as the inbox does. #}
   <div id="messages">
     <p class="text-sm text-brand-muted">Loading messages…</p>
   </div>
 
-  <button type="button" id="moreMessages" class="btn-secondary mt-6 text-sm hidden">
-    Load older messages
-  </button>
-
-</div>
+  <nav aria-label="Pages" class="mt-6 flex items-center justify-between gap-4">
+    <button type="button" id="newer" class="btn-secondary text-sm" disabled>Newer</button>
+    <p id="pageWhere" class="text-sm text-brand-muted tabular-nums"></p>
+    <button type="button" id="older" class="btn-secondary text-sm" disabled>Older</button>
+  </nav>
 
 </section>
