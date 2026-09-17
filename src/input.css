@@ -60,6 +60,30 @@
      silently do nothing if a page ever grew a second one. */
   header { view-transition-name: site-header; }
   footer { view-transition-name: site-footer; }
+
+  /* The app's own chrome, hidden until there is a reason to believe someone is signed in.
+     app-shell.njk puts `app-unknown` on <html> and a script in <head> takes it off when this
+     browser has a profile hint; shell.js takes it off when /me answers. Without it,
+     app.tzortzoglou.eu/ painted the entire signed-in home view to a signed-out visitor for about
+     40ms - rail, Private and Admin links, a Sign out button, the weather card - before the
+     redirect to /login/ caught up.
+
+     visibility rather than display: the layout is already correct, so revealing it a moment
+     later must not move anything. */
+  .app-unknown #appHeader,
+  .app-unknown #main-content,
+  .app-unknown [data-logout] { visibility: hidden; }
+
+  /* The app needs JavaScript for anything at all, but a page that is merely invisible is a worse
+     failure than one that is visibly broken. */
+  @media (scripting: none) {
+    .app-unknown #appHeader,
+    .app-unknown #main-content,
+    .app-unknown [data-logout] { visibility: visible; }
+  }
+
+  /* Reserved so that the address arriving from /me does not shove the links down. */
+  #whoami { min-height: 1rem; }
 }
 
 /* --- cross-document view transitions -------------------------------------------------------

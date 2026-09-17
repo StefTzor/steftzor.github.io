@@ -94,7 +94,12 @@ function showPending() {
  */
 function remember(me) {
   try {
-    localStorage.setItem("app-profile", JSON.stringify({ email: me.email, role: me.role }));
+    // The role and nothing else. It used to carry the email too, so that the rail could be drawn
+    // complete before /me answered - which meant a browser whose session had since lapsed painted
+    // the last person's address on screen for a moment to whoever opened the app next. A role is
+    // not a name; an address is. The address now waits for the server to confirm there is a
+    // session to attach it to.
+    localStorage.setItem("app-profile", JSON.stringify({ role: me.role }));
   } catch (e) { /* private mode: the next page just paints a moment later */ }
 }
 
@@ -104,6 +109,7 @@ function forget() {
 
 function paint(me) {
   remember(me);
+  document.documentElement.classList.remove("app-unknown");
   const who = el("whoami");
   if (who) who.textContent = me.email + (me.role === "User" ? "" : ` · ${me.role}`);
 

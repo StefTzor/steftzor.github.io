@@ -21,7 +21,10 @@
     pageStyle    inline <style> for this page
     bodyScripts  [{src, type, integrity, defer}] loaded at end of body
 #}
-<html lang="en" class="scroll-smooth dark">
+{# `app-unknown` ONLY on the pages that carry the signed-in shell. Putting it on every app page
+   hid the sign-in form, the register form, the reset form, the action page and the sign-out
+   confirmation - none of which load shell.js, so nothing would ever have taken it off again. #}
+<html lang="en" class="scroll-smooth dark{% if shell %} app-unknown{% endif %}">
 
 <head>
   <meta charset="UTF-8">
@@ -29,6 +32,23 @@
   {# Must stay before the stylesheet, or the wrong theme paints first. Byte-identical to the
      public site's copy so both pages hash to the same CSP value. #}
   {% include "chrome/theme-boot.njk" %}
+  {# Is there any reason to believe someone is signed in here?
+
+     `app-unknown` on <html> hides the app's own chrome (see src/input.css). This takes it off
+     when this browser has a profile hint, which is written only after /me has answered and
+     cleared on every path that ends a session - so a returning signed-in visitor sees the rail
+     with the page, and someone who has signed out, or never signed in, sees none of it while
+     Firebase works out that they have to go to /login/.
+
+     Before this, app.tzortzoglou.eu/ painted the whole signed-in home view - rail, section
+     links, a Sign out button, the weather card - for about 40ms to anyone at all, then
+     redirected. It looked like being signed in and then thrown out. #}
+  <script>(function(){var d=document.documentElement;try{if(localStorage.getItem("app-profile")){d.classList.remove("app-unknown");return;}}catch(e){}
+  /* Safety valve. shell.js takes the class off when /me answers, and Firebase comes from
+     gstatic - so if that request is blocked, shell.js never runs and nothing would ever reveal
+     the page. A visible shell that does not work can at least be diagnosed; a blank one looks
+     like the site is broken. Long enough that the redirect to /login/ always wins the race. */
+  setTimeout(function(){d.classList.remove("app-unknown");},6000);})();</script>
   <link rel="preload" href="/fonts/poppins-400-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/poppins-700-latin.woff2" as="font" type="font/woff2" crossorigin>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -95,7 +115,7 @@
        being a function rather than undefined is what let a role of "constructor" clear every
        gate on the server once; that shape does not get to exist again, even somewhere it could
        only mis-draw a link. #}
-    <script>(function(){try{var p=JSON.parse(localStorage.getItem("app-profile")||"null");if(!p||typeof p.role!=="string")return;var ORDER=["User","SuperUser","Admin"];var have=ORDER.indexOf(p.role)+1;if(!have)return;document.querySelectorAll("[data-min-role]").forEach(function(i){var n=ORDER.indexOf(i.getAttribute("data-min-role"))+1;if(n&&have>=n)i.classList.remove("hidden");});var w=document.getElementById("whoami");if(w&&typeof p.email==="string")w.textContent=p.email+(p.role==="User"?"":" \u00b7 "+p.role);}catch(e){}})();</script>
+    <script>(function(){try{var p=JSON.parse(localStorage.getItem("app-profile")||"null");if(!p||typeof p.role!=="string")return;var ORDER=["User","SuperUser","Admin"];var have=ORDER.indexOf(p.role)+1;if(!have)return;document.querySelectorAll("[data-min-role]").forEach(function(i){var n=ORDER.indexOf(i.getAttribute("data-min-role"))+1;if(n&&have>=n)i.classList.remove("hidden");});}catch(e){}})();</script>
   {%- endif %}
 
   {%- if shell %}
