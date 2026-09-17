@@ -114,10 +114,31 @@
                 {% icon "fa-solid-heart-lock", "side-icon" %}<span>Private</span>
               </a>
             </li>
+            {# Admin is not one page any more, so it is not one link any more. A <details> rather
+               than a scripted menu: the browser already knows how to open and close a disclosure,
+               announce its state and move focus through it, and this needs no JavaScript at all -
+               which matters here, because the rail is drawn before Firebase has even loaded.
+
+               It is open when you are already inside Admin, decided at build time from the URL,
+               so arriving at a section never shows the tree closed over the page you are on and
+               then opening. The sections themselves come from app/pages/_data/adminSections.js. #}
             <li class="hidden" data-min-role="Admin">
-              <a href="/admin/" data-nav="admin" class="side-link">
-                {% icon "fa-solid-users", "side-icon" %}<span>Admin</span>
-              </a>
+              <details class="group"{% if "/admin/" in page.url %} open{% endif %}>
+                <summary class="side-link cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
+                  {% icon "fa-solid-users", "side-icon" %}
+                  <span class="flex-1">Admin</span>
+                  {% icon "fa-solid-chevron-down", "h-3 w-3 shrink-0 text-brand-muted transition-transform duration-150 group-open:rotate-180" %}
+                </summary>
+                <ul class="mt-1 ml-4 space-y-1 border-l border-brand-muted/15 pl-2">
+                  {%- for s in adminSections %}
+                  <li>
+                    <a href="{{ s.href }}" data-nav="{{ s.navKey }}" class="side-link">
+                      {% icon s.icon, "side-icon" %}<span>{{ s.label }}</span>
+                    </a>
+                  </li>
+                  {%- endfor %}
+                </ul>
+              </details>
             </li>
           </ul>
         </nav>

@@ -1,0 +1,46 @@
+---
+permalink: /admin/invites/
+title: "Invites | Admin"
+bodyScripts:
+  - src: "/scripts/admin-invites.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+---
+<section class="container mx-auto px-4 py-10 max-w-2xl">
+
+  {% include "chrome/admin-sections.njk" %}
+
+  <h1 class="text-3xl font-bold text-brand-text mb-2">Invites</h1>
+  <p class="text-brand-muted mb-8">
+    Creates an approved account and emails them a link to choose a password. They never need to
+    register, and you never need to approve them afterwards.
+  </p>
+
+  <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
+
+  <form id="inviteForm" method="post" novalidate
+    class="card grid gap-3 sm:grid-cols-[1fr,auto,auto] sm:items-end">
+    <div>
+      <label for="inviteEmail" class="field-label text-sm">Email address</label>
+      <input type="email" id="inviteEmail" name="inviteEmail" required autocomplete="off" maxlength="254"
+        aria-describedby="status"
+        class="field">
+    </div>
+    <div>
+      <label for="inviteRole" class="field-label text-sm">Role</label>
+      <select id="inviteRole" name="inviteRole" class="field sm:w-auto">
+        <option value="User">User</option>
+        <option value="SuperUser">SuperUser</option>
+        <option value="Admin">Admin</option>
+      </select>
+    </div>
+    <button type="submit" class="btn-primary w-full sm:w-auto">Send invitation</button>
+  </form>
+
+  <p class="hint mt-4">
+    An address that already has an account is refused rather than re-invited — look for it on
+    <a href="/admin/" class="text-brand-accent underline hover:no-underline">Accounts</a>.
+  </p>
+
+</section>

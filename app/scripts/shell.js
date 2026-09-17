@@ -138,12 +138,21 @@ function paint(me) {
     item.classList.toggle("hidden", !allowed);
   });
 
-  const key = location.pathname === "/" ? "home" : location.pathname.replace(/\//g, "");
-  const here = document.querySelector(`[data-nav="${key}"]`);
-  if (here) {
-    here.classList.add("bg-brand-bg", "font-semibold");
-    here.setAttribute("aria-current", "page");
-  }
+  // "/" -> home, "/admin/" -> admin, "/admin/messages/" -> admin-messages. The nesting has to
+  // survive, or every page under /admin/ collapses onto the same key and the rail marks Accounts
+  // as current while you are reading Messages.
+  const key = location.pathname.replace(/^\/+|\/+$/g, "").replace(/\//g, "-") || "home";
+  // All of them, not the first. A section link exists twice on an admin page - in the rail and in
+  // the row shown below lg - and querySelector marked whichever came first in the document, which
+  // on a phone was always the hidden one.
+  //
+  // Compared rather than interpolated into a selector: the key comes from location.pathname, and
+  // a stray quote in a URL should not be able to reach querySelector as syntax.
+  document.querySelectorAll("[data-nav]").forEach((link) => {
+    if (link.dataset.nav !== key) return;
+    link.classList.add("bg-brand-bg", "font-semibold");
+    link.setAttribute("aria-current", "page");
+  });
 
   const main = el("main-content");
   if (main) main.setAttribute("aria-busy", "false");

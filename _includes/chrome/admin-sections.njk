@@ -1,0 +1,23 @@
+{#
+  The Admin sections, for screens too narrow to show the sidebar.
+
+  Below lg the rail in app-shell.njk is hidden and the only navigation is the drawer, which
+  carries one Admin link. Without this row, reaching Messages on a phone would mean going to
+  Accounts first and there would be no way back out of it except the drawer.
+
+  Same list as the sidebar disclosure, from the same data file, so the two cannot disagree.
+  aria-current is set by app/scripts/shell.js, which marks every element carrying the matching
+  data-nav - this row and the rail item both.
+#}
+<nav aria-label="Admin sections" class="lg:hidden mb-8">
+  <ul class="flex flex-wrap gap-2">
+    {%- for s in adminSections %}
+    <li>
+      <a href="{{ s.href }}" data-nav="{{ s.navKey }}"
+        class="side-link min-h-[44px] border border-brand-muted/20 bg-brand-surface">
+        {% icon s.icon, "side-icon" %}<span>{{ s.label }}</span>
+      </a>
+    </li>
+    {%- endfor %}
+  </ul>
+</nav>

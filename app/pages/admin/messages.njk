@@ -1,0 +1,35 @@
+---
+permalink: /admin/messages/
+title: "Messages | Admin"
+bodyScripts:
+  - src: "/scripts/admin-messages.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+---
+<section class="container mx-auto px-4 py-10 max-w-3xl">
+
+  {% include "chrome/admin-sections.njk" %}
+
+  <div class="flex items-baseline justify-between gap-4 mb-2">
+    <h1 class="text-3xl font-bold text-brand-text">Messages</h1>
+    <p id="messageCount" class="text-sm text-brand-muted"></p>
+  </div>
+  <p class="text-brand-muted mb-8">
+    Sent through the contact form, on either site. Replying happens in your email.
+  </p>
+
+  {# Same single live region the accounts page uses, for the same reason. #}
+  <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
+
+  {# Narrower than the accounts page on purpose: this is prose written by a stranger, and a line
+     of it running the full width of a desktop window is a line nobody finishes reading. #}
+  <div id="messages">
+    <p class="text-sm text-brand-muted">Loading messages…</p>
+  </div>
+
+  <button type="button" id="moreMessages" class="btn-secondary mt-6 text-sm hidden">
+    Load older messages
+  </button>
+
+</section>

@@ -42,7 +42,10 @@ module.exports = function (eleventyConfig) {
     "app/scripts/forms.js": "scripts/forms.js",
     "app/scripts/app.js": "scripts/app.js",
     "app/scripts/private.js": "scripts/private.js",
-    "app/scripts/admin.js": "scripts/admin.js",
+    "app/scripts/admin-status.js": "scripts/admin-status.js",
+    "app/scripts/admin-accounts.js": "scripts/admin-accounts.js",
+    "app/scripts/admin-messages.js": "scripts/admin-messages.js",
+    "app/scripts/admin-invites.js": "scripts/admin-invites.js",
   });
 
   // Same reason as the public site: CI writes the real config after the build.
