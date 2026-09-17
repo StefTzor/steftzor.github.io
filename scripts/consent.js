@@ -37,14 +37,29 @@
   // this used to claim otherwise: it is sent whole, because the browser gives it whole, and
   // a referring URL is exactly where somebody's search terms ride. The server reduces it to
   // its host before anything is written and discards the rest - so the trimming is real, it
-  // just happens one hop later than here. The property (site or app) is decided server-side
+  // just happens one hop later than here. What is NOT sent is a referrer from this same site:
+  // the server drops a same-site one as self-referral anyway, so sending it could only ever
+  // carry the previous page's query string somewhere it is not wanted.
+  // The property (site or app) is decided server-side
   // from the Origin header: a client that named its own property would be making a claim
   // rather than reporting a fact.
+  // The referring URL, but only when it came from somewhere else. Wrapped because an opaque or
+  // malformed referrer makes URL() throw, and a counter may not be the thing that breaks a page.
+  function fromElsewhere() {
+    var ref = document.referrer;
+    if (!ref) return '';
+    try {
+      return new URL(ref).origin === location.origin ? '' : ref;
+    } catch (e) {
+      return '';
+    }
+  }
+
   function count() {
     if (counted) return;
     counted = true;
     var url = API_BASE + '/hit';
-    var body = JSON.stringify({ path: location.pathname, referrer: document.referrer });
+    var body = JSON.stringify({ path: location.pathname, referrer: fromElsewhere() });
     try {
       // sendBeacon survives the page being closed the instant after this runs; keepalive
       // gives the fetch fallback the same property.

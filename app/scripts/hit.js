@@ -29,6 +29,14 @@ import { API_BASE } from "./api-base.js";
  * the client does not send one either, so the credential never leaves the tab it arrived in
  * rather than being discarded at the far end of a request.
  *
+ * **The referrer needed the same care, and for a while did not get it.** Under this app's
+ * Referrer-Policy a SAME-ORIGIN referrer is the full URL, query string included - so navigating
+ * away from /admin/account/?uid=X put that uid in this body, one page after the path rule had
+ * carefully kept it out. Nothing stored it (the server reduces a referrer to its host, and drops
+ * a same-site one entirely), but it travelled, and the docblock above claimed it did not. A
+ * referrer from our own origin is now not sent at all: the server would discard it, and the only
+ * thing sending it could do is carry something.
+ *
  * The property is NOT sent. The server reads it from the Origin header, which CORS has already
  * checked; a property in this body would be a claim by a page rather than a fact about it.
  */
@@ -36,11 +44,28 @@ import { API_BASE } from "./api-base.js";
 // One page load is one view, whatever calls this and however often.
 let counted = false;
 
+/**
+ * The referring URL, but only when it came from somewhere else.
+ *
+ * A same-origin referrer is this app's own previous URL in full, and the server drops it as
+ * same-site anyway - so it is all cost and no answer. Wrapped because an opaque or malformed
+ * referrer makes `new URL` throw, and a counter may not be the thing that breaks a page.
+ */
+function fromElsewhere() {
+  const ref = document.referrer;
+  if (!ref) return "";
+  try {
+    return new URL(ref).origin === location.origin ? "" : ref;
+  } catch (e) {
+    return "";
+  }
+}
+
 export function count() {
   if (counted) return;
   counted = true;
 
-  const body = JSON.stringify({ path: location.pathname, referrer: document.referrer });
+  const body = JSON.stringify({ path: location.pathname, referrer: fromElsewhere() });
 
   try {
     // sendBeacon survives the page being closed mid-flight, which fetch() only does with
