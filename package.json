@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node scripts/consent.test.js && node scripts/auth.security.test.js && node scripts/contact.security.test.js && node scripts/app-headers.test.js",
+    "test": "node scripts/consent.test.js && node scripts/auth.security.test.js && node scripts/contact.security.test.js && node scripts/admin-messages.security.test.js && node scripts/app-headers.test.js",
     "build": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify && eleventy && node scripts/cachebust.test.js && node scripts/urls.test.js && node scripts/csp.test.js _site && node scripts/assets.test.js _site",
     "watch": "concurrently \"tailwindcss -i ./src/input.css -o ./dist/output.css --watch\" \"eleventy --serve\"",
     "dev": "npm run watch",
-    "build:app": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify && eleventy --config=eleventy.app.js && node scripts/csp.test.js _app && node scripts/assets.test.js _app && node scripts/app-nav.test.js && node scripts/app-headers.test.js",
+    "build:app": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify && eleventy --config=eleventy.app.js && node scripts/csp.test.js _app && node scripts/assets.test.js _app && node scripts/app-nav.test.js && node scripts/admin-messages.security.test.js && node scripts/app-headers.test.js",
     "dev:app": "concurrently \"tailwindcss -i ./src/input.css -o ./dist/output.css --watch\" \"eleventy --config=eleventy.app.js --serve --port=8081\""
   },
   "repository": {

@@ -12,15 +12,28 @@ import { el, say } from "./admin-status.js";
 let oldest = null;     // the cursor for the next page, handed to us by the server
 let inbox = [];        // every message rendered so far, so "unread" is counted from data
 
-// The API validated this shape on the way in, so an address that reaches here has no spaces and
-// no newlines. Re-checking anyway, because this builds an href: if it ever does not match, the
-// address is rendered as plain text rather than as a link to something unexpected.
-const MAILTO = /^[^\s@<>"']+@[^\s@<>"']+\.[^\s@<>"']+$/;
+// An allowlist, and the allowlist is the point.
+//
+// This used to be a blocklist - anything without a space, an @ or an angle bracket - which is a
+// reasonable test of "is this an email address" and no test at all of "may this go in a URL".
+// `a@b.co?bcc=attacker%40evil.com` passes that test, passes the API's identical check on the way
+// in, and is stored as somebody's address; the mailto it builds silently blind-copies a stranger
+// on your reply. `?body=` writes the reply for you, `?to=` adds a recipient. `%40` is why the
+// "only one @" shape of the old pattern did not stop any of it.
+//
+// A mailto cannot be fixed by appending: the FIRST `?` wins, so our own `?subject=` below lands
+// after theirs and changes nothing. The address itself has to be refused.
+//
+// Still not percent-encoded, for the original reason - encodeURIComponent turns a@b.com into
+// a%40b.com. An address that cannot go into a URL as written is refused instead, and
+// messageCard() already renders a null href as a plain <span>: such an address loses its link,
+// never its text, and the message is still readable and still says who sent it.
+const MAILTO = /^[A-Za-z0-9._+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/;
+const MAX_EMAIL = 254;   // RFC 5321, the same ceiling the API applies on the way in
 
-/** A mailto: URL, or null if the address is not one. Deliberately NOT percent-encoded: the
- *  address is the path of a mailto URL, and encoding it turns a@b.com into a%40b.com. */
+/** A mailto: URL for an address, or null if that address has no business being in one. */
 function mailto(email, subject) {
-  if (typeof email !== "string" || !MAILTO.test(email)) return null;
+  if (typeof email !== "string" || email.length > MAX_EMAIL || !MAILTO.test(email)) return null;
   return "mailto:" + email + (subject ? "?subject=" + encodeURIComponent(subject) : "");
 }
 
