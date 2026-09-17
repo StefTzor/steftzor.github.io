@@ -327,6 +327,13 @@
 
   {# Presentation only, and imports nothing - see scripts/chrome.js for why that matters. #}
   <script src="/scripts/chrome.js"></script>
+  {# The page-view beacon used to be loaded here, as its own module, on every `shell` page. It is
+     not, any more: these pages are static files and the sign-in is a redirect JavaScript performs
+     after they have already rendered, so a script tag counted every stranger who opened one. It
+     is now imported by app/scripts/shell.js and called when /me confirms the session, which every
+     signed-in page reaches and no auth page does - so the set of counted pages is unchanged and
+     the moment of counting is the only thing that moved. A tag here as well would be a second
+     fetch of a module that sends nothing on import. #}
   {%- for s in bodyScripts %}
   {# Literal src="..." with double quotes - the cachebust transform only versions that shape. #}
   <script{% if s.type %} type="{{ s.type }}"{% endif %} src="{{ s.src }}"{% if s.integrity %} integrity="{{ s.integrity }}" crossorigin="anonymous" referrerpolicy="no-referrer"{% endif %}{% if s.defer %} defer{% endif %}></script>

@@ -3,10 +3,10 @@ layout: legal.njk
 permalink: /cookies/
 title: "Cookies & Local Storage | Stefanos Tzortzoglou"
 heading: "Cookies & Local Storage"
-description: "This site sets no cookies and shows no consent banner. Here is exactly what is stored in your browser, which third parties your browser contacts, and why no consent is legally required."
+description: "This site sets no cookies. Here is exactly what is stored in your browser, what the page-view counter records, which third parties your browser contacts, and how to change your analytics choice."
 summary: "This site sets no cookies. The only thing you could reasonably object to is the page-view counter, so that is what the banner asks about. It stays off until you say yes."
-updated: "2026-09-16"
-updatedLabel: "16 September 2026"
+updated: "2026-09-17"
+updatedLabel: "17 September 2026"
 sitemapOrder: 70
 sitemapChangefreq: yearly
 sitemapPriority: "0.3"
@@ -89,6 +89,28 @@ sitemapPriority: "0.3"
   your browser under <code>analytics-consent</code> and never leaves your device.
 </p>
 
+<h3>What is counted if you accept</h3>
+<p>
+  The counter is mine. Accepting sends one short message to <strong>api.tzortzoglou.eu</strong>, the same server that
+  receives the contact form; no analytics company is involved and no third-party script is loaded. Each counted page
+  view stores four things: the <strong>path</strong> of the page without its query string or fragment, which of my two
+  sites it was, the <strong>host</strong> of the page that linked you here (<code>www.linkedin.com</code>, never the
+  full address), and the <strong>time</strong>.
+</p>
+<p>
+  It stores no cookie, no IP address, no fingerprint and <strong>no identifier of any kind</strong>, so nothing joins
+  one page view to the next and there is no profile to build. The full referring URL is thrown away as soon as its host
+  has been read off it, because a full referring address can carry someone's search terms in its query string. Until
+  September 2026 this counting was done by GoatCounter instead; nothing goes there now, and what it gathered is history
+  rather than a live source. The <a href="/privacy/#analytics">Privacy Policy</a> sets out the legal basis.
+</p>
+<p>
+  This choice covers this site. The signed-in application at <code>app.tzortzoglou.eu</code> counts its own page loads
+  for everyone, without asking, because that is a service you deliberately logged in to rather than an audience being
+  measured — it records the same four things and nothing more, not even which account was signed in.
+  <a href="/privacy/#app-analytics">Section 3.2 of the Privacy Policy</a> explains why it is treated differently.
+</p>
+
 <h3>Why the banner only asks about this one thing</h3>
 <p>
   Under Article 5(3) of the ePrivacy Directive (in Sweden, the Electronic Communications Act,
@@ -114,7 +136,8 @@ sitemapPriority: "0.3"
 <p>
   Some assets are loaded from other providers instead of this domain. Your browser connects to them directly, so they
   receive your IP address, user-agent, and the page you were viewing. None of them set cookies here, but the connection
-  itself is a transfer of data, so it is listed in full:
+  itself is a transfer of data, so it is listed in full. The page-view counter is no longer among them: it is a request
+  to my own server, and <strong>only if you accepted it</strong>.
 </p>
 
 <table>
@@ -132,11 +155,6 @@ sitemapPriority: "0.3"
       <td>Only the <a href="https://app.tzortzoglou.eu/login/">sign in</a>,
         <a href="https://app.tzortzoglou.eu/register/">register</a> and private-area
         pages, or any page if you are signed in on this browser</td>
-    </tr>
-    <tr>
-      <td>GoatCounter</td>
-      <td>Cookieless page-view counter</td>
-      <td><strong>Only after you accept</strong></td>
     </tr>
     <tr>
       <td>jsDelivr</td>
@@ -162,5 +180,6 @@ sitemapPriority: "0.3"
   built to stay readable without them: text, layout, navigation, the typeface and every icon are served entirely from
   this domain, and the GitHub activity graph is built into the page rather than fetched by your browser. On most pages
   there is nothing left to block. What you lose is the rendered GitHub statistics images on the
-  <a href="/code/">Code</a> page.
+  <a href="/code/">Code</a> page. Such a blocker may also stop the page-view counter, which is fine — it is the same
+  outcome as declining.
 </p>

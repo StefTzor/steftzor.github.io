@@ -132,10 +132,11 @@ module.exports = function (eleventyConfig, { cspOverrides = {} } = {}) {
 
     const policy = {
       "default-src": ["'self'"],
-      // gc.zgo.at is GoatCounter, injected by consent.js after consent, so no hash can ever
-      // cover it. No gstatic: the public site loads no Firebase. The app needs both the SDK
-      // and the identity endpoints, and says so in its own cspOverrides.
-      "script-src": ["'self'", "https://gc.zgo.at"],
+      // Nothing third-party by default: the page counter is a beacon to my own API rather
+      // than a script somebody else serves, so script-src never has to widen for it. No
+      // gstatic either - the public site loads no Firebase. The app needs both the SDK and
+      // the identity endpoints, and says so in its own cspOverrides.
+      "script-src": ["'self'"],
       // style-src-elem and -attr are what current browsers honour; the plain style-src is the
       // fallback for those that do not know them. The attribute source has to stay
       // 'unsafe-inline': the inlined Font Awesome icons carry style="display:inline-block"
@@ -145,8 +146,8 @@ module.exports = function (eleventyConfig, { cspOverrides = {} } = {}) {
       "style-src-attr": ["'unsafe-inline'"],
       "img-src": ["'self'", "data:"],
       "font-src": ["'self'"],
-      // The contact form, and GoatCounter's beacon.
-      "connect-src": ["'self'", "https://api.tzortzoglou.eu", "https://steftzor.goatcounter.com"],
+      // The contact form and the page-view beacon, both of which talk to the same API.
+      "connect-src": ["'self'", "https://api.tzortzoglou.eu"],
       "form-action": ["'self'"],
       "frame-src": ["'none'"],
       "object-src": ["'none'"],

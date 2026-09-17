@@ -10,9 +10,15 @@
   The `?theme=` branch is the handoff between tzortzoglou.eu and app.tzortzoglou.eu. localStorage
   is per-origin, so a choice made on one is invisible to the other, and crossing over used to
   flip you back to dark in your face. The header appends the parameter to its cross-property link
-  (see scripts/chrome.js), this adopts it, and this then takes it back out of the address bar -
-  in <head> rather than on DOMContentLoaded, because consent.js injects GoatCounter and
-  GoatCounter records location.search when it loads, which a later cleanup would race.
+  (see scripts/chrome.js), this adopts it, and this then takes it back out of the address bar.
+
+  The cleanup happens here rather than on DOMContentLoaded for the same reason the theme itself
+  is decided here: this block already has to run before the first paint, and leaving `?theme=dark`
+  in the address bar until the document is ready means it is in whatever the visitor copies,
+  shares or bookmarks in between. It also used to be a race against the counter, which read
+  location.search as it loaded - that counter is gone, and the reason above is the one that
+  survives it. Nothing now reads the query string on either property: the page-view beacon sends
+  location.pathname and never location.href, deliberately.
 
   Whichever choice was made most recently wins, wherever it was made - hence `theme-at`, written
   beside `theme` by the toggle and carried alongside it. The first version instead let the

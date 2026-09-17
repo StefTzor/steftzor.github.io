@@ -12,9 +12,15 @@
  */
 (function () {
   var KEY = 'analytics-consent';           // 'granted' | 'denied'
-  var GC = 'https://gc.zgo.at/count.js';
+
+  // Same rule as contact.js, so there is one convention for "which API am I talking to".
+  var API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:3000'
+    : 'https://api.tzortzoglou.eu';
 
   var memory = null;                       // fallback when storage is blocked
+  var counted = false;                     // one page load is one view, however consent arrived
+
   function read() {
     try { return localStorage.getItem(KEY); } catch (e) { return memory; }
   }
@@ -25,18 +31,44 @@
     try { localStorage.setItem(KEY, v); return true; } catch (e) { return false; }
   }
 
-  function loadAnalytics() {
-    if (document.querySelector('script[data-goatcounter]')) return;
-    var s = document.createElement('script');
-    s.async = true;
-    s.src = GC;
-    s.setAttribute('data-goatcounter', 'https://steftzor.goatcounter.com/count');
-    document.body.appendChild(s);
+  // The beacon carries which page and where the visitor came from, and nothing else.
+  // `location.pathname` leaves out this page's own query string and fragment, so a search
+  // term sitting in the address bar is never sent. The referrer is a different matter and
+  // this used to claim otherwise: it is sent whole, because the browser gives it whole, and
+  // a referring URL is exactly where somebody's search terms ride. The server reduces it to
+  // its host before anything is written and discards the rest - so the trimming is real, it
+  // just happens one hop later than here. The property (site or app) is decided server-side
+  // from the Origin header: a client that named its own property would be making a claim
+  // rather than reporting a fact.
+  function count() {
+    if (counted) return;
+    counted = true;
+    var url = API_BASE + '/hit';
+    var body = JSON.stringify({ path: location.pathname, referrer: document.referrer });
+    try {
+      // sendBeacon survives the page being closed the instant after this runs; keepalive
+      // gives the fetch fallback the same property.
+      // Typed text/plain, which is one of the three content types a CORS-simple request may
+      // carry, so the beacon leaves with no OPTIONS in front of it. As application/json it
+      // cost a preflight on every counted page view, and a preflight that fails takes the
+      // beacon with it silently. The endpoint parses both, so the fallback below still sends
+      // JSON with the header that names it.
+      if (navigator.sendBeacon &&
+          navigator.sendBeacon(url, new Blob([body], { type: 'text/plain' }))) return;
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: body,
+        keepalive: true
+      }).catch(function () {});
+    } catch (e) {
+      // A counter is not worth an error in a visitor's console.
+    }
   }
 
   function decide(value) {
     var saved = write(value);
-    if (value === 'granted') loadAnalytics();
+    if (value === 'granted') count();
     var b = document.getElementById('consent-banner');
     if (b) {
       b.remove();
@@ -74,7 +106,8 @@
           '<h2 id="consent-title" class="font-bold text-brand-text mb-1">Analytics cookies? There aren’t any.</h2>' +
           '<p class="text-sm text-brand-muted leading-relaxed">' +
             'This site sets <strong class="text-brand-text">no cookies</strong> and runs no advertising. ' +
-            'May I count this page view with a privacy-focused, cookieless analytics tool? ' +
+            'May I count this page view <strong class="text-brand-text">on my own server</strong>? ' +
+            'No third party, no cookie, nothing that identifies you. ' +
             'Declining changes nothing about how the site works. ' +
             '<a href="/cookies/" class="text-brand-accent underline hover:no-underline">Details</a>.' +
           '</p>' +
@@ -91,7 +124,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     var v = read();
-    if (v === 'granted') loadAnalytics();
+    if (v === 'granted') count();
     if (!v) banner();
     render();
 
@@ -105,7 +138,7 @@
           note.textContent = !saved
             ? 'Applied to this page only — your browser is blocking site storage, so this choice cannot be remembered.'
             : next === 'denied'
-              ? 'Saved. Analytics will not load on any further page you visit.'
+              ? 'Saved. Nothing further you visit will be counted.'
               : 'Saved. Analytics is now enabled.';
         }
       });

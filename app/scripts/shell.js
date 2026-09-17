@@ -18,6 +18,10 @@ import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/
 export { API_BASE } from "./api-base.js";
 import { API_BASE } from "./api-base.js";
 import { forgetRows } from "./rows.js";
+// The page-view beacon. Imported here rather than loaded as its own script tag, because the one
+// thing it must not do is fire for somebody who is not signed in - and this module is the only
+// place that knows when that is settled. Importing it sends nothing; count() does.
+import { count } from "./hit.js";
 
 // A Map, not an object literal - the same reason as the server's gate. An object inherits
 // Object.prototype, so RANK['constructor'] is a function rather than undefined, and comparing a
@@ -84,6 +88,12 @@ export const profile = new Promise((resolve) => {
       return;
     }
     paint(me);
+    // Here and nowhere earlier. /me answering means the API re-read this session against
+    // Firestore and accepted it, so the claim /privacy/ §3.2 rests on - that everyone counted in
+    // the app is an approved account holder - is true at exactly this line and not before it.
+    // Every other path out of this callback is a stranger, an unapproved account or a server
+    // that did not answer, and none of them counts.
+    count();
     resolve(me);
   });
 });

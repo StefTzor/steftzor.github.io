@@ -18,8 +18,11 @@ const shared = require("./eleventy.common");
 module.exports = function (eleventyConfig) {
   shared(eleventyConfig, {
     cspOverrides: {
-      // No GoatCounter here: the app is not analytics territory, and nothing behind a login
-      // should be able to phone out to a host that only the marketing site has a reason to use.
+      // Still no third-party analytics host here. The app IS counted now - see
+      // app/scripts/hit.js - but it is counted by the API this app already talks to, so nothing
+      // behind the login phones out to anywhere it did not already go and connect-src below is
+      // unchanged. The rule that kept GoatCounter out was never "do not count"; it was "do not
+      // let a page behind a login report to a host that has no other business with it".
       "script-src": ["'self'", "https://www.gstatic.com"],
       "connect-src": ["'self'", "https://api.tzortzoglou.eu",
         "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com",
@@ -48,6 +51,7 @@ module.exports = function (eleventyConfig) {
     "scripts/chrome.js": "scripts/chrome.js",
     "app/scripts/shell.js": "scripts/shell.js",
     "app/scripts/api-base.js": "scripts/api-base.js",
+    "app/scripts/hit.js": "scripts/hit.js",
     "app/scripts/forms.js": "scripts/forms.js",
     "app/scripts/email.js": "scripts/email.js",
     "app/scripts/app.js": "scripts/app.js",

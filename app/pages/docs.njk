@@ -111,7 +111,10 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">Postgres</h3>
         <p class="hint mt-1">
-          Three tables: contact submissions, a row per process start, and which migrations have run.
+          Four tables: contact submissions, a row per process start, which migrations have run, and
+          one row per page view — path, which of the two properties, the referring host and the
+          time, and deliberately nothing else. No address, no cookie, no identifier of any kind,
+          and not the full referring URL, only its host.
           Browsable on
           <a href="/admin/data/" class="text-brand-accent underline hover:no-underline">the data view</a>
           if you are an admin. A contact submission can be deleted one row at a time from
@@ -147,6 +150,37 @@ bodyScripts:
       provider's delivery log. Neither is a store this code owns, and nothing in the endpoint list
       below reaches into them. The erasure preview and the receipt both say so, in the API's own
       words, rather than reporting a deletion that sounds wider than the one that happened.
+    </p>
+
+    {# The two properties count differently, and a reader who noticed the banner on one site and
+       not on the other deserves the reason rather than the appearance of an oversight. #}
+    <h3 class="mt-8 font-semibold text-brand-text">Why the two sites count differently</h3>
+    <p class="text-sm text-brand-muted mt-2 max-w-prose">
+      The public site counts only after you say yes. The banner is opt-in, declining means nothing
+      is counted at all, and that has not changed — what changed is only where the count goes: to
+      the API above rather than to a third party.
+    </p>
+    <p class="text-sm text-brand-muted mt-3 max-w-prose">
+      This app counts every page load, with no banner. It is behind a login, everyone here is a
+      known account holder, and counting loads of your own service for the running of that service
+      is operational telemetry rather than audience measurement — the legal basis is different, so
+      the consent is too. The line that keeps that honest is being told, which is what this
+      paragraph and <a href="https://tzortzoglou.eu/privacy/" rel="noopener"
+        class="text-brand-accent underline hover:no-underline">the privacy notice</a> are for; a
+      count nobody is told about would be the same count with the honesty taken out.
+    </p>
+    <p class="text-sm text-brand-muted mt-3 max-w-prose">
+      "Everyone here is a known account holder" has to be true of the code, not only of the intent,
+      and for a while it was not: these pages are static files that anyone can fetch, and the
+      sign-in is a redirect JavaScript performs once one has loaded — so a stranger opening
+      <code>/transit/</code> was counted on the way to being bounced. The beacon now fires from
+      <code>shell.js</code> only after <code>/me</code> has confirmed the session, which is the
+      earliest moment that sentence means anything. Not signed in, not counted.
+    </p>
+    <p class="text-sm text-brand-muted mt-3 max-w-prose">
+      Erasure does not reach this table, and there is nothing in it to reach. A view row names
+      nobody: there is no account on it, no address, and nothing to join it to a person with, which
+      is the point rather than an omission.
     </p>
   </section>
 

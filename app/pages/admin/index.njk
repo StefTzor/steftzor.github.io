@@ -77,27 +77,32 @@ bodyScripts:
   </ul>
 
   {# --- traffic -----------------------------------------------------------
-     Deliberately empty rather than populated with a plausible-looking shape. GoatCounter's
-     statistics need an API token, which cannot live in a page anyone can view source on - so
-     until the API proxies it, this page does not know the number and says so. An invented
-     sparkline here would be a chart of nothing, and nobody who saw it twice would trust the
-     rest of the screen. #}
+     This card used to say the counter was "not connected yet", because GoatCounter's statistics
+     needed an API token and a token cannot live in a page anyone can view the source of. That is
+     no longer the situation: the counting is first-party now, the figures come from the API's own
+     table, and /admin/analytics/ draws them. The card stayed a link and became a true one.
+
+     Still no number on this page, and still deliberately. Every figure on Analytics belongs to a
+     window the reader chose, and a single count lifted out of that context here would be a
+     statistic with its meaning left behind - which is the same reason an invented sparkline was
+     refused before. #}
   <h2 class="text-xl font-bold text-brand-text mb-1">Traffic</h2>
-  <p class="text-sm text-brand-muted mb-4">Visits to the public site, from GoatCounter.</p>
+  <p class="text-sm text-brand-muted mb-4">Page views of both properties, counted by the API itself.</p>
 
   <a href="/admin/analytics/" class="card block hover:border-brand-accent/40 transition-colors duration-200">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <h3 class="font-semibold text-brand-text">Not connected yet</h3>
+        <h3 class="font-semibold text-brand-text">Analytics</h3>
         <p class="hint mt-1 max-w-prose">
-          GoatCounter needs an API token to read statistics, and a token cannot sit in a page
-          anyone can view the source of. It will arrive here once the API proxies that call.
+          Views per day, the busiest pages of each property and where visitors arrived from, over
+          a window you choose. No third party is involved and nothing counted there identifies
+          anybody.
         </p>
       </div>
       {% icon "fa-solid-chart-line", "h-5 w-5 shrink-0 text-brand-muted" %}
     </div>
     <p class="mt-4 text-sm font-semibold text-brand-accent">
-      What this will show →
+      Open the dashboard →
     </p>
   </a>
 
