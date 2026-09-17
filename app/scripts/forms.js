@@ -14,6 +14,7 @@
  * The form-level region is kept for things that are genuinely about the whole form: the pending
  * message after registering, or a failure that belongs to no single field.
  */
+import { isEmail } from "./email.js";
 
 /** The slot for a field's error, created next to it the first time it is needed. */
 function slotFor(input) {
@@ -64,15 +65,13 @@ export function focusFirstError(form) {
   if (first) first.focus();
 }
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 /**
  * Checks that can run before the server is involved.
  * Returns a message, or null when the value is acceptable.
  */
 export const check = {
   email: (v) => (!v.trim() ? "Enter your email address."
-    : !EMAIL.test(v.trim()) ? "That does not look like an email address." : null),
+    : !isEmail(v.trim()) ? "That does not look like an email address." : null),
   password: (v) => (!v ? "Enter a password." : null),
   newPassword: (v) => (!v ? "Choose a password."
     : v.length < 8 ? "Use at least 8 characters." : null),

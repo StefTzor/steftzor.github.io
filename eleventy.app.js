@@ -40,6 +40,7 @@ module.exports = function (eleventyConfig) {
     "scripts/chrome.js": "scripts/chrome.js",
     "app/scripts/shell.js": "scripts/shell.js",
     "app/scripts/forms.js": "scripts/forms.js",
+    "app/scripts/email.js": "scripts/email.js",
     "app/scripts/app.js": "scripts/app.js",
     "app/scripts/private.js": "scripts/private.js",
     "app/scripts/admin-status.js": "scripts/admin-status.js",
