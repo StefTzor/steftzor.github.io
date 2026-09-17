@@ -704,6 +704,25 @@
     box-shadow: inset 2px 0 0 0 theme('colors.brand.accent' / 45%);
   }
 
+  /* A card waiting for its first answer.
+
+     These carried `hidden` until the fetch landed, which is why the home view measured 0.427 CLS:
+     two whole cards, 692px between them, appeared from nothing and shoved the rest of the page
+     down. The card is on screen from the first paint now, with placeholder rows the height of the
+     real ones, and the answer replaces them in place.
+
+     `absent` is what `hidden` was really for - no key configured, or no race left in the season.
+     A card with nothing to say still says nothing; it just decides that before the reader has
+     started reading rather than after. */
+  [data-card="absent"] { display: none !important; }
+
+  /* One placeholder row, sized to what the real rows measure: departures 38px, sessions 34px,
+     board rows 55px. The reserved box has to be the box that gets filled, or this trades one
+     shift for a smaller one. */
+  .skel-row {
+    @apply flex items-center gap-3 py-2 first:pt-0 last:pb-0;
+  }
+
   /* The profile block at the foot of the rail.
 
      The name, address and role arrive only after /me answers - roughly a second after the page

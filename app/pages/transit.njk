@@ -66,7 +66,22 @@ bodyScripts:
       <p id="trPickNote" role="status" aria-live="polite" class="hint mt-2"></p>
     </form>
 
-    <ul id="trList" class="divide-y divide-brand-muted/10"></ul>
+    {# Twelve, because that is what the API returns at most and what a board normally shows.
+       Reserving fewer would trade a large jump for a smaller one, which is not the point. Each
+       placeholder is the two-line shape of a real row: line badge, destination over its
+       scheduled time, and the countdown. renderBoard() clears the list. #}
+    <ul id="trList" aria-busy="true" class="divide-y divide-brand-muted/10">
+      {%- for i in range(0, 12) %}
+      <li class="board-row" aria-hidden="true">
+        <span class="skel h-6 w-7"></span>
+        <span class="min-w-0">
+          <span class="skel block h-4 w-3/4"></span>
+          <span class="skel mt-2 block h-3 w-1/2"></span>
+        </span>
+        <span class="skel h-4 w-12"></span>
+      </li>
+      {%- endfor %}
+    </ul>
     <p id="trNote" class="text-sm text-brand-muted"></p>
   </div>
 

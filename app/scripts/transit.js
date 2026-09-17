@@ -39,6 +39,7 @@ function clock(time) {
 function renderBoard(data) {
   const list = el("trList");
   list.textContent = "";
+  list.removeAttribute("aria-busy");
 
   el("board-heading").textContent = shortStop(data.stop) || "This stop";
   el("trAge").textContent = data.stale ? "last known" : "";
@@ -172,6 +173,19 @@ async function load(button) {
     renderBoard(data);
   } catch (err) {
     console.error("transit:", err.status, err.code);
+    // The placeholder rows are cleared by renderBoard() and by nothing else, so a first load that
+    // never reaches it left twelve of them pulsing under the error - a board that reads as still
+    // arriving, above a sentence saying it never will.
+    //
+    // Only a board that never arrived, though. load() also runs on the Departures/Arrivals
+    // toggle, on Refresh, and unasked on returning to the tab; clearing unconditionally would
+    // wipe twelve real departures because an unattended refresh hit a 429. Stale numbers under a
+    // sentence saying so beat an empty card, which is the rule departures.js already states.
+    // aria-busy is present if and only if renderBoard() has never run, so it is the flag already.
+    if (el("trList").hasAttribute("aria-busy")) {
+      el("trList").textContent = "";
+      el("trList").removeAttribute("aria-busy");
+    }
     say(err.code === "no_such_stop" ? "That stop could not be found."
       : err.code === "not_configured" ? "This deployment has no transit key."
       : "The board could not be loaded.", "error");

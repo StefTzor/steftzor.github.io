@@ -52,6 +52,7 @@ function render(data) {
 
   const list = el("f1Sessions");
   list.textContent = "";
+  list.removeAttribute("aria-busy");
   race.sessions.forEach((s) => {
     const li = document.createElement("li");
     li.className = "flex items-baseline justify-between gap-4 py-2 first:pt-0 last:pb-0";
@@ -74,17 +75,20 @@ function render(data) {
     list.appendChild(li);
   });
 
-  el("f1").classList.remove("hidden");
+  el("f1").dataset.card = "ready";
 }
 
 profile.then(async () => {
   if (!el("f1")) return;
   try {
     const data = await api("/f1/next");
-    // No race left in the season is a real answer, and the card stays away rather than saying so
-    // on a home view that has nothing else to do with racing.
+    // No race left in the season is a real answer, and the card goes away rather than saying so
+    // on a home view that has nothing else to do with racing. It holds its space until then, so
+    // the decision costs the page no movement either way.
     if (data.next) render(data);
+    else el("f1").dataset.card = "absent";
   } catch (err) {
     console.error("f1:", err.status, err.code);
+    el("f1").dataset.card = "absent";
   }
 });

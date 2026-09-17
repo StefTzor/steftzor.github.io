@@ -9,8 +9,10 @@ import { inWords, shortStop, towardsOf } from "./stop-format.js";
  * reading it. Instead it loads once, refreshes when you come back to the tab and what is on
  * screen has gone stale, and refreshes when asked.
  *
- * The card starts hidden and stays hidden if there is nothing to show. A card that announces
- * itself and then says it knows nothing is worse than no card at all.
+ * The card holds its own space from the first paint - placeholder rows the height of the real
+ * ones - and goes away entirely if there turns out to be nothing to show. A card that announces
+ * itself and then says it knows nothing is worse than no card at all; a card that appears out of
+ * nowhere and shoves the page down is worse than both, which is what this used to do.
  */
 
 const el = (id) => document.getElementById(id);
@@ -23,9 +25,16 @@ function render(data) {
   const list = el("depList");
   list.textContent = "";
 
+  list.removeAttribute("aria-busy");
+
   const next = data.departures.slice(0, SHOW);
   if (!next.length) {
     el("depNote").textContent = "Nothing leaving in the next hour.";
+    // Empty before the card has ever shown a board is the "nothing to say" case it removes itself
+    // for, exactly as the hidden version did. Empty AFTER one is an answer about a board the
+    // reader is already reading - the last bus of the evening having gone - so it is said in the
+    // note rather than by deleting what they are looking at. Same rule as the catch below.
+    if (el("departures").dataset.card !== "ready") el("departures").dataset.card = "absent";
     return;
   }
   el("depNote").textContent = "";
@@ -80,7 +89,7 @@ function render(data) {
   // Stale is said, not hidden: a departure board that is two minutes old is a departure board
   // that is wrong, and the reader is the one who should decide whether that matters.
   el("depAge").textContent = data.stale ? " · last known" : "";
-  el("departures").classList.remove("hidden");
+  el("departures").dataset.card = "ready";
 }
 
 async function load(refreshButton) {
@@ -91,9 +100,15 @@ async function load(refreshButton) {
     render(data);
   } catch (err) {
     console.error("departures:", err.status, err.code);
-    // Configured-but-broken is worth saying once the card is already on screen; never
-    // configured at all means this deployment has no key, and the card stays away entirely.
-    if (el("departures").classList.contains("hidden")) return;
+    // Configured-but-broken is worth saying once the card has shown a board; never configured at
+    // all means this deployment has no key, and the card goes away entirely. The state lives in
+    // data-card rather than a `hidden` class now, because the card is on screen from the first
+    // paint holding its own space - "not yet answered" and "nothing to say" stopped being the
+    // same thing the moment it stopped starting hidden.
+    if (el("departures").dataset.card !== "ready") {
+      el("departures").dataset.card = "absent";
+      return;
+    }
     el("depNote").textContent = err.code === "no_such_stop"
       ? "That stop could not be found."
       : "Departures could not be loaded.";

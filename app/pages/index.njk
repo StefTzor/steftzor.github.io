@@ -113,13 +113,14 @@ signOut: true
   </ul>
 
   {# --- departures --------------------------------------------------------
-     Hidden until it has something to say. A card that announces itself and then admits it knows
+     On screen from the first paint, holding its own space, and removed entirely if it turns out
+     to have nothing to say. A card that announces itself and then admits it knows
      nothing is worse than no card, and this one is useless to anybody whose API has no key.
 
      It does not poll. The API caches for 45 seconds and the whole deployment shares 100 requests
      per 15 minutes, so a tab left open on a timer would quietly spend that on nobody reading it.
      It refreshes when you come back to the tab and the numbers have gone stale, and when asked. #}
-  <section id="departures" aria-labelledby="dep-heading" class="mt-8 hidden">
+  <section id="departures" aria-labelledby="dep-heading" class="mt-8" data-card="loading">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-1">
       {# The badge is filled in from the board's own `operator` field, not written here: this
          card is pointed at whichever stop you chose, and hardcoding "UL" would keep saying UL
@@ -150,15 +151,27 @@ signOut: true
         <p id="depPickNote" role="status" aria-live="polite" class="hint mt-2"></p>
       </form>
 
-      <ul id="depList" class="divide-y divide-brand-muted/10"></ul>
+      {# Placeholder rows, in the markup rather than drawn by script: they have to exist at
+         first paint, and a skeleton that waits for JavaScript reserves nothing during the wait
+         it is there for. render() clears the list, so these disappear when the board arrives. #}
+      <ul id="depList" aria-busy="true" class="divide-y divide-brand-muted/10">
+        {%- for i in range(0, 5) %}
+        <li class="skel-row" aria-hidden="true">
+          <span class="skel h-6 w-7 shrink-0"></span>
+          <span class="skel h-4 flex-1"></span>
+          <span class="skel h-4 w-12 shrink-0"></span>
+        </li>
+        {%- endfor %}
+      </ul>
       <p id="depNote" class="text-sm text-brand-muted"></p>
     </div>
   </section>
 
   {# --- the next race weekend ---------------------------------------------
-     Hidden until it has one. Every time below is rendered from an ISO instant in the reader's
+     On screen from the first paint, and removed if the season has no race left. Every time below
+     is rendered from an ISO instant in the reader's
      own timezone by the browser, which is the only thing that knows what that is. #}
-  <section id="f1" aria-labelledby="f1-heading" class="mt-8 hidden">
+  <section id="f1" aria-labelledby="f1-heading" class="mt-8" data-card="loading">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-1">
       <h2 id="f1-heading" class="flex items-center gap-2 text-xl font-bold text-brand-text">
         <span class="card-badge" aria-hidden="true">F1</span>
@@ -171,11 +184,18 @@ signOut: true
     </div>
     <div class="card">
       <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h3 id="f1Name" class="text-lg font-semibold text-brand-text"></h3>
+        <h3 id="f1Name" class="text-lg font-semibold text-brand-text">&nbsp;</h3>
         <span id="f1Sprint" class="hidden rounded-full bg-brand-accent/10 px-2 py-0.5 text-[11px] font-semibold text-brand-accent">Sprint weekend</span>
       </div>
-      <p id="f1Countdown" class="mt-1 text-sm text-brand-muted"></p>
-      <ul id="f1Sessions" class="mt-4 divide-y divide-brand-muted/10"></ul>
+      <p id="f1Countdown" class="mt-1 text-sm text-brand-muted">&nbsp;</p>
+      <ul id="f1Sessions" aria-busy="true" class="mt-4 divide-y divide-brand-muted/10">
+        {%- for i in range(0, 5) %}
+        <li class="skel-row" aria-hidden="true">
+          <span class="skel h-5 flex-1"></span>
+          <span class="skel h-5 w-24 shrink-0"></span>
+        </li>
+        {%- endfor %}
+      </ul>
     </div>
   </section>
 
