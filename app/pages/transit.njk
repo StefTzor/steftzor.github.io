@@ -109,7 +109,18 @@ bodyScripts:
     <p id="trLinesNote" class="text-sm text-brand-muted mb-4">
       Every line due in the next hour, and where each one is headed.
     </p>
-    <ul id="trLines" class="grid gap-3 sm:grid-cols-2"></ul>
+    {# Two placeholders, matching the shape renderLines draws: a line badge beside the places
+       that line goes. Two because a stop is usually served by two lines - this one is - and a
+       list whose length depends on the timetable cannot be reserved exactly. Reserving the
+       typical count is the whole of what is available here; see the note on the board above. #}
+    <ul id="trLines" aria-busy="true" class="grid gap-3 sm:grid-cols-2">
+      {%- for i in range(0, 2) %}
+      <li class="card flex items-start gap-3 py-3" aria-hidden="true">
+        <span class="skel dep-line mt-0.5 w-7"></span>
+        <span class="skel h-8 min-w-0 flex-1"></span>
+      </li>
+      {%- endfor %}
+    </ul>
   </section>
 
   {# --- nearby --------------------------------------------------------------
