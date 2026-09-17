@@ -205,8 +205,21 @@ function position() {
   });
 }
 
+/**
+ * Two decimals, about 1.1 km, rounded HERE.
+ *
+ * The API rounds too, and would be wrong to trust a client that promised it had. But the note
+ * beside the button says your location "is sent rounded to about a kilometre", and until this
+ * existed that sentence was not true - full GPS precision left the device and was rounded after
+ * arrival. Rounding on both sides costs one line and makes the sentence accurate: the extra
+ * digits are never transmitted at all.
+ */
+const coarse = (n) => Number(n.toFixed(2));
+
 async function load(coords) {
-  const q = coords ? `?lat=${encodeURIComponent(coords.lat)}&lon=${encodeURIComponent(coords.lon)}` : "";
+  const q = coords
+    ? `?lat=${encodeURIComponent(coarse(coords.lat))}&lon=${encodeURIComponent(coarse(coords.lon))}`
+    : "";
   renderWeather(await api("/weather" + q));
 }
 
