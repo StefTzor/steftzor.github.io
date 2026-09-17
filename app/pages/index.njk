@@ -9,6 +9,8 @@ bodyScripts:
     type: "module"
   - src: "/scripts/palette.js"
     type: "module"
+  - src: "/scripts/departures.js"
+    type: "module"
 bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
 shell: true
 navDrawerOnly: true
@@ -119,5 +121,26 @@ signOut: true
       </a>
     </li>
   </ul>
+
+  {# --- departures --------------------------------------------------------
+     Hidden until it has something to say. A card that announces itself and then admits it knows
+     nothing is worse than no card, and this one is useless to anybody whose API has no key.
+
+     It does not poll. The API caches for 45 seconds and the whole deployment shares 100 requests
+     per 15 minutes, so a tab left open on a timer would quietly spend that on nobody reading it.
+     It refreshes when you come back to the tab and the numbers have gone stale, and when asked. #}
+  <section id="departures" aria-labelledby="dep-heading" class="mt-8 hidden">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-1">
+      <h2 id="dep-heading" class="text-xl font-bold text-brand-text">Next departures</h2>
+      <p class="text-sm text-brand-muted">
+        <span id="depStop"></span><span id="depAge" class="tabular-nums"></span>
+        <button type="button" id="depRefresh" class="ml-2 underline hover:text-brand-accent">Refresh</button>
+      </p>
+    </div>
+    <div class="card">
+      <ul id="depList" class="divide-y divide-brand-muted/10"></ul>
+      <p id="depNote" class="text-sm text-brand-muted"></p>
+    </div>
+  </section>
 
 </section>

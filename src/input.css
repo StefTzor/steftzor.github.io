@@ -324,6 +324,12 @@
     .hero-sky { animation: none !important; }
   }
 
+  /* A bus line number. Fixed width so a 1 and a 155 leave the destinations aligned. */
+  .dep-line {
+    @apply inline-flex h-6 min-w-[1.75rem] shrink-0 items-center justify-center rounded
+           bg-brand-accent/10 px-1.5 text-xs font-bold tabular-nums text-brand-accent;
+  }
+
   /* The command palette.
 
      ::backdrop is the browser's own overlay - no extra element, and it is inert by definition,
