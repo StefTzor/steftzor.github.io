@@ -7,7 +7,8 @@ bodyScripts:
   - src: "/scripts/contact-widget.js"
     type: "module"
 ---
-<section class="app-page max-w-3xl">
+<section class="app-page">
+  <div class="app-prose">
 
   {% include "chrome/admin-sections.njk" %}
 
@@ -31,5 +32,7 @@ bodyScripts:
   <button type="button" id="moreMessages" class="btn-secondary mt-6 text-sm hidden">
     Load older messages
   </button>
+
+</div>
 
 </section>

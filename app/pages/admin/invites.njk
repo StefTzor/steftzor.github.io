@@ -7,7 +7,8 @@ bodyScripts:
   - src: "/scripts/contact-widget.js"
     type: "module"
 ---
-<section class="app-page max-w-3xl">
+<section class="app-page">
+  <div class="app-prose">
 
   {% include "chrome/admin-sections.njk" %}
 
@@ -42,5 +43,7 @@ bodyScripts:
     An address that already has an account is refused rather than re-invited — look for it on
     <a href="/admin/" class="text-brand-accent underline hover:no-underline">Accounts</a>.
   </p>
+
+</div>
 
 </section>

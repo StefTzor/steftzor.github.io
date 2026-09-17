@@ -94,7 +94,7 @@ signOut: true
      The two admin tiles carry data-min-role and are hidden until shell.js confirms the role,
      exactly like the rail - so the grid never offers a tile that answers 403. #}
   <h2 class="sr-only">Shortcuts</h2>
-  <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
     <li class="hidden" data-min-role="Admin">
       <a href="/admin/accounts/" class="tile">
         {% icon "fa-solid-users", "tile-icon" %}
@@ -116,49 +116,6 @@ signOut: true
         <span class="tile-label">Your profile</span>
       </a>
     </li>
-    <li>
-      <a href="https://tzortzoglou.eu/" data-cross class="tile">
-        {% icon "fa-solid-arrow-right", "tile-icon" %}
-        <span class="tile-count tile-count--none" aria-hidden="true">&nbsp;</span>
-        <span class="tile-label">The public site</span>
-      </a>
-    </li>
   </ul>
-
-  {# --- recent activity ---------------------------------------------------
-     The last twelve weeks of the same build-time GitHub fetch the public /code/ page uses. A
-     year of it belongs on that page, which is about the work; twelve weeks is what fits here
-     and what you would actually glance at.
-
-     `contributions` is null when the fetch failed, and a failed fetch must never fail a build -
-     so this renders nothing at all rather than an empty grid claiming no activity. #}
-  {%- if contributions %}
-  {#- Nunjucks' `last` returns the last item, not the last n - `.slice` is the one that
-     takes a count, and Nunjucks will call a real array method. #}
-  {%- set recent = contributions.weeks.slice(-12) %}
-  <h2 class="mt-10 mb-1 text-xl font-bold text-brand-text">Recent activity</h2>
-  <p class="text-sm text-brand-muted mb-4">
-    The last twelve weeks on GitHub, as of this deploy.
-  </p>
-  <figure class="card">
-    <figcaption class="sr-only">
-      A grid of the last twelve weeks, one square per day, shaded by how many contributions that
-      day holds. {{ contributions.total }} contributions in total between
-      {{ contributions.from }} and {{ contributions.to }}.
-    </figcaption>
-    <div class="heat" aria-hidden="true">
-      {%- for week in recent %}{% for day in week %}
-      {%- if day %}<div class="contrib-day" data-level="{{ day.level }}" title="{{ day.label }}"></div>
-      {%- else %}<div></div>
-      {%- endif %}
-      {%- endfor %}{% endfor %}
-    </div>
-    <p class="mt-4 text-sm text-brand-muted">
-      {{ contributions.total }} contributions in the last year.
-      <a href="https://tzortzoglou.eu/code/" data-cross
-        class="text-brand-accent underline hover:no-underline">See the full year</a>.
-    </p>
-  </figure>
-  {%- endif %}
 
 </section>

@@ -191,11 +191,26 @@
 
      Left-aligned with a ceiling rather than flush, so a very wide screen does not stretch a
      line of prose past the point of being readable. */
-  /* max-w-6xl, not 5xl: at 1440 the card stopped 208px short of the right edge and the space
-     did nothing. Pages whose content is prose rather than data narrow themselves by adding a
-     max-w-* utility, which wins over this because utilities come after components. */
+  /* Fills the space it is given, and only starts leaving a margin once there is more space than
+     any layout can use.
+  
+     It was a fixed cap with no auto margin, which is two different wrongs at two sizes: at 1440
+     it stopped 208px short of the right edge, and on a maximised 1920 or wider it left several
+     hundred pixels of nothing on the right while hugging the rail. `mx-auto` with a high ceiling
+     fixes both - below 1536 the container simply fills, so there is no gap to notice, and above
+     it the leftover is split evenly instead of all landing on one side.
+  
+     Pages whose content is prose constrain a wrapper INSIDE this, not this itself: narrowing the
+     container would re-centre a reading column in a wide empty area, which is the thing the
+     left-alignment was introduced to stop. */
   .app-page {
-    @apply px-4 py-10 sm:px-6 lg:px-8 max-w-6xl;
+    @apply px-4 py-10 sm:px-6 lg:px-8 mx-auto w-full max-w-[96rem];
+  }
+
+  /* The reading measure, left-aligned inside .app-page. Messages, Invites, Analytics and
+     Profile are text; the width that makes them readable is not the width of the page. */
+  .app-prose {
+    @apply max-w-3xl;
   }
 
   /* The home hero.
