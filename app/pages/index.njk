@@ -26,35 +26,53 @@ signOut: true
 
   {% include "chrome/weather-icons.njk" %}
 
-  <h1 id="greeting" class="text-3xl font-bold mb-8 text-brand-text">&nbsp;</h1>
+  <div class="flex items-start justify-between gap-4 flex-wrap">
+    <h1 id="greeting" class="text-3xl font-bold text-brand-text">&nbsp;</h1>
 
-  <section aria-labelledby="weather-heading" class="card">
-    <div class="flex items-start justify-between gap-4">
-      <div>
-        <h2 id="weather-heading" class="text-lg font-bold text-brand-text">Weather</h2>
-        <p id="weatherPlace" class="text-sm text-brand-muted mt-0.5"></p>
+    {# The forecast, small. Everything else is one interaction away.
+
+       It opens on hover, which is what was asked for, and ALSO on click, tap and keyboard -
+       hover alone is unreachable on a phone, and this is the only route to the location
+       control. The chip is a real <button> with aria-expanded so that is not a claim, it is
+       the element's own state. #}
+    <div id="wx" class="relative w-full sm:w-auto" data-open="false">
+      <button id="wxChip" type="button" aria-expanded="false" aria-controls="wxPanel"
+        class="wx-chip w-full sm:w-auto">
+        <svg id="wxChipIcon" class="h-8 w-8 shrink-0 text-brand-accent" aria-hidden="true" focusable="false">
+          <use href="#wx-cloud"></use>
+        </svg>
+        <span class="text-left leading-tight min-w-0">
+          <span class="block text-sm font-semibold text-brand-text">
+            <span id="wxChipTemp" class="tabular-nums">—</span><span id="wxChipWhat" class="font-normal text-brand-muted"></span>
+          </span>
+          <span class="block text-xs text-brand-muted truncate">
+            <span id="wxChipPlace"></span><span id="wxChipTime" class="tabular-nums"></span>
+          </span>
+        </span>
+        <span class="sr-only">Show the full forecast</span>
+      </button>
+
+      <div id="wxPanel" class="wx-panel" role="group" aria-label="Full forecast">
+        <div class="flex items-baseline justify-between gap-4 mb-3">
+          <h2 class="text-base font-bold text-brand-text">Weather</h2>
+          <p id="weatherPlace" class="text-xs text-brand-muted"></p>
+        </div>
+
+        {# One live region for the whole panel: loading, the forecast, and any failure all land
+           here, so a screen reader is told once rather than on every field. #}
+        <div id="weather" role="status" aria-live="polite">
+          <p class="text-sm text-brand-muted">Loading the forecast…</p>
+        </div>
+
+        {# Shown only when the browser has the API, and never prompting on its own: an
+           unexplained permission dialog on page load is the one thing everybody refuses by
+           reflex. The button says what it will do; the browser then asks. #}
+        <div id="geo" class="mt-5 border-t border-brand-muted/15 pt-4 hidden">
+          <p id="geoNote" class="text-xs text-brand-muted"></p>
+          <button type="button" id="geoBtn" class="btn-secondary text-sm px-4 py-1.5 mt-3">Use my location</button>
+        </div>
       </div>
-      <p id="weatherClock" class="text-right text-sm text-brand-muted tabular-nums"></p>
     </div>
-
-    {# One live region for the whole card: loading, the forecast, and any failure all land
-       here, so a screen reader is told once rather than on every field. #}
-    <div id="weather" role="status" aria-live="polite" class="mt-4">
-      <p class="text-sm text-brand-muted">Loading the forecast…</p>
-    </div>
-
-    {# Shown only when the browser has the API, and never prompting on its own: an unexplained
-       permission dialog on page load is the one thing everybody refuses out of reflex. The
-       button says what it will do; the browser then asks. #}
-    <div id="geo" class="mt-6 border-t border-brand-muted/15 pt-4 hidden">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <p id="geoNote" class="text-xs text-brand-muted max-w-sm">
-          Showing the forecast for a fixed location. Use your device's location for one nearer to you —
-          it is sent rounded to about a kilometre, and never stored.
-        </p>
-        <button type="button" id="geoBtn" class="btn-secondary text-sm px-4 py-1.5 shrink-0">Use my location</button>
-      </div>
-    </div>
-  </section>
+  </div>
 
 </section>

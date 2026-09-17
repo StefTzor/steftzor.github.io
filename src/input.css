@@ -163,6 +163,38 @@
            hover:bg-brand-accent hover:text-brand-onaccent transition-colors duration-200;
   }
 
+  /* The compact forecast on the app's home view, and the panel it opens.
+
+     The panel is `invisible` rather than `hidden` so it keeps its measured size: a panel that
+     only exists once opened has to be laid out at the moment it appears, which is when the
+     flicker would be most obvious. */
+  .wx-chip {
+    @apply inline-flex items-center gap-3 rounded-xl border border-brand-muted/15 bg-brand-surface
+           px-3 py-2 text-left transition-colors duration-200
+           hover:border-brand-accent/40 hover:bg-brand-surface;
+  }
+
+  .wx-panel {
+    @apply invisible opacity-0 absolute right-0 z-30 mt-2 w-[min(28rem,calc(100vw-2rem))]
+           rounded-xl border border-brand-muted/15 bg-brand-surface p-5 shadow-xl
+           transition-opacity duration-150;
+  }
+
+  [data-open="true"] > .wx-panel {
+    @apply visible opacity-100;
+  }
+
+  /* Below sm the chip is full width and the panel sits under it in the flow, because a floating
+     panel pinned to the right edge of a 390px screen is a panel half off the screen. */
+  @media (max-width: 639px) {
+    .wx-panel {
+      @apply static right-auto w-full;
+    }
+    [data-open="false"] > .wx-panel {
+      @apply hidden;
+    }
+  }
+
   /* Icon-only controls in the bar: the theme toggle and sign out. Same footprint, so the right
      hand side of the header is a row of equals rather than a word next to two glyphs. Each one
      carries an .sr-only label; an icon button without a name is unusable in a screen reader. */

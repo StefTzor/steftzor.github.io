@@ -69,6 +69,24 @@ function bearing(d) {
 /** Open-Meteo returns local wall-clock without a zone, so it must not be parsed as UTC. */
 const clockOf = (iso) => (typeof iso === "string" && iso.includes("T") ? iso.slice(11, 16) : "");
 
+/**
+ * The actual time where the forecast is, now.
+ *
+ * NOT data.current.time, which is what this used to show and label "local time". That is the
+ * observation stamp and Open-Meteo publishes it on a 900-second interval, so it reads 11:00
+ * when it is 11:14 - close enough to look like a clock and wrong enough to be irritating.
+ */
+function localNow(timeZone) {
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      hour: "2-digit", minute: "2-digit", hour12: false, timeZone: timeZone || undefined,
+    }).format(new Date());
+  } catch (e) {
+    // An unknown zone name throws rather than falling back, and a wrong clock is worse than none.
+    return "";
+  }
+}
+
 const dayName = (iso, i) =>
   i === 0 ? "Today" : new Date(iso + "T12:00:00").toLocaleDateString(undefined, { weekday: "short" });
 
@@ -133,27 +151,52 @@ function dayGrid(days) {
   return wrap;
 }
 
-function renderWeather(data) {
+// Ticking rather than painted once: the panel is open for as long as someone hovers it, and a
+// clock that stopped when the page loaded is worse than no clock.
+let tick = null;
+function startClock(timeZone) {
+  const paint = () => {
+    const t = localNow(timeZone);
+    const target = el("wxChipTime");
+    if (target) target.textContent = t ? ` · ${t}` : "";
+  };
+  paint();
+  if (tick) clearInterval(tick);
+  // Twenty seconds: the display is minutes, so a full minute could show the wrong one for
+  // most of its life, and a second would be a wasted wake-up sixty times a minute.
+  tick = setInterval(paint, 20000);
+}
+
+/** The compact form: icon, temperature, condition, place, time. Everything else is in the panel. */
+function renderChip(data) {
   const now = data.current || {};
-  const today = (data.daily || [])[0] || {};
   const what = describe(now.code, now.isDay);
 
-  el("weatherPlace").textContent = data.precise
-    ? "Your location" + (data.timezone ? ` · ${data.timezone.replace(/_/g, " ")}` : "")
-    : (data.place || "");
-
-  const clock = el("weatherClock");
-  clock.textContent = "";
-  if (data.observedAt) {
-    clock.append(
-      node("span", "block text-lg font-semibold text-brand-text tabular-nums", clockOf(data.observedAt)),
-      node("span", "block text-xs", "local time"),
-    );
+  const use = document.querySelector("#wxChipIcon use");
+  if (use) {
+    use.setAttribute("href", `#wx-${what.icon}`);
+    use.setAttributeNS(XLINK, "xlink:href", `#wx-${what.icon}`);
   }
+  el("wxChipTemp").textContent = deg(now.temperature);
+  el("wxChipWhat").textContent = what.text ? ` · ${what.text}` : "";
+  el("wxChipPlace").textContent = data.precise ? "Your location" : (data.place || "");
+  startClock(data.timezone);
+}
+
+function renderWeather(data) {
+  renderChip(data);
+
+  const now = data.current || {};
+  const today = (data.daily || [])[0] || {};
+
+  el("weatherPlace").textContent = data.observedAt
+    ? `observed ${clockOf(data.observedAt)}` + (data.timezone ? ` · ${data.timezone.replace(/_/g, " ")}` : "")
+    : "";
 
   const box = el("weather");
   box.textContent = "";
 
+  const what = describe(now.code, now.isDay);
   const head = node("div", "flex items-center gap-4");
   head.appendChild(icon(what.icon, "h-14 w-14 shrink-0 text-brand-accent"));
   const headText = node("div", "");
@@ -237,8 +280,8 @@ function setupGeo(usingMine) {
   if (!panel || !btn || !navigator.geolocation) return;
   panel.classList.remove("hidden");
 
-  const FIXED_NOTE = "Showing the forecast for a fixed location. Use your device's location for one " +
-    "nearer to you \u2014 it is sent rounded to about a kilometre, and never stored.";
+  const FIXED_NOTE = "Showing a fixed location. Use your device's location for one nearer to you " +
+    "\u2014 it is rounded to about a kilometre before it is sent, and never stored.";
   const MINE_NOTE = "Showing the forecast for your device's location, rounded to about a kilometre.";
 
   let mine = !!usingMine;
@@ -279,8 +322,61 @@ function setupGeo(usingMine) {
   });
 }
 
+/**
+ * Opening the panel: hover, click, tap, keyboard.
+ *
+ * Hover is what was asked for and it is here, but only as one of the ways in. The skill's own
+ * guidance rates relying on hover alone as a High-severity mistake, and it is right for a
+ * concrete reason rather than a general one: this panel is the only route to the location
+ * control, and a phone has no hover at all.
+ *
+ * `aria-expanded` is driven from the same state as the class, not from CSS, so it can never
+ * describe a panel that is open while claiming to be shut.
+ */
+function setupPanel() {
+  const wrap = el("wx");
+  const chip = el("wxChip");
+  if (!wrap || !chip) return;
+
+  let shut = null;
+  const set = (open) => {
+    clearTimeout(shut);
+    wrap.dataset.open = String(open);
+    chip.setAttribute("aria-expanded", String(open));
+  };
+
+  chip.addEventListener("click", () => set(wrap.dataset.open !== "true"));
+
+  // Pointer devices only. On a touch screen `pointerenter` fires on tap, which would fight the
+  // click handler and leave the panel toggling twice.
+  const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+  wrap.addEventListener("pointerenter", () => { if (fine.matches) set(true); });
+  wrap.addEventListener("pointerleave", () => {
+    // A grace period, because the gap between the chip and the panel is a place the pointer
+    // passes through on the way to the panel, not a decision to leave.
+    if (fine.matches) { clearTimeout(shut); shut = setTimeout(() => set(false), 180); }
+  });
+
+  // Keyboard needs no opener of its own: Enter and Space on a <button> fire click, which is
+  // handled above. There used to be a `focusin` handler that opened the panel, and it made
+  // Escape do nothing visible - it closed, then `chip.focus()` fired focusin and reopened it in
+  // the same tick. Closing has to be able to win.
+  wrap.addEventListener("focusout", (e) => {
+    if (!wrap.contains(e.relatedTarget)) set(false);
+  });
+  wrap.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    set(false);
+    chip.focus();
+  });
+
+  // Tapping elsewhere shuts it, which is the only way out on a touch screen.
+  document.addEventListener("click", (e) => { if (!wrap.contains(e.target)) set(false); });
+}
+
 profile.then(async (me) => {
   greet(me);
+  setupPanel();
 
   let coords = null;
   if (wantsGeo() && navigator.geolocation) {
