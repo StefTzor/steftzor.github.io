@@ -7,6 +7,8 @@ bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
 bodyScripts:
   - src: "/scripts/admin.js"
     type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
 navDrawerOnly: true
 navItems:
   - label: "Home"
@@ -41,6 +43,24 @@ signOut: true
   <div id="accounts">
     <p class="text-sm text-brand-muted">Loading accounts…</p>
   </div>
+
+  {# Messages, reusing the #status live region above rather than adding a second one - the same
+     rule the accounts list follows, for the same reason. #}
+  <section aria-labelledby="messages-heading" class="mt-14">
+    <div class="flex items-baseline justify-between gap-4 mb-2">
+      <h2 id="messages-heading" class="text-2xl font-bold text-brand-text">Messages</h2>
+      <p id="messageCount" class="text-sm text-brand-muted"></p>
+    </div>
+    <p class="text-brand-muted mb-6">
+      Sent through the contact form, on either site. Replying happens in your email.
+    </p>
+    <div id="messages">
+      <p class="text-sm text-brand-muted">Loading messages…</p>
+    </div>
+    <button type="button" id="moreMessages" class="btn-secondary mt-6 text-sm hidden">
+      Load older messages
+    </button>
+  </section>
 
   <section aria-labelledby="invite-heading"
     class="card mt-12">

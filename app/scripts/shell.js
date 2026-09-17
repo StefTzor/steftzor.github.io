@@ -119,7 +119,14 @@ function paint(me) {
   const name = el("whoamiName");
   if (name) name.textContent = me.name || "";
   const who = el("whoami");
-  if (who) who.textContent = me.email + (me.role === "User" ? "" : ` · ${me.role}`);
+  if (who) who.textContent = me.email || "";
+  // Its own line rather than a suffix on the address: as a suffix it was the first thing the
+  // truncation ate, which is the opposite of what a role badge is for.
+  const badge = el("whoamiRole");
+  if (badge) {
+    badge.textContent = me.role || "";
+    badge.classList.toggle("hidden", !me.role);
+  }
 
   const rank = RANK.get(me.role) ?? 1;
   document.querySelectorAll("[data-min-role]").forEach((item) => {

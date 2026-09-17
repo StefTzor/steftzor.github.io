@@ -130,6 +130,11 @@
             <span class="min-w-0">
               <span id="whoamiName" class="block truncate font-semibold"></span>
               <span id="whoami" class="block truncate text-xs text-brand-muted"></span>
+              {# The role on its own line, not appended to the address. It used to be
+                 "email · Role" on one truncated line, which made the role the first thing to be
+                 clipped - the one part of that line short enough to always fit. #}
+              <span id="whoamiRole"
+                class="mt-1 hidden w-fit rounded-full bg-brand-accent/10 px-2 py-0.5 text-[11px] font-semibold text-brand-accent"></span>
             </span>
           </a>
         </div>
@@ -159,6 +164,47 @@
   <main id="main-content" class="flex-grow">
     {{ content | safe }}
   </main>
+  {%- endif %}
+
+  {%- if shell %}
+  {# A way to reach me from inside the app. Bottom right, out of the way of everything, and only
+     on the pages a signed-in person actually uses - the auth pages have their own job. #}
+  <div class="fixed bottom-4 right-4 z-40 print:hidden">
+    <div id="cwPanel" class="hidden mb-3 w-[min(26rem,calc(100vw-2rem))] rounded-xl border border-brand-muted/15 bg-brand-surface p-5 shadow-xl"
+      role="dialog" aria-modal="false" aria-labelledby="cw-title">
+      <div class="flex items-start justify-between gap-4">
+        <h2 id="cw-title" class="text-base font-bold text-brand-text">Send me a message</h2>
+        <button type="button" id="cwClose" class="icon-btn -mr-2 -mt-2 text-lg" title="Close">
+          {% icon "fa-solid-times", "" %}<span class="sr-only">Close</span>
+        </button>
+      </div>
+
+      <p class="hint mt-1">
+        From <span id="cwName" class="font-semibold text-brand-text"></span>
+        (<span id="cwEmail"></span>) — I reply to that address.
+      </p>
+
+      <form id="cwForm" method="post" novalidate class="mt-4">
+        <label for="cwMessage" class="field-label">Message</label>
+        <textarea id="cwMessage" name="message" rows="4" maxlength="5000" class="field"></textarea>
+
+        <label class="mt-3 flex items-start gap-2 text-sm text-brand-muted">
+          <input type="checkbox" id="cwConsent" name="consent" class="mt-1 shrink-0">
+          <span>I am happy for this message and my address to be emailed to Stefanos and stored.</span>
+        </label>
+
+        <div class="mt-4 flex items-center gap-3">
+          <button type="submit" class="btn-primary text-sm">Send</button>
+          <p id="cwStatus" class="text-sm text-brand-muted" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+
+    <button type="button" id="cwOpen" aria-expanded="false" aria-controls="cwPanel"
+      class="nav-cta bg-brand-surface shadow-lg">
+      {% icon "fa-solid-envelope", "text-sm" %}<span>Message me</span>
+    </button>
+  </div>
   {%- endif %}
 
   {% include "chrome/footer.njk" %}
