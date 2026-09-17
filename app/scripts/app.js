@@ -179,7 +179,10 @@ function renderChip(data) {
   }
   el("wxChipTemp").textContent = deg(now.temperature);
   el("wxChipWhat").textContent = what.text ? ` · ${what.text}` : "";
-  el("wxChipPlace").textContent = label || (data.precise ? "Your location" : (data.place || ""));
+  // The chip gets the town, not the whole label. The region and country are saved because the
+  // profile needs them to tell three Uppsalas apart; a chip two lines tall does not.
+  el("wxChipPlace").textContent = label ? label.split(",")[0].trim()
+    : (data.precise ? "Your location" : (data.place || ""));
   startClock(data.timezone);
 }
 
@@ -189,9 +192,13 @@ function renderWeather(data) {
   const now = data.current || {};
   const today = (data.daily || [])[0] || {};
 
-  el("weatherPlace").textContent = data.observedAt
-    ? `observed ${clockOf(data.observedAt)}` + (data.timezone ? ` · ${data.timezone.replace(/_/g, " ")}` : "")
-    : "";
+  // The panel has room for both: which place this is, and when it was measured. The chip shows
+  // only the town, so this is where "which Uppsala?" gets an answer.
+  el("weatherPlace").textContent = [
+    label || (data.precise ? "Your location" : data.place),
+    data.observedAt ? `observed ${clockOf(data.observedAt)}` : "",
+    data.timezone ? data.timezone.replace(/_/g, " ") : "",
+  ].filter(Boolean).join(" · ");
 
   const box = el("weather");
   box.textContent = "";
