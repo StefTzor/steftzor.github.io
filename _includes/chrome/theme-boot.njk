@@ -9,14 +9,22 @@
 
   The `?theme=` branch is the handoff between tzortzoglou.eu and app.tzortzoglou.eu. localStorage
   is per-origin, so a choice made on one is invisible to the other, and crossing over used to
-  flip the site back to dark in your face. The header appends the parameter to its cross-property
-  link (see scripts/chrome.js), this adopts it, and this then takes it straight back out of the
-  address bar - in <head> rather than on DOMContentLoaded, because consent.js injects GoatCounter
-  and GoatCounter records location.search when it loads, which a later cleanup would race.
+  flip you back to dark in your face. The header appends the parameter to its cross-property link
+  (see scripts/chrome.js), this adopts it, and this then takes it back out of the address bar -
+  in <head> rather than on DOMContentLoaded, because consent.js injects GoatCounter and
+  GoatCounter records location.search when it loads, which a later cleanup would race.
 
-  Adopted ONLY when this origin has no preference of its own - otherwise arriving from the site
-  would overrule a choice deliberately made inside the app. A cookie on .tzortzoglou.eu would
-  also have worked and would have been less code; it was rejected because /cookies/ says this
-  site sets none, and that claim is worth more than the code it costs.
+  Whichever choice was made most recently wins, wherever it was made - hence `theme-at`, written
+  beside `theme` by the toggle and carried alongside it. The first version instead let the
+  receiving origin's own preference win, which sounded careful and was wrong: the toggle writes
+  that preference, so using it once on the app disabled the handoff on that browser forever. A
+  feature that works exactly once is worse than no feature, because you stop expecting it.
+
+  An origin holding a `theme` with no `theme-at` predates this and counts as timestamp 0, so the
+  first deliberate choice made anywhere wins and the pair converges. Both are the same browser,
+  so there is no clock to disagree about.
+
+  A cookie on .tzortzoglou.eu would have been less code and would have needed none of this. It
+  was rejected because /cookies/ says this site sets none, and that claim is worth more.
 #}
-<script>(function(){var m=/[?&]theme=(light|dark)(&|$)/.exec(location.search);var t=null;try{t=localStorage.getItem('theme');}catch(e){}if(!t&&m){t=m[1];try{localStorage.setItem('theme',t);}catch(e){}}if(t==='light'){document.documentElement.classList.remove('dark');}if(m){try{var u=new URL(location.href);u.searchParams.delete('theme');history.replaceState(null,'',u.pathname+u.search+u.hash);}catch(e){}}})();</script>
+<script>(function(){var q=null;try{q=new URLSearchParams(location.search);}catch(e){}var inc=q&&q.get('theme');if(inc!=='light'&&inc!=='dark'){inc=null;}var incAt=q&&+q.get('theme-at')||0;var t=null,at=0;try{t=localStorage.getItem('theme');at=+localStorage.getItem('theme-at')||0;}catch(e){}if(inc&&(!t||incAt>at)){t=inc;try{localStorage.setItem('theme',t);localStorage.setItem('theme-at',String(incAt));}catch(e){}}if(t==='light'){document.documentElement.classList.remove('dark');}if(q&&q.has('theme')){try{q.delete('theme');q.delete('theme-at');var s=q.toString();history.replaceState(null,'',location.pathname+(s?'?'+s:'')+location.hash);}catch(e){}}})();</script>

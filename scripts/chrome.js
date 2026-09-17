@@ -27,24 +27,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function toggleTheme() {
     const isDark = document.documentElement.classList.toggle('dark');
-    try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch (e) { /* blocked */ }
+    // theme-at is what makes the handoff last-write-wins across the two origins, rather than
+    // working once and then never again. See _includes/chrome/theme-boot.njk.
+    try {
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      localStorage.setItem('theme-at', String(Date.now()));
+    } catch (e) { /* blocked */ }
     syncThemeButtons();
     syncCrossLinks();
   }
 
   // --- handing the theme to the other property --------------------------
   // localStorage is per-origin, so the choice made here is invisible on the other side and
-  // crossing over used to flip you back to dark. The link carries the answer instead; the
-  // receiving end adopts it only if it has no preference of its own, and takes it back out of
-  // the address bar - both in _includes/chrome/theme-boot.njk, which runs in <head>.
+  // crossing over used to flip you back to dark. The link carries the answer instead, with the
+  // time it was chosen so the two origins can tell whose is newer; the receiving end adopts it
+  // and takes it back out of the address bar, both in _includes/chrome/theme-boot.njk.
   // Written on load and after every toggle rather than on click, so that opening the link in
   // a new tab or copying its address carries the theme too.
   function syncCrossLinks() {
     const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    let at = '0';
+    try { at = localStorage.getItem('theme-at') || '0'; } catch (e) { /* blocked */ }
     document.querySelectorAll('a[data-cross]').forEach((a) => {
       try {
         const url = new URL(a.href);
         url.searchParams.set('theme', theme);
+        url.searchParams.set('theme-at', at);
         a.href = url.toString();
       } catch (e) { /* a relative or malformed href is not ours to fix */ }
     });
