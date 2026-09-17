@@ -1,0 +1,138 @@
+---
+permalink: /admin/erasure/
+title: "Erasure | Admin"
+bodyScripts:
+  - src: "/scripts/admin-erasure.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+  - src: "/scripts/palette.js"
+    type: "module"
+---
+<section class="app-page">
+  <div class="app-prose">
+
+    {% include "chrome/admin-sections.njk" %}
+
+    <h1 class="text-3xl font-bold text-brand-text mb-2">Erasure</h1>
+    <p class="text-brand-muted mb-6">
+      Everything held for one email address, and the one way to remove it. The contact form
+      promises a message can be deleted on request and
+      <a href="https://tzortzoglou.eu/privacy/" class="text-brand-accent underline hover:no-underline">the privacy
+      notice</a> promises Article 17; this is where that gets carried out rather than remembered.
+    </p>
+    {# Said on the page and not only in the results, because it is the thing an operator needs to
+       know BEFORE they promise somebody their data is gone. A contact message is stored and also
+       emailed: this screen reaches the database, and nothing reaches the copy that was sent. #}
+    <p class="text-brand-muted mb-6">
+      It cannot reach the copies that were emailed. Those are shown on every answer below, because
+      an erasure that reported "done" while a copy sat in a mailbox would be a lie the rest of this
+      codebase is written to avoid.
+    </p>
+
+    <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
+
+    <!-- Step 1: look up ------------------------------------------------------ -->
+    <form id="lookupForm" method="post" novalidate class="card">
+      <label for="target" class="field-label">Email address</label>
+      <input spellcheck="false" type="email" id="target" name="target" autocomplete="off"
+        maxlength="254" aria-describedby="lookupHint" class="field">
+      <p id="lookupHint" class="hint">
+        Reads only. Nothing is deleted by looking, and the address is matched the way the API
+        matches it — trimmed, and ignoring case.
+      </p>
+      <button type="submit" class="btn-primary mt-4">Look up</button>
+    </form>
+
+    <!-- What is held -------------------------------------------------------- -->
+    <div id="held" class="hidden">
+
+      <section aria-labelledby="held-heading" class="card mt-6">
+        <h2 id="held-heading" class="text-lg font-bold text-brand-text">
+          What is held for <span id="heldWho" class="break-all"></span>
+        </h2>
+
+        <h3 class="mt-4 font-semibold text-brand-text">Contact messages</h3>
+        <p id="heldMessages" class="mt-1 text-sm text-brand-muted"></p>
+        {# The dates and nothing else. The preview endpoint deliberately returns no IP address and
+           no user agent: this screen exists to delete somebody's data, and reading the rest of it
+           on the way past is not part of that. #}
+        <div id="heldDates" class="mt-2 flex flex-wrap gap-1.5"></div>
+
+        <h3 class="mt-6 font-semibold text-brand-text">Account</h3>
+        <p id="heldAccount" class="mt-1 text-sm text-brand-muted"></p>
+        <ul id="heldAccountFacts" class="mt-2 space-y-1 text-sm text-brand-muted"></ul>
+      </section>
+
+      <!-- The out-of-reach copies, as their own block on the preview and again on the receipt. -->
+      <section aria-labelledby="reach-heading" class="card mt-4">
+        <h2 id="reach-heading" class="text-lg font-bold text-brand-text">Copies this cannot reach</h2>
+        <p id="reachCount" class="mt-2 text-sm text-brand-text"></p>
+        {# The API's own sentence, printed as it arrives. It is the one part of this page that is
+           a statement about systems outside it, so it is not rephrased here - a rewrite would
+           drift from what the server actually knows, and this is exactly the claim that must
+           not drift. #}
+        <p id="reachNote" class="mt-2 text-sm text-brand-muted"></p>
+      </section>
+
+      <!-- Step 2: erase ----------------------------------------------------- -->
+      <section id="erase" class="hidden card mt-4" aria-labelledby="erase-heading">
+        <h2 id="erase-heading" class="text-lg font-bold text-brand-text">Erase</h2>
+        <p class="hint">
+          Removes the messages, the stored profile and the sign-in account. It crosses three
+          stores, there is no undo, and nothing here restores an account afterwards.
+        </p>
+
+        <button type="button" id="eraseOpen" class="btn-secondary mt-4">Erase what is held…</button>
+
+        {# Red rather than the amber the account page uses for handing an account to another
+           address. That action can at least be undone by whoever receives it; this one cannot be
+           undone by anybody. The alphas are pitched against a white card, the same way the amber
+           panel's were: /60 on the border reads as an edge worth noticing without the panel
+           turning into a block of colour. #}
+        <div id="eraseConfirm" class="hidden mt-4 rounded-lg border border-red-600/60 bg-red-600/10 p-4">
+          {# Names the counts rather than asking "are you sure": the number of messages is the
+             fact worth checking, and a dialog that only asks trains people to press yes. #}
+          <p class="text-sm text-brand-text">
+            About to delete <span id="eraseWhat" class="font-semibold"></span>.
+          </p>
+          <p class="hint mt-2">
+            Type the address to confirm. It is the only address this will act on.
+          </p>
+          <label for="eraseTyped" class="sr-only">Type the address to confirm</label>
+          <input spellcheck="false" type="text" id="eraseTyped" name="eraseTyped" autocomplete="off"
+            maxlength="254" class="field mt-2">
+          <div class="mt-3 flex flex-wrap gap-3">
+            <button type="button" id="eraseGo" class="btn-primary text-sm" disabled>Yes, erase it</button>
+            <button type="button" id="eraseCancel" class="btn-secondary text-sm">Cancel</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- The receipt --------------------------------------------------------- -->
+    <div id="receipt" class="hidden">
+      <section aria-labelledby="receipt-heading" class="card mt-6">
+        <h2 id="receipt-heading" class="text-lg font-bold text-brand-text">
+          Removed for <span id="receiptWho" class="break-all"></span>
+        </h2>
+        {# Every line under here is built from the erase response, never from the preview. The
+           preview is a guess that was true a moment ago; the receipt is what the API says it
+           actually deleted, and when the two disagree the receipt is the true one. #}
+        <ul id="receiptLines" class="mt-3 space-y-1 text-sm text-brand-text"></ul>
+      </section>
+
+      <section aria-labelledby="left-heading" class="card mt-4">
+        <h2 id="left-heading" class="text-lg font-bold text-brand-text">What is still out there</h2>
+        <p id="leftCount" class="mt-2 text-sm text-brand-text"></p>
+        <p id="leftNote" class="mt-2 text-sm text-brand-muted"></p>
+        {# Filled in and revealed only when there were emailed copies. Finishing the job means
+           opening the mailbox and deleting them by hand, so the page hands over the search
+           instead of leaving the operator to compose it. #}
+        <p id="leftSearch" class="hidden mt-3 text-sm"></p>
+      </section>
+    </div>
+
+  </div>
+</section>

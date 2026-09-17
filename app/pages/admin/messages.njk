@@ -18,8 +18,12 @@ bodyScripts:
     <h1 class="text-3xl font-bold text-brand-text">Messages</h1>
     <p id="messageCount" class="text-sm text-brand-muted"></p>
   </div>
+  {# The second sentence is not decoration. Every message here was also emailed when it arrived,
+     so "Delete" on a row reaches the stored copy and nothing else, and the page says which one
+     it means before anybody presses it. #}
   <p class="text-brand-muted mb-6 max-w-prose">
-    Sent through the contact form, on either site. Replying happens in your email.
+    Sent through the contact form, on either site. Replying happens in your email — and so does
+    the copy of each message, so deleting one here removes the stored record and nothing more.
   </p>
 
   <div id="status" role="status" aria-live="polite" class="mb-4 text-sm"></div>

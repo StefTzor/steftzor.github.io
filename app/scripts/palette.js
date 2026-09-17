@@ -94,6 +94,7 @@ const COMMANDS = [
   { label: "Unread messages", hint: "Messages you have not read", keywords: "inbox new", minRole: "Admin", run: go("/admin/messages/?unread=1") },
   { label: "Admin · Invites", hint: "Create an approved account", keywords: "invite new user", minRole: "Admin", run: go("/admin/invites/") },
   { label: "Admin · Data", hint: "Browse the Postgres tables", keywords: "database sql postgres tables rows schema", minRole: "Admin", run: go("/admin/data/") },
+  { label: "Admin · Erasure", hint: "Everything held for one address, and how to remove it", keywords: "delete forget gdpr erase right to be forgotten article 17", minRole: "Admin", run: go("/admin/erasure/") },
   { label: "Admin · Analytics", hint: "Traffic to the public site", keywords: "stats visits goatcounter", minRole: "Admin", run: go("/admin/analytics/") },
 
   {

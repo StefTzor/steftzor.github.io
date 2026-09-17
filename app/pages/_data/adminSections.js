@@ -43,6 +43,12 @@ module.exports = [
     icon: "fa-solid-database",
   },
   {
+    label: "Erasure",
+    href: "/admin/erasure/",
+    navKey: "admin-erasure",
+    icon: "fa-solid-eraser",
+  },
+  {
     label: "Health",
     href: "/admin/health/",
     navKey: "admin-health",

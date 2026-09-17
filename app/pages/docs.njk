@@ -96,14 +96,16 @@ bodyScripts:
         <h3 class="font-semibold text-brand-text">Firebase Authentication</h3>
         <p class="hint mt-1">
           Email addresses and password hashes. The browser trades a password for a signed token, and
-          the API only ever sees the token.
+          the API only ever sees the token. Deleting an account here is what actually stops somebody
+          signing in; everything else is a record about them.
         </p>
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Firestore</h3>
         <p class="hint mt-1">
           One document per account: name, role, approval state, home location, home stop. The role
-          is read from here on <em>every single request</em>.
+          is read from here on <em>every single request</em>. It is a separate store from the one
+          above, which is why an account can exist with no document and why erasure removes both.
         </p>
       </li>
       <li class="card">
@@ -112,7 +114,9 @@ bodyScripts:
           Three tables: contact submissions, a row per process start, and which migrations have run.
           Browsable on
           <a href="/admin/data/" class="text-brand-accent underline hover:no-underline">the data view</a>
-          if you are an admin.
+          if you are an admin. A contact submission can be deleted one row at a time from
+          <a href="/admin/messages/" class="text-brand-accent underline hover:no-underline">Messages</a>,
+          or all of one person's at once by erasure.
         </p>
       </li>
       <li class="card">
@@ -124,6 +128,26 @@ bodyScripts:
         </p>
       </li>
     </ul>
+
+    {# Added the day erasure was built, because until then this section described four stores
+       nothing could take anything out of, and a page called "where data lives" that cannot say
+       how data leaves is only half a map. The last two sentences are the ones that matter: the
+       emailed copy is real, it is outside all four stores, and no endpoint here reaches it. #}
+    <p class="text-sm text-brand-muted mt-4 max-w-prose">
+      Until recently nothing in this system could take a person out of any of them. It can now:
+      erasure takes one email address and removes that address's contact messages from Postgres,
+      its account document from Firestore and its sign-in from Firebase Authentication — then
+      answers with a receipt of what it actually removed, rather than a success message. One
+      action across three stores, because that is how far a person is spread: deleting from one
+      leaves the other two still holding them.
+    </p>
+    <p class="text-sm text-brand-muted mt-3 max-w-prose">
+      There is a fifth place, and it is the honest part of this page. A message sent through the
+      contact form is stored <em>and</em> emailed, so a copy sits in a mailbox and in the mail
+      provider's delivery log. Neither is a store this code owns, and nothing in the endpoint list
+      below reaches into them. The erasure preview and the receipt both say so, in the API's own
+      words, rather than reporting a deletion that sounds wider than the one that happened.
+    </p>
   </section>
 
   {# --- endpoints ----------------------------------------------------------- #}

@@ -64,6 +64,18 @@ function mailto(email, subject) {
   return "mailto:" + email + (subject ? "?subject=" + encodeURIComponent(subject) : "");
 }
 
+/**
+ * The arrival time in full, for the delete confirmation.
+ *
+ * The row shows "14 Sep", which is enough to scan a list by and not enough to decide on a
+ * deletion: two messages from the same person on the same day read identically in the row.
+ */
+function fullWhen(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleString(undefined, { dateStyle: "long", timeStyle: "short" });
+}
+
 /** A short, local rendering of when something arrived. */
 function when(iso) {
   const d = new Date(iso);
@@ -195,7 +207,122 @@ function messageRow(m) {
     actions.appendChild(reply);
   }
 
-  body.append(who, text, actions);
+  // --- deleting this one message ---
+  //
+  // Here rather than only in the erasure console, because the everyday case is reading something
+  // and wanting it gone. Going through the console would mean typing the sender's address to
+  // remove a message already open on the screen, and would take their other messages with it.
+  // This removes exactly this row.
+  const sender = named ? `${m.name} (${m.email})` : (m.email || m.name || "an unnamed sender");
+
+  const del = document.createElement("button");
+  del.type = "button";
+  // Red in both themes rather than the muted grey the other two actions use: this is the one
+  // control in the list that destroys something, and it should not look like the other two.
+  del.className = "text-sm text-red-700 underline hover:no-underline dark:text-red-400";
+  del.textContent = "Delete";
+  actions.appendChild(del);
+
+  // The confirmation names the sender and the arrival time. On a list where every row is the
+  // same shape, those two facts are what tell you whether this is the message you meant - and a
+  // confirm() can show neither, which is why there is not one anywhere in this codebase.
+  const confirm = document.createElement("div");
+  confirm.className = "hidden mt-4 rounded-lg border border-amber-600/60 bg-amber-600/10 p-4";
+
+  const ask = document.createElement("p");
+  ask.className = "text-sm text-brand-text";
+  const whoStrong = document.createElement("strong");
+  whoStrong.textContent = sender;
+  const stamp = fullWhen(m.createdAt);
+  ask.append(document.createTextNode("Delete the message from "), whoStrong,
+    document.createTextNode(stamp ? `, received ${stamp}?` : "?"));
+
+  const caveat = document.createElement("p");
+  caveat.className = "hint";
+  // Said before the deletion, not only in the receipt afterwards. A contact message is stored
+  // and emailed; this button reaches the stored one. Offering "Delete" without saying that would
+  // be the screen claiming a reach the code does not have.
+  caveat.textContent = m.notified
+    ? "This deletes the stored message. A copy was emailed when it arrived, and that copy is not reachable from here."
+    : "This deletes the stored message, and cannot be undone. Nothing was emailed for this one.";
+
+  const confirmActions = document.createElement("div");
+  confirmActions.className = "mt-3 flex flex-wrap gap-3";
+  const go = document.createElement("button");
+  go.type = "button";
+  go.className = "btn-primary text-sm";
+  go.textContent = "Yes, delete it";
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.className = "btn-secondary text-sm";
+  cancel.textContent = "Cancel";
+  confirmActions.append(go, cancel);
+  confirm.append(ask, caveat, confirmActions);
+
+  /**
+   * Take this row off the list and leave the page honest about what is left on it.
+   *
+   * Nothing here touches `before` or the cursor stack, and nothing re-fetches. Refilling the page
+   * would pull a row up from the next page into a list somebody is in the middle of reading, and
+   * the counter beneath the heading says "shown", not "total", so it stays true by counting what
+   * is actually left.
+   */
+  function remove() {
+    const i = rows.indexOf(m);
+    if (i !== -1) rows.splice(i, 1);
+    // Focus is about to be destroyed along with the row. It goes to the next message so the
+    // keyboard stays where the reader was, and falls back to the filter only when the deletion
+    // emptied the list and there is no message left to hold it.
+    const neighbour = row.nextElementSibling || row.previousElementSibling;
+    row.remove();
+    if (!rows.length) {
+      const host = el("messages");
+      host.textContent = "";
+      paintEmpty(host);
+    }
+    paintCount();
+    (neighbour ? neighbour.querySelector("summary") : el("filterAll")).focus();
+  }
+
+  del.addEventListener("click", () => {
+    confirm.classList.remove("hidden");
+    go.focus();
+  });
+  cancel.addEventListener("click", () => {
+    confirm.classList.add("hidden");
+    del.focus();
+  });
+
+  go.addEventListener("click", async () => {
+    go.disabled = true;
+    say("Deleting…");
+    try {
+      const res = await api(`/admin/messages/${encodeURIComponent(m.id)}/delete`, { method: "POST" });
+      remove();
+      // The API's own sentence about the emailed copies, printed as it wrote it. Rewriting it
+      // shorter here is how a receipt ends up describing a deletion wider than the one that
+      // happened, so it is repeated rather than summarised.
+      say(res.notified && res.notified.count
+        ? `Message from ${sender} deleted. ${res.notified.note}`
+        : `Message from ${sender} deleted.`, "ok");
+    } catch (err) {
+      console.error("messages: delete failed", err.status, err.code);
+      if (err.status === 404) {
+        // Already gone: deleted in another tab, or swept up by an erasure of this sender. The
+        // row is taken away anyway, because leaving it would be the list claiming the database
+        // still holds something it does not.
+        remove();
+        say("That message was already gone. It has been taken off the list.");
+        return;
+      }
+      go.disabled = false;
+      say(err.code === "bad_id" ? "That message could not be identified."
+        : err.status === 403 ? "This account is not allowed to delete messages."
+        : "That message could not be deleted. Nothing was removed.", "error");
+    }
+  });
+
+  body.append(who, text, actions, confirm);
   row.append(head, body);
   return row;
 }
