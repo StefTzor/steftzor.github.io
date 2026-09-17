@@ -13,9 +13,10 @@ import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/
  * never a boundary. Anyone can unhide it and the endpoint will still say no.
  */
 
-export const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
-  ? "http://localhost:3000"
-  : "https://api.tzortzoglou.eu";
+// Defined in api-base.js and re-exported here, because this module cannot be imported by a page
+// where nobody is signed in - see the note in that file.
+export { API_BASE } from "./api-base.js";
+import { API_BASE } from "./api-base.js";
 
 // A Map, not an object literal - the same reason as the server's gate. An object inherits
 // Object.prototype, so RANK['constructor'] is a function rather than undefined, and comparing a

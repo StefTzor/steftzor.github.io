@@ -7,6 +7,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 import { fieldError, clearAll, check, validateOnBlur, busy as setBusy } from "./forms.js";
+import { API_BASE } from "./api-base.js";
 
 /**
  * Auth for app.tzortzoglou.eu.
@@ -24,9 +25,7 @@ import { fieldError, clearAll, check, validateOnBlur, busy as setBusy } from "./
 // When the registration form became available — used for the bot timing check.
 let formLoadedAt = 0;
 
-const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
-  ? "http://localhost:3000"
-  : "https://api.tzortzoglou.eu";
+
 
 // Shown both on a successful registration AND when the address already has an
 // account, so the form cannot be used to test whether an address is registered.

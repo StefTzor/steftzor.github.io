@@ -39,6 +39,7 @@ module.exports = function (eleventyConfig) {
     "app/scripts/contact-widget.js": "scripts/contact-widget.js",
     "scripts/chrome.js": "scripts/chrome.js",
     "app/scripts/shell.js": "scripts/shell.js",
+    "app/scripts/api-base.js": "scripts/api-base.js",
     "app/scripts/forms.js": "scripts/forms.js",
     "app/scripts/email.js": "scripts/email.js",
     "app/scripts/app.js": "scripts/app.js",
