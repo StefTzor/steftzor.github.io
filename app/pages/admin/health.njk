@@ -45,6 +45,18 @@ bodyScripts:
     </li>
   </ul>
 
+  {# --- restarts ---------------------------------------------------------
+     The one thing deploy history cannot answer. A deploy that succeeded and a container that has
+     restarted eleven times since look identical in GitHub Actions. #}
+  <h2 class="text-xl font-bold text-brand-text mb-1">API restarts</h2>
+  <p class="text-sm text-brand-muted mb-4 max-w-prose">
+    Every time the API process started. A deploy shows here as one restart; several in a row
+    without a deploy means something is falling over.
+  </p>
+  <div id="boots" class="card mb-10">
+    <p class="text-sm text-brand-muted">Loading…</p>
+  </div>
+
   {# --- deploys ----------------------------------------------------------
      Rendered by admin-health.js: one block per workflow, newest first. A failed run names the
      step that failed, because that is the one thing worth knowing before opening the log. #}

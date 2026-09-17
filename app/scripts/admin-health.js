@@ -142,6 +142,69 @@ function render(data) {
   }
 }
 
+/**
+ * When the API process started, and the times before that.
+ *
+ * Shown with the gap between each restart and the one before it, because that gap is the whole
+ * signal: two restarts a month apart are two deploys, and two restarts ninety seconds apart are
+ * something crashing.
+ */
+function gap(fromIso, toIso) {
+  const ms = Date.parse(toIso) - Date.parse(fromIso);
+  if (!Number.isFinite(ms) || ms <= 0) return "";
+  const mins = Math.round(ms / 60000);
+  if (mins < 60) return `${mins} min later`;
+  const hours = Math.round(mins / 60);
+  if (hours < 48) return `${hours} h later`;
+  return `${Math.round(hours / 24)} d later`;
+}
+
+async function loadBoots() {
+  const host = el("boots");
+  try {
+    const { boots } = await api("/admin/boots");
+    host.textContent = "";
+    if (!boots.length) {
+      host.appendChild(Object.assign(document.createElement("p"),
+        { className: "text-sm text-brand-muted", textContent: "No restarts recorded yet." }));
+      return;
+    }
+    const list = document.createElement("ul");
+    list.className = "divide-y divide-brand-muted/10";
+    boots.forEach((b, i) => {
+      const li = document.createElement("li");
+      li.className = "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2 first:pt-0 last:pb-0";
+
+      const when = document.createElement("span");
+      when.className = "text-sm text-brand-text";
+      when.textContent = new Date(b.startedAt).toLocaleString(undefined,
+        { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+      const meta = document.createElement("span");
+      meta.className = "text-xs text-brand-muted tabular-nums";
+      // The gap to the PREVIOUS start, which is the one below it in a newest-first list.
+      const next = boots[i + 1];
+      meta.textContent = [b.version, next ? gap(next.startedAt, b.startedAt) : ""]
+        .filter(Boolean).join(" · ");
+
+      li.append(when, meta);
+      list.appendChild(li);
+    });
+    host.appendChild(list);
+  } catch (err) {
+    console.error("health: boots", err.status, err.code);
+    host.textContent = "";
+    host.appendChild(Object.assign(document.createElement("p"), {
+      className: "text-sm text-brand-muted",
+      // A 404 here means the route is behind `if (postgres)` and there is no database, which is
+      // a configuration fact rather than a fault.
+      textContent: err.status === 404
+        ? "Restart history needs the database, which is not configured."
+        : "Restart history could not be loaded.",
+    }));
+  }
+}
+
 async function loadDeploys() {
   try {
     render(await api("/admin/deploys"));
@@ -162,5 +225,6 @@ profile.then(() => {
   say("");
   loadApi();
   loadApp();
+  loadBoots();
   loadDeploys();
 });
