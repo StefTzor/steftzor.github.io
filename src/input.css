@@ -324,6 +324,52 @@
     .hero-sky { animation: none !important; }
   }
 
+  /* The command palette.
+
+     ::backdrop is the browser's own overlay - no extra element, and it is inert by definition,
+     so nothing behind the dialog can be clicked or tabbed into while it is open. */
+  .palette {
+    @apply w-[min(36rem,calc(100vw-2rem))] rounded-xl border border-brand-muted/20
+           bg-brand-surface p-0 text-brand-text shadow-2xl;
+    /* Near the top rather than centred: the list grows downward, and a centred dialog that
+       changes height as you type moves the row under your eye while you are reading it. */
+    margin: 12vh auto auto;
+  }
+
+  .palette::backdrop {
+    background: rgb(0 0 0 / 55%);
+    backdrop-filter: blur(2px);
+  }
+
+  .palette-panel {
+    @apply flex flex-col;
+  }
+
+  .palette-item {
+    @apply flex cursor-pointer items-baseline justify-between gap-4 px-4 py-2.5 text-sm;
+  }
+
+  /* Highlighted from aria-selected, so what is announced and what is drawn cannot disagree. */
+  .palette-item[aria-selected="true"] {
+    @apply bg-brand-accent/10;
+  }
+
+  .palette-item[aria-selected="true"] span:first-child {
+    @apply font-semibold text-brand-accent;
+  }
+
+  /* The opener in the rail. Quiet - it is a hint that a shortcut exists, not a primary action. */
+  .palette-opener {
+    @apply flex w-full items-center gap-2 rounded-lg border border-brand-muted/20 px-3 py-2
+           text-sm text-brand-muted transition-colors duration-150
+           hover:border-brand-accent/40 hover:text-brand-text;
+  }
+
+  .palette-chord {
+    @apply shrink-0 rounded border border-brand-muted/30 px-1.5 py-0.5 text-[11px]
+           font-sans text-brand-muted;
+  }
+
   /* A segmented control. aria-pressed carries the state; the styling follows it rather than a
      class, so the two cannot disagree about which segment is active. */
   .seg {

@@ -97,6 +97,17 @@
        profile below them because it is about you rather than about the app. #}
     <aside id="appHeader" class="hidden lg:flex lg:w-60 lg:shrink-0 lg:flex-col lg:border-r border-brand-muted/15 bg-brand-surface">
       <div class="lg:sticky lg:top-[77px] lg:h-[calc(100vh-77px)] flex flex-col">
+        {# The palette's only visible affordance. A keyboard shortcut nobody is told about is a
+           feature nobody has, and this is the app-only rail rather than the shared bar - the
+           public site has no palette and must not grow a button for one. #}
+        <div class="p-3 pb-0">
+          <button type="button" id="paletteOpen" class="palette-opener">
+            {% icon "fa-solid-terminal", "h-3.5 w-3.5 shrink-0 text-brand-muted" %}
+            <span class="flex-1 text-left">Search</span>
+            <kbd id="paletteChord" class="palette-chord"></kbd>
+          </button>
+        </div>
+
         <nav aria-label="Application" class="flex flex-1 flex-col min-h-0 p-3">
           <ul class="space-y-1">
             <li>
@@ -251,6 +262,25 @@
     </button>
   </div>
   {%- endif %}
+
+  {# The command palette. A native <dialog>: the browser traps focus, makes the rest of the page
+     inert, closes on Escape and restores focus to whatever opened it. Everything it does is
+     gated by the API on its own, so the list is a courtesy rather than a boundary. #}
+  <dialog id="palette" class="palette" aria-label="Command palette">
+    <div class="palette-panel">
+      <div class="flex items-center gap-3 border-b border-brand-muted/15 px-4 py-3">
+        {% icon "fa-solid-terminal", "h-4 w-4 shrink-0 text-brand-muted" %}
+        {# The combobox pattern: focus stays in the text box and the highlighted row is named by
+           aria-activedescendant, so typing keeps working and the row is still announced. #}
+        <input id="paletteInput" type="text" role="combobox" autocomplete="off"
+          aria-expanded="true" aria-controls="paletteList" aria-autocomplete="list"
+          placeholder="Where to, or what to do…"
+          class="w-full bg-transparent text-brand-text placeholder:text-brand-muted focus:outline-none">
+      </div>
+      <ul id="paletteList" role="listbox" aria-label="Commands" class="max-h-80 overflow-y-auto py-2"></ul>
+      <p id="paletteStatus" role="status" aria-live="polite" class="px-4 pb-3 text-sm text-brand-muted"></p>
+    </div>
+  </dialog>
 
   {% include "chrome/footer.njk" %}
 
