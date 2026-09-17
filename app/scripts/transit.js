@@ -47,7 +47,10 @@ function renderBoard(data) {
   const operator = data.departures.map((d) => d.operator).find(Boolean);
   const badge = el("trOperator");
   badge.textContent = operator || "";
-  badge.classList.toggle("hidden", !operator);
+  // `invisible`, not `hidden`: the badge holds its box from the first paint, so revealing
+  // it adds no width and wraps nothing. display:none would give the space back and put
+  // the shift right back in.
+  badge.classList.toggle("invisible", !operator);
 
   if (!data.departures.length) {
     el("trNote").textContent = arrivals

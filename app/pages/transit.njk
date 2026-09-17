@@ -31,7 +31,7 @@ bodyScripts:
       {% icon "fa-solid-bus", "h-7 w-7 text-brand-accent" %}
       <span>Transit</span>
       {# Filled in from the board, and empty until it says. See app/scripts/transit.js. #}
-      <span id="trOperator" class="card-badge hidden" aria-hidden="true"></span>
+      <span id="trOperator" class="card-badge invisible min-w-[2.25rem]" aria-hidden="true"></span>
     </h1>
 
     {# Departures and arrivals are two boards for one stop, so they are one control with two
@@ -48,13 +48,15 @@ bodyScripts:
   {# --- the stop ------------------------------------------------------------
      The heading is the stop, because every number on this page is about it. The controls sit
      beside it rather than in a toolbar of their own: there are two of them. #}
-  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-1">
+  <div class="flex flex-wrap items-end justify-between gap-x-4 gap-y-1 mb-1">
     <h2 id="board-heading" class="text-xl font-bold text-brand-text">&nbsp;</h2>
-    <p class="text-sm text-brand-muted">
-      <span id="trAge" class="tabular-nums"></span>
-      <button type="button" id="trChange" class="link-action ml-1">Change stop</button>
-      <button type="button" id="trRefresh" class="link-action ml-1">Refresh</button>
-    </p>
+    <div class="text-sm text-brand-muted sm:flex sm:items-end sm:gap-x-2">
+      <p class="min-h-5"><span id="trAge" class="tabular-nums"></span></p>
+      <p class="-ml-1.5 sm:ml-0">
+        <button type="button" id="trChange" class="link-action">Change stop</button>
+        <button type="button" id="trRefresh" class="link-action ml-1">Refresh</button>
+      </p>
+    </div>
   </div>
 
   <div class="card">

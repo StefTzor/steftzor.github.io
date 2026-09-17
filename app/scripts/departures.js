@@ -84,7 +84,10 @@ function render(data) {
   const operator = next.map((d) => d.operator).find(Boolean);
   const badge = el("depOperator");
   badge.textContent = operator || "";
-  badge.classList.toggle("hidden", !operator);
+  // `invisible`, not `hidden`: the badge holds its box from the first paint, so revealing
+  // it adds no width and wraps nothing. display:none would give the space back and put
+  // the shift right back in.
+  badge.classList.toggle("invisible", !operator);
 
   // Stale is said, not hidden: a departure board that is two minutes old is a departure board
   // that is wrong, and the reader is the one who should decide whether that matters.
