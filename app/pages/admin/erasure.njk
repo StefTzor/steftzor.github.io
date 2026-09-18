@@ -72,6 +72,17 @@ bodyScripts:
            drift from what the server actually knows, and this is exactly the claim that must
            not drift. #}
         <p id="reachNote" class="mt-2 text-sm text-brand-muted"></p>
+        {# Written here rather than sent by the API, because it is a fact about a table this page
+           does not touch and never will. Erasure joins three stores on an email address; a page
+           view has no address on it, so there is no handle to point at one - which is also why
+           /privacy/ 6 answers an erasure request about counted views by saying the number expires
+           rather than by offering to delete it. The sentence is on the screen that would
+           otherwise imply it had covered everything. #}
+        <p class="mt-2 text-sm text-brand-muted">
+          Counted page views are not in scope and cannot be: a view carries a visitor number and
+          no address, so nothing here could find the ones belonging to this person. That number
+          is erased from every row 30 days after the view.
+        </p>
       </section>
 
       <!-- Step 2: erase ----------------------------------------------------- -->
