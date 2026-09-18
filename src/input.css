@@ -646,7 +646,7 @@
   }
 
   .tile-count {
-    @apply mt-2 text-2xl font-bold leading-[1.2] text-brand-text tabular-nums;
+    @apply mt-2 text-2xl font-bold leading-[1.2] text-brand-text;
   }
 
   .tile-count[data-loading] {
@@ -699,7 +699,8 @@
      was retinted - it was #cbd5e1, the old light background, so on a white card every empty day
      read as a filled one and the year looked busier than it was. #e2e8f0 is the faintest step
      that still shows the grid's shape (1.23:1 on the card), and the lightest green is well clear
-     of it (1.56:1), so "none" and "one" are never the same cell. */
+     of it - 2.06:1 in light and 1.89:1 in dark - so "none" and "one" are never the same cell.
+     Those two figures moved when level 1 did; the paragraph below is why. */
   .contrib-day { aspect-ratio: 1; border-radius: 2px; background: #e2e8f0; }
   /* Level 1 was #34d399 and measured 1.92:1 against the card - under the 2:1 floor a sequential
      ramp's palest DATA step has to clear, so "one view" and "none" were nearly the same cell in
@@ -707,8 +708,9 @@
      the 0.06 lightness minimum; the dark ramp's own pale end moved for the same reason, 1.90:1
      to 2.67:1. Both checked with a validator rather than by eye - the whole ramp now passes
      monotone lightness, step gaps, single hue (6 degrees light, 2 dark) and the pale-end floor.
-     The EMPTY cell is deliberately left at 1.23:1 and is not a step: it is the absence, and the
-     paragraph above is why it has to read as one. */
+     The EMPTY cell is not a step and is deliberately left where it is - 1.23:1 against a white
+     card, 1.41:1 against a dark one. It is the absence, and the paragraph above is why it has to
+     read as one. Its separation FROM level 1 is what matters and that improved with the move. */
   .contrib-day[data-level="1"] { background: #10b981; }
   .contrib-day[data-level="2"] { background: #059669; }
   .contrib-day[data-level="3"] { background: #047857; }
@@ -734,7 +736,13 @@
 
   /* Proportional figures, not tabular. Equal-width digits exist so numbers line up down a
      column - a table, an axis - and at display size they make a number like 121 read loose and
-     gappy. These tiles sit side by side in a grid; nothing is aligning under anything. */
+     gappy. These tiles sit side by side in a grid; nothing is aligning under anything.
+     `.tile-count` above lost it at the same time and for the same reason: the two selectors are
+     one role in two places, and they render literally the same two numbers - awaiting approval
+     and unread messages - on the app home and the Admin home. Changing one would have made the
+     same figure render two ways depending on which page you were on. The small `tabular-nums`
+     left in this file are on values that DO align down a column: the count badge and the bar
+     list's value column. */
   .stat-number {
     @apply text-3xl font-bold leading-[1.2] text-brand-text;
   }

@@ -228,13 +228,36 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
     'one colour for every bar - these categories have no order to encode as a shade');
   assert.ok(fills.every((f) => /^[\d.]+%$/.test(f.style.width)), 'and a width that is a percentage');
   assert.ok(text(agents).includes('leads'), 'the part-to-whole is a sentence, not a ring');
-  ok('a nominal dimension is bars of one colour, and the value ramp on it is gone');
+  // The donut's arcs summing to a circle was the only check anywhere that the share arithmetic
+  // held. The ring is gone and the arithmetic is not: the same percentages are in the lead
+  // sentence and the table's share column, where a wrong-but-finite figure would survive the
+  // NaN sweep above in silence.
+  const shares = find(agents, (n) => n.tag === 'td' && /^\d+%$/.test(n._text))
+    .map((n) => Number(n._text.replace('%', '')));
+  assert.ok(shares.length >= 4, 'the table prints a share per row');
+  // FULL.byBrowser is the one dimension with enough rows to be worth summing: 60+30+4+3+2+1.
+  const browserShares = shares.slice(0, FULL.byBrowser.length);
+  const sum = browserShares.reduce((a, b) => a + b, 0);
+  assert.ok(Math.abs(sum - 100) <= browserShares.length,
+    `the shares of one dimension add up to a whole: ${browserShares.join(' + ')} = ${sum}`);
+  ok('a nominal dimension is bars of one colour, the ramp is gone, and the shares still sum to a whole');
 
   // The spline's hover, which the bar chart had and the curve lost: one transparent full-height
   // target per day, so a value is reachable by pointing at the column rather than at the line.
   const hits = tags(byId.get('chart'), 'rect').filter((r) => r.attrs.fill === 'transparent');
   assert.strictEqual(hits.length, DAILY.length, 'one hover target per day');
-  assert.ok(tags(hits[0], 'title').length, 'and each one names its day and count');
+  // Every one of them, and the text as well as its presence. The first version of this checked
+  // `hits[0]` for the existence of a <title> and printed a message claiming it had checked all
+  // thirty for their contents - an assertion weaker than the sentence beside it, which is the
+  // kind that reads as coverage and is not.
+  hits.forEach((hit, i) => {
+    const titles = tags(hit, 'title');
+    assert.strictEqual(titles.length, 1, `day ${i} has exactly one tooltip`);
+    assert.ok(/^\d+ \w+: [\d,]+ views$/.test(titles[0].textContent),
+      `day ${i}'s tooltip names a day and a count, not "${titles[0].textContent}"`);
+  });
+  assert.ok(hits.every((h) => Number(h.attrs.width) > 0 && Number(h.attrs.height) === 100),
+    'and each target is the full height of the plot, so the pointer need not find the curve');
 
   // A sequential ramp with no key is five shades of nothing.
   const swatches = find(byId.get('heatmap'), (n) => n.className === 'contrib-day h-3 w-3');
