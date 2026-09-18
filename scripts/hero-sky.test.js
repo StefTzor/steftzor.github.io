@@ -238,26 +238,44 @@ function block(selector, contains) {
   };
 
   /**
-   * The two layouts, and where the digest's last word lands in each.
+   * **The wide scrim is checked structurally, because it is now built not to need a sample point.**
    *
-   * The first version measured one point, 36% across, from a card assumed to be 1536px. It is
-   * 1472 - `app-page` adds `lg:px-8` - and `max-w-prose` is 65ch, which is nearer 0.55em than the
-   * 0.5em that arithmetic assumed. The real edge is past 41%, where the same stack measured
-   * 3.93:1. A sample point that flatters the layout is worse than no sample point.
+   * Its stops are `calc(2rem + 65ch + …)` - the body padding, the prose measure, and a fade after
+   * it - so the opaque region ends exactly where the text does, at any width and in any font. That
+   * is the fix for the thing two sample points in a row got wrong: `max-w-prose` is a FIXED 650px
+   * in Poppins while the card shrinks with the window, so the digest's right edge climbs across
+   * the card as the viewport narrows - 46% of it at 1920, 57% at 1280, 73% at 1024, 81% at 768.
+   * Percentage stops tuned at one width were wrong at every other one, and measured on rendered
+   * pixels the digest sat on 1.00:1 at 768px.
    *
-   * Under 640px `max-w-prose` is wider than the card, so it stops binding entirely: the line runs
-   * to the padding and the scrim there runs DOWN the card instead, so the sample is a y.
+   * So there is nothing to interpolate here: if the fully opaque stop reaches the end of the
+   * measure, the text is on plain surface and the ratio is the palette's own. What is asserted is
+   * that the three numbers still agree with the three the layout uses.
    */
-  const CARD = 1472;                       // max-w-[96rem] less lg:px-8 on both sides
-  const CH = 0.55 * 16;                    // one `ch` of the body face, measured rather than 0.5em
+  const wide = block('@media (min-width: 1280px)', 'linear-gradient(100deg');
+  const opaque = wide.match(/rgb\(var\(--color-surface\)\)\s+calc\(([^)]*)\)/);
+  assert.ok(opaque, 'the wide scrim must hold full opacity to a calc() stop, not to a percentage');
+  const measure = opaque[1].replace(/\s+/g, '');
+  assert.strictEqual(measure, '2rem+65ch',
+    `the wide scrim holds opaque to ${measure}; it has to reach the end of the text, which is the `
+    + 'body padding plus the prose measure. Any other value is a guess about where the words stop');
+
+  // ...and those two numbers have to be the ones the layout actually uses.
+  assert.ok(/\.hero-body\s*\{[^}]*sm:p-8/.test(CSS) || /sm:p-8/.test(block('.hero-body', '@apply')),
+    'the wide scrim assumes 2rem of padding, which is `sm:p-8` on .hero-body');
+  assert.ok(/max-w-prose/.test(block('.hero-digest', '@apply')),
+    'the wide scrim assumes a 65ch measure, which is `max-w-prose` on .hero-digest');
+  ok('the wide scrim holds opaque to the end of the text measure, in the same units the text uses');
+
+  /**
+   * The narrow scrim still needs a point, because it runs down the card and the text's height is
+   * what varies. MEASURED, not computed: the arithmetic said 52% of a 208px card; a browser at
+   * 360 and 390px says the card is 268px there - the digest wraps to three lines and the chip
+   * drops below it - and the last line ends 66% down. Two attempts at deriving this from the
+   * markup were optimistic in the same direction, so it comes from the browser now.
+   */
   const LAYOUTS = [
-    { name: 'wide', axis: 'x', at: (32 + 65 * CH) / CARD, gradient: block('@media (min-width: 640px)', 'linear-gradient(100deg') },
-    // Narrow: MEASURED, not computed. The arithmetic said the digest's last line sits 52% down a
-    // 208px card; rendering one at 360 and 390px says the card is 268px there, because the digest
-    // wraps to three lines and the chip drops below the text, and the last line ends 66% down.
-    // Both attempts at deriving a sample point from first principles have been optimistic, so
-    // this one comes from the browser: scratchpad/sky/measure.mjs prints it at four widths.
-    { name: 'narrow', axis: 'y', at: 0.66, gradient: block('.hero-scrim', 'linear-gradient(180deg') },
+    { name: 'narrow', at: 0.66, gradient: block('.hero-scrim', 'linear-gradient(180deg') },
   ];
 
   let worst = { ratio: Infinity };
@@ -328,8 +346,8 @@ function block(selector, contains) {
     });
   });
 
-  ok(`the text clears 4.5:1 over all ${conditions.size} stacks in both themes and both layouts `
-    + `(worst: ${worst.where} at ${worst.ratio.toFixed(2)}:1)`);
+  ok(`the text clears 4.5:1 over all ${conditions.size} stacks in both themes on a narrow card `
+    + `(worst: ${worst.where} at ${worst.ratio.toFixed(2)}:1); the wide card is covered structurally above`);
 }
 
 // --- 4. reduced motion silences everything the hero starts --------------------

@@ -433,20 +433,27 @@
       transparent 96%);
   }
 
-  /* From `sm` the chip sits beside the text rather than under it, `max-w-prose` binds, and the
-     right half of the card is free - so the scrim can run across and leave the weather and the
-     whole skyline visible. 100deg rather than 90 so it tilts with the rain.
+  /* **The horizontal scrim waits for `xl`, and its stops are measured in text, not in percent.**
+     Two things were wrong with doing it from `sm` in percentages. The text column is a FIXED
+     width - `max-w-prose` is 65ch, about 650px in Poppins - while the card shrinks with the
+     window, so the digest's right edge climbs across the card as the viewport narrows: 46% of the
+     card at 1920px, 57% at 1280, 73% at 1024, 81% at 768. Percentage stops tuned at one width are
+     wrong at every other one, and measured on rendered pixels the digest sat on 1.00:1 at 768px
+     and 1.84:1 at 1024.
 
-     The sample point these stops are set against is the digest's real right edge: a 1472px card
-     (`max-w-[96rem]` less `lg:px-8`) and 65ch at about 0.55em, which is past 41% - not the 36% an
-     earlier version assumed from a 1536px card and a 0.5em ch. */
-  @media (min-width: 640px) {
+     So the stops are `calc(2rem + 65ch + …)`: the padding, the measure, and a fade after it. That
+     is the same arithmetic the text itself uses, in the same units, so it cannot drift from the
+     thing it is protecting - not with the font, not with the width. And it only applies once the
+     card is wide enough for it to leave anything: below `xl` the vertical scrim is the one that
+     works, because there the text is most of the card's width and a left-to-right fade has
+     nowhere to go. */
+  @media (min-width: 1280px) {
     .hero-scrim {
       background: linear-gradient(100deg,
-        rgb(var(--color-surface)) 0%,
-        rgb(var(--color-surface) / 96%) 40%,
-        rgb(var(--color-surface) / 45%) 68%,
-        transparent 80%);
+        rgb(var(--color-surface)) 0,
+        rgb(var(--color-surface)) calc(2rem + 65ch),
+        rgb(var(--color-surface) / 40%) calc(2rem + 65ch + 5rem),
+        transparent calc(2rem + 65ch + 12rem));
     }
   }
 
