@@ -102,6 +102,23 @@ bodyScripts:
       </div>
       {% icon "fa-solid-chart-line", "h-5 w-5 shrink-0 text-brand-muted" %}
     </div>
+
+    {# The card used to carry no number, and the comment above explained why: a figure lifted out
+       of the window it was measured in is a statistic with its meaning left behind. That still
+       holds for every figure on Analytics but one. "Right now" needs no window - it IS its own
+       window - so it is the only number that can stand here without a caption explaining what it
+       is a number of. The line beside it is seven days of shape, not a reading: it has no axis
+       and no scale on purpose, and the page it links to is where the counts are. #}
+    <div class="mt-4 flex items-end justify-between gap-4">
+      <div>
+        <span class="stat-label">Right now</span>
+        <span class="block text-2xl font-bold text-brand-text tabular-nums" id="liveNow"
+          data-loading>—</span>
+        <span class="hint block" id="liveNowNote">The last five minutes.</span>
+      </div>
+      <div id="spark" class="min-w-0 flex-1 max-w-[12rem]"></div>
+    </div>
+
     <p class="mt-4 text-sm font-semibold text-brand-accent">
       Open the dashboard →
     </p>

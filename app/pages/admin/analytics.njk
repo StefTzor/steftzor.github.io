@@ -23,17 +23,29 @@ bodyScripts:
     User-Agent string.
   </p>
 
-  {# The one control. It changes `days`, and everything below is drawn from the one answer that
-     comes back - so there is nothing on this page that can be showing a different window from
-     anything else on it. #}
-  <div class="mb-6 flex items-center gap-2">
-    <label for="range" class="text-sm text-brand-muted">Last</label>
-    <select id="range" class="field w-auto py-1.5 text-sm">
-      <option value="7">7 days</option>
-      <option value="30" selected>30 days</option>
-      <option value="90">90 days</option>
-      <option value="365">365 days</option>
-    </select>
+  {# Two controls, and everything below is drawn from the one answer they fetch together - so
+     nothing on this page can be showing a different window, or a different property, from
+     anything else on it. The property filter is a real parameter rather than a filter applied
+     here: a visit that crossed from the site to the app is two visits in two properties, so a
+     total filtered in the browser would be right for the lists and wrong for every rate. #}
+  <div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+    <div class="flex items-center gap-2">
+      <label for="range" class="text-sm text-brand-muted">Last</label>
+      <select id="range" class="field w-auto py-1.5 text-sm">
+        <option value="7">7 days</option>
+        <option value="30" selected>30 days</option>
+        <option value="90">90 days</option>
+        <option value="365">365 days</option>
+      </select>
+    </div>
+    <div class="flex items-center gap-2">
+      <label for="property" class="text-sm text-brand-muted">Site</label>
+      <select id="property" class="field w-auto py-1.5 text-sm">
+        <option value="all" selected>Both</option>
+        <option value="site">Public site</option>
+        <option value="app">App</option>
+      </select>
+    </div>
   </div>
 
   <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
@@ -42,16 +54,44 @@ bodyScripts:
      measurement and these have not been measured yet; the dash is the page saying it does not
      know. The same rule is what the empty window does below: "nothing yet" is an answer, and a
      nought drawn where no counting has happened is an invention. #}
-  <div class="grid gap-4 sm:grid-cols-3 mb-10">
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
+    <div class="stat-card">
+      <span class="stat-label">Visitors</span>
+      <span class="stat-number" id="visitors" data-loading>—</span>
+      <span class="stat-note" id="visitorsNote">Browsers, counted once a day each.</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Visits</span>
+      <span class="stat-number" id="visits" data-loading>—</span>
+      <span class="stat-note" id="visitsNote">A gap of 30 minutes starts a new one.</span>
+    </div>
     <div class="stat-card">
       <span class="stat-label">Views</span>
       <span class="stat-number" id="views" data-loading>—</span>
       <span class="stat-note" id="viewsNote">In this window.</span>
     </div>
     <div class="stat-card">
-      <span class="stat-label">Against the window before</span>
-      <span class="stat-number" id="change" data-loading>—</span>
-      <span class="stat-note" id="changeNote">The equally long window before this one.</span>
+      <span class="stat-label">Right now</span>
+      <span class="stat-number" id="live" data-loading>—</span>
+      <span class="stat-note" id="liveNote">The last five minutes, whatever the window says.</span>
+    </div>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+    <div class="stat-card">
+      <span class="stat-label">Views per visit</span>
+      <span class="stat-number" id="perVisit" data-loading>—</span>
+      <span class="stat-note" id="perVisitNote">Pages read before leaving.</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Bounce rate</span>
+      <span class="stat-number" id="bounce" data-loading>—</span>
+      <span class="stat-note" id="bounceNote">Visits that read one page.</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Average visit</span>
+      <span class="stat-number" id="duration" data-loading>—</span>
+      <span class="stat-note" id="durationNote">Between the first and last page.</span>
     </div>
     <div class="stat-card">
       <span class="stat-label">From LinkedIn</span>
@@ -60,11 +100,56 @@ bodyScripts:
     </div>
   </div>
 
+  {# The five things about these numbers that are artefacts of how they are made rather than
+     facts about readers. Written on the page and not only in the code, because a dashboard that
+     prints "average visit 41s" beside "bounce 62%" without saying the second one produced the
+     first is a dashboard that misleads its only reader. #}
+  <details class="card mb-10">
+    <summary class="cursor-pointer text-sm font-semibold text-brand-text">
+      What these figures cannot tell you
+    </summary>
+    <ul class="mt-3 space-y-2 text-sm text-brand-muted">
+      <li><strong class="text-brand-text">A bounce lasts zero seconds, by arithmetic.</strong>
+        The clock runs between two page views, so the last page of every visit is untimed and a
+        one-page visit is untimed entirely. Every bounce therefore averages in as nought, which is
+        most of why the average visit looks short. Read the two figures together or neither.</li>
+      <li><strong class="text-brand-text">A visit that began before the window is cut at its
+        edge.</strong> Its earlier pages are outside the range and the query cannot see them, so
+        the first visit of any window reads shorter and thinner than it was.</li>
+      <li><strong class="text-brand-text">The same reader on both sites is two visitors.</strong>
+        The number is computed per property on purpose - two sites, two consent regimes - so
+        signing in from the public site is counted as arriving somewhere new. That is a choice,
+        not a measurement.</li>
+      <li><strong class="text-brand-text">"Visitors" means browsers.</strong> One person on a
+        phone and a laptop is two, and the same browser tomorrow is two more. Every analytics
+        product means this by the word; none of them says so.</li>
+      <li id="unidentifiedNote"></li>
+    </ul>
+  </details>
+
   <h2 class="text-xl font-bold text-brand-text mb-1">Views per day</h2>
   <p class="text-sm text-brand-muted mb-4 max-w-prose">
     Every day in the range, including the ones with nothing on them.
   </p>
   <div id="chart" class="card mb-10">
+    <p class="text-sm text-brand-muted">Loading…</p>
+  </div>
+
+  <h2 class="text-xl font-bold text-brand-text mb-1">When it is read</h2>
+  <p class="text-sm text-brand-muted mb-4 max-w-prose">
+    Day of the week against hour, in UTC - the same clock every other figure here uses, so a
+    reader in another zone should add their own offset rather than trust the column heading.
+  </p>
+  <div id="heatmap" class="card mb-10">
+    <p class="text-sm text-brand-muted">Loading…</p>
+  </div>
+
+  <h2 class="text-xl font-bold text-brand-text mb-1">What they are reading on</h2>
+  <p class="text-sm text-brand-muted mb-4 max-w-prose">
+    Four coarse facts, each from a short closed list. The browser's own version string is never
+    stored and neither is the exact window width; what is kept is the name and the bracket.
+  </p>
+  <div id="agents" class="mb-10">
     <p class="text-sm text-brand-muted">Loading…</p>
   </div>
 
@@ -77,12 +162,31 @@ bodyScripts:
     <p class="text-sm text-brand-muted">Loading…</p>
   </div>
 
+  <h2 class="text-xl font-bold text-brand-text mb-1">Where visits start and end</h2>
+  <p class="text-sm text-brand-muted mb-4 max-w-prose">
+    Not the same question as the busiest pages: a page can be read constantly and entered almost
+    never. These count visits, not views.
+  </p>
+  <div id="journeys" class="mb-10">
+    <p class="text-sm text-brand-muted">Loading…</p>
+  </div>
+
   <h2 class="text-xl font-bold text-brand-text mb-1">Where readers came from</h2>
   <p class="text-sm text-brand-muted mb-4 max-w-prose">
     The host only. A full referring URL can carry somebody's search terms in its query string, so
     the API keeps the host and throws the rest away before anything is written down.
   </p>
-  <div id="referrers">
+  <div id="referrers" class="mb-10">
+    <p class="text-sm text-brand-muted">Loading…</p>
+  </div>
+
+  <h2 class="text-xl font-bold text-brand-text mb-1">The last twenty visits</h2>
+  <p class="text-sm text-brand-muted mb-4 max-w-prose">
+    The one thing here that is not an aggregate. It carries no visitor number: what a visit read
+    and for how long is the question, and the handle that joins two visits together is not part
+    of it.
+  </p>
+  <div id="recent">
     <p class="text-sm text-brand-muted">Loading…</p>
   </div>
 

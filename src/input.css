@@ -680,6 +680,15 @@
 
   .heat .contrib-day { aspect-ratio: auto; }
 
+  /* Hour of day against day of week, on /admin/analytics/. A third grid rather than a variant of
+     .heat, because 24 columns of a fixed 15px is 384px and does not fit a card on a phone - this
+     one divides the width it is given. It borrows .contrib-day and therefore the same ramp, which
+     is the part that must not drift; only the shape is its own. */
+  .hours {
+    @apply grid gap-[2px];
+    grid-template-columns: repeat(24, minmax(0, 1fr));
+  }
+
   /* One day, on both properties. These used to live in pages/code.njk's inline style, which is
      also the only place they could be edited - and this grid wants exactly the same ramp. The
      layout stays with each grid because the two are genuinely different shapes; the colours are

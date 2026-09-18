@@ -18,6 +18,45 @@ const PROPERTY = { site: "Public site", app: "App" };
 const PROPERTY_HOST = { site: "tzortzoglou.eu", app: "app.tzortzoglou.eu" };
 
 const count = (n) => n.toLocaleString();
+const pct = (n) => `${Math.round(n * 100)}%`;
+
+/**
+ * A duration, in the units somebody would say it in.
+ *
+ * Seconds under a minute, m:ss above it. Not "0.68 minutes", and not a bare seconds count for
+ * anything long enough that nobody can read it at a glance.
+ */
+function clock(seconds) {
+  const s = Math.max(0, Math.round(seconds));
+  if (s < 60) return `${s}s`;
+  return `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, "0")}s`;
+}
+
+/** A time of day and the date, for the last-visits list. */
+const stamp = (iso) => new Date(iso).toLocaleString(undefined, {
+  day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+});
+
+const DOW = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const DOW_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const DIMENSIONS = [
+  ["byBrowser", "Browser"],
+  ["byOs", "Operating system"],
+  ["byDevice", "Device"],
+  ["byScreen", "Window width"],
+];
+
+// The width brackets, said as a person would. The API stores the bracket name; this is the only
+// place that turns it into something with a number in it, so the boundaries live in one file on
+// each side rather than being repeated as prose in the template.
+const SCREEN = {
+  phone: "Phone (under 640px)",
+  tablet: "Tablet (640-1023px)",
+  laptop: "Laptop (1024-1279px)",
+  desktop: "Desktop (1280px and up)",
+  unknown: "Not sent",
+};
 
 function node(tag, cls, text) {
   const n = document.createElement(tag);
@@ -58,15 +97,64 @@ function stat(id, value, note) {
   el(id + "Note").textContent = note;
 }
 
-/** label · value rows, the shape Health and Messages already use for a list of counts. */
-function rowList(rows) {
-  const ul = node("ul", "mt-3 divide-y divide-brand-border");
+/**
+ * The table that says in words what a picture says in ink.
+ *
+ * Every chart on this page is aria-hidden and paired with one of these. A picture is not an
+ * answer to somebody who cannot see it, and an aria-label per bar is thirty announcements with
+ * no structure holding them together - a table has a caption, headers and rows, which is the
+ * structure the numbers already have.
+ */
+function srTable(caption, rows, headers) {
+  const table = node("table", "sr-only");
+  table.appendChild(node("caption", "", caption));
+  if (headers) {
+    const head = node("thead");
+    const tr = node("tr");
+    headers.forEach((h) => {
+      const th = node("th", "", h);
+      th.setAttribute("scope", "col");
+      tr.appendChild(th);
+    });
+    head.appendChild(tr);
+    table.appendChild(head);
+  }
+  const body = node("tbody");
+  rows.forEach((cells) => {
+    const tr = node("tr");
+    const th = node("th", "", String(cells[0]));
+    th.setAttribute("scope", "row");
+    tr.appendChild(th);
+    cells.slice(1).forEach((c) => tr.appendChild(node("td", "", String(c))));
+    body.appendChild(tr);
+  });
+  table.appendChild(body);
+  return table;
+}
+
+/**
+ * A list of label/value rows with the value drawn as a bar behind the label.
+ *
+ * The bar is a background on the row rather than a second element beside it, so the label sits
+ * on top of its own measurement and the list stays one column wide on a phone. Proportional to
+ * the largest row, not to the total: the question these lists answer is "which of these is the
+ * big one", and against a total the small ones become invisible lines.
+ */
+function barList(rows, unit) {
+  const ul = node("ul", "mt-3 space-y-1");
+  const max = Math.max(...rows.map((r) => r[1]), 1);
   rows.forEach(([label, value]) => {
-    const li = node("li", "flex items-baseline justify-between gap-4 py-2 first:pt-0 last:pb-0");
-    li.append(
+    const li = node("li", "relative overflow-hidden rounded");
+    const fill = node("div", "absolute inset-y-0 left-0 bg-brand-accent/15");
+    fill.style.width = `${Math.max(2, (value / max) * 100)}%`;
+    fill.setAttribute("aria-hidden", "true");
+    const line = node("div", "relative flex items-baseline justify-between gap-4 px-2 py-1.5");
+    line.append(
       node("span", "min-w-0 flex-1 truncate text-sm text-brand-text", label),
-      node("span", "shrink-0 text-xs text-brand-muted tabular-nums", count(value)),
+      node("span", "shrink-0 text-xs text-brand-muted tabular-nums",
+        `${count(value)}${unit ? " " + unit : ""}`),
     );
+    li.append(fill, line);
     ul.appendChild(li);
   });
   return ul;
@@ -103,70 +191,292 @@ function chart(daily) {
     nothing(host, "Nothing counted in this window yet. Every day in the range is empty.");
     return;
   }
-  // One day is a number, not a shape. A single full-height bar would read as a trend, and the
-  // only trend a one-day window contains is the one the reader invents.
+  // One day is a number, not a shape. A single point would read as a trend, and the only trend a
+  // one-day window contains is the one the reader invents.
   if (daily.length < 2) {
     nothing(host, `${count(daily[0].views)} views on ${dayLabel(daily[0].day)}.`);
     return;
   }
 
+  const W = daily.length * 10;
   const H = 100;
   const svg = document.createElementNS(SVG_NS, "svg");
-  svg.setAttribute("viewBox", `0 0 ${daily.length * 10} ${H}`);
-  svg.setAttribute("preserveAspectRatio", "none");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   svg.setAttribute("class", "w-full h-40 text-brand-accent");
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
 
-  // Drawn even though a bar of zero height is invisible - without it an empty stretch of days
-  // is indistinguishable from the panel having failed to draw anything at all.
-  const base = document.createElementNS(SVG_NS, "g");
-  base.setAttribute("class", "text-brand-border");
-  const line = document.createElementNS(SVG_NS, "rect");
-  line.setAttribute("x", "0");
-  line.setAttribute("y", String(H - 1));
-  line.setAttribute("width", String(daily.length * 10));
-  line.setAttribute("height", "1");
-  line.setAttribute("fill", "currentColor");
-  base.appendChild(line);
-  svg.appendChild(base);
+  // **No preserveAspectRatio="none" here, and that is the difference between this and the bars
+  // it replaced.** Non-uniform scaling cannot make a rect look wrong, so the old chart could
+  // stretch to any width for free. A stroked curve cannot: stretching it horizontally thins the
+  // stroke to a hairline at one end of the range and fattens it at the other. So the drawing
+  // keeps its aspect and `vector-effect` below keeps the line one pixel wherever it lands.
+  const x = (i) => (i / (daily.length - 1)) * W;
+  const y = (v) => H - 2 - (v / max) * (H - 6);
 
-  daily.forEach((d, i) => {
-    if (!d.views) return;
-    const height = (d.views / max) * H;
-    const bar = document.createElementNS(SVG_NS, "rect");
-    bar.setAttribute("x", String(i * 10 + 1));
-    bar.setAttribute("y", String(H - height));
-    bar.setAttribute("width", "8");
-    bar.setAttribute("height", String(height));
-    bar.setAttribute("fill", "currentColor");
-    // A native tooltip for a pointer. The table below is what a screen reader reads.
-    const title = document.createElementNS(SVG_NS, "title");
-    title.textContent = `${dayLabel(d.day)}: ${count(d.views)}`;
-    bar.appendChild(title);
-    svg.appendChild(bar);
-  });
+  // A Catmull-Rom spline converted to cubic Béziers, which is four lines of arithmetic and the
+  // reason there is still no chart library in this repository. It passes THROUGH every point
+  // rather than near it - a smoothing that moved the days would be a chart drawing numbers
+  // nobody counted - and the tension is the standard 1/6, which is the value that makes the
+  // curve match a circular arc through three evenly spaced points.
+  const pts = daily.map((d, i) => [x(i), y(d.views)]);
+  let path = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i += 1) {
+    const p0 = pts[i - 1] || pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] || p2;
+    path += ` C ${p1[0] + (p2[0] - p0[0]) / 6} ${p1[1] + (p2[1] - p0[1]) / 6},`
+      + ` ${p2[0] - (p3[0] - p1[0]) / 6} ${p2[1] - (p3[1] - p1[1]) / 6},`
+      + ` ${p2[0]} ${p2[1]}`;
+  }
 
-  const busiest = daily.reduce((a, b) => (b.views > a.views ? b : a));
+  // The fill first, so the line draws over its own edge rather than under it.
+  const area = document.createElementNS(SVG_NS, "path");
+  area.setAttribute("d", `${path} L ${W} ${H} L 0 ${H} Z`);
+  area.setAttribute("fill", "currentColor");
+  area.setAttribute("opacity", "0.12");
+  svg.appendChild(area);
+
+  const line = document.createElementNS(SVG_NS, "path");
+  line.setAttribute("d", path);
+  line.setAttribute("fill", "none");
+  line.setAttribute("stroke", "currentColor");
+  line.setAttribute("stroke-width", "1.5");
+  line.setAttribute("stroke-linecap", "round");
+  line.setAttribute("stroke-linejoin", "round");
+  // One CSS pixel however the viewBox is scaled, which is what keeps a 365-day window from
+  // drawing a line too fine to see.
+  line.setAttribute("vector-effect", "non-scaling-stroke");
+  svg.appendChild(line);
+
+  // The busiest day gets a dot, because the caption names it and a name with nothing to point
+  // at is a sentence about a picture rather than a label on one.
+  const peak = daily.reduce((a, b, i) => (b.views > daily[a].views ? i : a), 0);
+  const dot = document.createElementNS(SVG_NS, "circle");
+  dot.setAttribute("cx", String(x(peak)));
+  dot.setAttribute("cy", String(y(daily[peak].views)));
+  dot.setAttribute("r", "2");
+  dot.setAttribute("fill", "currentColor");
+  svg.appendChild(dot);
+
+  const busiest = daily[peak];
   const figure = node("figure");
   const caption = node("figcaption", "mt-3 text-sm text-brand-muted",
     `${dayLabel(daily[0].day)} to ${dayLabel(daily[daily.length - 1].day)}. `
     + `Busiest day ${dayLabel(busiest.day)}, ${count(busiest.views)} views.`);
 
-  const table = node("table", "sr-only");
-  table.appendChild(node("caption", "", "Views per day"));
-  const body = node("tbody");
-  daily.forEach((d) => {
+  figure.append(svg, caption,
+    srTable("Views per day", daily.map((d) => [dayLabel(d.day), `${count(d.views)} views`])));
+  only(host, figure);
+}
+
+/**
+ * Day of week against hour, as a grid of cells rather than a chart.
+ *
+ * It borrows `.contrib-day` and therefore the exact colour ramp the contribution grids on /code/
+ * and the Admin home use. One ramp in one place is the point: three grids that each invented
+ * their own green would be three different meanings for the same shade.
+ *
+ * The scale is relative to the busiest single cell in the window, not to a fixed number of views,
+ * so a quiet week and a busy one are each readable - the question a heatmap answers is "when",
+ * not "how many", and the table underneath carries the counts for anyone who wants them.
+ */
+function heatmap(hours) {
+  const host = el("heatmap");
+  const total = hours.reduce((n, h) => n + h.views, 0);
+  if (!total) {
+    nothing(host, "Nothing counted in this window yet.");
+    return;
+  }
+
+  const cells = new Map(hours.map((h) => [`${h.dow}:${h.hour}`, h.views]));
+  const max = Math.max(...hours.map((h) => h.views));
+
+  const figure = node("figure");
+  const rows = node("div", "space-y-[2px] overflow-x-auto");
+  for (let d = 0; d < 7; d += 1) {
+    const row = node("div", "flex items-center gap-2");
+    row.appendChild(node("span", "w-8 shrink-0 text-xs text-brand-muted", DOW_SHORT[d]));
+    const grid = node("div", "hours min-w-[16rem] flex-1");
+    for (let h = 0; h < 24; h += 1) {
+      const views = cells.get(`${d}:${h}`) || 0;
+      const cell = node("div", "contrib-day");
+      // Five steps, and a day with nothing on it keeps level 0 rather than being given the
+      // faintest green - the ramp's own comment says an empty cell has to read as an absence.
+      if (views) cell.setAttribute("data-level", String(Math.min(4, Math.ceil((views / max) * 4))));
+      // A native tooltip for a pointer, the same as the chart's <title> elements. The table below
+      // is what a screen reader reads; this is for the mouse.
+      cell.title = `${DOW[d]} ${String(h).padStart(2, "0")}:00 UTC - ${count(views)} views`;
+      grid.appendChild(cell);
+    }
+    row.appendChild(grid);
+    rows.appendChild(row);
+  }
+
+  const busiest = hours.reduce((a, b) => (b.views > a.views ? b : a));
+  const caption = node("figcaption", "mt-3 text-sm text-brand-muted",
+    `Busiest hour: ${DOW[busiest.dow]} at ${String(busiest.hour).padStart(2, "0")}:00 UTC, `
+    + `${count(busiest.views)} views. Hours run 00 to 23 left to right.`);
+
+  // One row per day rather than 168, because a screen reader reading "Monday 00:00, 0 views"
+  // 168 times is a worse answer than the picture it is standing in for.
+  const table = srTable("Views by day of week and hour, UTC",
+    DOW.map((name, d) => {
+      const busiestHour = Array.from({ length: 24 }, (_, h) => [h, cells.get(`${d}:${h}`) || 0])
+        .reduce((a, b) => (b[1] > a[1] ? b : a));
+      const dayTotal = Array.from({ length: 24 }, (_, h) => cells.get(`${d}:${h}`) || 0)
+        .reduce((n, v) => n + v, 0);
+      return [name, `${count(dayTotal)} views`,
+        dayTotal ? `busiest at ${String(busiestHour[0]).padStart(2, "0")}:00 UTC` : "none"];
+    }),
+    ["Day", "Views", "Busiest hour"]);
+
+  figure.append(rows, caption, table);
+  only(host, figure);
+}
+
+/**
+ * One dimension as a donut, with its rows beside it.
+ *
+ * A donut and not a pie, because the hole is where the total goes and a total is the number a
+ * proportion is meaningless without. Drawn as stroked arcs on one circle using stroke-dasharray,
+ * which is the whole trick: the circumference is a known length, so each slice is "this much of
+ * it, offset by that much" and there are no arc-path calculations at all.
+ *
+ * Cut to five slices and a sixth for the rest. Six is where a donut stops being readable, and
+ * the list below it carries every row regardless.
+ */
+function donut(list, label) {
+  const card = node("section", "card");
+  card.appendChild(node("h3", "font-semibold text-brand-text", label));
+
+  const total = list.reduce((n, r) => n + r.views, 0);
+  if (!total) {
+    card.appendChild(node("p", "hint mt-1", "Nothing counted in this window yet."));
+    return card;
+  }
+
+  const named = (r) => (label === "Window width" ? SCREEN[r.value] || r.value : r.value);
+  const top = list.slice(0, 5);
+  const rest = list.slice(5).reduce((n, r) => n + r.views, 0);
+  const slices = rest ? [...top, { value: "Everything else", views: rest }] : top;
+
+  // Five tints of one hue rather than five hues. The dimensions here have no natural colours -
+  // there is nothing about Firefox that is blue - so a rainbow would be five arbitrary decisions
+  // asking to be read as meaningful. One hue stepped by opacity says "these are parts of one
+  // thing", which is what they are, and it survives both themes because the hue is currentColor.
+  const R = 15.915;  // circumference 100, so a percentage IS the dash length
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", "0 0 42 42");
+  svg.setAttribute("class", "h-24 w-24 shrink-0 -rotate-90 text-brand-accent");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+
+  let offset = 0;
+  slices.forEach((r, i) => {
+    const share = (r.views / total) * 100;
+    const arc = document.createElementNS(SVG_NS, "circle");
+    arc.setAttribute("cx", "21");
+    arc.setAttribute("cy", "21");
+    arc.setAttribute("r", String(R));
+    arc.setAttribute("fill", "none");
+    arc.setAttribute("stroke", "currentColor");
+    arc.setAttribute("stroke-width", "6");
+    arc.setAttribute("stroke-opacity", String(1 - i * 0.16));
+    arc.setAttribute("stroke-dasharray", `${share} ${100 - share}`);
+    arc.setAttribute("stroke-dashoffset", String(-offset));
+    svg.appendChild(arc);
+    offset += share;
+  });
+
+  const top1 = list[0];
+  const lead = node("div", "min-w-0 flex-1");
+  lead.append(
+    node("p", "text-sm text-brand-text", `${named(top1)} leads`),
+    node("p", "hint mt-0.5", `${pct(top1.views / total)} of ${count(total)} views.`),
+  );
+  const body = node("div", "mt-3 flex items-center gap-4");
+  body.append(svg, lead);
+  card.append(body, barList(list.map((r) => [named(r), r.views])),
+    srTable(label, list.map((r) => [named(r), `${count(r.views)} views`,
+      pct(r.views / total)]), [label, "Views", "Share"]));
+  return card;
+}
+
+/** The four dimensions, each as its own card. */
+function agents(data) {
+  const grid = node("div", "grid gap-4 sm:grid-cols-2");
+  DIMENSIONS.forEach(([key, label]) => grid.appendChild(donut(data[key] || [], label)));
+  only(el("agents"), grid);
+}
+
+/** Where visits began, and where they stopped. Two lists of the same shape, side by side. */
+function journeys(entryPages, exitPages) {
+  const grid = node("div", "grid gap-4 sm:grid-cols-2");
+  [["Entry pages", entryPages, "Where visits began."],
+   ["Exit pages", exitPages, "The last page before the visit ended."]].forEach(([label, list, hint]) => {
+    const card = node("section", "card");
+    card.append(node("h3", "font-semibold text-brand-text", label), node("p", "hint mt-1", hint));
+    if (!list.length) {
+      card.appendChild(node("p", "mt-3 text-sm text-brand-muted", "Nothing counted in this window yet."));
+    } else {
+      card.append(
+        barList(list.map((r) => [r.path, r.visits]), "visits"),
+        srTable(label, list.map((r) => [r.path, `${count(r.visits)} visits`,
+          PROPERTY[r.property] || r.property]), ["Page", "Visits", "Site"]),
+      );
+    }
+    grid.appendChild(card);
+  });
+  only(el("journeys"), grid);
+}
+
+/**
+ * The last twenty visits.
+ *
+ * A real table and not an sr-only one, because this is a list of rows and a list of rows is what
+ * a table is for. It carries no visitor number: the question is what a visit read and for how
+ * long, and the handle that joins two visits together is not part of that question - which is
+ * also why the API does not send one.
+ */
+function recentVisits(list) {
+  const host = el("recent");
+  if (!list.length) {
+    nothing(host, "Nothing counted in this window yet.");
+    return;
+  }
+  const card = node("section", "card overflow-x-auto");
+  const table = node("table", "w-full text-sm");
+  const head = node("thead", "text-left text-xs uppercase tracking-wide text-brand-muted");
+  const hr = node("tr");
+  ["When", "Site", "Entered", "Left", "Pages", "Length", "Reading on"].forEach((h) => {
+    const th = node("th", "py-2 pr-4 font-semibold", h);
+    th.setAttribute("scope", "col");
+    hr.appendChild(th);
+  });
+  head.appendChild(hr);
+
+  const body = node("tbody", "divide-y divide-brand-border");
+  list.forEach((v) => {
     const tr = node("tr");
-    const th = node("th", "", dayLabel(d.day));
-    th.setAttribute("scope", "row");
-    tr.append(th, node("td", "", `${count(d.views)} views`));
+    [
+      stamp(v.started),
+      PROPERTY[v.property] || v.property,
+      v.entry,
+      // An exit equal to the entry on a one-page visit is not a second fact, it is the same one.
+      v.views > 1 ? v.exit : "—",
+      count(v.views),
+      // The caveat, per row: a one-page visit has nothing to measure between.
+      v.views > 1 ? clock(v.seconds) : "—",
+      [v.browser, v.os, v.device].filter(Boolean).join(" · "),
+    ].forEach((cell) => tr.appendChild(node("td", "py-2 pr-4 align-top text-brand-text", cell)));
     body.appendChild(tr);
   });
-  table.appendChild(body);
 
-  figure.append(svg, caption, table);
-  only(host, figure);
+  table.append(head, body);
+  card.appendChild(table);
+  only(host, card);
 }
 
 /** One card per property, so a silent property reads as silent rather than as absent. */
@@ -185,7 +495,13 @@ function paths(topPaths, byProperty) {
         ? `${count(views)} views · ${PROPERTY_HOST[key]}`
         : `Nothing counted here in this window yet · ${PROPERTY_HOST[key]}`),
     );
-    if (rows.length) card.appendChild(rowList(rows.map((r) => [r.path, r.views])));
+    if (rows.length) {
+      card.append(
+        barList(rows.map((r) => [r.path, r.views])),
+        srTable(`${PROPERTY[key]}: which pages are read`,
+          rows.map((r) => [r.path, `${count(r.views)} views`]), ["Page", "Views"]),
+      );
+    }
     grid.appendChild(card);
   });
 
@@ -202,50 +518,114 @@ function referrers(list) {
   // A null host is a real and common answer - somebody typed the address, or the browser was
   // told not to send a referrer. Calling it "direct" and leaving it at that would claim more
   // than is known, so the row says both.
-  card.appendChild(rowList(list.map((r) => [r.host || "Direct, or no referrer sent", r.views])));
+  const rows = list.map((r) => [r.host || "Direct, or no referrer sent", r.views]);
+  card.append(barList(rows), srTable("Where readers came from",
+    rows.map(([label, views]) => [label, `${count(views)} views`]), ["Referrer", "Views"]));
   only(host, card);
+}
+
+/**
+ * A figure against the same figure in the window before it.
+ *
+ * Four sentences, because a percentage is only meaningful when there is something to be a
+ * percentage of. Dividing by a previous window of nought gives Infinity, and "+∞%" of nothing is
+ * the kind of figure that ends up in a slide.
+ */
+function against(now, before, noun) {
+  if (!now && !before) return `Nothing counted in either window.`;
+  if (!before) return `Nothing in the window before this one.`;
+  const change = Math.round(((now - before) / before) * 100);
+  return `${change > 0 ? "+" : ""}${change}% against ${count(before)} ${noun} before.`;
 }
 
 function render(data) {
   const totals = data.totals || {};
-  const views = totals.views || 0;
-  const previous = totals.previousViews || 0;
   const range = data.range || {};
+  const views = totals.views || 0;
+  const visits = totals.visits || 0;
+  const visitors = totals.visitors || 0;
+  // Not `window`: this file runs in a browser and shadowing that name inside the one function
+  // that draws everything is a trap set for whoever adds the next line.
+  const span = range.from && range.to
+    ? `${dateLabel(range.from)} to ${dateLabel(range.to)}.` : "In this window.";
 
   stat("views", views ? count(views) : "None yet",
-    range.from && range.to ? `${dateLabel(range.from)} to ${dateLabel(range.to)}.`
-      : "In this window.");
+    views ? `${span} ${against(views, totals.previousViews || 0, "views")}` : span);
+  stat("visitors", visitors ? count(visitors) : "None yet",
+    visitors ? against(visitors, totals.previousVisitors || 0, "browsers")
+      : "Browsers, counted once a day each.");
+  stat("visits", visits ? count(visits) : "None yet",
+    visits ? "A gap of 30 minutes starts a new one."
+      : "No page view in this window carries a visitor number.");
 
-  // Four different sentences, because a percentage is only meaningful when there is something to
-  // be a percentage of. Dividing by a previous window of nought gives Infinity, and "+∞%" of
-  // nothing is the kind of figure that ends up in a slide.
-  if (!views && !previous) {
-    stat("change", "—", "Nothing counted in either window.");
-  } else if (!previous) {
-    stat("change", "First", "Nothing was counted in the window before this one.");
+  const live = data.live || {};
+  stat("live", count(live.visitors || 0),
+    live.visitors
+      ? `${count(live.views || 0)} views in the last five minutes.`
+      : "Nobody in the last five minutes.");
+
+  // **These three are drawn only when there are visits to derive them from.** A bounce rate of
+  // 0% over no visits is not a good bounce rate, it is an absence wearing a number, and the same
+  // goes for an average visit of 0s. The em dash is the panel saying it does not know, which is
+  // the rule the rest of this page already follows.
+  if (visits) {
+    stat("perVisit", (totals.viewsPerVisit || 0).toFixed(1), "Pages read before leaving.");
+    stat("bounce", pct(totals.bounceRate || 0),
+      `${count(Math.round((totals.bounceRate || 0) * visits))} of ${count(visits)} visits read one page.`);
+    stat("duration", clock(totals.durationSeconds || 0),
+      "Bounces count as zero, so this reads low. See the note above.");
   } else {
-    const pct = Math.round(((views - previous) / previous) * 100);
-    stat("change", `${pct > 0 ? "+" : ""}${pct}%`, `${count(previous)} views in the window before.`);
+    ["perVisit", "bounce", "duration"].forEach((id) => {
+      stat(id, "—", "Needs at least one visit to derive.");
+    });
   }
 
   const linkedin = data.fromLinkedIn || 0;
   stat("linkedin", linkedin ? count(linkedin) : "None yet",
-    linkedin && views ? `${Math.round((linkedin / views) * 100)}% of views in this window.`
+    linkedin && views ? `${pct(linkedin / views)} of views in this window.`
       : "No view in this window arrived from LinkedIn.");
 
+  // The fifth caveat is the only one whose wording depends on the window, so it is written here
+  // rather than in the template. Inside 30 days a view with no visitor number means the request
+  // arrived without an address, which is a fault; past 30 days it means the erasure has run,
+  // which is the promise working. The same figure, two different things.
+  const missing = data.unidentified || 0;
+  const note = el("unidentifiedNote");
+  if (!views || !missing) {
+    note.textContent = "";
+  } else if ((range.days || 0) > 30) {
+    note.textContent = `${pct(missing / views)} of views in this window carry no visitor number. `
+      + `This window reaches past 30 days, so those are views whose number has been erased - `
+      + `the counts survive and the link between them does not. Visits and the rates below them `
+      + `are derived from the rest.`;
+  } else {
+    note.textContent = `${pct(missing / views)} of views in this window carry no visitor number, `
+      + `which inside a 30-day window means the request arrived with no address. A figure that `
+      + `is not near nought here means the API is not seeing real addresses, and every visitor `
+      + `count on this page is wrong in the same direction.`;
+  }
+
   chart(data.daily || []);
+  heatmap(data.hours || []);
+  agents(data);
   paths(data.topPaths || [], data.byProperty || []);
+  journeys(data.entryPages || [], data.exitPages || []);
   referrers(data.referrers || []);
+  recentVisits(data.recent || []);
 }
+
+const FIGURES = ["visitors", "visits", "views", "live", "perVisit", "bounce", "duration", "linkedin"];
+const PANELS = ["chart", "heatmap", "agents", "paths", "journeys", "referrers", "recent"];
 
 /** Every panel says why it is empty, rather than each one quietly drawing nothing. */
 function unavailable(message) {
-  ["views", "change", "linkedin"].forEach((id) => {
+  FIGURES.forEach((id) => {
     el(id).textContent = "—";
     el(id).setAttribute("data-loading", "");
     el(id + "Note").textContent = "";
   });
-  ["chart", "paths", "referrers"].forEach((id) => nothing(el(id), message));
+  el("unidentifiedNote").textContent = "";
+  PANELS.forEach((id) => nothing(el(id), message));
 }
 
 // A slow answer for 365 days must not land after a fast answer for 7 and overwrite it. The same
@@ -256,7 +636,11 @@ async function load() {
   const mine = ++sequence;
   say("Loading…");
   try {
-    const data = await api("/admin/analytics?days=" + encodeURIComponent(el("range").value));
+    const query = new URLSearchParams({
+      days: el("range").value,
+      property: el("property").value,
+    });
+    const data = await api("/admin/analytics?" + query);
     if (mine !== sequence) return;
     render(data);
     say("");
@@ -285,6 +669,6 @@ async function load() {
 }
 
 profile.then(() => {
-  el("range").addEventListener("change", load);
+  ["range", "property"].forEach((id) => el(id).addEventListener("change", load));
   load();
 });

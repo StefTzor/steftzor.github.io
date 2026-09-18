@@ -1,4 +1,4 @@
-import { profile, API_BASE } from "./shell.js";
+import { profile, api, API_BASE } from "./shell.js";
 import { el, say } from "./admin-status.js";
 import { pendingAccounts, unreadMessages } from "./queues.js";
 
@@ -125,10 +125,83 @@ async function loadApp() {
   }
 }
 
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+/**
+ * Traffic: the one figure that means something without a window, and seven days of shape.
+ *
+ * Every other number on /admin/analytics/ belongs to a window somebody chose, and lifting one out
+ * of that window is how a dashboard ends up asserting something nobody measured. "Views in the
+ * last five minutes" is different: the window is in the name.
+ *
+ * The line beside it has no axis and no scale, deliberately. It is there to answer "is this
+ * normal for a week" at a glance, and a sparkline with a number on it is a chart pretending to
+ * be readable at 12rem wide. The counts are one click away, which is what the card is.
+ */
+function sparkline(daily) {
+  const host = el("spark");
+  host.textContent = "";
+  if (daily.length < 2) return;
+  const max = Math.max(...daily.map((d) => d.views));
+  if (!max) return;
+
+  const W = 100;
+  const H = 28;
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.setAttribute("class", "w-full h-7 text-brand-accent");
+  // Hidden from assistive technology and not labelled, because it says nothing the sentence
+  // below it does not: the note carries the seven-day total in words.
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+
+  const pts = daily.map((d, i) => [
+    (i / (daily.length - 1)) * W,
+    H - 2 - (d.views / max) * (H - 4),
+  ]);
+  const line = document.createElementNS(SVG_NS, "polyline");
+  line.setAttribute("points", pts.map((p) => p.join(",")).join(" "));
+  line.setAttribute("fill", "none");
+  line.setAttribute("stroke", "currentColor");
+  line.setAttribute("stroke-width", "1.5");
+  line.setAttribute("stroke-linecap", "round");
+  line.setAttribute("stroke-linejoin", "round");
+  // The viewBox is stretched to whatever width the card gives it, so without this the stroke is
+  // stretched with it and the line reads as a different weight on every screen size.
+  line.setAttribute("vector-effect", "non-scaling-stroke");
+  svg.appendChild(line);
+  host.appendChild(svg);
+}
+
+async function loadTraffic() {
+  try {
+    const data = await api("/admin/analytics?days=7");
+    const live = data.live || {};
+    setCount("liveNow", "liveNowNote", String(live.visitors || 0),
+      live.visitors
+        ? `${live.views} view${live.views === 1 ? "" : "s"} in the last five minutes`
+        : "Nobody in the last five minutes");
+    const daily = data.daily || [];
+    sparkline(daily);
+    const week = daily.reduce((n, d) => n + d.views, 0);
+    if (week) {
+      el("liveNowNote").textContent += ` · ${week.toLocaleString()} views this week`;
+    }
+  } catch (err) {
+    console.error("overview: traffic failed", err.status);
+    setUnavailable("liveNow", "liveNowNote",
+      err.status === 404 ? "The counter is not configured"
+        : err.status === 403 ? "You may not read the counts"
+        : "The counts are unavailable");
+  }
+}
+
 profile.then(() => {
   say("");
   loadPending();
   loadUnread();
   loadApi();
   loadApp();
+  loadTraffic();
 });
