@@ -267,6 +267,26 @@ function chart(daily) {
   dot.setAttribute("fill", "currentColor");
   svg.appendChild(dot);
 
+  // **The bars had a tooltip per day and the spline lost it.** A line is one shape, so there is
+  // nothing to hover - which left the values reachable only from the table underneath, and a
+  // table is the accessible twin of a chart rather than a substitute for reading one. A
+  // transparent rect per day, full height, restores what the bars had for the cost of one
+  // element each: a wide target that does not need the pointer anywhere near the curve, and a
+  // native tooltip that needs no JavaScript to show or hide.
+  const step = W / daily.length;
+  daily.forEach((d, i) => {
+    const hit = document.createElementNS(SVG_NS, "rect");
+    hit.setAttribute("x", String(i * step));
+    hit.setAttribute("y", "0");
+    hit.setAttribute("width", String(step));
+    hit.setAttribute("height", String(H));
+    hit.setAttribute("fill", "transparent");
+    const title = document.createElementNS(SVG_NS, "title");
+    title.textContent = `${dayLabel(d.day)}: ${count(d.views)} views`;
+    hit.appendChild(title);
+    svg.appendChild(hit);
+  });
+
   const busiest = daily[peak];
   const figure = node("figure");
   const caption = node("figcaption", "mt-3 text-sm text-brand-muted",
@@ -321,6 +341,20 @@ function heatmap(hours) {
     rows.appendChild(row);
   }
 
+  // A key, because a sequential ramp without one is five shades of nothing: the cells say which
+  // hours are busier than which, and nothing on the page said darker meant more until this line.
+  // Both ends are labelled rather than every step - the exact bin boundaries are arithmetic
+  // nobody needs, and the busiest cell's own count is in the caption below.
+  const key = node("div", "mt-3 flex items-center gap-2 text-xs text-brand-muted");
+  const ramp = node("div", "flex gap-[2px]");
+  [0, 1, 2, 3, 4].forEach((level) => {
+    const swatch = node("div", "contrib-day h-3 w-3");
+    if (level) swatch.setAttribute("data-level", String(level));
+    ramp.appendChild(swatch);
+  });
+  key.append(node("span", "", "Quieter"), ramp,
+    node("span", "", `Busier (${count(max)} views)`));
+
   const busiest = hours.reduce((a, b) => (b.views > a.views ? b : a));
   const caption = node("figcaption", "mt-3 text-sm text-brand-muted",
     `Busiest hour: ${DOW[busiest.dow]} at ${String(busiest.hour).padStart(2, "0")}:00 UTC, `
@@ -339,22 +373,27 @@ function heatmap(hours) {
     }),
     ["Day", "Views", "Busiest hour"]);
 
-  figure.append(rows, caption, table);
+  figure.append(rows, key, caption, table);
   only(host, figure);
 }
 
 /**
- * One dimension as a donut, with its rows beside it.
+ * One dimension: the leader in a sentence, then every value as a bar.
  *
- * A donut and not a pie, because the hole is where the total goes and a total is the number a
- * proportion is meaningless without. Drawn as stroked arcs on one circle using stroke-dasharray,
- * which is the whole trick: the circumference is a known length, so each slice is "this much of
- * it, offset by that much" and there are no arc-path calculations at all.
+ * **There was a donut here and it was wrong twice over.** It coloured six nominal categories -
+ * Chrome, Safari, Firefox - as six steps of one hue's opacity, which is a value ramp doing a
+ * category's job: it double-encodes the length the bars below already show, and it spends the
+ * one free channel on information the reader has. And a ring is the wrong form for the question
+ * anyway. "Which is the big one" is a length comparison, and lengths from a common baseline are
+ * read far more accurately than angles - which is exactly what the bar list underneath was
+ * already doing, one row per value, with the numbers on them.
  *
- * Cut to five slices and a sixth for the rest. Six is where a donut stops being readable, and
- * the list below it carries every row regardless.
+ * So the ring went and nothing replaced it. The lead line carries the part-to-whole ("Chrome
+ * leads, 60% of 100 views") because that is the one proportion worth stating, and the bars carry
+ * the comparison. One colour for every bar, because these categories have no order and nothing
+ * about Firefox is a darker green than Safari.
  */
-function donut(list, title) {
+function dimension(list, title) {
   const card = node("section", "card");
   card.appendChild(node("h3", "font-semibold text-brand-text", title));
 
@@ -365,56 +404,20 @@ function donut(list, title) {
   }
 
   const named = (r) => (title === "Window width" ? label(SCREEN, r.value) : r.value);
-  const top = list.slice(0, 5);
-  const rest = list.slice(5).reduce((n, r) => n + r.views, 0);
-  const slices = rest ? [...top, { value: "Everything else", views: rest }] : top;
-
-  // Five tints of one hue rather than five hues. The dimensions here have no natural colours -
-  // there is nothing about Firefox that is blue - so a rainbow would be five arbitrary decisions
-  // asking to be read as meaningful. One hue stepped by opacity says "these are parts of one
-  // thing", which is what they are, and it survives both themes because the hue is currentColor.
-  const R = 15.915;  // circumference 100, so a percentage IS the dash length
-  const svg = document.createElementNS(SVG_NS, "svg");
-  svg.setAttribute("viewBox", "0 0 42 42");
-  svg.setAttribute("class", "h-24 w-24 shrink-0 -rotate-90 text-brand-accent");
-  svg.setAttribute("aria-hidden", "true");
-  svg.setAttribute("focusable", "false");
-
-  let offset = 0;
-  slices.forEach((r, i) => {
-    const share = (r.views / total) * 100;
-    const arc = document.createElementNS(SVG_NS, "circle");
-    arc.setAttribute("cx", "21");
-    arc.setAttribute("cy", "21");
-    arc.setAttribute("r", String(R));
-    arc.setAttribute("fill", "none");
-    arc.setAttribute("stroke", "currentColor");
-    arc.setAttribute("stroke-width", "6");
-    arc.setAttribute("stroke-opacity", String(1 - i * 0.16));
-    arc.setAttribute("stroke-dasharray", `${share} ${100 - share}`);
-    arc.setAttribute("stroke-dashoffset", String(-offset));
-    svg.appendChild(arc);
-    offset += share;
-  });
-
   const top1 = list[0];
-  const lead = node("div", "min-w-0 flex-1");
-  lead.append(
-    node("p", "text-sm text-brand-text", `${named(top1)} leads`),
-    node("p", "hint mt-0.5", `${pct(top1.views / total)} of ${count(total)} views.`),
-  );
-  const body = node("div", "mt-3 flex items-center gap-4");
-  body.append(svg, lead);
-  card.append(body, barList(list.map((r) => [named(r), r.views])),
+  card.append(
+    node("p", "hint mt-1", `${named(top1)} leads, ${pct(top1.views / total)} of ${count(total)} views.`),
+    barList(list.map((r) => [named(r), r.views])),
     srTable(title, list.map((r) => [named(r), `${count(r.views)} views`,
-      pct(r.views / total)]), [title, "Views", "Share"]));
+      pct(r.views / total)]), [title, "Views", "Share"]),
+  );
   return card;
 }
 
 /** The four dimensions, each as its own card. */
 function agents(data) {
   const grid = node("div", "grid gap-4 sm:grid-cols-2");
-  DIMENSIONS.forEach(([key, title]) => grid.appendChild(donut(data[key] || [], title)));
+  DIMENSIONS.forEach(([key, title]) => grid.appendChild(dimension(data[key] || [], title)));
   only(el("agents"), grid);
 }
 

@@ -701,12 +701,20 @@
      that still shows the grid's shape (1.23:1 on the card), and the lightest green is well clear
      of it (1.56:1), so "none" and "one" are never the same cell. */
   .contrib-day { aspect-ratio: 1; border-radius: 2px; background: #e2e8f0; }
-  .contrib-day[data-level="1"] { background: #34d399; }
+  /* Level 1 was #34d399 and measured 1.92:1 against the card - under the 2:1 floor a sequential
+     ramp's palest DATA step has to clear, so "one view" and "none" were nearly the same cell in
+     the one direction that matters. #10b981 measures 2.54:1 and keeps the gap to level 2 above
+     the 0.06 lightness minimum; the dark ramp's own pale end moved for the same reason, 1.90:1
+     to 2.67:1. Both checked with a validator rather than by eye - the whole ramp now passes
+     monotone lightness, step gaps, single hue (6 degrees light, 2 dark) and the pale-end floor.
+     The EMPTY cell is deliberately left at 1.23:1 and is not a step: it is the absence, and the
+     paragraph above is why it has to read as one. */
+  .contrib-day[data-level="1"] { background: #10b981; }
   .contrib-day[data-level="2"] { background: #059669; }
   .contrib-day[data-level="3"] { background: #047857; }
   .contrib-day[data-level="4"] { background: #064e3b; }
   .dark .contrib-day { background: #334155; }
-  .dark .contrib-day[data-level="1"] { background: #065f46; }
+  .dark .contrib-day[data-level="1"] { background: #047857; }
   .dark .contrib-day[data-level="2"] { background: #059669; }
   .dark .contrib-day[data-level="3"] { background: #34d399; }
   .dark .contrib-day[data-level="4"] { background: #a7f3d0; }
@@ -724,8 +732,11 @@
     @apply flex items-center gap-2 text-sm font-medium text-brand-muted;
   }
 
+  /* Proportional figures, not tabular. Equal-width digits exist so numbers line up down a
+     column - a table, an axis - and at display size they make a number like 121 read loose and
+     gappy. These tiles sit side by side in a grid; nothing is aligning under anything. */
   .stat-number {
-    @apply text-3xl font-bold leading-[1.2] text-brand-text tabular-nums;
+    @apply text-3xl font-bold leading-[1.2] text-brand-text;
   }
 
   /* The placeholder state of a figure still being fetched. Dimmed rather than replaced by a

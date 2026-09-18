@@ -4,7 +4,7 @@
  * The Analytics dashboard's drawing, run without a browser.
  *
  * Every panel on /admin/analytics/ is built by hand out of DOM calls and inline SVG - a spline
- * converted from a Catmull-Rom, a donut drawn as stroke-dasharray arcs, a 7x24 grid - and none
+ * converted from a Catmull-Rom, a 7x24 grid of cells, bar lists drawn as row backgrounds - none
  * of that is checkable by reading it. The page also cannot be opened without signing in through
  * Firebase, so a headless browser is not the cheap answer either.
  *
@@ -215,16 +215,32 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
     'the stroke does not thin when the viewBox is stretched');
   ok('the spline is finite, has one curve per gap, and reaches both ends of the range');
 
-  // The donuts. Six slices at most, and the arcs must sum to the circle rather than overrun it.
-  const browser = tags(byId.get('agents'), 'svg')[0];
-  assert.strictEqual(browser.children.length, 6, 'five slices and a sixth for the rest');
-  const shares = browser.children.map((c) => Number(c.attrs['stroke-dasharray'].split(' ')[0]));
-  assert.ok(Math.abs(shares.reduce((a, b) => a + b, 0) - 100) < 0.001,
-    'the slices are a whole circle: ' + shares.join(' + '));
-  const offsets = browser.children.map((c) => Number(c.attrs['stroke-dashoffset']));
-  assert.deepStrictEqual(offsets.map((o) => o <= 0), offsets.map(() => true),
-    'each arc starts where the last one ended');
-  ok('a donut is six slices at most and they add up to one circle');
+  // **No ring, and no ramp.** A donut coloured six nominal categories as six steps of one hue's
+  // opacity, which is a value ramp doing a category's job and is a named anti-pattern; the bar
+  // list underneath was already answering the same question with lengths from a common baseline.
+  // The assertion is that neither came back: no <svg> in this panel at all, and every bar the
+  // same colour rather than one shade per row.
+  const agents = byId.get('agents');
+  assert.strictEqual(tags(agents, 'svg').length, 0, 'the dimensions draw no ring');
+  const fills = find(agents, (n) => n.className && n.className.includes('bg-brand-accent'));
+  assert.ok(fills.length >= 6, 'every value is a bar');
+  assert.deepStrictEqual([...new Set(fills.map((f) => f.className))].length, 1,
+    'one colour for every bar - these categories have no order to encode as a shade');
+  assert.ok(fills.every((f) => /^[\d.]+%$/.test(f.style.width)), 'and a width that is a percentage');
+  assert.ok(text(agents).includes('leads'), 'the part-to-whole is a sentence, not a ring');
+  ok('a nominal dimension is bars of one colour, and the value ramp on it is gone');
+
+  // The spline's hover, which the bar chart had and the curve lost: one transparent full-height
+  // target per day, so a value is reachable by pointing at the column rather than at the line.
+  const hits = tags(byId.get('chart'), 'rect').filter((r) => r.attrs.fill === 'transparent');
+  assert.strictEqual(hits.length, DAILY.length, 'one hover target per day');
+  assert.ok(tags(hits[0], 'title').length, 'and each one names its day and count');
+
+  // A sequential ramp with no key is five shades of nothing.
+  const swatches = find(byId.get('heatmap'), (n) => n.className === 'contrib-day h-3 w-3');
+  assert.strictEqual(swatches.length, 5, 'the heatmap carries a scale key');
+  assert.ok(text(byId.get('heatmap')).includes('Quieter'), 'with both ends labelled');
+  ok('the spline can be hovered and the heatmap says what darker means');
 
   // The heatmap: 7 rows of 24, and a cell with nothing in it keeps level 0 rather than being
   // given the faintest green - an empty hour has to read as an absence.
