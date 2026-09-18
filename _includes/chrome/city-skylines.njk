@@ -1,0 +1,53 @@
+{#
+  City skylines as an inline SVG sprite, for the hero card's background.
+
+  Same contract as weather-icons.njk beside it, and for the same reason: the place is upstream
+  data, app.js renders with createElement and textContent and never innerHTML, so the shapes live
+  in the markup and the script only points a <use> at one of them by id. A place name can
+  therefore never become markup.
+
+  **Why drawn rather than a map.** A basemap of where the reader lives would be a tile request
+  from the busiest page in the app to a third party, on every load, with nobody having pressed
+  anything - and the tile numbers are the location. /privacy/ 3.3 says a map is drawn on two
+  pages and names them. These are half a kilobyte of path data each, they fetch nothing, and they
+  keep that sentence true.
+
+  **One silhouette, not a row of logos.** Each is a single continuous ground line with the
+  landmarks standing on it in roughly their real order, so it reads as a place seen from a
+  distance rather than as a sticker sheet. Recognition is the whole point: somebody who knows
+  Uppsala should catch the cathedral's twin spires before they notice anything else.
+
+  Generated from shape primitives rather than typed by hand - the first hand-written attempt
+  produced three interchangeable block cities, which is what this is for. See the accompanying
+  note in the commit.
+
+  1200x200, ground at y=200. `xMidYMax meet` rather than `slice`: meet always shows the whole
+  city sitting on the bottom edge, where slice on a wide short card scales to cover and crops
+  the top - which is precisely where the spires are. Verified at 1400x230 and at 360x200.
+
+  fill="currentColor" throughout, so one themed class inks the whole drawing. An SVG with hex
+  fills in it is a drawing that is unreadable in one of the two modes.
+#}
+<svg width="0" height="0" class="hidden" aria-hidden="true" focusable="false">
+
+  {# Carolina Rediviva's pedimented block, the cathedral's twin spires standing well
+       above everything else, Gustavianum's dome, and the castle's long mass with its round
+       tower - left to right along the ridge, as the town actually reads. #}
+  <symbol id="city-uppsala" viewBox="0 0 1200 200" preserveAspectRatio="xMidYMax meet">
+    <path fill="currentColor" d="M0 200V193h1200V200z M20 200V174h70V200z M100 200V176l28 -12l28 12V200z M168 200V166h44V200z M226 200V148l59 -16l59 16V200z M360 200V172h40V200z M418 200V126h86V200z M408 200V104h8.5V94l6.5 -62l6.5 62V104h8.5V200z M494 200V104h8.5V94l6.5 -62l6.5 62V104h8.5V200z M540 200V170h52V200z M600 200V174l22 -11l22 11V200z M656 200V170a19 20 0 0 1 38 0V200zM673.5 150h3v-10h-3z M706 200V176h58V200z M776 200V160h150V200z M762 200V154a20 20 0 0 1 40 0V200zM780.5 134h3v-10h-3z M940 200V174h62V200z M1014 200V176l24 -12l24 12V200z M1074 200V168h54V200z M1140 200V178h60V200z"/>
+  </symbol>
+
+  {# Stadshuset's brick tower with its lantern and needle, Riddarholmskyrkan's openwork
+       spire, Katarina's dome, and Globen as the one unmistakable circle - kept well inside
+       the right edge so it is never the thing a narrow card loses. #}
+  <symbol id="city-stockholm" viewBox="0 0 1200 200" preserveAspectRatio="xMidYMax meet">
+    <path fill="currentColor" d="M0 200V193h1200V200z M16 200V174h72V200z M98 200V174l26 -12l26 12V200z M150 200V74h13V54h12.5V24h5V54h12.5V74h13V200z M224 200V166h104V200z M344 200V172h46V200z M400 200V138h13.5V124l7.5 -78l7.5 78V138h13.5V200z M456 200V174h60V200z M530 200V156a32 34 0 0 1 64 0V200zM560.5 122h3v-17h-3z M610 200V176h56V200z M678 200V174l25 -12l25 12V200z M740 200V170h68V200z M820 200V160h44V200z M920 148a40 40 0 1 1 80 0a40 40 0 1 1 -80 0zM932 178h56V200h-56z M1042 200V174h58V200z M1112 200V176l26 -11l26 11V200z"/>
+  </symbol>
+
+  {# Anywhere this does not know. Roofs, a water tower and two spires: a town, rather than
+       a particular town. Inventing a landmark here would be a claim about a place. #}
+  <symbol id="city-generic" viewBox="0 0 1200 200" preserveAspectRatio="xMidYMax meet">
+    <path fill="currentColor" d="M0 200V193h1200V200z M18 200V176h64V200z M94 200V174l25 -12l25 12V200z M156 200V164h44V200z M214 200V146h11V136l7 -44l7 44V146h11V200z M266 200V172h74V200z M352 200V156h50V200z M414 200V174l29 -13l29 13V200z M486 200V170h46V200z M544 200V166a22 22 0 0 1 44 0V200zM564.5 144h3v-11h-3z M602 200V174h80V200z M694 200V162h42V200z M748 200V176l27 -12l27 12V200z M814 200V170h62V200z M888 200V154h10V146l6 -34l6 34V154h10V200z M936 200V176h70V200z M1018 200V174l24 -12l24 12V200z M1078 200V166h56V200z M1146 200V178h54V200z"/>
+  </symbol>
+
+</svg>

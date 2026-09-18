@@ -117,6 +117,67 @@ function greet(me) {
   el("greeting").textContent = `${part}, ${firstName(me)}`;
 }
 
+/**
+ * Which skyline stands behind the hero card.
+ *
+ * **Matched on position, not on the name**, for two reasons. The saved home is a display string
+ * that profile.js flattens out of the geocoder's structured answer - "Uppsala, Uppsala län, SE" -
+ * so matching text means guessing at "Gamla Uppsala", a stop name, or a localised spelling. And
+ * the name is missing entirely in the case that matters most: somebody who granted the browser
+ * their location has coordinates and no label at all, and the chip beside this says "Your
+ * location".
+ *
+ * Thirty kilometres is far coarser than the coordinates themselves, which are already rounded to
+ * two decimals on both sides of the wire, so this reads nothing more precise than the page holds.
+ *
+ * Anything unmatched gets `generic`, which is a skyline too. A card with no city on it would look
+ * half-built rather than deliberately plain.
+ */
+const CITIES = [
+  { id: "uppsala", lat: 59.86, lon: 17.64 },
+  { id: "stockholm", lat: 59.33, lon: 18.07 },
+];
+const CITY_RADIUS_KM = 30;
+
+/** Equirectangular, which is exact enough at 30 km and needs no trigonometry beyond one cosine. */
+function nearestCity(coords) {
+  if (!coords || !Number.isFinite(coords.lat) || !Number.isFinite(coords.lon)) return null;
+  let best = null;
+  for (const city of CITIES) {
+    const dy = (city.lat - coords.lat) * 111;
+    const dx = (city.lon - coords.lon) * 111 * Math.cos((coords.lat * Math.PI) / 180);
+    const km = Math.sqrt(dx * dx + dy * dy);
+    if (km <= CITY_RADIUS_KM && (!best || km < best.km)) best = { id: city.id, km };
+  }
+  return best && best.id;
+}
+
+/** The fallback for the third state: no coordinates at all, and the API named its own place. */
+function cityFromName(name) {
+  if (typeof name !== "string") return null;
+  const town = name.split(",")[0].trim().toLowerCase();
+  if (!town) return null;
+  const hit = CITIES.find((c) => town === c.id || town.startsWith(c.id) || town.endsWith(c.id));
+  return hit && hit.id;
+}
+
+/**
+ * Point the card's skyline at one of the symbols in chrome/city-skylines.njk.
+ *
+ * Sets `href` and nothing else: the script never builds SVG, so a place name cannot become
+ * markup. `data-city` on the card is what fades the layer in, so the skyline appears once it is
+ * the right one rather than a generic town correcting itself a moment later.
+ */
+function drawCity(data) {
+  const art = el("cityArt");
+  const hero = el("hero");
+  if (!art || !hero) return;
+  const id = nearestCity(at) || cityFromName(label) || cityFromName(data && data.place) || "generic";
+  art.setAttribute("href", `#city-${id}`);
+  art.setAttributeNS(XLINK, "xlink:href", `#city-${id}`);
+  hero.dataset.city = id;
+}
+
 // WMO codes, grouped rather than enumerated: the difference between slight and moderate
 // drizzle is not worth thirty lines on a personal dashboard. Each group names a word and a
 // symbol in _includes/chrome/weather-icons.njk.
@@ -276,7 +337,14 @@ function renderChip(data) {
   // The hero's sky, from the same describe() result that just chose the icon. One fact drawn
   // twice rather than two guesses that can disagree.
   const hero = el("hero");
-  if (hero) hero.dataset.wx = what.icon;
+  if (hero) {
+    hero.dataset.wx = what.icon;
+    // describe() only forks on day and night for a clear sky, because that is all the chip's
+    // icon needs. The card needs more: without this a rainy midnight looks exactly like a rainy
+    // afternoon. `isDay` is a boolean from the API, and an absent one reads as day.
+    hero.dataset.night = now.isDay === false ? "true" : "false";
+  }
+  drawCity(data);
   lastWeather = { temp: now.temperature, text: what.text, place: label ? label.split(",")[0].trim()
     : (data.precise ? "your location" : (data.place || "")) };
   paintDigest();
@@ -419,8 +487,16 @@ const coarse = (n) => Number(n.toFixed(2));
  */
 let label = null;
 
+/**
+ * And where it is for, kept for the same reason the label is: the response does not echo the
+ * coordinates back, so if this page does not remember what it asked about, nothing does. The
+ * skyline is matched on this.
+ */
+let at = null;
+
 async function load(coords, name) {
   label = name || null;
+  at = coords || null;
   const q = coords
     ? `?lat=${encodeURIComponent(coarse(coords.lat))}&lon=${encodeURIComponent(coarse(coords.lon))}`
     : "";

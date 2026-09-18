@@ -304,8 +304,53 @@
      inside the rounded corners, and it also clipped the forecast popover that opens from the
      chip inside this card - 327px of a 366px panel, so hovering the chip produced a sliver.
      The clipping belongs to the thing that needs clipping, which is the sky, not the card. */
+  /* A minimum height, unconditionally.
+
+     The card used to be whatever its text needed, about 110px, which left the sky nowhere to be
+     seen. This is in the stylesheet and NOT applied when the forecast lands, because a card that
+     grows once the weather arrives shifts everything below it - the same reason the greeting is
+     an `&nbsp;` placeholder rather than an empty element. */
   .hero {
-    @apply relative rounded-2xl border border-brand-border bg-brand-surface;
+    @apply relative min-h-[13rem] rounded-2xl border border-brand-border bg-brand-surface sm:min-h-[15rem];
+
+    /* The ink for every layer below, declared once here so the four siblings inherit it and the
+       dark fork stays a single block. All of it is roughly double what it was: the effect was
+       tuned to be invisible until noticed, and the ask was for weather you can see at a glance. */
+    --wx-sun: rgb(217 119 6 / 38%);          /* Amber 600 */
+    --wx-disc: rgb(245 158 11 / 50%);        /* the sun itself, not its glow */
+    --wx-night: rgb(71 85 105 / 30%);        /* Slate 600 */
+    --wx-moon: rgb(100 116 139 / 42%);
+    --wx-veil: rgb(100 116 139 / 26%);       /* Slate 500 */
+    --wx-veil2: rgb(100 116 139 / 17%);      /* the second bank, further away */
+    --wx-rain-wash: rgb(2 132 199 / 22%);    /* Sky 600 */
+    --wx-rain-streak: rgb(29 78 216 / 45%);  /* Blue 700 */
+    --wx-storm-wash: rgb(67 56 202 / 26%);   /* Indigo 700 */
+    --wx-storm-streak: rgb(55 48 163 / 48%); /* Indigo 800 */
+    /* Lightning cannot brighten a white card, so in light mode it darkens instead: the sky
+       flickers deeper for an instant. Same keyframe, same geometry, opposite ink - which is the
+       whole reason the fork is colour-only. */
+    --wx-flash: rgb(49 46 129 / 34%);        /* Indigo 900 */
+    --wx-snow: 100 116 139;                  /* Slate 500, as channels */
+    --wx-city: 71 85 105;                    /* Slate 600, as channels */
+    --wx-city-alpha: 26%;
+  }
+
+  .dark .hero,
+  .chrome-dark .hero {
+    --wx-sun: rgb(251 191 36 / 40%);
+    --wx-disc: rgb(253 224 71 / 62%);
+    --wx-night: rgb(148 163 184 / 34%);
+    --wx-moon: rgb(226 232 240 / 62%);
+    --wx-veil: rgb(148 163 184 / 28%);
+    --wx-veil2: rgb(148 163 184 / 18%);
+    --wx-rain-wash: rgb(56 189 248 / 20%);
+    --wx-rain-streak: rgb(148 197 255 / 38%);
+    --wx-storm-wash: rgb(129 140 248 / 28%);
+    --wx-storm-streak: rgb(191 210 255 / 42%);
+    --wx-flash: rgb(224 242 254 / 40%);      /* here it brightens, as lightning does */
+    --wx-snow: 226 232 240;
+    --wx-city: 148 163 184;
+    --wx-city-alpha: 30%;
   }
 
   .hero-body {
@@ -334,106 +379,177 @@
      the wash is something the white card can show; dark mode keeps exactly the values that were
      tuned for navy. Doing it the other way round - a second copy of all seven rules scoped to
      light - is the same information written twice, and the copies drift. */
-  .hero-sky {
+  /* Four layers, in paint order: the sky and whatever hangs in it, the city, whatever falls past
+     the city, and a scrim that buys the text back its contrast. Each clips ITSELF, because .hero
+     must not - see above. */
+  .hero-sky,
+  .hero-city,
+  .hero-fall,
+  .hero-scrim {
     @apply pointer-events-none absolute inset-0 overflow-hidden rounded-2xl;
-    --wx-sun: rgb(217 119 6 / 22%);          /* Amber 600 */
-    --wx-night: rgb(71 85 105 / 16%);        /* Slate 600 */
-    --wx-veil: rgb(100 116 139 / 15%);       /* Slate 500 */
-    --wx-rain-wash: rgb(2 132 199 / 12%);    /* Sky 600 */
-    --wx-rain-streak: rgb(29 78 216 / 30%);  /* Blue 700 */
-    --wx-storm-wash: rgb(67 56 202 / 14%);   /* Indigo 700 */
-    --wx-storm-streak: rgb(55 48 163 / 32%); /* Indigo 800 */
-    /* Channels rather than a finished colour: the three snowfall layers are one colour at three
-       opacities, and the opacities belong with the layer that uses them. On white the only speck
-       that reads as a speck is a dark one, so light mode falls the flakes in slate. */
-    --wx-snow: 100 116 139;                  /* Slate 500 */
   }
 
-  .dark .hero-sky,
-  .chrome-dark .hero-sky {
-    --wx-sun: rgb(251 191 36 / 26%);
-    --wx-night: rgb(148 163 184 / 22%);
-    --wx-veil: rgb(148 163 184 / 16%);
-    --wx-rain-wash: rgb(56 189 248 / 10%);
-    --wx-rain-streak: rgb(148 197 255 / 22%);
-    --wx-storm-wash: rgb(129 140 248 / 16%);
-    --wx-storm-streak: rgb(191 210 255 / 26%);
-    --wx-snow: 226 232 240;
+  /* The skyline. It fades in when app.js has worked out which city this is, so nobody sees a
+     generic town for half a second and then the right one. */
+  .hero-city {
+    color: rgb(var(--wx-city) / var(--wx-city-alpha));
+    opacity: 0;
+    transition: opacity 700ms ease-out;
   }
 
-  /* Clear and mostly clear: a warm low sun breathing at the top right. */
+  .hero[data-city] .hero-city {
+    opacity: 1;
+  }
+
+  /* Bottom two thirds, so the buildings stand on the floor of the card with sky above them
+     rather than floating in the middle of it. */
+  .hero-city svg {
+    @apply absolute inset-x-0 bottom-0 h-2/3 w-full;
+  }
+
+  /* The text's contrast, bought back explicitly.
+
+     Everything above is painted across the whole card, and the greeting and the digest sit on top
+     of it. Rather than keep every wash weak enough to read through - which is what made this
+     invisible in the first place - the card is allowed to be loud and the text column gets its
+     surface colour back underneath it. 100deg rather than 90 so the scrim tilts with the rain. */
+  .hero-scrim {
+    background: linear-gradient(100deg,
+      rgb(var(--color-surface)) 0%,
+      rgb(var(--color-surface) / 92%) 30%,
+      rgb(var(--color-surface) / 45%) 56%,
+      transparent 70%);
+  }
+
+  /* Clear and mostly clear: a warm low sun, and this time an actual disc rather than only its
+     glow. The hard stop at 20px is what makes it a sun instead of a smudge. */
   .hero[data-wx="clear"] .hero-sky,
   .hero[data-wx="partly"] .hero-sky {
-    background: radial-gradient(60% 120% at 88% -20%, var(--wx-sun), transparent 70%);
+    background:
+      radial-gradient(circle at 84% 24%, var(--wx-disc) 0 20px, transparent 21px),
+      radial-gradient(60% 120% at 88% -20%, var(--wx-sun), transparent 70%);
     animation: hero-breathe 9s ease-in-out infinite;
   }
 
-  /* Night: cooler, higher, dimmer. */
+  /* Night: the same disc, cooler and higher, with a dimmer sky behind it. */
   .hero[data-wx="night"] .hero-sky {
-    background: radial-gradient(50% 110% at 85% -25%, var(--wx-night), transparent 72%);
+    background:
+      radial-gradient(circle at 84% 22%, var(--wx-moon) 0 16px, transparent 17px),
+      radial-gradient(50% 110% at 85% -25%, var(--wx-night), transparent 72%);
     animation: hero-breathe 12s ease-in-out infinite;
   }
 
+  /* Two banks at different speeds and opposite directions, which is what makes it read as depth
+     rather than as one moving stripe. One animation drives both, because a keyframe can name a
+     position per background layer. */
   .hero[data-wx="cloud"] .hero-sky,
   .hero[data-wx="fog"] .hero-sky {
-    background: linear-gradient(105deg, transparent 20%, var(--wx-veil) 50%, transparent 80%);
-    background-size: 220% 100%;
-    animation: hero-drift 18s linear infinite;
+    background:
+      linear-gradient(101deg, transparent 12%, var(--wx-veil) 44%, transparent 72%),
+      linear-gradient(97deg, transparent 22%, var(--wx-veil2) 56%, transparent 86%);
+    background-size: 200% 100%, 260% 100%;
+    animation: hero-clouds 26s linear infinite;
   }
 
-  /* Rain and drizzle: fine diagonal streaks falling. repeating-linear-gradient rather than
-     elements, so this is one painted layer however hard it is raining. */
-  .hero[data-wx="rain"] .hero-sky,
-  .hero[data-wx="drizzle"] .hero-sky {
+  /* Rain and snow fall in FRONT of the buildings, which is the whole reason they are their own
+     layer. repeating-linear-gradient rather than elements, so this is one painted layer however
+     hard it is raining.
+
+     **The gap between streaks is doing the work, not their colour.** The first cut ran a 1.5px
+     line every 7px and the result was a moire hatch: at that spacing the eye stops reading
+     separate drops and starts reading a screen printed over the card. Every fourteen pixels
+     reads as rain. */
+  .hero[data-wx="rain"] .hero-fall {
     background:
-      linear-gradient(180deg, var(--wx-rain-wash), transparent 60%),
-      repeating-linear-gradient(74deg, var(--wx-rain-streak) 0 1px, transparent 1px 9px);
-    background-size: 100% 100%, 100% 64px;
-    animation: hero-rain 0.85s linear infinite;
+      repeating-linear-gradient(74deg, var(--wx-rain-streak) 0 1.5px, transparent 1.5px 14px),
+      linear-gradient(180deg, var(--wx-rain-wash), transparent 70%);
+    background-size: 100% 64px, 100% 100%;
+    animation: hero-rain 0.8s linear infinite;
   }
 
-  .hero[data-wx="thunder"] .hero-sky {
+  /* Drizzle is not weak rain, it is finer and slower, and sharing a rule with rain said the
+     opposite. Thinner lines, twice the gap, half the speed. */
+  .hero[data-wx="drizzle"] .hero-fall {
     background:
-      linear-gradient(180deg, var(--wx-storm-wash), transparent 60%),
-      repeating-linear-gradient(74deg, var(--wx-storm-streak) 0 1px, transparent 1px 7px);
-    background-size: 100% 100%, 100% 64px;
-    animation: hero-rain 0.6s linear infinite;
+      repeating-linear-gradient(74deg, var(--wx-rain-streak) 0 1px, transparent 1px 22px),
+      linear-gradient(180deg, var(--wx-rain-wash), transparent 78%);
+    background-size: 100% 64px, 100% 100%;
+    animation: hero-rain 1.5s linear infinite;
   }
 
-  /* Snow: soft dots drifting down, slowly. */
-  .hero[data-wx="snow"] .hero-sky {
+  .hero[data-wx="thunder"] .hero-fall {
     background:
-      radial-gradient(circle at 20% 20%, rgb(var(--wx-snow) / 55%) 1.4px, transparent 1.6px),
-      radial-gradient(circle at 70% 60%, rgb(var(--wx-snow) / 45%) 1.6px, transparent 1.8px),
-      radial-gradient(circle at 45% 85%, rgb(var(--wx-snow) / 40%) 1.2px, transparent 1.4px);
-    background-size: 90px 90px, 130px 130px, 70px 70px;
+      repeating-linear-gradient(74deg, var(--wx-storm-streak) 0 2px, transparent 2px 12px),
+      linear-gradient(180deg, var(--wx-storm-wash), transparent 70%);
+    background-size: 100% 64px, 100% 100%;
+    animation: hero-rain 0.55s linear infinite;
+  }
+
+  /* The flash sits on a pseudo-element so it can pulse opacity while the rain underneath it goes
+     on falling. Two blips in seven seconds: WCAG 2.3.1 draws its line at three per SECOND, and
+     this is an order of magnitude under it, deliberately. */
+  .hero[data-wx="thunder"] .hero-fall::after {
+    content: "";
+    @apply absolute inset-0;
+    background: linear-gradient(180deg, var(--wx-flash), transparent 55%);
+    opacity: 0;
+    animation: hero-flash 7s ease-out infinite;
+  }
+
+  /* Snow: four layers now, at four sizes and four speeds, so it has depth instead of being one
+     sheet of dots sliding down. */
+  .hero[data-wx="snow"] .hero-fall {
+    background:
+      radial-gradient(circle at 20% 20%, rgb(var(--wx-snow) / 70%) 2px, transparent 2.2px),
+      radial-gradient(circle at 70% 60%, rgb(var(--wx-snow) / 58%) 2.4px, transparent 2.6px),
+      radial-gradient(circle at 45% 85%, rgb(var(--wx-snow) / 48%) 1.7px, transparent 1.9px),
+      radial-gradient(circle at 88% 35%, rgb(var(--wx-snow) / 38%) 1.3px, transparent 1.5px);
+    background-size: 90px 90px, 130px 130px, 70px 70px, 170px 170px;
     animation: hero-snow 14s linear infinite;
   }
 
   @keyframes hero-breathe {
-    0%, 100% { opacity: 0.75; }
+    0%, 100% { opacity: 0.82; }
     50%      { opacity: 1; }
   }
 
-  @keyframes hero-drift {
-    from { background-position: 0 0; }
-    to   { background-position: 220% 0; }
+  @keyframes hero-clouds {
+    from { background-position: 0 0, 0 0; }
+    to   { background-position: 200% 0, -260% 0; }
   }
 
   @keyframes hero-rain {
     from { background-position: 0 0, 0 0; }
-    to   { background-position: 0 0, 0 64px; }
+    to   { background-position: 0 64px, 0 0; }
   }
 
   @keyframes hero-snow {
-    from { background-position: 0 0, 0 0, 0 0; }
-    to   { background-position: 0 90px, 0 130px, 0 70px; }
+    from { background-position: 0 0, 0 0, 0 0, 0 0; }
+    to   { background-position: 0 90px, 0 130px, 0 70px, 0 170px; }
+  }
+
+  /* Blip, gone, blip, gone, then a long dark wait. The second is weaker than the first, the way
+     a real one is. */
+  @keyframes hero-flash {
+    0%, 3%, 100% { opacity: 0; }
+    1%           { opacity: 1; }
+    2%           { opacity: 0.15; }
+    2.6%         { opacity: 0.7; }
   }
 
   /* Weather is decoration here - the chip beside it states the condition in words. Somebody who
-     asked not to be moved keeps the tint and loses the motion entirely. */
+     asked not to be moved keeps every tint, the sun, the moon and the whole skyline, and loses
+     only the movement. The skyline stops fading in and is simply there. */
   @media (prefers-reduced-motion: reduce) {
-    .hero-sky { animation: none !important; }
+    .hero-sky,
+    .hero-fall,
+    .hero-fall::after {
+      animation: none !important;
+    }
+
+    .hero-city {
+      transition: none !important;
+    }
   }
 
   /* A bus line number. Fixed width so a 1 and a 155 leave the destinations aligned. */

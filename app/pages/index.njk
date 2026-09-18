@@ -21,6 +21,7 @@ signOut: true
 <section class="app-page">
 
   {% include "chrome/weather-icons.njk" %}
+  {% include "chrome/city-skylines.njk" %}
 
   {# The hero.
 
@@ -28,8 +29,21 @@ signOut: true
      card's weather and the chip's weather are the same fact rendered twice rather than two
      guesses. Until the forecast lands it is "unknown", which draws the plain surface - a card
      that guesses sunshine and corrects itself to rain is worse than one that simply waits. #}
+  {# Four layers, painted in this order behind the text: the sky and what hangs in it, the city,
+     what falls past the city, and a scrim that gives the text column its contrast back. All four
+     are decoration and none of them is reachable - the chip says the weather in words, and the
+     skyline says nothing the place name beside it does not already say. #}
   <div id="hero" class="hero" data-wx="unknown">
     <div class="hero-sky" aria-hidden="true"></div>
+
+    {# `href` is set by app.js once it knows which city this is, and `data-city` on the card
+       fades the layer in. Empty until then, so nobody watches a generic town turn into Uppsala. #}
+    <div class="hero-city" aria-hidden="true">
+      <svg focusable="false"><use id="cityArt"></use></svg>
+    </div>
+
+    <div class="hero-fall" aria-hidden="true"></div>
+    <div class="hero-scrim" aria-hidden="true"></div>
 
     <div class="hero-body">
       <div class="min-w-0 flex-1">
