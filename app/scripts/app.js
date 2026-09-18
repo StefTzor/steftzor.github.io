@@ -569,9 +569,19 @@ function setupGeo(usingMine, home) {
     } catch (err) {
       setGeo(false);
       show();
-      // PERMISSION_DENIED is a decision, not a failure, and must not be argued with.
-      note.textContent = err && err.code === 1
-        ? "No problem \u2014 staying with the fixed location. You can allow location access in your browser's site settings if you change your mind."
+      // The three codes mean genuinely different things and "could not be determined" covered all
+      // of them, which left somebody whose browser simply has no location service reading a
+      // sentence that sounds like this page is broken. The code is logged as well: it is the one
+      // fact that turns "it does not work" into something fixable.
+      console.error("geo: position failed", err && err.code, err && err.message);
+      const code = err && err.code;
+      note.textContent =
+        // PERMISSION_DENIED is a decision, not a failure, and must not be argued with.
+        code === 1 ? "No problem \u2014 staying with the fixed location. You can allow location access in your browser's site settings if you change your mind."
+        // POSITION_UNAVAILABLE. On a desktop this is usually the browser itself having no location
+        // service to ask rather than anything about this page, and saying so saves a hunt.
+        : code === 2 ? "Your browser could not work out where you are, so the fixed location is still shown. On a desktop that usually means the browser has no location service available, rather than anything about this page."
+        : code === 3 ? "Your browser took too long to find a position, so the fixed location is still shown. Trying again sometimes works."
         : "Your location could not be determined, so the fixed location is still being shown.";
     }
     setBusy(false);
