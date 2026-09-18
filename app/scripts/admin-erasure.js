@@ -159,8 +159,7 @@ function paintPreview(p) {
   // belongs to the previous target, and a confirm button still enabled from that comparison would
   // now be armed against a different address.
   el("eraseConfirm").classList.add("hidden");
-  el("eraseTyped").value = "";
-  el("eraseGo").disabled = true;
+  resetTyped();
 
   el("held").classList.remove("hidden");
 
@@ -217,10 +216,27 @@ el("lookupForm").addEventListener("submit", async (e) => {
 
 const confirmBox = () => el("eraseConfirm");
 
-el("eraseOpen").addEventListener("click", () => {
-  confirmBox().classList.remove("hidden");
+const MATCHED = 'Matches. "Yes, erase it" is enabled.';
+const UNMATCHED = "No longer matches, so the button is off again.";
+const REFUSED = "Pasting is off here. Type the address, so it gets read once before it goes.";
+
+/** The line under the confirmation field. Everything said about that field is said here. */
+const typedNote = (text) => { el("eraseMatch").textContent = text; };
+
+/** Whether the field matched at the last keystroke. Only the change is worth announcing. */
+let matched = false;
+
+/** Empties the field and everything that was true about what was in it. */
+function resetTyped() {
   el("eraseTyped").value = "";
   el("eraseGo").disabled = true;
+  matched = false;
+  typedNote("");
+}
+
+el("eraseOpen").addEventListener("click", () => {
+  confirmBox().classList.remove("hidden");
+  resetTyped();
   // Focus goes to the field rather than to the confirm button, unlike the account page: here the
   // button is disabled until the address is typed, and focusing a disabled control would land a
   // keyboard user on nothing.
@@ -232,10 +248,51 @@ el("eraseCancel").addEventListener("click", () => {
   el("eraseOpen").focus();
 });
 
+/**
+ * Paste is refused in the confirmation field, and the refusal is a courtesy like the disabled
+ * button below it - not a control.
+ *
+ * The request carries { email: target }, so the API cannot tell a typed address from a pasted one
+ * and devtools removes this in a second. What it buys is the only thing the typing was ever for:
+ * an address that arrived by clipboard was never read, and copying the wrong row is exactly the
+ * accident this screen is built around. It also has to say so out loud - a field that silently
+ * drops what is pasted into it reads as broken, and the reader is then troubleshooting the page
+ * instead of checking the address.
+ */
+const refusePaste = (e) => {
+  e.preventDefault();
+  // The refusal and the match state share this one line, and the input handler below only writes
+  // to it when the match CHANGES - so a paste attempted after the address was typed correctly used
+  // to replace "Matches" with the refusal and leave it there, announcing that nothing was armed
+  // above a button that was. The match is re-stated alongside the refusal rather than in place of
+  // it: two sentences, both true, and the control and its announcement agree again.
+  typedNote(matched ? `${REFUSED} ${MATCHED}` : REFUSED);
+};
+el("eraseTyped").addEventListener("paste", refusePaste);
+// Dragged text fires `drop` and never `paste`, and the address is sitting in the preview above,
+// one drag away from this field.
+el("eraseTyped").addEventListener("drop", refusePaste);
+// The backstop, catching the insertion itself whichever route produced it. By NAME and not by
+// prefix: insertReplacementText is how speech input and some IMEs commit perfectly ordinary
+// dictated text, and refusing every insert* would lock a Dragon or Voice Control user out of the
+// field with nothing on screen to explain why.
+const PASTED_IN = new Set(["insertFromPaste", "insertFromDrop", "insertFromPasteAsQuotation"]);
+el("eraseTyped").addEventListener("beforeinput", (e) => {
+  if (PASTED_IN.has(e.inputType)) refusePaste(e);
+});
+
 // The button is a courtesy - the guard below refuses too. Both, because a disabled button that
 // can be re-enabled in devtools is not a control, and an unguarded handler is not either.
 el("eraseTyped").addEventListener("input", (e) => {
-  el("eraseGo").disabled = !target || !same(e.target.value, target);
+  const ok = Boolean(target) && same(e.target.value, target);
+  el("eraseGo").disabled = !ok;
+  // Announced on the change and not on the keystroke. The region is polite, but rewriting it
+  // forty times while somebody types a forty-character address queues forty announcements for
+  // one fact, so silence means "not yet" and the line is spent on the moment that changes:
+  // the button coming alive, or going back off when a character is taken away.
+  if (ok === matched) return;
+  matched = ok;
+  typedNote(ok ? MATCHED : UNMATCHED);
 });
 
 el("eraseGo").addEventListener("click", async () => {

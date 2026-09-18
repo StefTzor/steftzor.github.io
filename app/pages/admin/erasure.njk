@@ -78,11 +78,17 @@ bodyScripts:
       <section id="erase" class="hidden card mt-4" aria-labelledby="erase-heading">
         <h2 id="erase-heading" class="text-lg font-bold text-brand-text">Erase</h2>
         <p class="hint">
-          Removes the messages, the stored profile and the sign-in account. It crosses three
-          stores, there is no undo, and nothing here can recreate the account.
+          Deletes the contact messages, the stored profile and the sign-in account for this
+          address. It crosses three stores, there is no undo, and nothing here can recreate the
+          account.
         </p>
 
-        <button type="button" id="eraseOpen" class="btn-secondary mt-4">Erase what is held…</button>
+        {# The button names the deed and the ellipsis says a step comes first, the way the account
+           page's "Move this account…" does. It read "Erase what is held…", which left the two
+           questions this whole page is about - held where, and held for whom - unanswered on the
+           one control that acts. The hint above it lists the three stores and the confirmation
+           below names the counts, so the button itself only has to be the verb. #}
+        <button type="button" id="eraseOpen" class="btn-secondary mt-4">Erase everything held for this address…</button>
 
         {# Red rather than the amber the account page uses for handing an account to another
            address. That action can at least be undone by whoever receives it; this one cannot be
@@ -95,12 +101,21 @@ bodyScripts:
           <p class="text-sm text-brand-text">
             About to delete <span id="eraseWhat" class="font-semibold"></span>.
           </p>
-          <p class="hint mt-2">
-            Type the address to confirm. It is the only address this will act on.
+          <p id="eraseTypedHint" class="hint mt-2">
+            Type the address out to confirm; the field refuses a paste. It is the only address
+            this will act on, and typing it is the last chance to notice it is the wrong one.
           </p>
           <label for="eraseTyped" class="sr-only">Type the address to confirm</label>
           <input spellcheck="false" type="text" id="eraseTyped" name="eraseTyped" autocomplete="off"
-            maxlength="254" class="field mt-2">
+            maxlength="254" aria-describedby="eraseTypedHint" class="field mt-2">
+          {# The one live region on this page that is not #status. What happens here is not the
+             result of an action - it is the state of a field somebody is part-way through typing -
+             and sending it through say() would wipe "Holding 3 messages for…" off the top of the
+             page while they were still working out whether this is the right address. It sits
+             beside the field because that is where the thing it describes is. Without it the only
+             sign that the address had matched was the button quietly losing its disabled
+             attribute, which is no sign at all to somebody who cannot see it. #}
+          <p id="eraseMatch" role="status" aria-live="polite" class="hint mt-2"></p>
           <div class="mt-3 flex flex-wrap gap-3">
             <button type="button" id="eraseGo" class="btn-primary text-sm" disabled>Yes, erase it</button>
             <button type="button" id="eraseCancel" class="btn-secondary text-sm">Cancel</button>

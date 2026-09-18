@@ -124,33 +124,54 @@ bodyScripts:
   </section>
 
   {# --- around this stop ----------------------------------------------------
-     A picture of where the stop is, and of the stops around you once you have shared a location.
+     A picture of where the stop is, of the stops around you once you have shared a location, and
+     of where one departure goes next once you have chosen one from the board.
 
      The map is centred from the board's own coordinate, so it needs no permission - which is the
      whole reason this section is no longer hidden until one is granted. A map of the stop you are
      watching should not depend on being willing to say where you are standing. The nearby stops
      still do, because finding them needs a coordinate to search around.
 
-     It deliberately draws no lines between the dots. ResRobot's departure board carries no
-     geometry and no stop sequence, so a line from this stop towards anywhere would be a straight
-     line across whatever is in between - a claim about a path the bus does not take. "Lines on
-     this board" above is the honest version of that question and stays exactly as it is. #}
+     **What the line between two dots is, and what it is not.** The board now carries the stops
+     each row calls at on the far side of this one - after it on a departures board, before it on
+     an arrivals board - in order, so the sequence is real data. The shape of the
+     leg between two of them is not: ResRobot gives no geometry, so what is drawn is a straight
+     chord across whatever is in between. It is dashed and the copy below says so, because a solid
+     line between two places on a map is read as a road, and this app does not claim a control it
+     does not have - in a picture any more than in a sentence. "Lines on this board" above answers
+     "where does this line go" without drawing anything, and stays exactly as it is. #}
   <section aria-labelledby="around-heading" class="mt-10">
     <h2 id="around-heading" class="text-xl font-bold text-brand-text mb-1">Around this stop</h2>
+    {# Worded for both boards rather than for the departures one. The stops a row carries are the
+       ones on the far side of this stop, and which side that is turns round with the board: ahead
+       of the bus on departures, behind it on arrivals. The note under the map names the direction
+       in full once a row has been pressed. #}
     <p class="text-sm text-brand-muted mb-4">
-      Where the stop is, not how to get anywhere from it: the dots are places, and nothing
-      between two of them is drawn.
+      Where the stop is, and where one journey on the board above runs either side of it: choose a
+      row. The dots are places and the dashes between them are the order they are called at, not
+      the roads the bus drives.
     </p>
 
     {# Hidden until there is a coordinate to centre it on and a library to draw it with; the note
        below says which of the two is missing. An explicit height because a map has no content of
        its own to be the height of, and `p-0` because a card's padding would leave the tiles
-       floating inside a frame. #}
-    <div id="trMap" class="card hidden h-64 overflow-hidden p-0 sm:h-80"></div>
-    {# Not a live region, unlike the notes above it. It is rewritten on every board load, mostly
-       with the sentence it already had, and three announcements a refresh is how a live region
-       stops being read. #}
+       floating inside a frame.
+
+       Taller than it was, because it now has a route across it rather than one dot in the middle:
+       at the old height a sequence of six stops fitted into a band a couple of centimetres deep
+       and the basemap under it was too cramped to say which part of town any of them was in. #}
+    <div id="trMap" class="card hidden h-80 overflow-hidden p-0 sm:h-[28rem]"></div>
+    {# Two notes, because they are announced differently and that is the only reason.
+
+       The first is not a live region, unlike the notes above it: it is rewritten on every board
+       load, mostly with the sentence it already had, and three announcements a refresh is how a
+       live region stops being read. It also carries showMap()'s reasons for there being no map.
+
+       The second is, and has to be. It is written only when a row on the board is pressed, and
+       what that press changes is a canvas - unreachable, and silent to a screen reader. Without a
+       polite announcement here, pressing a row reorders a picture nobody is told about. #}
     <p id="trMapNote" class="hint"></p>
+    <p id="trRouteNote" role="status" aria-live="polite" class="hint"></p>
 
     {# The list survives the map rather than being replaced by it: it carries the distance in
        metres, and "how far away is it" is a question a number answers better than a picture.

@@ -224,23 +224,46 @@ function qualifyingTable(rows) {
  * costs the page its globe and nothing else: the results, the sessions and the championships are
  * what the page is for and none of them is downstream of a map.
  *
- * **The markers are a GeoJSON source and two circle layers, not `maplibregl.Marker` elements.**
+ * **The markers are GeoJSON sources and layers, not `maplibregl.Marker` elements.**
  * map.js deliberately does not export the library object, and a DOM marker needs it - but the
  * deeper reason is that a DOM marker is a div that has to be re-projected by hand on every frame
  * of the flight and on every frame of a drag, whereas a layer inside the style is drawn by the
  * same renderer that is already drawing the tiles. The cost is that the dots live in a canvas
  * where no screen reader can reach them, so the canvas is hidden from one outright and the round
  * selector is their text alternative; see the comment on the card in f1.njk.
+ *
+ * There are two sources, because they answer two different questions. The dots are the season -
+ * every round, at globe zoom, one point each. The outlines are the place - the real shape of the
+ * tarmac, which is a third of a pixel wide until somebody zooms in and is then the only thing on
+ * screen worth looking at.
  */
 const SOURCE = "rounds";
 const ALL = "round-dots";
 const HERE = "round-chosen";
+const TRACKS = "circuits";
+const TRACK = "circuit-outline";
+const TRACK_BED = "circuit-outline-casing";
+
+/**
+ * The vendored circuit outlines: bacinger/f1-circuits, MIT, forty tracks as LineStrings.
+ *
+ * Served from this origin like everything else in /vendor, and fetched rather than bundled
+ * because 133 KB of coordinates has no business in a script. The extension is `.json` and not
+ * `.geojson` on purpose: nginx's mime map knows the first and not the second, and an unknown
+ * extension goes out as application/octet-stream - which `res.json()` would still parse, but
+ * which falls outside the server's gzip_types and so ships 133 KB where 34 would do.
+ *
+ * The geometry is traced from OpenStreetMap, whom the basemap's own attribution control already
+ * credits on this very map. Crediting them a second time in the page would be noise, not care.
+ */
+const OUTLINES = "/vendor/f1-circuits.json";
 
 // Close enough to place a circuit in its country, far enough that the globe still reads as one.
 const CIRCUIT_ZOOM = 4;
 
 let globe = null;     // the map itself, once it exists and only if it ever does
 let located = [];     // the calendar rounds that came back with a coordinate
+let tracks = null;    // this season's circuit outlines, once fetched and joined - or never
 let chosen = null;    // the round number currently shown, as a number
 let target = null;    // its [lon, lat], or null when the round has no coordinate
 
@@ -261,6 +284,63 @@ function ink(token) {
   return `rgb(${channels.split(/\s+/).join(",")})`;
 }
 
+/**
+ * Kilometres between two [lon, lat].
+ *
+ * Flat earth, deliberately. Haversine is the correct formula and over the few tens of kilometres
+ * this is ever asked about it would differ by metres - which is nothing next to the twenty-
+ * kilometre threshold the answer is immediately compared against.
+ */
+function apart([alon, alat], [blon, blat]) {
+  const east = (alon - blon) * Math.cos(((alat + blat) / 2) * Math.PI / 180);
+  return Math.hypot(east, alat - blat) * 111.32;
+}
+
+/** A circuit's middle, from the bounding box the vendored file already carries for each one. */
+const middle = (f) => [(f.bbox[0] + f.bbox[2]) / 2, (f.bbox[1] + f.bbox[3]) / 2];
+
+/**
+ * How far a round's coordinate may sit from a circuit's middle and still be that circuit, in km.
+ *
+ * Both ends of this were measured rather than picked. Across this season the worst any round
+ * falls from the outline it belongs to is under a kilometre - the API's coordinate is a point on
+ * the track itself, not a nearby town - and the two closest circuits in the whole file, Imola and
+ * Mugello, are forty-seven kilometres apart. Twenty is twenty times the first and comfortably
+ * under half the second, so no point on earth can be within it of two circuits at once and the
+ * first match found is therefore also the only one.
+ */
+const NEAR = 20;
+
+/**
+ * This season's rounds, each carrying the real shape of the circuit it is raced on.
+ *
+ * **Matched on where they are, not on what they are called.** The two sources name the same
+ * places differently - the API says "Albert Park Grand Prix Circuit" where the outlines say
+ * "Albert Park Circuit", and "Kuala Lumpur" where they say "Sepang" - and the outline ids are
+ * country-and-year strings like `au-1953` that the API has never heard of. A name table would
+ * need a new exception every time either side renamed something, and would fail silently when it
+ * did. A coordinate does not get renamed, and we are already given one per round.
+ *
+ * A round with no outline within NEAR is simply left out, which is not a failure: the dots are a
+ * separate source and every located round is in it, so a circuit this file has never seen keeps
+ * its dot and loses only a shape that was never there to draw.
+ */
+async function circuitOutlines(rounds) {
+  const res = await fetch(OUTLINES);
+  if (!res.ok) throw new Error(`the circuit outlines answered ${res.status}`);
+  const circuits = (await res.json()).features;
+  const features = [];
+  rounds.forEach((r) => {
+    const here = at(r);
+    const shape = circuits.find((f) => apart(here, middle(f)) < NEAR);
+    // `over` replaces the file's own properties, none of which this page reads. It is the same
+    // flag the dots carry, so an outline is painted by the same expression as the dot it sits
+    // under and the key below the map goes on describing both.
+    if (shape) features.push({ ...shape, properties: { over: Boolean(r.over) } });
+  });
+  return { type: "FeatureCollection", features };
+}
+
 /** Named for the element it writes, because `note` is already a local in resultsTable. */
 function mapNote(message) {
   const n = el("mapNote");
@@ -272,18 +352,38 @@ function mapNote(message) {
  * Put the season on the map, and put it back after a theme change.
  *
  * map.js re-inks the basemap by calling setStyle, and a style carries its own sources and layers -
- * so everything added here is thrown away every time the theme is toggled. Listening to
- * `styledata` and re-adding what is missing covers both that and the first style load, and
- * re-reading the tokens each time is what keeps the dots in the palette they are drawn on.
+ * so everything added here is thrown away every time the theme is toggled. Re-adding it on every
+ * `style.load` covers both that and the first one, and re-reading the tokens each time is what
+ * keeps the dots and the outlines in the palette they are drawn on.
  *
- * **It has to do nothing at all once the season is already there.** Every change to a style fires
- * `styledata` on the next frame, setFilter included - so a handler that reached for setFilter
- * unconditionally would filter, wake itself, filter again, and repaint for as long as the tab
- * was open. Bailing out on the source it just added is what stops that, and it is why the round
- * is re-marked from aim() rather than from here.
+ * **It has to do nothing at all once the season is already there**, because it is also called
+ * directly and would otherwise add a second copy of everything. One guard and not two: the dot
+ * source is the one addRounds always adds and always adds first, so its presence is the answer to
+ * "has this style been drawn on yet" whether or not the outlines ever arrived.
+ *
+ * Wrapped, and the wrapping matters: the same guard means a throw *after* the first source was
+ * added would block every future attempt while leaving the layers missing - a half-built style
+ * that can never repair itself. On a throw everything added here is taken back out, so the next
+ * `style.load` starts clean.
  */
 function draw() {
-  if (!globe.isStyleLoaded() || globe.getSource(SOURCE)) return;
+  if (!globe || globe.getSource(SOURCE)) return;
+  try {
+    addRounds();
+  } catch (err) {
+    console.error("f1: the globe's markers could not be drawn", err);
+    // Layers first, then sources: MapLibre refuses to remove a source that a layer still points
+    // at, so the obvious order leaves exactly the wreckage this is here to clear.
+    try {
+      [TRACK, TRACK_BED, HERE, ALL].forEach((id) => {
+        if (globe.getLayer(id)) globe.removeLayer(id);
+      });
+      [TRACKS, SOURCE].forEach((id) => { if (globe.getSource(id)) globe.removeSource(id); });
+    } catch (e) { /* nothing left to tidy */ }
+  }
+}
+
+function addRounds() {
   globe.addSource(SOURCE, {
     type: "geojson",
     data: {
@@ -335,6 +435,71 @@ function draw() {
       "circle-stroke-color": ink("surface"),
     },
   });
+
+  // **The real shape of the track, once there is room to draw one.** This is the answer to a
+  // globe of twenty-three identical dots: a dot says a race happens somewhere near here, and
+  // Monaco's hairpins, Spa's climb through Eau Rouge and Zandvoort's banking say which race it
+  // is. A circuit is about five kilometres of tarmac, which at the zoom this globe opens at is a
+  // third of a pixel - so the outline is not drawn away, it is simply not visible until the map
+  // is close enough for it to mean something, and the dots carry the season until then.
+  //
+  // The two zoom stops are where those two facts change hands. Nothing below 8, full by 11:
+  // around 11 a lap is a few hundred pixels across, which is the first zoom at which the shape
+  // reads as a circuit rather than as a smudge. Width grows with zoom for the same reason a
+  // hairline would vanish on a phone and a fat line would bury the pit straight.
+  //
+  // Skipped entirely when the outlines did not arrive, which is the whole of the fallback: the
+  // dots are a different source and every located round is still in it.
+  if (tracks) {
+    globe.addSource(TRACKS, { type: "geojson", data: tracks });
+
+    // **A casing under the outline, so its contrast stops depending on what it lands on.**
+    //
+    // WCAG 1.4.11 asks 3:1 of a graphical object, and the outline is drawn at the zooms where the
+    // dark basemap is at its lightest. Measured against the inks in vendor/positron-dark.json:
+    // over bare land #334155 accent #10b981 holds 4.08:1 and muted #94a3b8 4.04:1, which passes -
+    // but half this calendar is street circuits, and Monaco, Baku, Singapore and Albert Park are
+    // ordinary public roads in OpenStreetMap, so the shape is drawn directly along the road the
+    // style has already painted. On the major-road ink #5c6b85 that is 2.12:1 and 2.10:1; on the
+    // minor-road #4a5871, 2.83:1 and 2.80:1; on a pit complex's buildings #40526c, 3.13:1 and
+    // 3.10:1, which clears the bar by nothing at all. So the outline passes or fails according to
+    // which circuit was chosen, which is not a state to ship.
+    //
+    // Two pixels of --color-bg on each side makes the outline's neighbour one known colour
+    // instead of whatever the tile holds. Against it accent is 7.04:1 and muted 6.96:1 in dark,
+    // and 6.83:1 / 6.74:1 in light, where --color-bg #eef2f7 sits at 1.08:1 against positron's
+    // near-white land - invisible and load-bearing at once, which is what a halo is, and the same
+    // trick both styles already use under every label they draw.
+    //
+    // Same source, same zoom ramp, same join and cap, so it fades in with the outline instead of
+    // appearing as a bare dark worm at the zoom where the outline is still transparent.
+    globe.addLayer({
+      id: TRACK_BED,
+      type: "line",
+      source: TRACKS,
+      layout: { "line-join": "round", "line-cap": "round" },
+      paint: {
+        "line-color": ink("bg"),
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0, 11, 1],
+        "line-width": ["interpolate", ["linear"], ["zoom"], 8, 5, 14, 7],
+      },
+    });
+
+    // Added last so the line draws over its own dot. The same `over` expression as the dots
+    // above, from the same flag, so zooming in changes the shape of what is drawn and not what
+    // its colour means.
+    globe.addLayer({
+      id: TRACK,
+      type: "line",
+      source: TRACKS,
+      layout: { "line-join": "round", "line-cap": "round" },
+      paint: {
+        "line-color": ["case", ["get", "over"], ink("muted"), ink("accent")],
+        "line-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0, 11, 1],
+        "line-width": ["interpolate", ["linear"], ["zoom"], 8, 1, 14, 3],
+      },
+    });
+  }
   mark();
 }
 
@@ -390,6 +555,21 @@ function showOnMap(race) {
  */
 async function startGlobe(rounds) {
   located = rounds.filter(at);
+
+  // Started here and awaited below rather than awaited here, so 133 KB of circuit outlines
+  // downloads alongside the ~300 KB of library instead of after it. Both are static files on this
+  // origin and neither waits on the other, so adding the smaller wait to the larger would buy
+  // nothing. `located` and not `rounds`, because a round the API could not place has no
+  // coordinate to match on.
+  //
+  // Caught here and not at the call site: a failure has to cost the outlines and nothing else.
+  // `tracks` stays null, addRounds skips the line layer, and the globe is exactly the globe it
+  // was before any of this - which is the same fallback an unmatched circuit gets.
+  const outlines = circuitOutlines(located).catch((err) => {
+    console.error("f1: the circuit outlines could not be loaded", err);
+    return null;
+  });
+
   try {
     globe = await createMap(el("f1Map"), {
       globe: true,
@@ -413,8 +593,27 @@ async function startGlobe(rounds) {
   canvas.setAttribute("aria-hidden", "true");
   canvas.tabIndex = -1;
 
-  globe.on("styledata", draw);
-  if (globe.isStyleLoaded()) draw();
+  // **`style.load`, not `styledata`, and draw once immediately.**
+  //
+  // This is where the markers were lost. `createMap` awaits `style.load` before it hands the map
+  // back, so by the time this line runs the only `styledata` of the initial load has already been
+  // dispatched - the listener was attached to an event that was never coming again. The guard
+  // below it did not save it either: `isStyleLoaded()` is true only once every tile source has
+  // loaded as well, which one microtask after `style.load` it is not. So `draw()` returned early
+  // every time it was called and the source was never added, for the life of the page.
+  //
+  // `style.load` is the right event because it fires again on `setStyle`, which is how map.js
+  // re-inks on a theme change - and a new style discards the source and both layers, so that is
+  // exactly when they need re-adding. The direct call covers the first draw, since the style this
+  // map was built with is already loaded.
+  //
+  // Awaited immediately before the first draw, so both sources go in together on every style this
+  // map ever has - including the very first one. A draw that ran before the outlines landed would
+  // leave the line layer missing until the next theme toggle, which is a bug that only shows up
+  // on a slow connection.
+  tracks = await outlines;
+  globe.on("style.load", draw);
+  draw();
   aim();
 }
 

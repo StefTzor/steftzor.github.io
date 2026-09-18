@@ -30,16 +30,26 @@ const STYLESHEET = "/vendor/maplibre-gl.css";
 // own tiles are clean and keyless, but their usage policy is explicit that they are not for use
 // as an app's basemap, and testing against them here was throttled within a few minutes, which is
 // that policy working rather than failing. OpenFreeMap asks for no key, sets no limit, and exists
-// for this; positron and dark are one cartography in two palettes, so a theme change re-inks and
-// changes nothing else.
+// for this.
+//
+// **The two styles are one cartography, because we built the second one.** OpenFreeMap serves
+// five styles and none of them is a dark positron: `dark` paints a background of rgb(12,12,12),
+// darker than this app's own page at #0f172a, so it reads as a hole punched through the layout,
+// and `fiord` - which this shipped before - draws 48 layers to positron's 55 and 14 layers of
+// labels to its 16, which is why the light map looked like the better-made one rather than merely
+// the brighter one. So the dark style here is positron itself, re-inked to this app's palette and
+// nothing else: same layers, same filters, same zoom stops, same tile source. Its provenance and
+// every colour substitution are in vendor/positron-dark.build.mjs, which regenerates it from the
+// URL above and refuses to if anything but a colour has moved.
+//
+// It being local changes nothing about where the map comes from. The style document is the only
+// part that was ever fetched from the provider as a document; the tiles, glyphs and sprite are
+// still requested from tiles.openfreemap.org because the sources block is copied verbatim, so the
+// CSP in eleventy.app.js is unchanged and the attribution - which MapLibre reads from the
+// TileJSON at the source URL, not from the style - arrives with them exactly as before.
 const STYLE = {
   light: "https://tiles.openfreemap.org/styles/positron",
-  // `fiord`, not `dark`. The dark style's background is rgb(12,12,12) - darker than this
-  // app's own page at #0f172a - so a map drawn in it reads as a hole punched through the
-  // layout rather than as a card sitting on it. Fiord is #45516E, a slate blue a little
-  // lighter than the surface it sits on, which is the direction every other raised thing
-  // here goes.
-  dark: "https://tiles.openfreemap.org/styles/fiord",
+  dark: "/vendor/positron-dark.json",
 };
 
 const isDark = () => document.documentElement.classList.contains("dark");
@@ -104,12 +114,30 @@ export async function createMap(container, { globe = false, center = [0, 0], zoo
   // for the same reason rotation is: there is no bearing here worth resetting.
   map.addControl(new maplibregl.NavigationControl({ showCompass: false, visualizePitch: false }),
     "top-right");
+  // Fullscreen, because both of these maps are a card in a column on a phone and the thing anybody
+  // wants next is more of it. MapLibre's control handles the resize itself, so there is nothing to
+  // wire up on the way in or the way out.
+  //
+  // **The card, not the map container.** Given no `container`, the control fullscreens the element
+  // the map was built in - which on /f1/ is the box that EXCLUDES the key and the note under it,
+  // and that key is the only text the dots and the outlines have. Going fullscreen therefore
+  // dropped the words and kept the picture, on the one screen size where the words matter most.
+  //
+  // `closest` rather than a new option, because both callers already wrap their map in `.card` and
+  // neither has anything to say about it that the markup does not already say. On /transit/ the map
+  // container IS the card, so `closest` returns that same element and that map fullscreens exactly
+  // as it did before - including while the box is still `hidden`, since nothing here reads its
+  // layout. An option would have been a second way to state a fact the DOM already holds, and the
+  // next caller to forget it would quietly get this bug back.
+  map.addControl(
+    new maplibregl.FullscreenControl({ container: container.closest(".card") || container }),
+    "top-right");
   // Pinch to zoom, but never to rotate.
   map.touchZoomRotate.disableRotation();
 
-  // The projection is set after the style rather than in it: these styles are fetched from the
-  // provider and say nothing about one, and setting it before the style lands is overwritten when
-  // the style does. The globe is the whole reason /f1/ has a map instead of a place name; flat
+  // The projection is set after the style rather than in it: neither style declares one - the dark
+  // one is positron copied layer for layer, so it says no more about projection than positron does
+  // - and setting it before the style lands is overwritten when the style does. The globe is the whole reason /f1/ has a map instead of a place name; flat
   // everywhere else, because a globe is right for "which corner of the world is this race in" and
   // wrong for "which stops are within a kilometre of me".
   if (globe) map.on("style.load", () => map.setProjection({ type: "globe" }));

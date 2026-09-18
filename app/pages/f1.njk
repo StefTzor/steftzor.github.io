@@ -49,25 +49,38 @@ bodyScripts:
      it throws itself around the world between one round and the next. Every round of the season
      is a dot and the chosen one is lit; changing the round turns the globe to it.
 
+     Zoom in and the circuit itself is drawn over its dot, traced from OpenStreetMap - because at
+     that range a dot has stopped saying which place this is and the shape of the track is the only
+     thing that distinguishes one from the next. The dots stay: they are what keeps the chosen
+     round findable at every zoom, and the outline is an addition to them rather than a
+     replacement for them.
+
      The dots are drawn into a canvas and no screen reader can reach them, so the canvas is hidden
      from one and the round selector at the top of the page is their text alternative - it names
      every round of the season, which is exactly what the dots are.
 
      The height is explicit because MapLibre measures its container: without one it renders a
-     canvas zero pixels tall, which looks like a map that failed rather than a map with no room. #}
+     canvas zero pixels tall, which looks like a map that failed rather than a map with no room.
+     It is also generous, and that is the point of a globe: a sphere loses its edges to a short
+     box, and a circuit you have zoomed into needs room to be a circuit rather than a squiggle. #}
   <section aria-labelledby="map-heading" class="mb-10">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-3">
       <h2 id="map-heading" class="text-xl font-bold text-brand-text">Where it is raced</h2>
       <p id="circuitName" class="text-sm text-brand-muted"></p>
     </div>
-    <div class="card p-3">
-      <div id="f1Map" class="h-72 w-full overflow-hidden rounded-lg sm:h-96"></div>
+    {# A flex column whose map is the part that grows, because the fullscreen button hands this
+       whole card to the browser rather than the map box inside it - the key below is the picture's
+       text and it has to come along. At the card's ordinary auto height there is no free space to
+       distribute, so the map keeps exactly the height its own classes give it; fullscreen makes the
+       card viewport-tall and the one growing child takes everything the key and the note do not. #}
+    <div class="card flex flex-col p-3">
+      <div id="f1Map" class="h-96 w-full grow overflow-hidden rounded-lg sm:h-[32rem]"></div>
 
       {# The key. The dots are drawn inside a canvas no screen reader can enter, so this is not a
-         decoration of the picture - it is the picture's text, and it says the same three things
-         the colours do. Static markup rather than drawn by the script: it describes a scheme that
-         is fixed, and a legend that only appears once a map has loaded is missing exactly when
-         somebody is trying to work out why the map has not. #}
+         decoration of the picture - it is the picture's text, and it says the same things the
+         colours and the shapes do. Static markup rather than drawn by the script: it describes a
+         scheme that is fixed, and a legend that only appears once a map has loaded is missing
+         exactly when somebody is trying to work out why the map has not. #}
       <ul class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 px-2 pb-1 text-xs text-brand-muted">
         <li class="flex items-center gap-2">
           <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-hover ring-2 ring-brand-surface"
@@ -78,6 +91,15 @@ bodyScripts:
         </li>
         <li class="flex items-center gap-2">
           <span class="h-2 w-2 shrink-0 rounded-full bg-brand-muted opacity-70" aria-hidden="true"></span>already raced
+        </li>
+        {# The outline takes its colour from the same raced/still-to-come flag as the dot beneath
+           it, so this row describes a shape and not a fourth colour - and says so, because a
+           swatch in the accent beside the word "circuit" would otherwise read as a fourth state.
+           It is not drawn at the zoom the map opens at: five kilometres of tarmac is a third of a
+           pixel from up there. #}
+        <li class="flex items-center gap-2">
+          <span class="h-0.5 w-5 shrink-0 rounded-full bg-brand-accent"
+            aria-hidden="true"></span>the circuit itself, in those same two colours, once you zoom in
         </li>
       </ul>
 
