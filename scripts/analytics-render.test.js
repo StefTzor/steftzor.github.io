@@ -238,7 +238,10 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
   // FULL.byBrowser is the one dimension with enough rows to be worth summing: 60+30+4+3+2+1.
   const browserShares = shares.slice(0, FULL.byBrowser.length);
   const sum = browserShares.reduce((a, b) => a + b, 0);
-  assert.ok(Math.abs(sum - 100) <= browserShares.length,
+  // The tolerance is the rounding and nothing more: each share is a Math.round, so n rows can
+  // drift by at most n/2 in total. Six rows means three. A looser bound - n, say - would pass a
+  // sum of 94 and stop being a check of the arithmetic.
+  assert.ok(Math.abs(sum - 100) <= browserShares.length / 2,
     `the shares of one dimension add up to a whole: ${browserShares.join(' + ')} = ${sum}`);
   ok('a nominal dimension is bars of one colour, the ramp is gone, and the shares still sum to a whole');
 
@@ -250,11 +253,26 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
   // `hits[0]` for the existence of a <title> and printed a message claiming it had checked all
   // thirty for their contents - an assertion weaker than the sentence beside it, which is the
   // kind that reads as coverage and is not.
+  //
+  // **Composed from the module's own formatters, not matched against a shape.** The second
+  // version used /^\d+ \w+: [\d,]+ views$/, which passes here and fails on any machine whose
+  // locale disagrees: `toLocaleDateString` gives "1 Aug" here, "Aug 1" in en-US and "1. Aug." in
+  // de-DE, and `toLocaleString` separates thousands with a space in sv-SE. A test that is green
+  // because of the developer's locale is the same fault in a different coat.
+  //
+  // The expected string is built here rather than read off the module, and that is deliberate as
+  // well as necessary - `dayLabel` and `count` are `const`, so `vm` never puts them on the
+  // context the way it does the function declarations. Restating the format means a change to
+  // either formatter fails this test and has to be made on purpose, which is the job. Both sides
+  // go through the same Intl call on the same runtime, so the locale cancels out.
+  const expected = (d) => `${new Date(d.day + 'T12:00:00')
+    .toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}`
+    + `: ${d.views.toLocaleString()} views`;
   hits.forEach((hit, i) => {
     const titles = tags(hit, 'title');
     assert.strictEqual(titles.length, 1, `day ${i} has exactly one tooltip`);
-    assert.ok(/^\d+ \w+: [\d,]+ views$/.test(titles[0].textContent),
-      `day ${i}'s tooltip names a day and a count, not "${titles[0].textContent}"`);
+    assert.strictEqual(titles[0].textContent, expected(DAILY[i]),
+      `day ${i}'s tooltip names its own day and its own count`);
   });
   assert.ok(hits.every((h) => Number(h.attrs.width) > 0 && Number(h.attrs.height) === 100),
     'and each target is the full height of the plot, so the pointer need not find the curve');
