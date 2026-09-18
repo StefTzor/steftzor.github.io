@@ -151,118 +151,55 @@ function block(selector, contains) {
   const darkRoot = block('.chrome-dark', '--color-surface');
   const hero = block('.hero', '--wx-sun');
   const darkHero = block('.chrome-dark .hero', '--wx-sun');
-  const scrim = block('.hero-scrim', 'linear-gradient');
 
-  /**
-   * Where the digest's last word sits, as a fraction of the card.
-   *
-   * `max-w-prose` is 65ch, about 520px, and `.hero-body` pads it by 32px on a card that reaches
-   * 1536px. That puts the far end of the longest line around 36% across - which is the point
-   * where the scrim has faded the most while still having text under it.
-   */
-  const SAMPLE = 0.36;
-
-  /** The scrim's alpha at that point, interpolated between its own declared stops. */
-  const stops = [...scrim.matchAll(/rgb\(var\(--color-surface\)(?:\s*\/\s*(\d+)%)?\)\s+(\d+)%/g)]
-    .map((m) => ({ alpha: m[1] === undefined ? 1 : +m[1] / 100, at: +m[2] / 100 }));
-  const transparentAt = scrim.match(/transparent\s+(\d+)%/);
-  assert.ok(stops.length >= 2 && transparentAt, 'could not read the scrim gradient stops');
-  stops.push({ alpha: 0, at: +transparentAt[1] / 100 });
-
-  /**
-   * **The gradient has to be well-formed, not merely to contain the right numbers.**
-   *
-   * Dropping one comma between two stops leaves a declaration CSS throws away entirely - the
-   * scrim then does not render at all and the text sits directly on the weather - while this
-   * file's stop-matching regex still finds three perfectly good stops and reports the strength it
-   * expected. That happened while tuning these very numbers. So the argument list is checked as a
-   * list: every part after the angle must be one colour and one position, and nothing else.
-   */
-  const args = scrim.slice(scrim.indexOf('linear-gradient(') + 'linear-gradient('.length);
-  const list = args.slice(0, args.indexOf(');')).split(/,(?![^(]*\))/).map((x) => x.trim());
-  assert.ok(/^\d+deg$/.test(list[0]), `the scrim gradient should start with an angle, got "${list[0]}"`);
-  list.slice(1).forEach((stop) => assert.ok(
-    /^(rgb\(var\(--color-surface\)(\s*\/\s*\d+%)?\)|transparent)\s+\d+%$/.test(stop),
-    `"${stop}" is not one colour and one position - a missing comma between two stops makes the `
-    + 'whole declaration invalid, the scrim vanishes, and the numbers here still read fine'));
-
-  let scrimAlpha = stops[stops.length - 1].alpha;
-  for (let i = 0; i < stops.length - 1; i += 1) {
-    if (SAMPLE >= stops[i].at && SAMPLE <= stops[i + 1].at) {
-      const t = (SAMPLE - stops[i].at) / (stops[i + 1].at - stops[i].at);
-      scrimAlpha = stops[i].alpha + t * (stops[i + 1].alpha - stops[i].alpha);
-      break;
-    }
-  }
-  assert.ok(scrimAlpha > 0.4,
-    `the scrim is only ${(scrimAlpha * 100).toFixed(0)}% opaque where the digest ends; the text `
-    + 'column is what it exists to protect');
-
-  /**
-   * **The real paint stack, per condition, rather than one ink at a time.**
-   *
-   * The first version measured each token alone and passed. The card paints them together: a
-   * cloudy dark card puts two veils AND the skyline under the digest, and that stack measured
-   * 4.49:1 while every single layer in it measured comfortably above the floor. `--wx-veil2` was
-   * not even in the list. Reading the tokens out of each condition's own rule fixes both, and a
-   * tenth condition added later is measured without anybody remembering to add it here.
-   *
-   * The discs are excluded on purpose: they are bounded circles at 74% across, and a separate
-   * assertion below keeps them out of the text column. Everything else is full-bleed.
-   */
   const POSITIONAL = ['--wx-disc', '--wx-moon'];
-  const conditions = new Map();
-  // Every condition named in the selector LIST, not just the first. `clear` and `partly` share a
-  // rule, as do `cloud` and `fog`; matching one name per rule silently dropped two of the nine and
-  // the count guard below is what caught it.
-  //
-  // Each token is kept with the WEIGHT it actually contributes to the background under a glyph.
-  // A wash covers the card, so it counts in full. A streak is 1.5px every 14px and a snowflake is
-  // a 2px dot on a 90px tile - modelling those as full-bleed said dark/snow was the worst case on
-  // the card at 3.74:1, when the flakes together cover about a quarter of one percent of it. The
-  // coverage is computed from the same declaration that draws them.
-  const coverageOf = (body, token) => {
-    const streak = new RegExp(`repeating-linear-gradient\\([^)]*?var\\(${token}\\)\\s*0\\s*([\\d.]+)px,\\s*transparent\\s*[\\d.]+px\\s*([\\d.]+)px`).exec(body);
-    if (streak) return Number(streak[1]) / Number(streak[2]);
-    // A field of dots: every radius against the tile it repeats on.
-    const dots = [...body.matchAll(new RegExp(`radial-gradient\\(circle at [^,]+,\\s*rgb\\(var\\(${token}\\)[^)]*\\)\\s*([\\d.]+)px`, 'g'))];
-    if (!dots.length) return 1;
-    const sizes = (body.match(/background-size:\s*([^;]+);/) || [, ''])[1].split(',')
-      .map((pair) => pair.trim().split(/\s+/).map((v) => parseFloat(v)))
-      .filter(([w, h]) => Number.isFinite(w) && Number.isFinite(h));
-    return dots.reduce((sum, d, i) => {
-      const [w, h] = sizes[i] || sizes[sizes.length - 1] || [100, 100];
-      return sum + (Math.PI * Number(d[1]) ** 2) / (w * h);
-    }, 0);
-  };
 
+  /**
+   * Which inks each condition paints.
+   *
+   * **Every ink counts in full, including the streaks and the flakes.** An earlier version
+   * weighted them by the fraction of the card they cover - 1.5px of streak every 14px reads as
+   * 11% - and that is the wrong model for legibility: WCAG measures a glyph against the pixels
+   * immediately behind it, and a streak at 74 degrees crosses essentially every glyph on a line.
+   * Locally it is entirely there. The weighting also bought about 0.02 of ratio for thirty lines
+   * of regex, and it silently mis-attributed a token used twice in one rule. Gone.
+   *
+   * Every condition named in the selector LIST, not just the first: `clear` and `partly` share a
+   * rule, as do `cloud` and `fog`, and matching one name per rule dropped two of the nine.
+   */
+  const conditions = new Map();
   [...CSS.matchAll(/([^{}]*)\{([^{}]*)\}/g)].forEach(([, selector, body]) => {
     const named = [...selector.matchAll(/\.hero\[data-wx="(\w+)"\]/g)].map((m) => m[1]);
     if (!named.length) return;
     const used = [...new Set([...body.matchAll(/var\((--wx-[a-z-]+)\)/g)].map((m) => m[1]))]
-      .filter((t) => !POSITIONAL.includes(t))
-      .map((t) => ({ token: t, coverage: coverageOf(body, t) }));
+      .filter((t) => !POSITIONAL.includes(t));
     if (!used.length) return;
-    named.forEach((cond) => conditions.set(cond, [...(conditions.get(cond) || []), ...used]));
+    named.forEach((cond) => conditions.set(cond, [...new Set([...(conditions.get(cond) || []), ...used])]));
   });
   assert.ok(conditions.size >= 8,
     `only found ${conditions.size} conditions with ink in them; this test is now guessing, so it fails`);
+
+  /**
+   * **No ink may go unmeasured.** `--wx-flash` reaches the thunder stack only because its rule's
+   * selector happens to name thunder. Move it to a bare `.hero-fall::after` - a natural refactor,
+   * since only thunder has one - and it drops out of every stack silently, the condition count
+   * stays at nine, and the reported worst case IMPROVES because the biggest contributor to it has
+   * gone. So the palette is the checklist: anything declared has to be painted somewhere.
+   */
+  const declared = [...new Set([...block('.hero', '--wx-sun').matchAll(/(--wx-[a-z-]+):/g)].map((m) => m[1]))]
+    .filter((t) => !POSITIONAL.includes(t) && t !== '--wx-city' && t !== '--wx-city-alpha');
+  const painted = new Set([...conditions.values()].flat());
+  const unmeasured = declared.filter((t) => !painted.has(t));
+  assert.deepStrictEqual(unmeasured, [],
+    `${unmeasured.join(', ')} is declared in the palette and appears in no condition's stack, so `
+    + 'nothing measures it. Either it is dead, or it is painted from a rule this cannot see');
 
   // The snow layer names its channel through rgb(var(--wx-snow) / N%) rather than as a finished
   // colour, so its strongest stop is read out of the rule it is used in.
   const snowRule = block('.hero[data-wx="snow"] .hero-fall', 'radial-gradient');
   const snowAlpha = Math.max(...[...snowRule.matchAll(/--wx-snow\)\s*\/\s*(\d+)%/g)].map((m) => +m[1])) / 100;
 
-  // The skyline is ink too and runs the full width under the text, so it is in every stack. It is
-  // declared as channels plus a separate alpha rather than as one colour, so it is assembled here.
-  //
-  // **What this check binds is the COMBINATION, which is worth stating plainly.** At the current
-  // scrim strength no single ink can fail it: push the city to 95% or the second cloud bank to
-  // 85% and the digest still clears the floor, because 87% of what is under it is surface colour.
-  // Weaken the scrim and every ink becomes load-bearing at once - which is exactly what happened
-  // while these numbers were being set. At 82.7% the sun-plus-skyline stack measured 4.44:1 and
-  // the thunder stack 4.41:1, and this assertion is what said so. It is satisfied by a scrim
-  // doing its job, and it fires the moment that stops.
+  // The skyline is ink too and runs the full width under the text, so it is in every stack.
   const cityInk = (source) => {
     const ch = source.match(/--wx-city:\s*([\d ]+);/);
     const al = source.match(/--wx-city-alpha:\s*([\d.]+)%/);
@@ -271,46 +208,94 @@ function block(selector, contains) {
     return { r, g, b, a: Number(al[1]) / 100 };
   };
 
+  /**
+   * The two layouts, and where the digest's last word lands in each.
+   *
+   * The first version measured one point, 36% across, from a card assumed to be 1536px. It is
+   * 1472 - `app-page` adds `lg:px-8` - and `max-w-prose` is 65ch, which is nearer 0.55em than the
+   * 0.5em that arithmetic assumed. The real edge is past 41%, where the same stack measured
+   * 3.93:1. A sample point that flatters the layout is worse than no sample point.
+   *
+   * Under 640px `max-w-prose` is wider than the card, so it stops binding entirely: the line runs
+   * to the padding and the scrim there runs DOWN the card instead, so the sample is a y.
+   */
+  const CARD = 1472;                       // max-w-[96rem] less lg:px-8 on both sides
+  const CH = 0.55 * 16;                    // one `ch` of the body face, measured rather than 0.5em
+  const LAYOUTS = [
+    { name: 'wide', axis: 'x', at: (32 + 65 * CH) / CARD, gradient: block('@media (min-width: 640px)', 'linear-gradient(100deg') },
+    // Narrow: the digest's last line, roughly two lines below a 30px greeting inside p-6, on the
+    // 13rem minimum card. Taken at the BOTTOM of that block, which is the weakest point.
+    { name: 'narrow', axis: 'y', at: 108 / 208, gradient: block('.hero-scrim', 'linear-gradient(180deg') },
+  ];
+
   let worst = { ratio: Infinity };
-  [['light', root, hero], ['dark', darkRoot, darkHero]].forEach(([mode, palette, ink]) => {
-    const surface = token(mode === 'light' ? root : palette, '--color-surface');
-    const text = token(mode === 'light' ? root : palette, '--color-text');
-    const muted = token(mode === 'light' ? root : palette, '--color-muted');
+  LAYOUTS.forEach((layout) => {
+    const stops = [...layout.gradient.matchAll(/rgb\(var\(--color-surface\)(?:\s*\/\s*(\d+)%)?\)\s+(\d+)%/g)]
+      .map((m) => ({ alpha: m[1] === undefined ? 1 : +m[1] / 100, at: +m[2] / 100 }));
+    const clear = layout.gradient.match(/transparent\s+(\d+)%/);
+    assert.ok(stops.length >= 2 && clear, `could not read the ${layout.name} scrim's stops`);
+    stops.push({ alpha: 0, at: +clear[1] / 100 });
 
-    conditions.forEach((tokens, cond) => {
-      // surface, then every ink this condition paints, then the skyline, then the scrim over it.
-      let bg = surface;
-      tokens.forEach(({ token: name, coverage }) => {
-        let paint;
-        if (name === '--wx-snow') {
-          const ch = ink.match(/--wx-snow:\s*([\d ]+);/);
-          const [r, g, b] = ch[1].trim().split(/\s+/).map(Number);
-          paint = { r, g, b, a: snowAlpha };
-        } else {
-          paint = token(ink, name);
-        }
-        bg = over({ ...paint, a: paint.a * coverage }, bg);
+    // The gradient must be well formed, not merely contain the right numbers: one missing comma
+    // makes CSS discard the whole declaration, the scrim never renders, and this file's stop
+    // matching still finds three perfectly good stops. That happened while tuning these.
+    const args = layout.gradient.slice(layout.gradient.indexOf('linear-gradient(') + 'linear-gradient('.length);
+    const list = args.slice(0, args.indexOf(');')).split(/,(?![^(]*\))/).map((x) => x.trim());
+    assert.ok(/^\d+deg$/.test(list[0]), `the ${layout.name} scrim should start with an angle, got "${list[0]}"`);
+    list.slice(1).forEach((stop) => assert.ok(
+      /^(rgb\(var\(--color-surface\)(\s*\/\s*\d+%)?\)|transparent)\s+\d+%$/.test(stop),
+      `"${stop}" is not one colour and one position - a missing comma between two stops makes the `
+      + 'whole declaration invalid, the scrim vanishes, and the numbers here still read fine'));
+
+    let scrimAlpha = stops[stops.length - 1].alpha;
+    for (let i = 0; i < stops.length - 1; i += 1) {
+      if (layout.at >= stops[i].at && layout.at <= stops[i + 1].at) {
+        const t = (layout.at - stops[i].at) / (stops[i + 1].at - stops[i].at);
+        scrimAlpha = stops[i].alpha + t * (stops[i + 1].alpha - stops[i].alpha);
+        break;
+      }
+    }
+    assert.ok(scrimAlpha > 0.4,
+      `the ${layout.name} scrim is only ${(scrimAlpha * 100).toFixed(0)}% opaque where the digest `
+      + 'ends; the text column is what it exists to protect');
+
+    [['light', root, hero], ['dark', darkRoot, darkHero]].forEach(([mode, palette, ink]) => {
+      const surface = token(mode === 'light' ? root : palette, '--color-surface');
+      const text = token(mode === 'light' ? root : palette, '--color-text');
+      const muted = token(mode === 'light' ? root : palette, '--color-muted');
+
+      conditions.forEach((tokens, cond) => {
+        let bg = surface;
+        tokens.forEach((name) => {
+          if (name === '--wx-snow') {
+            const ch = ink.match(/--wx-snow:\s*([\d ]+);/);
+            const [r, g, b] = ch[1].trim().split(/\s+/).map(Number);
+            bg = over({ r, g, b, a: snowAlpha }, bg);
+          } else {
+            bg = over(token(ink, name), bg);
+          }
+        });
+        bg = over(cityInk(ink), bg);
+        bg = over({ ...surface, a: scrimAlpha }, bg);
+
+        const onHeading = ratio({ ...text, a: 1 }, bg);
+        const onDigest = ratio({ ...muted, a: 1 }, bg);
+        const where = `${layout.name}/${mode}/${cond}`;
+        if (onDigest < worst.ratio) worst = { ratio: onDigest, where };
+
+        assert.ok(onHeading >= 4.5,
+          `${where}: the greeting is ${onHeading.toFixed(2)}:1 over ${tokens.join(' + ')} + the `
+          + 'skyline; large text may legally sit at 3:1 but this card has never been near that');
+        assert.ok(onDigest >= 4.5,
+          `${where}: the digest is ${onDigest.toFixed(2)}:1 over ${tokens.join(' + ')} + the `
+          + 'skyline, below the 4.5:1 body text needs. Every layer in that stack can be fine alone '
+          + 'and the sum still fail, which is why the stack is what is measured');
       });
-      bg = over(cityInk(ink), bg);
-      bg = over({ ...surface, a: scrimAlpha }, bg);
-
-      const onHeading = ratio({ ...text, a: 1 }, bg);
-      const onDigest = ratio({ ...muted, a: 1 }, bg);
-      if (onDigest < worst.ratio) worst = { ratio: onDigest, mode, cond };
-
-      assert.ok(onHeading >= 4.5,
-        `${mode}/${cond}: the greeting is ${onHeading.toFixed(2)}:1 over the whole stack `
-        + `(${tokens.map((t) => t.token).join(' + ')} + the skyline); large text may legally sit at 3:1 but this card `
-        + 'has never been near that and should not start');
-      assert.ok(onDigest >= 4.5,
-        `${mode}/${cond}: the digest is ${onDigest.toFixed(2)}:1 over the whole stack `
-        + `(${tokens.map((t) => t.token).join(' + ')} + the skyline), below the 4.5:1 that body text needs. Every layer `
-        + 'in that stack can be fine on its own and the sum still fail, which is the point of '
-        + 'measuring it this way');
     });
   });
-  ok(`the text clears 4.5:1 over all ${conditions.size} painted stacks in both themes `
-    + `(worst: ${worst.mode}/${worst.cond} at ${worst.ratio.toFixed(2)}:1, scrim ${(scrimAlpha * 100).toFixed(0)}% where the digest ends)`);
+
+  ok(`the text clears 4.5:1 over all ${conditions.size} stacks in both themes and both layouts `
+    + `(worst: ${worst.where} at ${worst.ratio.toFixed(2)}:1)`);
 }
 
 // --- 4. reduced motion silences everything the hero starts --------------------

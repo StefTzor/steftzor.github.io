@@ -417,12 +417,34 @@
      of it. Rather than keep every wash weak enough to read through - which is what made this
      invisible in the first place - the card is allowed to be loud and the text column gets its
      surface colour back underneath it. 100deg rather than 90 so the scrim tilts with the rain. */
+  /* **Narrow first, because that is the case the horizontal version cannot serve.** Under 640px
+     `max-w-prose` stops binding - 65ch is wider than the card - so the digest fills the width and
+     its last word lands around 93% across, where a left-to-right scrim is transparent by
+     construction. Measured there over a storm: 1.11:1. The text is at the top on a narrow card
+     and the skyline is at the bottom, so the scrim runs down rather than across, clearing the
+     text block completely and letting go in time for the city to show underneath it. */
   .hero-scrim {
-    background: linear-gradient(100deg,
+    background: linear-gradient(180deg,
       rgb(var(--color-surface)) 0%,
-      rgb(var(--color-surface) / 94%) 32%,
-      rgb(var(--color-surface) / 45%) 60%,
-      transparent 72%);
+      rgb(var(--color-surface) / 92%) 58%,
+      transparent 88%);
+  }
+
+  /* From `sm` the chip sits beside the text rather than under it, `max-w-prose` binds, and the
+     right half of the card is free - so the scrim can run across and leave the weather and the
+     whole skyline visible. 100deg rather than 90 so it tilts with the rain.
+
+     The sample point these stops are set against is the digest's real right edge: a 1472px card
+     (`max-w-[96rem]` less `lg:px-8`) and 65ch at about 0.55em, which is past 41% - not the 36% an
+     earlier version assumed from a 1536px card and a 0.5em ch. */
+  @media (min-width: 640px) {
+    .hero-scrim {
+      background: linear-gradient(100deg,
+        rgb(var(--color-surface)) 0%,
+        rgb(var(--color-surface) / 94%) 38%,
+        rgb(var(--color-surface) / 45%) 66%,
+        transparent 78%);
+    }
   }
 
   /* Clear and mostly clear: a warm low sun, and this time an actual disc rather than only its
