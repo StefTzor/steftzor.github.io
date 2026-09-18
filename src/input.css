@@ -740,9 +740,11 @@
      `.tile-count` above lost it at the same time and for the same reason: the two selectors are
      one role in two places, and they render literally the same two numbers - awaiting approval
      and unread messages - on the app home and the Admin home. Changing one would have made the
-     same figure render two ways depending on which page you were on. The small `tabular-nums`
-     left in this file are on values that DO align down a column: the count badge and the bar
-     list's value column. */
+     same figure render two ways depending on which page you were on. Two `tabular-nums` remain in
+     this file and both are small values in a column: `.dep-line`, the fixed-width badge holding
+     a route number in the departure board's first grid column, and `.msg-when`, the timestamp
+     stacked down the right of the message list. (The analytics bar list's value column wants the
+     same thing and gets it from an inline utility in admin-analytics.js, not from here.) */
   .stat-number {
     @apply text-3xl font-bold leading-[1.2] text-brand-text;
   }

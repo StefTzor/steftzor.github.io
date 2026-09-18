@@ -223,10 +223,25 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
   const agents = byId.get('agents');
   assert.strictEqual(tags(agents, 'svg').length, 0, 'the dimensions draw no ring');
   const fills = find(agents, (n) => n.className && n.className.includes('bg-brand-accent'));
-  assert.ok(fills.length >= 6, 'every value is a bar');
+  // **Derived from the fixture, not a lower bound.** The first version of this asserted
+  // `fills.length >= 6` against an actual 12, which `FULL.byBrowser` supplies on its own - so
+  // three of the four dimension cards could stop being drawn and every check here would still
+  // pass, including the panel sweep, because an empty grid still has children and still carries
+  // a table. Confirmed by mutation: slicing DIMENSIONS to one entry printed thirteen green
+  // checks. A count that follows the fixture cannot rot into a floor that means nothing.
+  const DIMS = ['byBrowser', 'byOs', 'byDevice', 'byScreen'];
+  const valueRows = DIMS.reduce((n, k) => n + FULL[k].length, 0);
+  assert.strictEqual(fills.length, valueRows,
+    `one bar per value across all four dimensions, not just the first card`);
   assert.deepStrictEqual([...new Set(fills.map((f) => f.className))].length, 1,
     'one colour for every bar - these categories have no order to encode as a shade');
   assert.ok(fills.every((f) => /^[\d.]+%$/.test(f.style.width)), 'and a width that is a percentage');
+  // Every dimension names its leader, so a card that drew nothing cannot hide behind a sibling.
+  DIMS.forEach((k) => {
+    const lead = FULL[k][0].value;
+    const shown = k === 'byScreen' ? { desktop: 'Desktop', phone: 'Phone' }[lead] || lead : lead;
+    assert.ok(text(agents).includes(shown), `${k} drew its own card (looking for "${shown}")`);
+  });
   assert.ok(text(agents).includes('leads'), 'the part-to-whole is a sentence, not a ring');
   // The donut's arcs summing to a circle was the only check anywhere that the share arithmetic
   // held. The ring is gone and the arithmetic is not: the same percentages are in the lead
@@ -234,7 +249,7 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
   // NaN sweep above in silence.
   const shares = find(agents, (n) => n.tag === 'td' && /^\d+%$/.test(n._text))
     .map((n) => Number(n._text.replace('%', '')));
-  assert.ok(shares.length >= 4, 'the table prints a share per row');
+  assert.strictEqual(shares.length, valueRows, 'the table prints a share for every row of every card');
   // FULL.byBrowser is the one dimension with enough rows to be worth summing: 60+30+4+3+2+1.
   const browserShares = shares.slice(0, FULL.byBrowser.length);
   const sum = browserShares.reduce((a, b) => a + b, 0);
