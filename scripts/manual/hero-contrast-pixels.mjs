@@ -1,8 +1,15 @@
 /**
  * Contrast measured from RENDERED PIXELS, not from a model.  MANUAL - needs a browser.
  *
- *   npm run build:app && python3 -m http.server 8137 --directory _app
+ *   npm run build:app
+ *   python3 -m http.server 8137 --directory _app &
  *   node scripts/manual/hero-contrast-pixels.mjs
+ *
+ * Needs `puppeteer-core` and a Chrome binary, NEITHER of which is a dependency of this repo - on
+ * purpose, because a 300MB browser in devDependencies to run one script by hand is the wrong
+ * trade. Install it wherever you like and point the import at it. It also wants a probe page at
+ * _app/hero-probe.html: the hero markup and the two sprites from _app/index.html, in a document
+ * with the compiled stylesheet and `class="dark"` on <html>.
  *
  * Not in `npm test` because it needs Chrome and a server, and the suite runs on a CI box with
  * neither. It is the authority all the same: scripts/hero-sky.test.js models this, and the model
