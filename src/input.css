@@ -426,8 +426,9 @@
   .hero-scrim {
     background: linear-gradient(180deg,
       rgb(var(--color-surface)) 0%,
-      rgb(var(--color-surface) / 92%) 58%,
-      transparent 88%);
+      rgb(var(--color-surface) / 95%) 68%,
+      rgb(var(--color-surface) / 40%) 84%,
+      transparent 96%);
   }
 
   /* From `sm` the chip sits beside the text rather than under it, `max-w-prose` binds, and the

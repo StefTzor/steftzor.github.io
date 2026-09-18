@@ -223,9 +223,12 @@ function block(selector, contains) {
   const CH = 0.55 * 16;                    // one `ch` of the body face, measured rather than 0.5em
   const LAYOUTS = [
     { name: 'wide', axis: 'x', at: (32 + 65 * CH) / CARD, gradient: block('@media (min-width: 640px)', 'linear-gradient(100deg') },
-    // Narrow: the digest's last line, roughly two lines below a 30px greeting inside p-6, on the
-    // 13rem minimum card. Taken at the BOTTOM of that block, which is the weakest point.
-    { name: 'narrow', axis: 'y', at: 108 / 208, gradient: block('.hero-scrim', 'linear-gradient(180deg') },
+    // Narrow: MEASURED, not computed. The arithmetic said the digest's last line sits 52% down a
+    // 208px card; rendering one at 360 and 390px says the card is 268px there, because the digest
+    // wraps to three lines and the chip drops below the text, and the last line ends 66% down.
+    // Both attempts at deriving a sample point from first principles have been optimistic, so
+    // this one comes from the browser: scratchpad/sky/measure.mjs prints it at four widths.
+    { name: 'narrow', axis: 'y', at: 0.66, gradient: block('.hero-scrim', 'linear-gradient(180deg') },
   ];
 
   let worst = { ratio: Infinity };
