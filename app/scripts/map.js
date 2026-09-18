@@ -222,11 +222,24 @@ const homeView = new WeakMap();
  * @param {() => any} move
  */
 export function homeTo(map, move) {
+  remember(map, move);
+  return move();
+}
+
+/**
+ * Record a move as home WITHOUT making it, for the view a map is built at.
+ *
+ * Split out for exactly one caller and it is not an abstraction looking for a second: /transit/
+ * never moves its map on the way in. The stop it is a picture of is the centre the map is
+ * constructed with, so nothing calls goTo, so there was no home view and Reset sat disabled on
+ * the one page whose map is already where it should be in its first frame. Running the move to
+ * record it would work and would be a camera event fired to say "stay exactly there".
+ */
+function remember(map, move) {
   const state = homeView.get(map) || {};
   state.replay = move;
   homeView.set(map, state);
   if (state.enable) state.enable();
-  return move();
 }
 
 /**
@@ -330,6 +343,10 @@ export async function createMap(container, {
     "top-right");
   // After zoom and fullscreen, because it is the button you want once you have used those two.
   map.addControl(resetControl(map), "top-right");
+  // The view it was built at is a home view too, and on /transit/ it is the only one until a row
+  // is pressed. Through goTo so there is one definition of moving to a place; a caller that frames
+  // something of its own a moment later simply records over this.
+  remember(map, () => goTo(map, center, zoom));
   // Declared before the control that closes over it. The assignment only happens on a click, so
   // the later `let` would have been safe - but a reader should not have to work that out.
   let showing = "map";

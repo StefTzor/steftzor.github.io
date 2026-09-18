@@ -146,6 +146,29 @@ function withReset(ctx) {
   ok('prefers-reduced-motion is honoured by the replay, because the replay IS the original move');
 }
 
+// --- the view a map is built at is a home view too ---------------------------
+{
+  // Found by loading /transit/ rather than by reading it: that map is constructed at the stop it
+  // is a picture of and never moved, so nothing called goTo, so Reset arrived disabled on the one
+  // page whose map is already right. `remember` records without moving, which is what a view the
+  // map is already at needs.
+  const ctx = load();
+  const { map, moves, button } = withReset(ctx);
+  ctx.remember(map, () => map.jumpTo({ center: [17.6, 59.85], zoom: 15 }));
+  assert.deepStrictEqual(moves, [], 'recording the view a map is already at moves nothing');
+  assert.strictEqual(button.disabled, false, 'and still gives Reset somewhere to go');
+  button.click();
+  assert.strictEqual(moves.length, 1, 'which it goes to when pressed');
+  ok('a map built at a view can be reset to it without being moved to record it');
+
+  // And createMap must actually do that with its own arguments - the vm cannot see createMap, so
+  // the call is read. `center, zoom` and not two fresh literals: a home view recorded from
+  // anything but the options the map was built with is a button that goes somewhere else.
+  assert.ok(/remember\(map, \(\) => goTo\(map, center, zoom\)\)/.test(MAP),
+    'createMap must record the view it built the map at, from the same center and zoom it used');
+  ok('createMap records the view it was built at, from the options it was built with');
+}
+
 // --- and createMap actually adds the control ---------------------------------
 {
   // The mutation the four sections above survive: everything they assert is about `homeTo`,
