@@ -210,6 +210,17 @@ function check(style, upstream) {
   const must = (ok, why) => { if (!ok) throw new Error(why); };
 
   // Nothing that decides WHERE a pixel goes, or WHERE it is fetched from, may have moved.
+  //
+  // The host is pinned as well as compared, because comparing against upstream is circular on
+  // exactly the question the file's own comment answers: if OpenFreeMap ever served a positron
+  // pointing somewhere else, "sources changed" would stay silent, the new host would be written
+  // into the vendored JSON, and the sentence above saying the CSP is unchanged would be false
+  // with nothing to notice it. Reviewed as a sub-threshold note in the security review of the
+  // commit that added this file.
+  const hosts = (s) => [...JSON.stringify(s).matchAll(/https?:\/\/([^/"]+)/g)].map((m) => m[1]);
+  must(hosts(style).every((h) => h === "tiles.openfreemap.org"),
+    `a URL points somewhere other than tiles.openfreemap.org: ${
+      [...new Set(hosts(style))].filter((h) => h !== "tiles.openfreemap.org").join(", ")}`);
   must(JSON.stringify(style.sources) === JSON.stringify(upstream.sources), "sources changed");
   must(style.glyphs === upstream.glyphs, "glyphs changed");
   must(style.sprite === upstream.sprite, "sprite changed");
