@@ -598,10 +598,18 @@ function setupGeo(usingMine, home) {
     setGeo(true);
     mine = true;
     show();
+    // show() has just repainted the button as "Show <home> again", which is true of what the next
+    // press will do but says nothing about the wait in progress. The success path repaints from
+    // renderChip, and the failure path writes its own note, so this text belongs to neither.
+    btn.textContent = "Fetching the forecast…";
     try {
       await load({ lat: pos.coords.latitude, lon: pos.coords.longitude }, null);
     } catch (err) {
-      console.error("geo: the forecast for that position failed", err && err.status, err && err.code);
+      // The whole error as well as the two fields, because `load` also runs renderWeather, and a
+      // TypeError in there has no `status` or `code` - which printed "undefined undefined" and
+      // threw away the one thing that would have explained it.
+      console.error("geo: the forecast for that position failed", err && err.status, err && err.code, err);
+      show();
       note.textContent = "Found you, but the forecast for that position could not be fetched just "
         + "now. Your location is still the one being used — try again in a moment.";
       unavailable();
