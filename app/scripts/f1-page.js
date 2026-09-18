@@ -600,6 +600,9 @@ async function startGlobe(rounds) {
       globe: true,
       center: target || [0, 0],
       zoom: target ? PLACE_ZOOM : 1,
+      // Offered here and not on /transit/: a photograph answers "which circuit is this" and hides
+      // everything a departure board's map is for. map.js says the whole of it.
+      satellite: true,
     });
   } catch (err) {
     console.error("f1: map", err);

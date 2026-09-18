@@ -167,14 +167,32 @@ ok(`all ${CIRCUITS.length} circuits carry a bbox, which is what the map is frame
 // Wrapped in an async IIFE rather than left as a top-level `return`. In CommonJS that `return`
 // exits the module wrapper, so a check appended below it - the natural place for the next one -
 // would never run. Verified: an `assert.ok(false)` after it did not fail the suite.
+//
+// **The limit of this technique, stated because everything below looks like it has none.**
+// `strip()` removes the `import` lines, so module linkage is structurally invisible here. Delete
+// `import { createMap, goTo, frame } from "./map.js"` from f1-page.js and this suite passes AND
+// `npm run build:app` passes - the asset check parses each script, and a missing import is valid
+// syntax. In a browser it is a ReferenceError on the first round change and the map dies
+// entirely. Nothing in this repository catches that, and nothing in this approach can: the whole
+// reason the functions are reachable is that their imports were taken away. A reader who sees
+// startGlobe running for real will assume otherwise, so it is written down here.
 (async () => {
   const vm = require('vm');
   const strip = (src) => src.split('\n').filter((l) => !l.startsWith('import ')).join('\n');
 
-  /** The map's surface, as much of it as startGlobe, draw() and mark() actually touch. */
+  /**
+   * The map's surface, as much of it as startGlobe, draw() and mark() actually touch.
+   *
+   * **It records rather than swallows.** The first version answered every call with nothing, which
+   * made it a sink: `draw()` could stop being called from startGlobe, or `addRounds` could stop
+   * adding the outline layers entirely, and the suite would go on asserting that every circuit
+   * frames past the zoom those layers are solid at - layers that were no longer there.
+   */
+  const layers = [];
   const fakeMap = () => ({
     getCanvas: () => ({ setAttribute() {}, tabIndex: 0 }),
-    on() {}, getSource: () => null, addSource() {}, addLayer() {},
+    on() {}, getSource: () => null, addSource() {},
+    addLayer: (l) => layers.push(l.id),
     getLayer: () => ({}), setFilter() {},
   });
 
@@ -218,28 +236,65 @@ ok(`all ${CIRCUITS.length} circuits carry a bbox, which is what the map is frame
   assert.strictEqual(joined.features.length, 2, 'both rounds matched an outline by coordinate');
   ok('circuitOutlines joins a round to its circuit, running for real against the vendored file');
 
-  rounds.forEach(({ round }) => {
-    const shape = joined.features.find((f) => f.properties.round === Number(round));
-    assert.ok(shape, `aim() can find round ${round}'s outline - if this fails, every round `
-      + `silently falls back to PLACE_ZOOM and the framing is gone with no other symptom`);
-    assert.ok(Array.isArray(shape.bbox) && shape.bbox.length === 4,
-      'and the shape it finds carries the four-element box frame() is given');
-    assert.strictEqual(typeof shape.properties.round, 'number',
-      'round is a number on both sides of the ===, so it cannot fail on a string');
-  });
-  ok('the round-to-outline lookup aim() performs resolves, and carries the box frame() needs');
+  assert.ok(joined.features.every((f) => typeof f.properties.round === 'number'),
+    'round is a number on the outline side of the ===, so it cannot fail against a Number()d one');
+  assert.ok(joined.features.every((f) => Array.isArray(f.bbox) && f.bbox.length === 4),
+    'and every joined shape carries the four-element box frame() is given');
+
+  // The lookup itself is not asserted here any more. It used to be, and it was a restatement of
+  // aim()'s line rather than an execution of it - the drive-through below now runs the real
+  // `===` inside the real aim(), against a round that is deliberately not the first in the list.
 
   // **The call site.** showOnMap -> aim -> frame, driven end to end. This is the assertion that
   // dies when somebody removes the frame() call, which every other check in this file survives.
+  //
+  // **Silverstone and not Monza, deliberately.** Monza is round 7, the first fixture round, and so
+  // also `features[0]` - which means replacing the whole lookup with `tracks.features[0]` would
+  // have satisfied this. The second round is the one that proves a lookup happened.
   await ctx.startGlobe(rounds);
+  // The four layer ids, read from source so a rename cannot make this silently check nothing.
+  const layerId = (name) => {
+    const m = PAGE.match(new RegExp(`const ${name} = "([^"]+)"`));
+    assert.ok(m, `could not read the ${name} layer id out of f1-page.js`);
+    return m[1];
+  };
+  const want = ['ALL', 'HERE', 'TRACK_BED', 'TRACK'].map(layerId);
+  assert.deepStrictEqual(layers.slice().sort(), want.slice().sort(),
+    'startGlobe draws the dots AND the outline layers - check 2 above asserts every circuit '
+    + 'frames past the zoom those layers are solid at, which means nothing if they are not added');
+  ok('starting the globe adds the dot layers and the circuit outline with its casing');
+
   moves.length = 0;                      // startGlobe aims once itself; this is about the next one
-  ctx.showOnMap({ round: 7, ...roundFor('Monza', 7), circuit: 'Autodromo Nazionale Monza' });
+  ctx.showOnMap({ ...roundFor('Silverstone', 12), circuit: 'Silverstone Circuit' });
   assert.deepStrictEqual(moves.map((m) => m[0]), ['frame'],
     'showOnMap -> aim -> frame: choosing a round frames the map to a box, and does NOT fall '
     + 'through to goTo - a fallback here is the whole feature dying with no symptom');
-  assert.strictEqual(moves[0][1][0], pick('Monza').bbox[0],
-    "and frames it to that round's own circuit, not to some other round's");
+  assert.strictEqual(moves[0][1][0], pick('Silverstone').bbox[0],
+    "and frames it to that round's own circuit, not to the first one in the list");
   ok('choosing a round drives showOnMap through aim into frame, with the right circuit');
+
+  // **The other limb of `if (shape && frame(...))`, which nothing had ever executed.** The stub
+  // answered true unconditionally, so `aim()` only ever took the framing branch - and deleting
+  // the `goTo` fallback underneath it passed. At runtime that costs a round with no outline any
+  // camera movement at all: the map stays on the previous circuit while the header beside it
+  // names the new one, which is worse than the bug this whole file exists for. Returning `false`
+  // rather than throwing was justified entirely by the caller reading it, so the caller reading
+  // it is the thing to assert.
+  const PZ = number(PAGE, /const PLACE_ZOOM = (\d+);/, 'PLACE_ZOOM');
+  moves.length = 0;
+  ctx.showOnMap({ round: 99, lon: -30, lat: 0, circuit: 'somewhere with no outline' });
+  assert.deepStrictEqual(moves, [['goTo', PZ]],
+    `a round with no outline still moves the camera, to PLACE_ZOOM (${PZ}) - not nowhere`);
+
+  // A box frame() refuses. The stub must still RECORD while answering false, or this passes for
+  // the wrong reason: `() => false` alone yields ['goTo'] and looks like success.
+  moves.length = 0;
+  ctx.frame = (m, bbox) => { moves.push(['frame', bbox]); return false; };
+  ctx.showOnMap({ ...roundFor('Monza', 7), circuit: 'Autodromo Nazionale Monza' });
+  assert.deepStrictEqual(moves.map((m) => m[0]), ['frame', 'goTo'],
+    'and a box frame() refuses falls through to the same fallback rather than not moving at all');
+  ctx.frame = (m, bbox) => { moves.push(['frame', bbox]); return true; };
+  ok('both limbs of the guard move the camera: a framed box, and a fallback when there is none');
 
   // --- frame() itself, both branches -----------------------------------------
   const inMap = (reducedMotion) => {

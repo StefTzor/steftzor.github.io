@@ -52,6 +52,60 @@ const STYLE = {
   dark: "/vendor/positron-dark.json",
 };
 
+/**
+ * Satellite, as a style of its own rather than a layer on top of the other two.
+ *
+ * **Why it is offered on /f1/ and not on /transit/.** A photograph of Spa is a pale ribbon through
+ * a forest and a photograph of Monza is an oval nobody could mistake - imagery answers "which
+ * circuit is this" better than a map can. A photograph of a bus stop is a roof. Satellite hides
+ * exactly what a departure board's map is for: the street name, the stop label, which way the road
+ * runs. So the toggle is a per-map option rather than a global one.
+ *
+ * **It does nothing for a street circuit, and that is not a reason to leave it out.** Monaco, Baku
+ * and Singapore are public roads, so from above they are a city and nothing else. What makes them
+ * legible is the outline drawn over the photograph - which is why this is a basemap swap and not a
+ * separate map: the dots, the circuit and its casing are re-added over whichever basemap is
+ * underneath, by the same style.load path a theme change already uses. The casing is what keeps
+ * the outline readable over a photograph it knows nothing about, which is the reason it exists.
+ *
+ * **EOX licence this on a condition, so the condition is met in two places.** The attribution
+ * below is required and names the year, and MapLibre renders it into the control already on the
+ * map. The other place is /privacy/ and /cookies/, because this is a second host a reader's
+ * browser contacts: a request this code cannot make on their behalf is one they can only learn
+ * about by being told. The year is interpolated into both the URL and the credit from one
+ * constant, so the imagery and the crediting of it cannot come apart.
+ *
+ * Sentinel-2 is 10 m data and a 256-pixel tile at zoom 14 is 9.55 m a pixel at the equator, which
+ * is native - so `maxzoom: 14` is where the imagery stops being measured rather than inferred.
+ * Asking for 15 or 16 returns the same pixels upscaled by the server at four and sixteen times the
+ * requests; past 14 MapLibre stretches the last real tile instead, which is the same picture for
+ * none of the traffic.
+ *
+ * **`tileSize: 256` also means MapLibre asks for one zoom level deeper than the map is at**, which
+ * is worth knowing before comparing these numbers to the framing ones. Observed rather than
+ * assumed: a map at zoom 13 requests `/g/14/...`. So the cap bites from map zoom 13 upward, and
+ * the circuits - framed between 12.7 and 15.2 - run from native at the far end to about twice
+ * stretched at the closest. Which is the right trade for imagery that was 10 m to begin with.
+ */
+const SATELLITE_YEAR = 2025;
+const SATELLITE = {
+  version: 8,
+  sources: {
+    s2cloudless: {
+      type: "raster",
+      // `{y}` before `{x}` because this is WMTS, whose path is TileRow then TileCol. MapLibre
+      // substitutes each placeholder wherever it finds it, so the order here is the server's.
+      tiles: [`https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-${SATELLITE_YEAR}_3857/default/g/{z}/{y}/{x}.jpg`],
+      tileSize: 256,
+      maxzoom: 14,
+      attribution:
+        '<a href="https://cloudless.eox.at" target="_blank" rel="noopener">EOxCloudless</a> '
+        + `by EOX IT Services GmbH (Contains modified Copernicus Sentinel data ${SATELLITE_YEAR})`,
+    },
+  },
+  layers: [{ id: "s2cloudless", type: "raster", source: "s2cloudless" }],
+};
+
 const isDark = () => document.documentElement.classList.contains("dark");
 const stillness = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -74,11 +128,52 @@ let loading = null;
 const maplibre = () => (loading || (loading = import(MAPLIBRE).then((m) => m.default || m)));
 
 /**
+ * The map/satellite switch, as a MapLibre control so it sits with the zoom and fullscreen buttons.
+ *
+ * A real `<button>` with `aria-pressed`, not a styled div: this is a two-state toggle, that is the
+ * attribute that says so, and a screen reader then announces the state change without the label
+ * having to be rewritten. The label stays "Satellite" in both states for the same reason - a
+ * button whose name changes when you press it is one a voice-control user cannot ask for twice.
+ *
+ * MapLibre's own control CSS styles `.maplibregl-ctrl button`, so the button inherits the size,
+ * the background and the focus ring of the zoom buttons beside it rather than inventing its own.
+ */
+function basemapToggle(onChange) {
+  let button;
+  return {
+    onAdd() {
+      const box = document.createElement("div");
+      box.className = "maplibregl-ctrl maplibregl-ctrl-group";
+      button = document.createElement("button");
+      button.type = "button";
+      button.textContent = "Satellite";
+      button.setAttribute("aria-pressed", "false");
+      // Narrow enough that MapLibre's square button rule would clip the word.
+      button.style.width = "auto";
+      button.style.padding = "0 8px";
+      button.style.font = "inherit";
+      button.style.fontSize = "11px";
+      button.addEventListener("click", () => {
+        const on = button.getAttribute("aria-pressed") !== "true";
+        button.setAttribute("aria-pressed", String(on));
+        onChange(on);
+      });
+      box.appendChild(button);
+      return box;
+    },
+    onRemove() {
+      if (button) button.remove();
+    },
+  };
+}
+
+/**
  * A map in `container`, once the library has arrived.
  *
  * @param {HTMLElement} container
  * @param {object} [opts]
  * @param {boolean} [opts.globe]      globe projection instead of flat
+ * @param {boolean} [opts.satellite]  offer a map/satellite toggle
  * @param {[number, number]} [opts.center]  [lon, lat] - MapLibre's order, which is not the order
  *                                          anybody says a coordinate out loud in
  * @param {number} [opts.zoom]
@@ -87,7 +182,9 @@ const maplibre = () => (loading || (loading = import(MAPLIBRE).then((m) => m.def
  * Throws if the library cannot be loaded. Callers are expected to catch and say so on the page:
  * a map is an addition to every page that has one, never the thing the page is for.
  */
-export async function createMap(container, { globe = false, center = [0, 0], zoom = 1 } = {}) {
+export async function createMap(container, {
+  globe = false, center = [0, 0], zoom = 1, satellite = false,
+} = {}) {
   stylesheet();
   const maplibregl = await maplibre();
 
@@ -132,6 +229,19 @@ export async function createMap(container, { globe = false, center = [0, 0], zoo
   map.addControl(
     new maplibregl.FullscreenControl({ container: container.closest(".card") || container }),
     "top-right");
+  // Declared before the control that closes over it. The assignment only happens on a click, so
+  // the later `let` would have been safe - but a reader should not have to work that out.
+  let showing = "map";
+  if (satellite) {
+    map.addControl(basemapToggle((on) => {
+      showing = on ? "satellite" : "map";
+      // setStyle throws away every source and layer the caller added, which is exactly what a
+      // theme change already does - so the caller's style.load handler puts them back over the
+      // new basemap and there is nothing to coordinate here.
+      map.setStyle(on ? SATELLITE : STYLE[theme]);
+    }), "top-right");
+  }
+
   // Pinch to zoom, but never to rotate.
   map.touchZoomRotate.disableRotation();
 
@@ -146,11 +256,15 @@ export async function createMap(container, { globe = false, center = [0, 0], zoo
   // there is no event to listen for - an observer on that one attribute is the whole mechanism.
   // setStyle replaces the basemap and keeps the camera, so the map does not jump.
   let theme = isDark() ? "dark" : "light";
+  // **Which basemap is showing, so the theme observer does not undo the toggle.** Re-inking is
+  // the right answer for two palettes of one cartography and the wrong answer for a photograph:
+  // without this, turning satellite on and then switching theme silently put the vector map back,
+  // and the button would have gone on claiming otherwise.
   const watch = new MutationObserver(() => {
     const next = isDark() ? "dark" : "light";
     if (next === theme) return;
     theme = next;
-    map.setStyle(STYLE[theme]);
+    if (showing === "map") map.setStyle(STYLE[theme]);
   });
   watch.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
   map.once("remove", () => watch.disconnect());

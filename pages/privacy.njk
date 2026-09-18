@@ -267,6 +267,16 @@ sitemapPriority: "0.3"
   worth their own section because they are not a file. The same script is fetched once and is the same for everybody;
   which tiles you ask for depends on what you are looking at, and you ask for more of them the longer you look.
 </p>
+<p>
+  <strong>Since 18 September 2026 there is a second tile host, on one page and behind a button.</strong> The Formula 1
+  page has a <strong>Satellite</strong> control that swaps the drawn map for photography, and that imagery comes from
+  <strong>tiles.maps.eox.at</strong> &mdash; EOX IT Services GmbH, who publish a cloud-free composite of the European
+  Space Agency's Sentinel-2 data. It arrives the same way, a square at a time, fetched by your browser. Everything
+  below about what a tile request reveals applies to it exactly as it does to the first host.
+  <strong>Nothing is fetched from them unless you press the button.</strong> Leave it alone and your browser never
+  contacts them; the departures page has no such button, because photography hides the street names and stop labels
+  that map exists to show.
+</p>
 <ul>
   <li><strong>What they receive:</strong> your <strong>IP address</strong>, your user-agent, and which tiles you asked
     for. Those tile numbers are themselves a location: not where you are, but which part of the world the map is

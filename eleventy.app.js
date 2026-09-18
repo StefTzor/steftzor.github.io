@@ -26,17 +26,29 @@ module.exports = function (eleventyConfig) {
       "script-src": ["'self'", "https://www.gstatic.com"],
       // tiles.openfreemap.org is the basemap: the style document, the vector tiles, the glyph
       // ranges and the sprite metadata all come from that one origin, and all of them are fetched
-      // rather than loaded as elements. It is the only third party either property talks to, and
-      // the only one the browser reaches directly rather than through the API - because tiles are
-      // requested one per tile as you pan, and proxying them would mean serving them.
+      // rather than loaded as elements. The browser reaches both tile hosts directly rather than
+      // through the API - because tiles are requested one per tile as you pan, and proxying them
+      // would mean serving them.
+      //
+      // tiles.maps.eox.at is the satellite basemap, offered behind a toggle on /f1/ only. It is
+      // listed in BOTH connect-src and img-src for the same reason the other one is: MapLibre
+      // decides for itself whether a raster tile arrives through fetch or as an image element,
+      // and which it picks is a function of the browser rather than of this code. Allowing one
+      // and not the other produces a map that works in some browsers.
+      //
+      // These two are the only third parties either property talks to, and adding the second one
+      // is why /privacy/ 3.3 and /cookies/ 4 both grew a row: a request this code cannot make on
+      // a reader's behalf is one they can only learn about by being told.
       "connect-src": ["'self'", "https://api.tzortzoglou.eu",
         "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com",
-        "https://firestore.googleapis.com", "https://tiles.openfreemap.org"],
+        "https://firestore.googleapis.com", "https://tiles.openfreemap.org",
+        "https://tiles.maps.eox.at"],
       // blob: because the private view fetches its photos over an authenticated request and
       // renders them from createObjectURL - a blob: URL is not covered by 'self', so without
       // this the images are blocked and the page looks broken for the one person it is for.
       // The basemap host serves the sprite sheet and a shaded-relief raster layer as images.
-      "img-src": ["'self'", "data:", "blob:", "https://tiles.openfreemap.org"],
+      "img-src": ["'self'", "data:", "blob:", "https://tiles.openfreemap.org",
+        "https://tiles.maps.eox.at"],
       // MapLibre renders in a Worker, and there was no worker-src directive at all before this -
       // which means workers fell back to default-src 'self' and the blob: path was blocked.
       // 'self' covers the module worker it loads as a sibling of /vendor/maplibre-gl.mjs; blob:

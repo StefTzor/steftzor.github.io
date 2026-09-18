@@ -49,9 +49,11 @@ bodyScripts:
       upstreams need a credential, and a key in a page is a key anyone can read with View Source.
       The one thing that does not is the basemap. Map tiles are fetched one per square as you pan,
       so your browser asks OpenFreeMap for them directly. Forwarding a few hundred of them a session
-      would mean running a tile server. It is the only upstream your browser contacts itself, so the
-      diagram names it as an exception: its arrow would have to leave from the top of the picture,
-      and every other arrow leaves from the bottom. The upstream list below says what that costs.
+      would mean running a tile server. Satellite on /f1/ is a second host on the same terms, EOX's
+      Sentinel-2 composite, and it is reached only after the Satellite control is turned on. Those
+      two are the only upstreams your browser contacts itself, so the diagram names them as the
+      exception: their arrows would have to leave from the top of the picture, and every other
+      arrow leaves from the bottom. The upstream list below says what that costs.
     </p>
   </section>
 
