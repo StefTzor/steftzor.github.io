@@ -127,6 +127,42 @@ function stylesheet() {
 let loading = null;
 const maplibre = () => (loading || (loading = import(MAPLIBRE).then((m) => m.default || m)));
 
+// **An explicit colour, because these are not brand surfaces.** MapLibre's controls are its own
+// white in BOTH themes - nothing in this app themes `.maplibregl-ctrl` - while `color` is
+// inherited from the page, which in dark mode is nearly white. The result was a white button with
+// white text, invisible until pressed. A brand token would be the same bug with more steps:
+// brand-text is light in dark mode for exactly the right reason. `OFF` is MapLibre's own
+// control-icon grey, so these match the zoom and fullscreen buttons they sit with rather than
+// inventing a third look. `ON` is not MapLibre's: it is the tint that says a button is pressed,
+// and it reads 5.4:1 on the background it makes.
+const ON = "#0b6b4f";
+const OFF = "#333";
+
+/**
+ * A control button with a word on it, in a group of its own.
+ *
+ * Both of the controls this file adds say something rather than drawing something, and MapLibre's
+ * own CSS sizes `.maplibregl-ctrl button` as a 29px square around an icon - so every one of them
+ * has the same four overrides to make, and had them written twice before this existed. Everything
+ * else about the button is inherited: the background, the radius and the focus ring all come from
+ * the zoom buttons beside it.
+ */
+function wordButton(label) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = label;
+  button.style.width = "auto";
+  button.style.padding = "0 8px";
+  button.style.font = "inherit";
+  button.style.fontSize = "11px";
+  button.style.fontWeight = "600";
+  button.style.color = OFF;
+  const box = document.createElement("div");
+  box.className = "maplibregl-ctrl maplibregl-ctrl-group";
+  box.appendChild(button);
+  return [box, button];
+}
+
 /**
  * The map/satellite switch, as a MapLibre control so it sits with the zoom and fullscreen buttons.
  *
@@ -134,36 +170,14 @@ const maplibre = () => (loading || (loading = import(MAPLIBRE).then((m) => m.def
  * attribute that says so, and a screen reader then announces the state change without the label
  * having to be rewritten. The label stays "Satellite" in both states for the same reason - a
  * button whose name changes when you press it is one a voice-control user cannot ask for twice.
- *
- * MapLibre's own control CSS styles `.maplibregl-ctrl button`, so the button inherits the size,
- * the background and the focus ring of the zoom buttons beside it rather than inventing its own.
  */
 function basemapToggle(onChange) {
-  let button;
+  let box;
   return {
     onAdd() {
-      const box = document.createElement("div");
-      box.className = "maplibregl-ctrl maplibregl-ctrl-group";
-      button = document.createElement("button");
-      button.type = "button";
-      button.textContent = "Satellite";
+      let button;
+      [box, button] = wordButton("Satellite");
       button.setAttribute("aria-pressed", "false");
-      // Narrow enough that MapLibre's square button rule would clip the word.
-      button.style.width = "auto";
-      button.style.padding = "0 8px";
-      button.style.font = "inherit";
-      button.style.fontSize = "11px";
-      button.style.fontWeight = "600";
-      // **An explicit colour, because this one is not a brand surface.** MapLibre's controls are
-      // its own white in BOTH themes - nothing in this app themes `.maplibregl-ctrl` - while
-      // `color` is inherited from the page, which in dark mode is nearly white. The result was a
-      // white button with white text, invisible until pressed. A brand token would be the same
-      // bug with more steps: brand-text is light in dark mode for exactly the right reason.
-      // `OFF` is MapLibre's own control-icon grey, so the button matches the zoom and fullscreen
-      // buttons it sits with rather than inventing a third look. `ON` is not MapLibre's: it is
-      // the tint that says the button is pressed, and it reads 5.4:1 on the background it makes.
-      const ON = "#0b6b4f";   // the pressed state reads as on without a second control
-      const OFF = "#333";
       const paint = (on) => {
         button.style.color = on ? ON : OFF;
         button.style.background = on ? "rgba(11,107,79,0.12)" : "";
@@ -175,11 +189,79 @@ function basemapToggle(onChange) {
         paint(on);
         onChange(on);
       });
-      box.appendChild(button);
       return box;
     },
     onRemove() {
-      if (button) button.remove();
+      if (box) box.remove();
+    },
+  };
+}
+
+/**
+ * Where this page last aimed each map, so there is somewhere to go back to.
+ *
+ * A WeakMap rather than a property on the map, because MapLibre's Map is a third party's object
+ * and what this app pointed it at is not its business.
+ */
+const homeView = new WeakMap();
+
+/**
+ * Make a camera move, and remember it as the view this page chose.
+ *
+ * **Recorded on the way in rather than read off the map afterwards.** The alternative is to watch
+ * `moveend` and keep the camera from any move with no `originalEvent` on it - which sounds like
+ * the same thing and is not: MapLibre's own zoom buttons move the map programmatically too, so
+ * pressing `+` twice would quietly redefine home as wherever you had got to. Only a move this
+ * application asked for is home, and this is the function that asks.
+ *
+ * The move is kept as a thunk rather than as a centre and a zoom, so replaying it re-runs the
+ * original framing - including prefers-reduced-motion, which is decided at the moment of the move
+ * and not at the moment of the press.
+ *
+ * @param {object} map
+ * @param {() => any} move
+ */
+export function homeTo(map, move) {
+  const state = homeView.get(map) || {};
+  state.replay = move;
+  homeView.set(map, state);
+  if (state.enable) state.enable();
+  return move();
+}
+
+/**
+ * Put the camera back where this page last aimed it.
+ *
+ * **"Back" is the view the app chose, not the view the page opened with.** Choose Singapore and
+ * the globe frames Marina Bay; zoom out to find it on the world and this returns to Marina Bay,
+ * not to wherever the page started. That is the view being explored away from, so it is the one
+ * worth a button.
+ *
+ * Disabled until there is one, which is a real state rather than the first few milliseconds: a
+ * round the calendar has no coordinate for never moves the globe at all, and a button that looks
+ * pressable and does nothing is worse than one that says it has nothing to do. The opacity is set
+ * here because MapLibre's `:disabled` rule dims an icon, and this button has a word instead.
+ */
+function resetControl(map) {
+  let box;
+  return {
+    onAdd() {
+      let button;
+      [box, button] = wordButton("Reset");
+      // The visible word is the accessible name; the title is the sentence it is short for.
+      button.title = "Back to the view this page chose";
+      const state = homeView.get(map) || {};
+      state.enable = () => {
+        button.disabled = !state.replay;
+        button.style.opacity = state.replay ? "" : "0.4";
+      };
+      homeView.set(map, state);
+      state.enable();
+      button.addEventListener("click", () => { if (state.replay) state.replay(); });
+      return box;
+    },
+    onRemove() {
+      if (box) box.remove();
     },
   };
 }
@@ -246,6 +328,8 @@ export async function createMap(container, {
   map.addControl(
     new maplibregl.FullscreenControl({ container: container.closest(".card") || container }),
     "top-right");
+  // After zoom and fullscreen, because it is the button you want once you have used those two.
+  map.addControl(resetControl(map), "top-right");
   // Declared before the control that closes over it. The assignment only happens on a click, so
   // the later `let` would have been safe - but a reader should not have to work that out.
   let showing = "map";
@@ -337,8 +421,9 @@ export async function createMap(container, {
  * exists for. Reduced motion gets the destination, immediately, with nothing lost but the journey.
  */
 export function goTo(map, center, zoom) {
-  if (stillness()) return map.jumpTo({ center, zoom });
-  return map.flyTo({ center, zoom, speed: 0.8, curve: 1.4, essential: false });
+  return homeTo(map, () => (stillness()
+    ? map.jumpTo({ center, zoom })
+    : map.flyTo({ center, zoom, speed: 0.8, curve: 1.4, essential: false })));
 }
 
 /**
@@ -377,12 +462,13 @@ export function frame(map, bbox) {
   const [west, south, east, north] = bbox;
   const bounds = [[west, south], [east, north]];
   const fit = { padding: 56, maxZoom: 15 };
-  // Both branches written the same plain way. The first draft returned `map.fitBounds(...), true`
-  // here and a bare `true` below, which is the cleverer line hiding in the branch a test running
-  // with prefers-reduced-motion off never executes - and losing the `true` from it costs exactly
+  // One `return true` outside both branches. The first draft returned `map.fitBounds(...), true`
+  // in one and a bare `true` in the other, which is the cleverer line hiding in the branch a test
+  // running with prefers-reduced-motion off never executes - and losing the `true` costs exactly
   // the readers who cannot see a flight: aim() reads false, falls through, and moves the camera a
   // second time on top of the framing it just did.
-  if (stillness()) map.fitBounds(bounds, { ...fit, duration: 0 });
-  else map.fitBounds(bounds, { ...fit, speed: 0.8, curve: 1.4, essential: false });
+  homeTo(map, () => (stillness()
+    ? map.fitBounds(bounds, { ...fit, duration: 0 })
+    : map.fitBounds(bounds, { ...fit, speed: 0.8, curve: 1.4, essential: false })));
   return true;
 }

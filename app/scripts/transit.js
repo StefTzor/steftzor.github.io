@@ -1,7 +1,7 @@
 import { api, profile } from "./shell.js";
 import { inWords, shortStop, towardsOf } from "./stop-format.js";
 import { remember } from "./rows.js";
-import { createMap, goTo } from "./map.js";
+import { createMap, goTo, homeTo } from "./map.js";
 
 /**
  * The full board for one stop: departures, arrivals, what lines turn up, and what else is
@@ -507,7 +507,9 @@ function fit(points) {
   if (!map || points.length < 2) return;
   const lons = points.map((p) => p[0]);
   const lats = points.map((p) => p[1]);
-  map.fitBounds(
+  // Through homeTo, like every goTo on this page, so the Reset button goes back to the route or
+  // the cluster of nearby stops rather than to the last thing that happened to be a single point.
+  homeTo(map, () => map.fitBounds(
     [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
     {
       padding: 48,
@@ -516,7 +518,7 @@ function fit(points) {
       // Pressing a row or Near me asked for this, so the movement is not unprovoked - but
       // somebody who has asked not to be moved still means it.
       animate: !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    });
+    }));
 }
 
 /** Forget the chosen departure without touching the board, which is being rebuilt around it. */
