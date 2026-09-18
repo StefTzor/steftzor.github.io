@@ -244,8 +244,15 @@ sitemapPriority: "0.8"
     {# A key, because a colour ramp with nothing naming its ends is five shades of nothing. The
        convention is borrowed from GitHub and widely read, which is an argument for keeping the
        ramp and not for leaving it unlabelled - a reader who has never seen one of these grids
-       has no way in. Marked aria-hidden and the words are repeated in the sentence below, so a
-       screen reader gets "quieter" and "busier" as language rather than as five empty boxes.
+       has no way in.
+
+       The whole paragraph is aria-hidden, not just the swatches, because "Fewer" and "More" are
+       positional labels: read out without the five boxes between them they are the string
+       "Fewer More", which is worse than silence. What they mean is already carried twice in
+       language - by the sentence below ("a darker square being a busier day") and by the
+       figure's own sr-only caption - so nothing is lost by hiding the row. It is the direction
+       of the ramp that is repeated, not these two words.
+
        The same key is under the hour grid on /admin/analytics/, drawn from this same ramp. #}
     <p class="mt-4 flex items-center gap-2 text-xs text-brand-muted" aria-hidden="true">
         <span>Fewer</span>
