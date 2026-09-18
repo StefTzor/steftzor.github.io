@@ -14,8 +14,15 @@ import { el, say } from "./admin-status.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
-const PROPERTY = { site: "Public site", app: "App" };
-const PROPERTY_HOST = { site: "tzortzoglou.eu", app: "app.tzortzoglou.eu" };
+// Maps rather than object literals, for the reason shell.js states beside its own RANK: a plain
+// object answers `obj["constructor"]` with an inherited function, and a lookup that falls back to
+// the key would then render a function's source as a label. Nothing here is caller-chosen - the
+// property is a server-side enum and the bracket names come from a closed list - so this is
+// consistency rather than a fix, and the shape that caused a real escalation once should not
+// survive anywhere in this codebase. Raised as a sub-threshold note in this commit's review.
+const PROPERTY = new Map([["site", "Public site"], ["app", "App"]]);
+const PROPERTY_HOST = new Map([["site", "tzortzoglou.eu"], ["app", "app.tzortzoglou.eu"]]);
+const label = (map, key) => map.get(key) || key;
 
 const count = (n) => n.toLocaleString();
 const pct = (n) => `${Math.round(n * 100)}%`;
@@ -50,13 +57,13 @@ const DIMENSIONS = [
 // The width brackets, said as a person would. The API stores the bracket name; this is the only
 // place that turns it into something with a number in it, so the boundaries live in one file on
 // each side rather than being repeated as prose in the template.
-const SCREEN = {
-  phone: "Phone (under 640px)",
-  tablet: "Tablet (640-1023px)",
-  laptop: "Laptop (1024-1279px)",
-  desktop: "Desktop (1280px and up)",
-  unknown: "Not sent",
-};
+const SCREEN = new Map([
+  ["phone", "Phone (under 640px)"],
+  ["tablet", "Tablet (640-1023px)"],
+  ["laptop", "Laptop (1024-1279px)"],
+  ["desktop", "Desktop (1280px and up)"],
+  ["unknown", "Not sent"],
+]);
 
 function node(tag, cls, text) {
   const n = document.createElement(tag);
@@ -143,14 +150,14 @@ function srTable(caption, rows, headers) {
 function barList(rows, unit) {
   const ul = node("ul", "mt-3 space-y-1");
   const max = Math.max(...rows.map((r) => r[1]), 1);
-  rows.forEach(([label, value]) => {
+  rows.forEach(([name, value]) => {
     const li = node("li", "relative overflow-hidden rounded");
     const fill = node("div", "absolute inset-y-0 left-0 bg-brand-accent/15");
     fill.style.width = `${Math.max(2, (value / max) * 100)}%`;
     fill.setAttribute("aria-hidden", "true");
     const line = node("div", "relative flex items-baseline justify-between gap-4 px-2 py-1.5");
     line.append(
-      node("span", "min-w-0 flex-1 truncate text-sm text-brand-text", label),
+      node("span", "min-w-0 flex-1 truncate text-sm text-brand-text", name),
       node("span", "shrink-0 text-xs text-brand-muted tabular-nums",
         `${count(value)}${unit ? " " + unit : ""}`),
     );
@@ -347,9 +354,9 @@ function heatmap(hours) {
  * Cut to five slices and a sixth for the rest. Six is where a donut stops being readable, and
  * the list below it carries every row regardless.
  */
-function donut(list, label) {
+function donut(list, title) {
   const card = node("section", "card");
-  card.appendChild(node("h3", "font-semibold text-brand-text", label));
+  card.appendChild(node("h3", "font-semibold text-brand-text", title));
 
   const total = list.reduce((n, r) => n + r.views, 0);
   if (!total) {
@@ -357,7 +364,7 @@ function donut(list, label) {
     return card;
   }
 
-  const named = (r) => (label === "Window width" ? SCREEN[r.value] || r.value : r.value);
+  const named = (r) => (title === "Window width" ? label(SCREEN, r.value) : r.value);
   const top = list.slice(0, 5);
   const rest = list.slice(5).reduce((n, r) => n + r.views, 0);
   const slices = rest ? [...top, { value: "Everything else", views: rest }] : top;
@@ -399,15 +406,15 @@ function donut(list, label) {
   const body = node("div", "mt-3 flex items-center gap-4");
   body.append(svg, lead);
   card.append(body, barList(list.map((r) => [named(r), r.views])),
-    srTable(label, list.map((r) => [named(r), `${count(r.views)} views`,
-      pct(r.views / total)]), [label, "Views", "Share"]));
+    srTable(title, list.map((r) => [named(r), `${count(r.views)} views`,
+      pct(r.views / total)]), [title, "Views", "Share"]));
   return card;
 }
 
 /** The four dimensions, each as its own card. */
 function agents(data) {
   const grid = node("div", "grid gap-4 sm:grid-cols-2");
-  DIMENSIONS.forEach(([key, label]) => grid.appendChild(donut(data[key] || [], label)));
+  DIMENSIONS.forEach(([key, title]) => grid.appendChild(donut(data[key] || [], title)));
   only(el("agents"), grid);
 }
 
@@ -415,16 +422,16 @@ function agents(data) {
 function journeys(entryPages, exitPages) {
   const grid = node("div", "grid gap-4 sm:grid-cols-2");
   [["Entry pages", entryPages, "Where visits began."],
-   ["Exit pages", exitPages, "The last page before the visit ended."]].forEach(([label, list, hint]) => {
+   ["Exit pages", exitPages, "The last page before the visit ended."]].forEach(([title, list, hint]) => {
     const card = node("section", "card");
-    card.append(node("h3", "font-semibold text-brand-text", label), node("p", "hint mt-1", hint));
+    card.append(node("h3", "font-semibold text-brand-text", title), node("p", "hint mt-1", hint));
     if (!list.length) {
       card.appendChild(node("p", "mt-3 text-sm text-brand-muted", "Nothing counted in this window yet."));
     } else {
       card.append(
         barList(list.map((r) => [r.path, r.visits]), "visits"),
-        srTable(label, list.map((r) => [r.path, `${count(r.visits)} visits`,
-          PROPERTY[r.property] || r.property]), ["Page", "Visits", "Site"]),
+        srTable(title, list.map((r) => [r.path, `${count(r.visits)} visits`,
+          label(PROPERTY, r.property)]), ["Page", "Visits", "Site"]),
       );
     }
     grid.appendChild(card);
@@ -462,7 +469,7 @@ function recentVisits(list) {
     const tr = node("tr");
     [
       stamp(v.started),
-      PROPERTY[v.property] || v.property,
+      label(PROPERTY, v.property),
       v.entry,
       // An exit equal to the entry on a one-page visit is not a second fact, it is the same one.
       v.views > 1 ? v.exit : "—",
@@ -483,22 +490,22 @@ function recentVisits(list) {
 function paths(topPaths, byProperty) {
   const grid = node("div", "grid gap-4 sm:grid-cols-2");
 
-  Object.keys(PROPERTY).forEach((key) => {
+  [...PROPERTY.keys()].forEach((key) => {
     const total = byProperty.find((p) => p.property === key);
     const views = total ? total.views : 0;
     const rows = topPaths.filter((p) => p.property === key);
 
     const card = node("section", "card");
     card.append(
-      node("h3", "font-semibold text-brand-text", PROPERTY[key]),
+      node("h3", "font-semibold text-brand-text", label(PROPERTY, key)),
       node("p", "hint mt-1", views
-        ? `${count(views)} views · ${PROPERTY_HOST[key]}`
-        : `Nothing counted here in this window yet · ${PROPERTY_HOST[key]}`),
+        ? `${count(views)} views · ${label(PROPERTY_HOST, key)}`
+        : `Nothing counted here in this window yet · ${label(PROPERTY_HOST, key)}`),
     );
     if (rows.length) {
       card.append(
         barList(rows.map((r) => [r.path, r.views])),
-        srTable(`${PROPERTY[key]}: which pages are read`,
+        srTable(`${label(PROPERTY, key)}: which pages are read`,
           rows.map((r) => [r.path, `${count(r.views)} views`]), ["Page", "Views"]),
       );
     }
@@ -520,7 +527,7 @@ function referrers(list) {
   // than is known, so the row says both.
   const rows = list.map((r) => [r.host || "Direct, or no referrer sent", r.views]);
   card.append(barList(rows), srTable("Where readers came from",
-    rows.map(([label, views]) => [label, `${count(views)} views`]), ["Referrer", "Views"]));
+    rows.map(([name, views]) => [name, `${count(views)} views`]), ["Referrer", "Views"]));
   only(host, card);
 }
 
