@@ -171,10 +171,21 @@ function block(selector, contains) {
   [...CSS.matchAll(/([^{}]*)\{([^{}]*)\}/g)].forEach(([, selector, body]) => {
     const named = [...selector.matchAll(/\.hero\[data-wx="(\w+)"\]/g)].map((m) => m[1]);
     if (!named.length) return;
-    const used = [...new Set([...body.matchAll(/var\((--wx-[a-z-]+)\)/g)].map((m) => m[1]))]
-      .filter((t) => !POSITIONAL.includes(t));
+    // **Which layer it is painted on, because the city goes between them.** `.hero-fall` sits in
+    // FRONT of the skyline - that is the whole reason precipitation was split out of `.hero-sky`
+    // - so rain and snow composite over the buildings, not under them. Modelling every ink as one
+    // group put the fall layer underneath and flattered exactly the three conditions that have
+    // one: dark/snow read 4.66:1 that way and 4.45:1 in the real order.
+    const layer = /\.hero-fall/.test(selector) ? 'fall' : 'sky';
+    const used = [...new Set([...body.matchAll(/var\((--wx-[a-z0-9-]+)\)/g)].map((m) => m[1]))]
+      .filter((t) => !POSITIONAL.includes(t))
+      .map((token) => ({ token, layer }));
     if (!used.length) return;
-    named.forEach((cond) => conditions.set(cond, [...new Set([...(conditions.get(cond) || []), ...used])]));
+    named.forEach((cond) => {
+      const already = conditions.get(cond) || [];
+      const fresh = used.filter((u) => !already.some((a) => a.token === u.token));
+      conditions.set(cond, [...already, ...fresh]);
+    });
   });
   assert.ok(conditions.size >= 8,
     `only found ${conditions.size} conditions with ink in them; this test is now guessing, so it fails`);
@@ -186,9 +197,27 @@ function block(selector, contains) {
    * stays at nine, and the reported worst case IMPROVES because the biggest contributor to it has
    * gone. So the palette is the checklist: anything declared has to be painted somewhere.
    */
-  const declared = [...new Set([...block('.hero', '--wx-sun').matchAll(/(--wx-[a-z-]+):/g)].map((m) => m[1]))]
+  const declared = [...new Set([...block('.hero', '--wx-sun').matchAll(/(--wx-[a-z0-9-]+):/g)].map((m) => m[1]))]
     .filter((t) => !POSITIONAL.includes(t) && t !== '--wx-city' && t !== '--wx-city-alpha');
-  const painted = new Set([...conditions.values()].flat());
+  // **The palette count, because a regex that cannot see a digit shrinks this list in silence.**
+  // `[a-z-]+` stops at `veil` and then fails on the `2`, so `--wx-veil2` appeared in neither list
+  // and the guard below compared two sets that were both missing it - passing vacuously, which is
+  // the exact failure it exists to prevent. A count is what notices.
+  assert.ok(declared.length >= 10,
+    `only ${declared.length} inks read out of the palette (${declared.join(', ')}); the pattern `
+    + 'that reads them has stopped matching something, and every check below is now weaker');
+
+  // And the two layers have to stay two. Collapsing them composites the rain UNDER the buildings,
+  // which is the opposite of what the card does and flatters every condition that has a fall
+  // layer - dark/snow reads 4.66:1 that way and 4.45:1 in the real order.
+  ['rain', 'snow', 'thunder'].forEach((cond) => assert.ok(
+    (conditions.get(cond) || []).some((t) => t.layer === 'fall'),
+    `${cond} paints nothing on .hero-fall, so the precipitation is being modelled behind the city `
+    + 'rather than in front of it'));
+  assert.ok([...conditions.values()].flat().some((t) => t.layer === 'sky'),
+    'nothing is painted on .hero-sky, so the layers are not being told apart at all');
+
+  const painted = new Set([...conditions.values()].flat().map((u) => u.token));
   const unmeasured = declared.filter((t) => !painted.has(t));
   assert.deepStrictEqual(unmeasured, [],
     `${unmeasured.join(', ')} is declared in the palette and appears in no condition's stack, so `
@@ -268,17 +297,19 @@ function block(selector, contains) {
       const muted = token(mode === 'light' ? root : palette, '--color-muted');
 
       conditions.forEach((tokens, cond) => {
-        let bg = surface;
-        tokens.forEach((name) => {
+        const paint = (bg, name) => {
           if (name === '--wx-snow') {
             const ch = ink.match(/--wx-snow:\s*([\d ]+);/);
             const [r, g, b] = ch[1].trim().split(/\s+/).map(Number);
-            bg = over({ r, g, b, a: snowAlpha }, bg);
-          } else {
-            bg = over(token(ink, name), bg);
+            return over({ r, g, b, a: snowAlpha }, bg);
           }
-        });
+          return over(token(ink, name), bg);
+        };
+        // The card's own paint order: sky, then the city, then whatever falls past it, then the
+        // scrim that buys the text back.
+        let bg = tokens.filter((t) => t.layer === 'sky').reduce((acc, t) => paint(acc, t.token), surface);
         bg = over(cityInk(ink), bg);
+        bg = tokens.filter((t) => t.layer === 'fall').reduce((acc, t) => paint(acc, t.token), bg);
         bg = over({ ...surface, a: scrimAlpha }, bg);
 
         const onHeading = ratio({ ...text, a: 1 }, bg);
@@ -287,10 +318,10 @@ function block(selector, contains) {
         if (onDigest < worst.ratio) worst = { ratio: onDigest, where };
 
         assert.ok(onHeading >= 4.5,
-          `${where}: the greeting is ${onHeading.toFixed(2)}:1 over ${tokens.join(' + ')} + the `
+          `${where}: the greeting is ${onHeading.toFixed(2)}:1 over ${tokens.map((t) => t.token).join(' + ')} + the `
           + 'skyline; large text may legally sit at 3:1 but this card has never been near that');
         assert.ok(onDigest >= 4.5,
-          `${where}: the digest is ${onDigest.toFixed(2)}:1 over ${tokens.join(' + ')} + the `
+          `${where}: the digest is ${onDigest.toFixed(2)}:1 over ${tokens.map((t) => t.token).join(' + ')} + the `
           + 'skyline, below the 4.5:1 body text needs. Every layer in that stack can be fine alone '
           + 'and the sum still fail, which is why the stack is what is measured');
       });

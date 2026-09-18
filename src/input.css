@@ -405,8 +405,10 @@
     opacity: 1;
   }
 
-  /* Bottom two thirds, so the buildings stand on the floor of the card with sky above them
-     rather than floating in the middle of it. */
+  /* The LAYER is the bottom two thirds; the drawing inside it is much shorter than that. The
+     symbols are 1200x200 with `xMidYMax meet`, so the silhouette letterboxes to a 6:1 band pinned
+     to the bottom of this box - about a quarter of the card's height on a wide one. Worth saying,
+     because reasoning from "two thirds" leads to wrong conclusions about what the scrim covers. */
   .hero-city svg {
     @apply absolute inset-x-0 bottom-0 h-2/3 w-full;
   }
@@ -442,9 +444,9 @@
     .hero-scrim {
       background: linear-gradient(100deg,
         rgb(var(--color-surface)) 0%,
-        rgb(var(--color-surface) / 94%) 38%,
-        rgb(var(--color-surface) / 45%) 66%,
-        transparent 78%);
+        rgb(var(--color-surface) / 96%) 40%,
+        rgb(var(--color-surface) / 45%) 68%,
+        transparent 80%);
     }
   }
 
