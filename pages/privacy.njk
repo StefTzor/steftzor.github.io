@@ -199,9 +199,10 @@ sitemapPriority: "0.3"
   <li><strong>Legal basis:</strong> your consent, Art. 6(1)(a) GDPR, given by ticking the consent box on the
     registration form. You may withdraw it at any time (see <a href="#rights">section 6</a>); withdrawal does not affect
     processing already carried out.</li>
-  <li><strong>Processor:</strong> Google Ireland Limited (Firebase / Google Cloud). Data is stored on Google Cloud
-    infrastructure and may be transferred outside the EEA under the EU Standard Contractual Clauses and Google's Data
-    Processing Addendum.</li>
+  <li><strong>Processors:</strong> Google Ireland Limited (Firebase / Google Cloud) holds the account itself. Data is
+    stored on Google Cloud infrastructure and may be transferred outside the EEA under the EU Standard Contractual
+    Clauses and Google's Data Processing Addendum. The mail this application sends you about the account goes through
+    a second processor, and that has its own <a href="#account-mail">section 3.4</a>.</li>
   <li><strong>Retention:</strong> until you ask for deletion, or until the account is no longer needed — whichever comes
     first. There is no scheduled clear-out: a registration I never approve stays where it is until I delete it myself,
     which I now do with a tool in the admin area that removes the sign-in, the stored document and anything sent from
@@ -313,6 +314,54 @@ sitemapPriority: "0.3"
   </li>
 </ul>
 
+<h3 id="account-mail">3.4 Mail this application sends you</h3>
+<p>
+  <strong>Added 18 September 2026, later than it should have been.</strong>
+  <a href="#account-data">Section 3.1</a> named only Google until today, and mail about your account has been going
+  out through a second processor since this application started sending any. I have now read one delivered copy of
+  each of the five messages below, and every one of them carried the tracking described here.
+  <a href="#changes">Section 9</a> says this policy is updated before something new goes live. That did not happen
+  here, and this section is the catch-up.
+</p>
+<p>
+  Five messages exist, and each one is about a single account: an invitation, which I send and you did not ask for;
+  the notice that your registration was approved; a password reset when you ask for one; the confirmation of an
+  address change; and a warning to an address that is about to stop being the one on an account. Nothing else is ever
+  sent to you. <strong>Brevo</strong> (Sendinblue SAS, France), the same provider named in
+  <a href="#contact-form">section 4.2</a>, transmits them, and receives the address each one is going to along with
+  the message itself. Brevo is established in France. Where it or a sub-processor it uses moves data outside the EEA,
+  that happens under Brevo's own data processing agreement and standard contractual clauses, which are the terms this
+  account is held on.
+</p>
+<ul>
+  <li><strong>The link in them is not rewritten.</strong> Each message is sent as plain text with no HTML part, because
+    Brevo rewrites links in an HTML body through its click tracker, and three of these messages carry a one-time link:
+    two of them set a password, and the third confirms a change of address. I read a delivered one rather than
+    trusting that. The link arrives character for character as it was sent, and Brevo has turned nothing in the
+    message into a link of its own. Your own mail provider is a different matter, because some scan or open links
+    before you see them, and that happens on their side.</li>
+  <li><strong>There is a tracking pixel, and I have not found a way to remove it.</strong> Brevo builds an HTML copy of
+    the message even though it was sent as text, and puts two invisible images into that copy, one sized a single
+    pixel and one hidden outright. Both point at <strong>r.mail.tzortzoglou.eu</strong>, which is worth naming because
+    it looks like mine and is not: it is a subdomain of this site's domain that Brevo operates, for this. If your mail
+    client loads remote images, fetching them tells Brevo the message was opened, along with your IP address, your
+    mail client's user agent and the time. The same address also appears as a line of text at the top of the message,
+    above the greeting, which is how this was noticed at all. <strong>Blocking remote images stops the fetch</strong>,
+    and nothing is lost by doing it, because the words and the link are already in front of you.</li>
+  <li><strong>What the consent setting does, and does not do.</strong> This account has Brevo's per-contact tracking
+    consent switched on, does not track contacts whose consent is unknown, and every message is sent marked as one
+    whose recipient has not consented. Brevo documents that combination as what keeps an open from being recorded
+    against the person who opened it. I am repeating their documentation rather than something I can watch from their
+    side, and the same documentation did not stop the pixel being added in the first place. Asking their support to
+    disable transactional tracking on the account is the only route left with this provider, and if that changes this
+    section will say so.</li>
+  <li><strong>The delivery log.</strong> Brevo keeps a record that it sent you each message. Exactly like the log
+    described in <a href="#contact-form">section 4.2</a>, it is not something I can edit, and it expires on their
+    schedule rather than mine. Erasing your account does not reach it; <a href="#rights">section 6</a> says so too.</li>
+  <li><strong>What it is never used for.</strong> Your address is not added to a mailing list, not used for marketing,
+    and not used to send you anything other than the five messages above. There is no list to be on.</li>
+</ul>
+
 <h2 id="contact">4. If you contact me</h2>
 
 <h3 id="contact-email">4.1 If you email me directly</h3>
@@ -414,9 +463,12 @@ sitemapPriority: "0.3"
   a reason.
 </p>
 <p>
-  One limit is worth stating plainly, because erasure cannot reach past it: if you used the contact form, a copy of
-  your message was emailed to me when it arrived. Deleting the stored record does not touch that copy or the mail
-  provider's delivery log. <a href="#contact-form">Section 4.2</a> says what happens to each of them.
+  One limit is worth stating plainly, because erasure cannot reach past it: anything already sent as mail has left
+  this system. If you used the contact form, a copy of your message was emailed to me when it arrived. If you have an
+  account, the mail this application sent you about it went out through Brevo, who keep a record of having sent it.
+  Deleting the stored records reaches neither those copies nor the provider's delivery log.
+  <a href="#account-mail">Section 3.4</a> and <a href="#contact-form">section 4.2</a> say what happens to each of
+  them.
 </p>
 <p>
   If you think your data has been handled improperly, you can complain to the Swedish supervisory authority,
