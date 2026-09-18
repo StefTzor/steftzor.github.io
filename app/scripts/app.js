@@ -560,12 +560,19 @@ function setupGeo(usingMine, home) {
     }
     setBusy(true);
     btn.textContent = "Locating\u2026";
+
+    /**
+     * Two failures, two meanings, and they used to share a catch.
+     *
+     * Finding you and then fetching a forecast are different things that can fail for unrelated
+     * reasons. With both inside one `try`, a forecast the server could not answer was reported as
+     * "your location could not be determined" - and worse, it ran `setGeo(false)` and threw away
+     * the permission you had just granted, so the next visit asked again. Locating is its own
+     * step now, and only its failure is a location failure.
+     */
+    let pos;
     try {
-      const pos = await position();
-      setGeo(true);
-      await load({ lat: pos.coords.latitude, lon: pos.coords.longitude }, null);
-      mine = true;
-      show();
+      pos = await position();
     } catch (err) {
       setGeo(false);
       show();
@@ -583,6 +590,21 @@ function setupGeo(usingMine, home) {
         : code === 2 ? "Your browser could not work out where you are, so the fixed location is still shown. On a desktop that usually means the browser has no location service available, rather than anything about this page."
         : code === 3 ? "Your browser took too long to find a position, so the fixed location is still shown. Trying again sometimes works."
         : "Your location could not be determined, so the fixed location is still being shown.";
+      setBusy(false);
+      return;
+    }
+
+    // The position is in hand, so the permission is kept whatever happens next.
+    setGeo(true);
+    mine = true;
+    show();
+    try {
+      await load({ lat: pos.coords.latitude, lon: pos.coords.longitude }, null);
+    } catch (err) {
+      console.error("geo: the forecast for that position failed", err && err.status, err && err.code);
+      note.textContent = "Found you, but the forecast for that position could not be fetched just "
+        + "now. Your location is still the one being used — try again in a moment.";
+      unavailable();
     }
     setBusy(false);
   });
