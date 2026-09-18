@@ -323,7 +323,7 @@ function caption() {
   // not need a second branch to keep it true.
   if (!picked) {
     return routeNote(el("trList").querySelector("button[aria-pressed]")
-      ? "Press a row above to see its route."
+      ? "Press a row on the board above to see its route."
       : "");
   }
 

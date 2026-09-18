@@ -189,10 +189,11 @@ ok(`all ${CIRCUITS.length} circuits carry a bbox, which is what the map is frame
    * frames past the zoom those layers are solid at - layers that were no longer there.
    */
   const layers = [];
+  const paints = [];
   const fakeMap = () => ({
     getCanvas: () => ({ setAttribute() {}, tabIndex: 0 }),
     on() {}, getSource: () => null, addSource() {},
-    addLayer: (l) => layers.push(l.id),
+    addLayer: (l) => { layers.push(l.id); paints.push(l.paint || {}); },
     getLayer: () => ({}), setFilter() {},
   });
 
@@ -210,7 +211,17 @@ ok(`all ${CIRCUITS.length} circuits carry a bbox, which is what the map is frame
     goTo: (m, centre, zoom) => moves.push(['goTo', zoom]),
     frame: (m, bbox) => { moves.push(['frame', bbox]); return true; },
     window: { matchMedia: () => ({ matches: false }) },
-    getComputedStyle: () => ({ getPropertyValue: () => '0 0 0' }),
+    // **A different value per token, which the divergence check below depends on.** Returning
+    // one constant made every `ink()` call equal, so two layers painted from DIFFERENT tokens
+    // compared identical and the check passed on a map that was visibly wrong. A stub that
+    // flattens the thing under test is the same fault as an assertion that never fails.
+    getComputedStyle: () => ({
+      getPropertyValue: (prop) => {
+        let h = 0;
+        for (const c of String(prop)) h = (h * 31 + c.charCodeAt(0)) % 251;
+        return `${h} ${(h * 7) % 251} ${(h * 13) % 251}`;
+      },
+    }),
   };
   vm.createContext(ctx);
   vm.runInContext(strip(PAGE).replace(/profile\.then\([\s\S]*$/, ''), ctx);
@@ -263,6 +274,34 @@ ok(`all ${CIRCUITS.length} circuits carry a bbox, which is what the map is frame
     'startGlobe draws the dots AND the outline layers - check 2 above asserts every circuit '
     + 'frames past the zoom those layers are solid at, which means nothing if they are not added');
   ok('starting the globe adds the dot layers and the circuit outline with its casing');
+
+  // **Every layer that branches on `over` must resolve to the SAME pair of colours.**
+  //
+  // That rule lived only as prose in a Nunjucks comment - f1.njk says the outline "takes its
+  // colour from the same raced/still-to-come flag as the dot beneath it, so this row describes a
+  // shape and not a fourth colour" - which is exactly how it managed to stop being true without
+  // anything noticing. The dots were retokenised to `map-past`; the outline was not; a raced
+  // round drew a grey dot on a different grey outline and the key went on promising three states.
+  //
+  // It names no colour, deliberately. Transcribing the paint expression into a second file would
+  // catch this once and then fail on every future palette change for no reason. This fails only
+  // on DIVERGENCE, which is the actual bug class: two layers that must agree, drifting. Same
+  // shape as basemap.test.js asserting the credit and the tile URL are built from one year.
+  // Colour properties only. `circle-opacity` also branches on `over` - the raced dots are drawn
+  // at 0.7 - and it is a second encoding of the same flag rather than a second colour scheme, so
+  // including it would make the set two and the check meaningless.
+  const overPairs = new Set(
+    paints.flatMap((p) => Object.entries(p))
+      .filter(([prop, v]) => prop.endsWith('-color')
+        && Array.isArray(v) && v[0] === 'case'
+        && JSON.stringify(v[1]) === JSON.stringify(['get', 'over']))
+      .map(([, v]) => JSON.stringify([v[2], v[3]])),
+  );
+  assert.ok(overPairs.size > 0, 'at least one layer branches on the raced flag');
+  assert.strictEqual(overPairs.size, 1,
+    `raced and still-to-come are drawn in ${overPairs.size} different colour pairs, and the key `
+    + `below the map promises one: ${[...overPairs].join(' vs ')}`);
+  ok('every layer that branches on the raced flag resolves to one pair of colours');
 
   moves.length = 0;                      // startGlobe aims once itself; this is about the next one
   ctx.showOnMap({ ...roundFor('Silverstone', 12), circuit: 'Silverstone Circuit' });

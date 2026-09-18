@@ -52,10 +52,16 @@
     --color-border: 182 194 210;  /* #b6c2d2 — 1.6:1 on bg, 1.8:1 on surface */
 
     /* The three states of a round on the /f1/ globe, and the only tokens here tuned against a
-       BASEMAP rather than against the page. Measured on positron's land (#f2efe9), all pairs:
-       now-past 16.3, now-future 15.9, future-past 15.7. **The metric is OKLab distance x100**,
-       which is what the palette validator this was checked with reports - not CIE dE2000 or
-       dE76, under which the same three separate by two to three times as much. The floor on that
+       BASEMAP rather than against the page. Measured on positron's land (#f2efe9), the CLOSEST
+       of the three pairs is 16.3 - and the closest pair is the only figure worth writing down,
+       because it is the one the argument rests on and the only one that survived being checked
+       twice. An earlier version of this comment listed all three and had four of six numbers
+       understated by 4 to 7 points; they were wrong in the safe direction, which is the kind of
+       wrong nobody catches.
+
+       **The metric is OKLab distance x100**, not CIE dE2000 or dE76, under which these separate
+       by two to three times as much. Naming it is what made the figures checkable: the same
+       formula reproduces this file's own 9.5 and 7.7 below to the decimal. The floor on that
        scale is 15, below which two colours are hard to tell apart with full colour vision.
 
        The pair that used to fail was future-past at 9.5 - both dark and desaturated on a pale
@@ -92,9 +98,10 @@
     --color-onaccent: 15 23 42;   /* Deep Navy on accent — 7.04:1 */
     --color-border: 51 65 85;     /* #334155 — 1.7:1 on bg, 1.4:1 on surface */
 
-    /* Dark's own three, measured on the re-inked basemap's land (#334155): now-past 18.9,
-       now-future 17.1, future-past 15.6. `past` keeps muted's value here because on a dark map a
-       light grey already recedes, helped by the 0.7 opacity the layer carries.
+    /* Dark's own three, measured on the re-inked basemap's land (#334155): closest pair 15.6,
+       same metric and same floor as the light block above. `past` keeps muted's value here
+       because on a dark map a light grey already recedes, helped by the 0.7 opacity the layer
+       carries.
        CVD: future-past is 7.2 for deuteranopia, inside the 6-8 band the palette guidance allows
        ONLY with a second encoding. There are three - the chosen dot is nearly twice the radius,
        the past ones are drawn at 0.7, and the key below the map names all three in words. Colour
