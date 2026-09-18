@@ -219,9 +219,21 @@ export function goTo(map, center, zoom) {
  * a malformed outline would give - solves to the maximum zoom the projection has, and the result
  * is a reader staring at four grey pixels wondering what broke.
  */
-export function frame(map, [west, south, east, north]) {
+export function frame(map, bbox) {
+  // **Checked before it is destructured, which is this codebase's rule and not defensiveness for
+  // its own sake.** GeoJSON permits a six-element bbox - `[w, s, minElevation, e, n, maxElevation]`
+  // - and positional destructuring reads that as east = the minimum elevation, which is a finite
+  // number, so nothing throws and the map frames a box reaching from the circuit to a longitude
+  // somewhere near sea level in metres. Every other malformed shape makes MapLibre throw from
+  // LngLat's own constructor, which is survivable; this one is silent and wrong, which is not.
+  //
+  // `false` rather than a throw, because the caller already has the right answer to "no usable
+  // box" three lines further down and it is the same answer an absent outline gets.
+  if (!Array.isArray(bbox) || bbox.length !== 4 || !bbox.every(Number.isFinite)) return false;
+  const [west, south, east, north] = bbox;
   const bounds = [[west, south], [east, north]];
   const fit = { padding: 56, maxZoom: 15 };
-  if (stillness()) return map.fitBounds(bounds, { ...fit, duration: 0 });
-  return map.fitBounds(bounds, { ...fit, speed: 0.8, curve: 1.4, essential: false });
+  if (stillness()) return map.fitBounds(bounds, { ...fit, duration: 0 }), true;
+  map.fitBounds(bounds, { ...fit, speed: 0.8, curve: 1.4, essential: false });
+  return true;
 }

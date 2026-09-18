@@ -552,7 +552,9 @@ function aim() {
   // fallback the outline itself has: a round this file could not match keeps its dot and loses
   // only the shape, and that is exactly the case where a box does not exist to frame.
   const shape = tracks && tracks.features.find((f) => f.properties.round === chosen);
-  if (shape && shape.bbox) return frame(globe, shape.bbox);
+  // `frame` answers false for a box it will not use, which is the same outcome as having no
+  // outline at all - so there is one fallback here rather than one per way of failing.
+  if (shape && frame(globe, shape.bbox)) return;
   goTo(globe, target, PLACE_ZOOM);
 }
 

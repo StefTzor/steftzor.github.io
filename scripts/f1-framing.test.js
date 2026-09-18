@@ -34,8 +34,14 @@ function number(source, re, what) {
   return Number(m[1]);
 }
 
-const PADDING = number(MAP, /padding:\s*(\d+)/, "frame()'s padding");
-const MAX_ZOOM = number(MAP, /maxZoom:\s*(\d+)/, "frame()'s maxZoom");
+// Anchored to `frame()`'s own `fit` object and allowing a decimal. Unanchored `/padding:\s*(\d+)/`
+// would silently measure the first `padding:` anywhere in the file - a future option on
+// createMap, say - and `(\d+)` read `maxZoom: 15.5` as 15 and passed, testing against a cap the
+// code did not have.
+const FIT = MAP.match(/const fit = \{([^}]*)\}/);
+assert.ok(FIT, "could not find frame()'s `fit` object - this test is now guessing, so it fails");
+const PADDING = number(FIT[1], /padding:\s*([\d.]+)/, "frame()'s padding");
+const MAX_ZOOM = number(FIT[1], /maxZoom:\s*([\d.]+)/, "frame()'s maxZoom");
 // The zoom at which the outline reaches full opacity. Both line layers carry the same ramp; the
 // test reads the first and asserts the second matches, because two ramps that drift apart would
 // make "the outline is visible" depend on which of the two you meant.
@@ -66,10 +72,41 @@ function framedZoom(bbox, width, height) {
   return Math.min(Math.log2(w / (512 * dx)), Math.log2(h / (512 * dy)), MAX_ZOOM);
 }
 
-// The two card sizes the map is actually laid out at. f1.njk is `h-96 sm:h-[32rem]`, so 384px
-// tall below the sm breakpoint and 512 above it; the widths are the column it sits in on a small
-// phone and on a desktop. The narrow one is the binding case and is the one worth having.
-const CARDS = [['phone', 380, 384], ['desktop', 680, 512]];
+/**
+ * The two card sizes the map is actually laid out at, with the heights read off the markup.
+ *
+ * Height is the binding dimension for most of these circuits, so it is an input to the
+ * arithmetic on exactly the same footing as the padding - and a layout pass that shrank the card
+ * is precisely the change that would eat the margin while a hardcoded 384 kept agreeing with
+ * itself. The widths stay stated: they are the column the card sits in, which no single class
+ * declares, and they are not what binds.
+ */
+const TAILWIND_H = { 'h-64': 256, 'h-72': 288, 'h-80': 320, 'h-96': 384, 'h-[32rem]': 512 };
+
+/**
+ * The height `#f1Map` is given at one breakpoint, in pixels.
+ *
+ * `prefix` is '' for the base class and 'sm:' for the one that overrides it. Refusing an
+ * unrecognised height rather than defaulting is the whole point: a card silently measured at the
+ * wrong size is the same failure as a constant silently read wrong, and this file exists because
+ * of one of those.
+ */
+function cardHeight(prefix) {
+  const el = read('app/pages/f1.njk').match(/id="f1Map"[^>]*class="([^"]*)"/);
+  assert.ok(el, 'could not find the #f1Map element to read its height from');
+  const want = el[1].split(/\s+/).filter((c) => c.startsWith(`${prefix}h-`)
+    && c.slice(prefix.length).indexOf(':') === -1)
+    .map((c) => c.slice(prefix.length));
+  assert.strictEqual(want.length, 1,
+    `#f1Map should declare exactly one "${prefix}h-" height, found ${JSON.stringify(want)}`);
+  const px = TAILWIND_H[want[0]];
+  assert.ok(px, `#f1Map's "${prefix}${want[0]}" is a height this test does not know. Add it to `
+    + `TAILWIND_H rather than letting the framing be measured against a card that is not the `
+    + `real one - the height is what binds most of these circuits.`);
+  return px;
+}
+
+const CARDS = [['phone', 380, cardHeight('')], ['desktop', 680, cardHeight('sm:')]];
 
 let passed = 0;
 const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
@@ -111,4 +148,102 @@ ok(`all ${CIRCUITS.length} circuits carry a bbox, which is what the map is frame
   ok(`the no-outline fallback opens at ${place}, not back at the zoom the outline is invisible from`);
 }
 
-console.log(`\nf1 framing: all ${passed} checks passed — every circuit is drawn at the zoom the map opens at`);
+// --- the join, executed rather than reasoned about --------------------------
+{
+  /**
+   * **Everything above this point is arithmetic, and arithmetic cannot see a disconnected wire.**
+   *
+   * The review of the commit that added this file proved it: delete `round: Number(r.round)` from
+   * circuitOutlines and `tracks.features.find((f) => f.properties.round === chosen)` returns
+   * undefined for every round forever, aim() falls through to PLACE_ZOOM, the per-circuit framing
+   * is dead - and every check above still passed. That is the same silent, plausible-looking
+   * fallback as the bug this file was written for, in the file written to catch it.
+   *
+   * So the real function runs. `circuitOutlines` is a function declaration, which is what `vm`
+   * puts on the context (a `const` arrow would not be there at all), and its only dependency is
+   * `fetch`, stubbed here to hand it the vendored file off disk.
+   */
+  const vm = require('vm');
+  const body = PAGE.split('\n').filter((l) => !l.startsWith('import ')).join('\n')
+    .replace(/profile\.then\([\s\S]*$/, '');
+  const ctx = {
+    fetch: async () => ({ ok: true, json: async () => ({ features: CIRCUITS }) }),
+    document: { getElementById: () => null, createElement: () => ({ style: {}, classList: { add() {} } }) },
+    console: { error: () => {} },
+    el: () => null, say: () => {}, api: async () => ({}), profile: { then: () => {} },
+    teamColour: () => '#000', createMap: async () => null, goTo: () => {}, frame: () => true,
+    window: { matchMedia: () => ({ matches: false }) },
+    getComputedStyle: () => ({ getPropertyValue: () => '0 0 0' }),
+  };
+  vm.createContext(ctx);
+  vm.runInContext(body, ctx);
+  assert.strictEqual(typeof ctx.circuitOutlines, 'function',
+    'circuitOutlines must stay a function declaration for this test to reach it');
+
+  // Two real circuits, given to the joiner the way the calendar gives them: a coordinate on the
+  // track and a round number. Monza and Silverstone, read out of the file itself so the fixture
+  // cannot drift from the data.
+  const pick = (name) => CIRCUITS.find((f) => f.properties.Name.includes(name));
+  const rounds = [['Monza', 7], ['Silverstone', 12]].map(([name, round]) => {
+    const f = pick(name);
+    assert.ok(f, `${name} is missing from the outlines file`);
+    return { round, lon: (f.bbox[0] + f.bbox[2]) / 2, lat: (f.bbox[1] + f.bbox[3]) / 2, over: false };
+  });
+
+  return ctx.circuitOutlines(rounds).then((joined) => {
+    assert.strictEqual(joined.features.length, 2, 'both rounds matched an outline by coordinate');
+    ok('circuitOutlines joins a round to its circuit, running for real against the vendored file');
+
+    // The lookup aim() does, with the values aim() has. This is the assertion that dies when the
+    // wire is cut, and it executes the `===` rather than describing it.
+    rounds.forEach(({ round }) => {
+      const chosen = Number(round);
+      const shape = joined.features.find((f) => f.properties.round === chosen);
+      assert.ok(shape, `aim() can find round ${chosen}'s outline - if this fails, every round `
+        + `silently falls back to PLACE_ZOOM and the framing is gone with no other symptom`);
+      assert.ok(Array.isArray(shape.bbox) && shape.bbox.length === 4,
+        'and the shape it finds carries the four-element box frame() is given');
+      assert.strictEqual(typeof shape.properties.round, 'number',
+        'round is a number on both sides of the ===, so it cannot fail on a string');
+    });
+    ok('the round-to-outline lookup aim() performs resolves, and carries the box frame() needs');
+
+    // **frame() is the other half of the wire**, so it runs too: map.js is an ES module, which
+    // `require` cannot load, and the vm trick that reaches circuitOutlines reaches this the same
+    // way once `export` is stripped off the declaration.
+    const mapCtx = { window: { matchMedia: () => ({ matches: false }) }, document: { querySelector: () => null } };
+    vm.createContext(mapCtx);
+    vm.runInContext(MAP.split('\n').filter((l) => !l.startsWith('import '))
+      .join('\n').replace(/^export /gm, ''), mapCtx);
+    assert.strictEqual(typeof mapCtx.frame, 'function', 'frame must stay a function declaration');
+
+    const asked = [];
+    const stub = { fitBounds: (bounds, opts) => asked.push({ bounds, opts }) };
+
+    const box = joined.features[0].bbox;
+    assert.strictEqual(mapCtx.frame(stub, box), true, 'a real circuit box is framed');
+    assert.strictEqual(asked.length, 1, 'and fitBounds is actually called with it');
+    // Flattened and spread into a host array before comparing: the arrays frame() built live in
+    // the vm's realm, so their prototype is that realm's Array.prototype and deepStrictEqual
+    // rejects them for that alone, with a diff showing two identical-looking values.
+    assert.deepStrictEqual([...asked[0].bounds.flat()], [box[0], box[1], box[2], box[3]],
+      'as south-west and north-east corners, in that order');
+    assert.strictEqual(asked[0].opts.padding, PADDING, 'with the padding this file measured');
+    assert.strictEqual(asked[0].opts.maxZoom, MAX_ZOOM, 'and the cap');
+
+    // The shapes that are not boxes. The six-element one is the dangerous case: GeoJSON allows
+    // `[w, s, minElevation, e, n, maxElevation]`, and destructuring that positionally reads east
+    // as an elevation - a finite number, so nothing throws and the map frames a rectangle
+    // reaching from the circuit to a longitude somewhere near sea level in metres.
+    [[box[0], box[1], 0, box[2], box[3], 400], [], [1, 2, 3], [1, 2, 3, NaN],
+     [1, 2, 3, '4'], null, undefined, 'bbox'].forEach((bad) => {
+      const before = asked.length;
+      assert.strictEqual(mapCtx.frame(stub, bad), false,
+        `${JSON.stringify(bad)} is refused rather than framed`);
+      assert.strictEqual(asked.length, before, 'and nothing was asked of the map');
+    });
+    ok('frame() calls fitBounds with the real box, and refuses every shape that is not one');
+
+    console.log(`\nf1 framing: all ${passed} checks passed — every circuit is drawn at the zoom the map opens at`);
+  });
+}
