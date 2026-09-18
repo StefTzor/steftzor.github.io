@@ -269,13 +269,18 @@ function block(selector, contains) {
     'setupGeo must not set `disabled` on the geo button: disabling the focused element moves focus '
     + 'to the body, the panel closes on focusout, and the answer is written where nobody can read it. '
     + 'Use aria-disabled and a guard.');
-  assert.ok(/aria-disabled/.test(geo), 'and it must still say it is busy to assistive technology');
+  // **Anchored to the call, not to the word.** `/aria-disabled/` alone matched the comment four
+  // lines above the code explaining why aria-disabled is used, so deleting the setAttribute
+  // outright left this green - a screen reader would get no busy state from a button that
+  // silently swallows the press, and the suite would have said nothing. Watched it fail.
+  assert.ok(/btn\.setAttribute\("aria-disabled"/.test(geo),
+    'and it must still say it is busy to assistive technology');
   assert.ok(/if \(busy\) return;/.test(geo), 'and actually refuse the second press');
 
   // A null relatedTarget means focus left the document - a permission prompt, another window -
   // which is not a decision to close anything.
   const out = APP.slice(APP.indexOf('wrap.addEventListener("focusout"'), APP.indexOf('});', APP.indexOf('wrap.addEventListener("focusout"')));
-  assert.ok(/e\.relatedTarget &&/.test(out),
+  assert.ok(/if \(e\.relatedTarget && !wrap\.contains\(e\.relatedTarget\)\) set\(false\);/.test(out),
     'the panel\'s focusout must ignore a null relatedTarget, or the browser\'s own location prompt '
     + 'closes the panel behind itself');
   ok('the weather panel stays open while the browser asks for permission, and the button keeps its focus');
