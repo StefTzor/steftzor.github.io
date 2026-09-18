@@ -595,24 +595,46 @@ function render(data) {
     linkedin && views ? `${pct(linkedin / views)} of views in this window.`
       : "No view in this window arrived from LinkedIn.");
 
-  // The fifth caveat is the only one whose wording depends on the window, so it is written here
-  // rather than in the template. Inside 30 days a view with no visitor number means the request
-  // arrived without an address, which is a fault; past 30 days it means the erasure has run,
-  // which is the promise working. The same figure, two different things.
+  // **The fifth caveat, and the same figure means three different things.** It is written here
+  // rather than in the template because only the window can say which.
+  //
+  //   * a view counted BEFORE the visitor number existed. The counter shipped at 00:03 on
+  //     18 September 2026 and the column at 02:58, so just under three hours of real page views
+  //     have no number and never will. Ordinary history, not a fault.
+  //   * past 30 days, the erasure has run. The promise in /privacy/ working.
+  //   * anything else is the alarm: a request that arrived with no address, which is what a
+  //     wrong `trust proxy` looks like - and the alternative failure is worse and silent, every
+  //     visitor hashing to the proxy and the chart showing one extremely loyal reader.
+  //
+  // **The first case was what shipped, and this note accused the deployment of the third.** On
+  // the morning it went live the panel read "52% of views carry no visitor number, which inside
+  // a 30-day window means the request arrived with no address" - true of the case imagined and
+  // false of the case that happened. A smoke alarm that cries wolf on day one is one nobody
+  // reads again, so the window is compared against the hour the column landed rather than
+  // assuming every window starts after it.
+  const IDENTIFIED_SINCE = Date.parse("2026-09-18T02:58:00Z");
   const missing = data.unidentified || 0;
   const note = el("unidentifiedNote");
+  const from = Date.parse(range.from || "");
+  const share = views ? pct(missing / views) : "";
+
   if (!views || !missing) {
     note.textContent = "";
   } else if ((range.days || 0) > 30) {
-    note.textContent = `${pct(missing / views)} of views in this window carry no visitor number. `
-      + `This window reaches past 30 days, so those are views whose number has been erased - `
-      + `the counts survive and the link between them does not. Visits and the rates below them `
-      + `are derived from the rest.`;
+    note.textContent = `${share} of views in this window carry no visitor number. This window `
+      + `reaches past 30 days, so those are views whose number has been erased: the counts `
+      + `survive and the link between them does not. Visits and the rates below them are derived `
+      + `from the rest.`;
+  } else if (Number.isFinite(from) && from < IDENTIFIED_SINCE) {
+    note.textContent = `${share} of views in this window carry no visitor number, and this `
+      + `window reaches back before 18 September 2026, when the number was added. Those are `
+      + `page views counted before there was anything to count people with. Nothing is wrong, `
+      + `and the share falls on its own as the window moves past that day.`;
   } else {
-    note.textContent = `${pct(missing / views)} of views in this window carry no visitor number, `
-      + `which inside a 30-day window means the request arrived with no address. A figure that `
-      + `is not near nought here means the API is not seeing real addresses, and every visitor `
-      + `count on this page is wrong in the same direction.`;
+    note.textContent = `${share} of views in this window carry no visitor number. Every view in `
+      + `this window was counted after the number existed, so this should be near nought: a `
+      + `figure that is not means requests are arriving with no address, and every visitor count `
+      + `on this page is wrong in the same direction.`;
   }
 
   chart(data.daily || []);

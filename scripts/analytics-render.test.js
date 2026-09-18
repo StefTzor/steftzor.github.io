@@ -318,14 +318,25 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
     'no visitor number reaches the screen');
   ok('a bounce shows a dash rather than a zero, and no visitor number is on the page');
 
-  // The fifth caveat, which changes meaning with the window.
-  assert.ok(byId.get('unidentifiedNote').textContent.includes('no address'),
-    'inside 30 days a missing number is a fault');
-  const short = load();
-  short.ctx.render({ ...FULL, range: { ...FULL.range, days: 90 } });
-  assert.ok(short.byId.get('unidentifiedNote').textContent.includes('erased'),
-    'past 30 days the same figure is the retention promise working');
-  ok('the unidentified note says which of the two things it means, from the window');
+  // **The fifth caveat, and the same figure means three different things.** All three are
+  // asserted because the first shipped saying the wrong one: on the morning it went live the
+  // panel read "52% ... means the request arrived with no address" over three hours of views
+  // that had simply been counted before the column existed. A branch nobody exercises is a
+  // sentence, not a check - and this one was wrong in the accusing direction.
+  const noteFor = (range) => {
+    const t = load();
+    t.ctx.render({ ...FULL, range: { ...FULL.range, ...range } });
+    return t.byId.get('unidentifiedNote').textContent;
+  };
+  assert.ok(noteFor({ days: 90 }).includes('erased'),
+    'past 30 days the figure is the retention promise working');
+  assert.ok(noteFor({ days: 30, from: '2026-08-19T00:00:00.000Z' }).includes('before 18 September'),
+    'a window reaching back before the column existed says so, and blames nothing');
+  const fault = noteFor({ days: 7, from: '2026-09-20T00:00:00.000Z' });
+  assert.ok(fault.includes('no address') && fault.includes('near nought'),
+    'a window entirely after the column is the one that accuses, because there it is an alarm');
+  assert.ok(!fault.includes('before 18 September'), 'and it does not hedge when it should accuse');
+  ok('the unidentified note picks the right one of its three meanings from the window');
 }
 
 // --- a window with nothing in it --------------------------------------------
