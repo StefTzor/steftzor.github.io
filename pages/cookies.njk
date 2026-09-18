@@ -3,8 +3,8 @@ layout: legal.njk
 permalink: /cookies/
 title: "Cookies & Local Storage | Stefanos Tzortzoglou"
 heading: "Cookies & Local Storage"
-description: "This site sets no cookies. Here is exactly what is stored in your browser, what the page-view counter records, which third parties your browser contacts, and how to change your analytics choice."
-summary: "This site sets no cookies. The only thing you could reasonably object to is the page-view counter, so that is what the banner asks about. It stays off until you say yes."
+description: "This site sets no cookies. Here is exactly what is stored in your browser, what the page-view counter stores and what it discards, which third parties your browser contacts, and how to change your analytics choice."
+summary: "This site sets no cookies. The only thing you could reasonably object to is the page-view counter, so that is what the banner asks about. It stays off until you say yes. Since 18 September 2026 a counted page view carries a visitor number that changes every 24 hours and is erased from the row after 30 days."
 updated: "2026-09-18"
 updatedLabel: "18 September 2026"
 sitemapOrder: 70
@@ -21,7 +21,9 @@ sitemapPriority: "0.3"
 <h2 id="storage">2. What is stored in your browser</h2>
 <p>
   Three things may be written to your browser's local storage. None is a cookie, none is sent to a server
-  automatically, and none is used to track you across sites.
+  automatically, and none is used to track you across sites. The visitor number in
+  <a href="#choice">section 3</a> is not on this list: it is computed on my server each time a page view is counted,
+  and nothing about it is written to your browser.
 </p>
 
 <table>
@@ -91,23 +93,49 @@ sitemapPriority: "0.3"
 
 <h3>What is counted if you accept</h3>
 <p>
-  The counter is mine. Accepting sends one short message to <strong>api.tzortzoglou.eu</strong>, the same server that
-  receives the contact form; no analytics company is involved and no third-party script is loaded. Each counted page
-  view stores four things: the <strong>path</strong> of the page without its query string or fragment, which of my two
-  sites it was, the <strong>host</strong> of the page that linked you here (<code>www.linkedin.com</code>, never the
-  full address), and the <strong>time</strong>.
+  <strong>This changed on 18 September 2026.</strong> A counted page view used to carry no identifier at all. It now
+  carries a visitor number: a 64-bit hash of a secret my server holds, your IP address, your browser's
+  User-Agent string and which of my two sites you were on. A new secret replaces the old one every 24 hours and the
+  old one is destroyed, so two page views from your browser on the same day share a number, and tomorrow's number is
+  a different one with nothing left that could join it to today's.
 </p>
 <p>
-  It stores no cookie, no IP address, no fingerprint and <strong>no identifier of any kind</strong>, so nothing joins
-  one page view to the next and there is no profile to build. The full referring URL is thrown away as soon as its host
-  has been read off it, because a full referring address can carry someone's search terms in its query string. Until
-  September 2026 this counting was done by GoatCounter instead; nothing goes there now, and what it gathered is frozen. The <a href="/privacy/#analytics">Privacy Policy</a> sets out the legal basis.
+  The counter is mine. Accepting sends one short message to <strong>api.tzortzoglou.eu</strong>, the same server that
+  receives the contact form; no analytics company is involved and no third-party script is loaded.
+</p>
+<p><strong>What a counted page view stores:</strong></p>
+<ul>
+  <li>the number described above</li>
+  <li>the <strong>path</strong> of the page, without its query string or fragment</li>
+  <li>which of my two sites it was</li>
+  <li>the <strong>host</strong> of the page that linked you here (<code>www.linkedin.com</code>, never the full
+    address)</li>
+  <li>the <strong>time</strong></li>
+  <li>a coarse browser name, a coarse operating system name, whether you are on a phone, a tablet or a desktop, and
+    which of a handful of width brackets your window falls into</li>
+</ul>
+<p><strong>What reaches my server and is not stored:</strong></p>
+<ul>
+  <li>your <strong>IP address</strong>, an input to the hash and a rate-limiter key, held in memory both times</li>
+  <li>your full <strong>User-Agent string</strong>, the other input taken from your browser</li>
+  <li>the full referring URL, which my server reads a host off and then drops, because a full referring address can
+    carry someone's search terms in its query string</li>
+  <li>your exact window width, which my server rounds into one of the brackets above and then drops</li>
+</ul>
+<p>
+  Nothing in the second list reaches the stored row. There is still no cookie and no fingerprint read off your
+  hardware, fonts or canvas, and a request whose User-Agent identifies it as a bot is not counted at all. The visitor
+  number is erased from the row 30 days after the page view, which leaves the counts and removes the one field that
+  ties one view to another. Until September 2026 this counting was done by GoatCounter instead; nothing goes there
+  now, and what it gathered is frozen. The <a href="/privacy/#analytics">Privacy Policy</a> sets out the legal basis
+  and what the number does and does not make possible.
 </p>
 <p>
   This choice covers this site. The signed-in application at <code>app.tzortzoglou.eu</code> counts its own page loads
   for everyone, without asking, because that is a service you deliberately logged in to, not an audience being
-  measured. It records the same four things and nothing more, not even which account was signed in.
-  <a href="/privacy/#app-analytics">Section 3.2 of the Privacy Policy</a> explains why it is treated differently.
+  measured. It stores the same fields, the number included, and still not which account was signed in.
+  <a href="/privacy/#app-analytics">Section 3.2 of the Privacy Policy</a> explains why it is treated differently, and
+  what the number means inside an audience of a handful of approved accounts.
 </p>
 
 <h3>Why the banner only asks about this one thing</h3>
@@ -136,7 +164,9 @@ sitemapPriority: "0.3"
   Some assets are loaded from other providers instead of this domain. Your browser connects to them directly, so they
   receive your IP address, user-agent, and the page you were viewing. None of them set cookies here, but the connection
   itself is a transfer of data, so it is listed in full. The page-view counter is no longer among them: it is a request
-  to my own server, and <strong>only if you accepted it</strong>.
+  to my own server, and <strong>only if you accepted it</strong>. A country code for counted page views is planned and
+  is not in place yet; when it is, the lookup will read a MaxMind database file sitting on that same server, so your
+  browser will still not be contacting anyone new.
 </p>
 
 <table>

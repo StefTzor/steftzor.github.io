@@ -122,9 +122,12 @@ bodyScripts:
         <h3 class="font-semibold text-brand-text">Postgres</h3>
         <p class="hint mt-1">
           Four tables: contact submissions, a row per process start, which migrations have run, and
-          one row per page view: path, which of the two properties, the referring host and the
-          time, and deliberately nothing else. No address, no cookie, no identifier of any kind,
-          and not the full referring URL, only its host.
+          one row per page view: path, which of the two properties, the referring host, the time,
+          a coarse browser, OS, device class and width bracket, and a visitor number that is a
+          64-bit hash of a 24-hour secret, the address, the User-Agent and the property. The server
+          feeds the address and the User-Agent into that hash and stores neither. It cuts the
+          referring URL down to its host, sets no cookie, and erases the number from the row after
+          30 days.
           Browsable on
           <a href="/admin/data/" class="text-brand-accent underline hover:no-underline">the data view</a>
           if you are an admin. A contact submission can be deleted one row at a time from
@@ -171,10 +174,12 @@ bodyScripts:
       API above, not to a third party.
     </p>
     <p class="text-sm text-brand-muted mt-3 max-w-prose">
-      This app counts every page load, with no banner. It is behind a login, everyone here is a
-      known account holder, and counting loads of your own service for the running of that service
-      is operational telemetry, not audience measurement. The legal basis is different, so the
-      consent is too. The line that keeps that honest is being told, which is what this
+      This app counts every page load, with no banner. It is behind a login, everyone here is an
+      approved account holder, and counting loads of your own service for the running of that
+      service is operational telemetry, not audience measurement. A row here carries the same
+      visitor number the public site's rows carry, and on the same terms. The secret behind it is
+      replaced every 24 hours, and the number is erased from the row after 30 days.
+      The legal basis is different, so the consent is too. The line that keeps that honest is being told, which is what this
       paragraph and <a href="https://tzortzoglou.eu/privacy/" rel="noopener"
         class="text-brand-accent underline hover:no-underline">the privacy notice</a> are for; a
       count nobody is told about would be the same count with the honesty taken out.
@@ -188,9 +193,11 @@ bodyScripts:
       earliest moment that sentence means anything. Not signed in, not counted.
     </p>
     <p class="text-sm text-brand-muted mt-3 max-w-prose">
-      Erasure does not reach this table, and there is nothing in it to reach. A view row names
-      nobody: there is no account on it, no address, and nothing to join it to a person with, which
-      is deliberate.
+      Erasure does not reach this table, and an email address is not a handle it could be pointed
+      at. A view row carries no account and no address. It does carry the number, which groups one
+      browser's page loads inside a single day and stops there, because the next day's secret is a
+      new one and the old one is gone. After 30 days the server erases the number and leaves the
+      row as a path, a time and four coarse browser facts.
     </p>
   </section>
 

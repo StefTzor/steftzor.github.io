@@ -4,7 +4,7 @@ permalink: /privacy/
 title: "Privacy Policy | Stefanos Tzortzoglou"
 heading: "Privacy Policy"
 description: "How tzortzoglou.eu handles personal data: what is collected, why, the legal basis under GDPR, who processes it, and how to exercise your rights."
-summary: "This site is a personal portfolio. It sets no cookies, runs no advertising, and does no profiling. The only personal data it stores is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form."
+summary: "This site is a personal portfolio. It sets no cookies and runs no advertising. Since 18 September 2026 a counted page view carries a visitor number that is the same for your browser all day, different tomorrow, and erased from the row after 30 days; section 2.2 sets out exactly what it is. Everything else stored here is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form."
 updated: "2026-09-18"
 updatedLabel: "18 September 2026"
 sitemapOrder: 60
@@ -53,36 +53,74 @@ sitemapPriority: "0.3"
 
 <h3 id="analytics">2.2 Analytics</h3>
 <p>
+  <strong>This section reversed on 18 September 2026.</strong> Until that day a counted page view
+  carried no identifier, and this section said so in those words. A counted page view now carries a
+  visitor number, the same for your browser all day and different tomorrow.
+</p>
+<p>
   If you accept the banner, page views are counted by a small endpoint on <strong>api.tzortzoglou.eu</strong>, the
   same application that receives the contact form, running on a virtual private server rented in my own name. No
   analytics company is involved and nothing is loaded from one: your browser sends one short message to my own server,
   which sends nothing back.
 </p>
+<p>
+  The number is a 64-bit hash of four things: a secret my server holds, your IP address, your browser's
+  User-Agent string, and which of my two sites you were on. A new secret replaces the old one every 24 hours, and the
+  old one is destroyed the moment the new one is made, so yesterday's numbers cannot be recomputed from anything that
+  still exists. Your IP address and your User-Agent go into the hash and are not written down.
+</p>
+<p>
+  Two page views from the same browser on the same day carry the same number, so they are linked to each other.
+  Tomorrow that browser gets a different number, and the secret that would relink the two days is gone. Anonymity
+  would be a larger claim and I am not making it. Within a single day, one browser's page views can be picked out as
+  a group.
+</p>
+<p>
+  That makes a counted page view pseudonymous data, and under the GDPR pseudonymous data is personal data
+  (Recital 26), so the rights in <a href="#rights">section 6</a> apply to it. Consent remains the legal basis for it
+  on this public site, Art. 6(1)(a).
+</p>
 <ul>
-  <li><strong>What a counted page view records:</strong> the path of the page (without its query string or fragment,
-    so anything sitting in this site's own address bar stays in your browser), which of my two sites it was, the
-    <em>host</em> of the page that linked you here (<code>www.linkedin.com</code>, not the full address), and the
-    time.</li>
-  <li><strong>What it does not record:</strong> no cookie, no IP address, no device or browser fingerprint, no
-    identifier of any kind, and never the full referring URL. The full URL is the one place a search term can ride: your browser hands the referring address over in full, as it does to every
-    site you click through to, and my server reduces it to its host and discards the rest before anything is written.
-    The trimming is real, but it happens on arrival, not before sending. Nothing ties one page view to another,
-    so there is no profile and nothing to build one out of.</li>
+  <li><strong>What a counted page view records:</strong> the number, the path of the page (without its query string
+    or fragment, so anything sitting in this site's own address bar stays in your browser), which of my two sites it
+    was, the <em>host</em> of the page that linked you here (<code>www.linkedin.com</code>, not the full address), the
+    time, and four coarse facts about your browser: its name (Firefox, Safari), its operating system (Windows,
+    Android), whether it is a phone, a tablet or a desktop, and which of a handful of width brackets its window falls
+    into. The window width is the one new thing your browser sends, and my server keeps only which bracket it fell
+    into.</li>
+  <li><strong>What it uses and discards:</strong> your IP address and the full User-Agent string. Both are inputs to
+    the hash and neither is written to the page view.</li>
+  <li><strong>What it still does not record:</strong> no cookie, no fingerprint read off your hardware, fonts or
+    canvas, and never the full referring URL. The full URL is the one place a search term can ride: your browser hands
+    the referring address over in full, as it does to every site you click through to, and my server reduces it to its
+    host and discards the rest before anything is written. The trimming is real, but it happens on arrival, not before
+    sending.</li>
+  <li><strong>What is refused outright:</strong> a request whose User-Agent identifies it as a bot or a crawler is not
+    counted at all.</li>
   <li><strong>Where the request goes:</strong> to that server, which I run, so unlike the hosting logs in
     <a href="#hosting-logs">section 2.1</a>, this one connection is to me, not to GitHub. Your IP address arrives
-    with it, because every request carries one, and it is used there for a single purpose: as the key a rate limiter
-    counts against, held in memory, so that the endpoint cannot be hammered. It is never written to the page view, never
-    stored, and never looked at.</li>
-  <li><strong>How long a counted page view is kept:</strong> there is no scheduled deletion today, and that is deliberate. A row identifies nobody and cannot be traced back to a person, so there is
-    nothing in it to expire on anyone's behalf, and the table is small enough that a deletion job would be machinery
-    built for a problem this site does not have. If it ever grows to the point of mattering, rows older than 24 months
-    will be deleted and this paragraph will say so.</li>
-  <li><strong>Purpose:</strong> understanding, in aggregate, which pages people find useful.</li>
+    with it, because every request carries one, and it is used twice, both times in memory: as the key a rate limiter
+    counts against, so that the endpoint cannot be hammered, and as one of the four inputs to the hash. It is never
+    written to the page view and never stored.</li>
+  <li><strong>If you ask me to find what I hold about you:</strong> the answer here used to be that there was nothing
+    to find. Within the current day, a row could in principle be matched to you: someone with your IP address and your
+    User-Agent could recompute the hash while that day's secret still exists and see which rows come out equal. Once
+    the secret is discarded that is no longer possible, and the rows from earlier days are numbers with nothing left
+    to compare them against.</li>
+  <li><strong>How long a counted page view is kept:</strong> the number is erased from the row 30 days after the page
+    view. The row stays and the counts stay; the field that ties one view to another is emptied. The rest of the row
+    has no scheduled deletion, and if the table ever grows to the point of mattering, rows older than 24 months will
+    be deleted and this paragraph will say so.</li>
+  <li><strong>Purpose:</strong> understanding, in aggregate, which pages people find useful, and how many separate
+    browsers a day's views came from rather than only how many views there were.</li>
   <li><strong>Legal basis:</strong> your consent, Art. 6(1)(a) GDPR. Nothing is counted at all unless you accept it
     on the banner shown on your first visit, and you can withdraw that consent at any time, as easily as you gave it,
     from the <a href="/cookies/">Cookies &amp; Local Storage</a> page (Art. 7(3)).</li>
   <li><strong>If you decline or ignore the banner:</strong> nothing is sent, nothing is counted, and the site works
     exactly the same.</li>
+  <li><strong>Country, which is not here yet:</strong> I intend to store a two-letter country code with each page
+    view. The lookup will read a MaxMind database file stored on my own server, and the two letters are all that
+    would be stored. No country is recorded today, and this section will be rewritten before the first one is.</li>
   <li><strong>Before September 2026</strong> this was done by <strong>GoatCounter</strong>, a third-party service.
     Nothing is sent there any more; the figures it gathered up to the switchover are frozen,
     and still readable at
@@ -184,12 +222,22 @@ sitemapPriority: "0.3"
   approved account holder, or it is not counted. That is a statement about the app's own pages,
   which is where the counts come from. The endpoint that receives them is open, as a page
   counter has to be, so a request made by hand, not by a browser, could add a row that no
-  session stands behind. That is why these counts are treated as a measure of traffic and never as
-  a record of who did what: there is nothing in a row to tie it to a person in the first place.
-  It records exactly the four things listed in <a href="#analytics">section 2.2</a> (the path, that it was
-  the application and not the public site, the referring host, and the time) and the same nothing else: no cookie,
-  no IP address, no identifier. In particular it does not record <em>which account</em> was signed in. A counted page
-  load is not linked to you, and cannot be linked back to you afterwards.
+  session stands behind.
+</p>
+<p>
+  <strong>This changed on 18 September 2026 too.</strong> A counted page load used to hold no identifier. It now
+  carries the same visitor number as the public site, computed the same way from the same four inputs, with the
+  application standing in as the second of the two sites. A row here holds the number, the path, that it was the
+  application and not the public site, the referring host, the time, and the same four coarse facts about the browser:
+  name, operating system, device class and width bracket. It still does not record <em>which account</em> was signed
+  in, and the counter is never told.
+</p>
+<p>
+  Page loads from one browser on one day carry the same number, so they group together. On the public site that
+  grouping sits inside an audience of strangers. Here it sits inside a handful of approved accounts, which is a much
+  smaller crowd. A day's rows for one browser, read next to the list of people who had access that day, could come
+  down to one person. The number is erased from the row after 30 days, as it is on the public site, and a row is then
+  a path, a time and four coarse browser facts with nothing joining it to any other row.
 </p>
 <ul>
   <li><strong>Why you are not asked:</strong> the public site's counter measures an audience of strangers, which is
@@ -197,12 +245,14 @@ sitemapPriority: "0.3"
     often its own pages are opened is part of operating it: knowing what works and what is unused, not
     measuring an audience. Asking a question I would have to keep working regardless would be the theatre this site
     avoids elsewhere.</li>
-  <li><strong>Legal basis:</strong> legitimate interests, Art. 6(1)(f) GDPR — operating, maintaining and improving a
-    service you are signed in to. The ePrivacy consent rule in Art. 5(3) is not engaged, because nothing is stored on
-    or read from your device to do this.</li>
-  <li><strong>Object to it:</strong> you can, under Art. 21 (see <a href="#rights">section 6</a>). Since the record
-    holds nothing that identifies you, the honest remedy is to say so and I will stop counting the application
-    entirely instead of pretending to filter you out of it.</li>
+  <li><strong>Legal basis:</strong> legitimate interests, Art. 6(1)(f) GDPR, for operating, maintaining and improving
+    a service you are signed in to. This section used to add that the ePrivacy consent rule in Art. 5(3) was not
+    engaged, because nothing is stored on or read from your device. Nothing is stored there. The window width is read
+    from your browser, and Art. 5(3) can reach that, so the claim is narrower than it was and the counting rests on
+    the legitimate interest and your right to object, above and below.</li>
+  <li><strong>Object to it:</strong> you can, under Art. 21 (see <a href="#rights">section 6</a>). Filtering your own
+    rows out is not something I can do, because the only thing that would let me find them is the number you would be
+    objecting to. Say so and I will stop counting the application entirely.</li>
 </ul>
 
 <h3 id="map-tiles">3.3 Map tiles inside the application</h3>
@@ -313,8 +363,8 @@ sitemapPriority: "0.3"
     delete the mailbox copy by hand when you ask; the provider's log is not something I can edit at all, and expires
     on their own schedule.</li>
   <li><strong>No marketing:</strong> an address given through this form is never added to a mailing list, never used
-    for marketing, never shared, and never sold. There is no profiling and no automated decision-making within the
-    meaning of Art. 22 GDPR.</li>
+    for marketing, never shared, and never sold. Nothing you send through the form feeds profiling or automated
+    decision-making within the meaning of Art. 22 GDPR.</li>
   <li><strong>Sensitive information:</strong> please do not send anything confidential or sensitive through the form.
     It is transmitted over HTTPS, but the resulting email is ordinary email and is not end-to-end encrypted.</li>
   <li><strong>Instead of the form:</strong> emailing me directly (section 4.1) avoids the server and the database

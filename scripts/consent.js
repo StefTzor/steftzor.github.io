@@ -122,7 +122,7 @@
           '<p class="text-sm text-brand-muted leading-relaxed">' +
             'This site sets <strong class="text-brand-text">no cookies</strong> and runs no advertising. ' +
             'The count goes to <strong class="text-brand-text">my own server</strong>: ' +
-            'no third party, no cookie, nothing that identifies you. ' +
+            'no third party, no cookie, and one visitor number that stays the same for this browser all day. ' +
             'Declining changes nothing about how the site works. ' +
             '<a href="/cookies/" class="text-brand-accent underline hover:no-underline">Details</a>.' +
           '</p>' +

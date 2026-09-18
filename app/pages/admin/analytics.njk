@@ -17,8 +17,10 @@ bodyScripts:
   <h1 class="text-3xl font-bold text-brand-text mb-2">Analytics</h1>
   <p class="text-brand-muted mb-8 max-w-prose">
     Who reads the public site, what they read, and how they got there, and the same for the app.
-    Counted on my own server: a row holds a path, which of the two sites it was on,
-    the host a reader arrived from and the time. No address, no cookie, no identifier of any kind.
+    Counted on my own server. A row holds a path, which of the two sites it was on, the host a reader
+    arrived from, the time, a coarse browser, OS and device, and a visitor number that one browser
+    keeps for 24 hours and that is erased from the row after 30 days. No address, no cookie, no
+    User-Agent string.
   </p>
 
   {# The one control. It changes `days`, and everything below is drawn from the one answer that

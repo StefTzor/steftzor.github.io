@@ -4,10 +4,13 @@ import { API_BASE } from "./api-base.js";
  * One page view, counted by the API rather than by anyone else.
  *
  * This is the app's half of the beacon; the public site's copy is gated behind consent, and this
- * one is not. Counting page loads of a service you run, for the operation of that service, is not
- * audience measurement: everyone here is a known account holder who signed in, there is nothing
- * to profile them with, and the row that gets written cannot be tied back to them. That is why
- * there is no banner. It is documented on /docs/ and in /privacy/, which is the part that makes
+ * one is not. Everyone here is an approved account holder who signed in, and counting page loads
+ * of a service you run, for the operation of that service, is operational telemetry rather than
+ * audience measurement. The row does carry a visitor number, the same one the public site's rows
+ * carry, on the same terms: the server hashes a secret it replaces every 24 hours, and erases the
+ * number from the row after 30 days. Within a day it groups one browser's loads together; it does
+ * not say which account was signed in, and this beacon is never told. That is why there is no
+ * banner. It is documented on /docs/ and in /privacy/, which is the part that makes
  * it defensible - an undocumented count is the same count with the honesty removed.
  *
  * **Nothing is sent by importing this file.** It used to fire at import time, which made that
