@@ -148,102 +148,152 @@ ok(`all ${CIRCUITS.length} circuits carry a bbox, which is what the map is frame
   ok(`the no-outline fallback opens at ${place}, not back at the zoom the outline is invisible from`);
 }
 
-// --- the join, executed rather than reasoned about --------------------------
-{
-  /**
-   * **Everything above this point is arithmetic, and arithmetic cannot see a disconnected wire.**
-   *
-   * The review of the commit that added this file proved it: delete `round: Number(r.round)` from
-   * circuitOutlines and `tracks.features.find((f) => f.properties.round === chosen)` returns
-   * undefined for every round forever, aim() falls through to PLACE_ZOOM, the per-circuit framing
-   * is dead - and every check above still passed. That is the same silent, plausible-looking
-   * fallback as the bug this file was written for, in the file written to catch it.
-   *
-   * So the real function runs. `circuitOutlines` is a function declaration, which is what `vm`
-   * puts on the context (a `const` arrow would not be there at all), and its only dependency is
-   * `fetch`, stubbed here to hand it the vendored file off disk.
-   */
+// --- the join and the call site, executed rather than reasoned about --------
+//
+// **Everything above this point is arithmetic, and arithmetic cannot see a disconnected wire.**
+//
+// The review of the commit that added this file proved it: delete `round: Number(r.round)` from
+// circuitOutlines and the lookup in aim() returns undefined for every round forever, aim() falls
+// through to PLACE_ZOOM, the per-circuit framing is dead - and every check above still passed.
+// Then the review of the commit that fixed THAT proved the same thing one level up: the two
+// halves were each executed, and nothing executed the line that joins them, so deleting the
+// `frame()` call from aim() altogether also passed.
+//
+// So this block drives the real path. `startGlobe` and `showOnMap` are function declarations,
+// which is what `vm` puts on a context - the module's `let globe/tracks/chosen/target` are
+// lexical and are not reachable from outside, which is precisely why going in through the front
+// door is the only honest way to test this and also the right one.
+//
+// Wrapped in an async IIFE rather than left as a top-level `return`. In CommonJS that `return`
+// exits the module wrapper, so a check appended below it - the natural place for the next one -
+// would never run. Verified: an `assert.ok(false)` after it did not fail the suite.
+(async () => {
   const vm = require('vm');
-  const body = PAGE.split('\n').filter((l) => !l.startsWith('import ')).join('\n')
-    .replace(/profile\.then\([\s\S]*$/, '');
+  const strip = (src) => src.split('\n').filter((l) => !l.startsWith('import ')).join('\n');
+
+  /** The map's surface, as much of it as startGlobe, draw() and mark() actually touch. */
+  const fakeMap = () => ({
+    getCanvas: () => ({ setAttribute() {}, tabIndex: 0 }),
+    on() {}, getSource: () => null, addSource() {}, addLayer() {},
+    getLayer: () => ({}), setFilter() {},
+  });
+
+  const moves = [];
   const ctx = {
     fetch: async () => ({ ok: true, json: async () => ({ features: CIRCUITS }) }),
     document: { getElementById: () => null, createElement: () => ({ style: {}, classList: { add() {} } }) },
     console: { error: () => {} },
-    el: () => null, say: () => {}, api: async () => ({}), profile: { then: () => {} },
-    teamColour: () => '#000', createMap: async () => null, goTo: () => {}, frame: () => true,
+    el: () => ({ textContent: '', hidden: false }),
+    say: () => {}, api: async () => ({}), profile: { then: () => {} },
+    teamColour: () => '#000',
+    createMap: async () => fakeMap(),
+    // The two ways the camera can be told to move. Recorded rather than performed, because which
+    // of them is called IS the behaviour under test.
+    goTo: (m, centre, zoom) => moves.push(['goTo', zoom]),
+    frame: (m, bbox) => { moves.push(['frame', bbox]); return true; },
     window: { matchMedia: () => ({ matches: false }) },
     getComputedStyle: () => ({ getPropertyValue: () => '0 0 0' }),
   };
   vm.createContext(ctx);
-  vm.runInContext(body, ctx);
+  vm.runInContext(strip(PAGE).replace(/profile\.then\([\s\S]*$/, ''), ctx);
   assert.strictEqual(typeof ctx.circuitOutlines, 'function',
     'circuitOutlines must stay a function declaration for this test to reach it');
+  assert.strictEqual(typeof ctx.startGlobe, 'function', 'and startGlobe likewise');
 
   // Two real circuits, given to the joiner the way the calendar gives them: a coordinate on the
-  // track and a round number. Monza and Silverstone, read out of the file itself so the fixture
-  // cannot drift from the data.
-  const pick = (name) => CIRCUITS.find((f) => f.properties.Name.includes(name));
-  const rounds = [['Monza', 7], ['Silverstone', 12]].map(([name, round]) => {
-    const f = pick(name);
+  // track and a round number. Read out of the file itself so the fixture cannot drift from the
+  // data it is a fixture for.
+  const pick = (name) => {
+    const f = CIRCUITS.find((c) => c.properties.Name.includes(name));
     assert.ok(f, `${name} is missing from the outlines file`);
+    return f;
+  };
+  const roundFor = (name, round) => {
+    const f = pick(name);
     return { round, lon: (f.bbox[0] + f.bbox[2]) / 2, lat: (f.bbox[1] + f.bbox[3]) / 2, over: false };
+  };
+  const rounds = [roundFor('Monza', 7), roundFor('Silverstone', 12)];
+
+  const joined = await ctx.circuitOutlines(rounds);
+  assert.strictEqual(joined.features.length, 2, 'both rounds matched an outline by coordinate');
+  ok('circuitOutlines joins a round to its circuit, running for real against the vendored file');
+
+  rounds.forEach(({ round }) => {
+    const shape = joined.features.find((f) => f.properties.round === Number(round));
+    assert.ok(shape, `aim() can find round ${round}'s outline - if this fails, every round `
+      + `silently falls back to PLACE_ZOOM and the framing is gone with no other symptom`);
+    assert.ok(Array.isArray(shape.bbox) && shape.bbox.length === 4,
+      'and the shape it finds carries the four-element box frame() is given');
+    assert.strictEqual(typeof shape.properties.round, 'number',
+      'round is a number on both sides of the ===, so it cannot fail on a string');
   });
+  ok('the round-to-outline lookup aim() performs resolves, and carries the box frame() needs');
 
-  return ctx.circuitOutlines(rounds).then((joined) => {
-    assert.strictEqual(joined.features.length, 2, 'both rounds matched an outline by coordinate');
-    ok('circuitOutlines joins a round to its circuit, running for real against the vendored file');
+  // **The call site.** showOnMap -> aim -> frame, driven end to end. This is the assertion that
+  // dies when somebody removes the frame() call, which every other check in this file survives.
+  await ctx.startGlobe(rounds);
+  moves.length = 0;                      // startGlobe aims once itself; this is about the next one
+  ctx.showOnMap({ round: 7, ...roundFor('Monza', 7), circuit: 'Autodromo Nazionale Monza' });
+  assert.deepStrictEqual(moves.map((m) => m[0]), ['frame'],
+    'showOnMap -> aim -> frame: choosing a round frames the map to a box, and does NOT fall '
+    + 'through to goTo - a fallback here is the whole feature dying with no symptom');
+  assert.strictEqual(moves[0][1][0], pick('Monza').bbox[0],
+    "and frames it to that round's own circuit, not to some other round's");
+  ok('choosing a round drives showOnMap through aim into frame, with the right circuit');
 
-    // The lookup aim() does, with the values aim() has. This is the assertion that dies when the
-    // wire is cut, and it executes the `===` rather than describing it.
-    rounds.forEach(({ round }) => {
-      const chosen = Number(round);
-      const shape = joined.features.find((f) => f.properties.round === chosen);
-      assert.ok(shape, `aim() can find round ${chosen}'s outline - if this fails, every round `
-        + `silently falls back to PLACE_ZOOM and the framing is gone with no other symptom`);
-      assert.ok(Array.isArray(shape.bbox) && shape.bbox.length === 4,
-        'and the shape it finds carries the four-element box frame() is given');
-      assert.strictEqual(typeof shape.properties.round, 'number',
-        'round is a number on both sides of the ===, so it cannot fail on a string');
-    });
-    ok('the round-to-outline lookup aim() performs resolves, and carries the box frame() needs');
+  // --- frame() itself, both branches -----------------------------------------
+  const inMap = (reducedMotion) => {
+    const c = { window: { matchMedia: () => ({ matches: reducedMotion }) },
+      document: { querySelector: () => null } };
+    vm.createContext(c);
+    vm.runInContext(strip(MAP).replace(/^export /gm, ''), c);
+    assert.strictEqual(typeof c.frame, 'function', 'frame must stay a function declaration');
+    return c;
+  };
 
-    // **frame() is the other half of the wire**, so it runs too: map.js is an ES module, which
-    // `require` cannot load, and the vm trick that reaches circuitOutlines reaches this the same
-    // way once `export` is stripped off the declaration.
-    const mapCtx = { window: { matchMedia: () => ({ matches: false }) }, document: { querySelector: () => null } };
-    vm.createContext(mapCtx);
-    vm.runInContext(MAP.split('\n').filter((l) => !l.startsWith('import '))
-      .join('\n').replace(/^export /gm, ''), mapCtx);
-    assert.strictEqual(typeof mapCtx.frame, 'function', 'frame must stay a function declaration');
-
+  const box = pick('Monza').bbox;
+  {
     const asked = [];
-    const stub = { fitBounds: (bounds, opts) => asked.push({ bounds, opts }) };
-
-    const box = joined.features[0].bbox;
-    assert.strictEqual(mapCtx.frame(stub, box), true, 'a real circuit box is framed');
+    const flying = inMap(false);
+    assert.strictEqual(flying.frame({ fitBounds: (b, o) => asked.push({ b, o }) }, box), true,
+      'a real circuit box is framed');
     assert.strictEqual(asked.length, 1, 'and fitBounds is actually called with it');
-    // Flattened and spread into a host array before comparing: the arrays frame() built live in
-    // the vm's realm, so their prototype is that realm's Array.prototype and deepStrictEqual
-    // rejects them for that alone, with a diff showing two identical-looking values.
-    assert.deepStrictEqual([...asked[0].bounds.flat()], [box[0], box[1], box[2], box[3]],
+    // Destructured rather than flattened. It solves the cross-realm problem the same way - the
+    // arrays frame() built live in the vm's realm, so deepStrictEqual rejects them on prototype
+    // alone - but it THROWS on anything that is not two pairs, where .flat() silently accepts a
+    // flat [w,s,e,n] and the message goes on claiming it checked the corners.
+    const [[swLng, swLat], [neLng, neLat]] = asked[0].b;
+    assert.deepStrictEqual([swLng, swLat, neLng, neLat], [box[0], box[1], box[2], box[3]],
       'as south-west and north-east corners, in that order');
-    assert.strictEqual(asked[0].opts.padding, PADDING, 'with the padding this file measured');
-    assert.strictEqual(asked[0].opts.maxZoom, MAX_ZOOM, 'and the cap');
+    assert.strictEqual(asked[0].o.padding, PADDING, 'with the padding this file measured');
+    assert.strictEqual(asked[0].o.maxZoom, MAX_ZOOM, 'and the cap');
 
     // The shapes that are not boxes. The six-element one is the dangerous case: GeoJSON allows
     // `[w, s, minElevation, e, n, maxElevation]`, and destructuring that positionally reads east
-    // as an elevation - a finite number, so nothing throws and the map frames a rectangle
-    // reaching from the circuit to a longitude somewhere near sea level in metres.
+    // as an elevation - finite, so nothing throws and the map frames a rectangle reaching from
+    // the circuit to a longitude somewhere near sea level in metres.
     [[box[0], box[1], 0, box[2], box[3], 400], [], [1, 2, 3], [1, 2, 3, NaN],
-     [1, 2, 3, '4'], null, undefined, 'bbox'].forEach((bad) => {
+     [1, 2, 3, '4'], [1, 2, 3, Infinity], null, undefined, 'bbox'].forEach((bad) => {
       const before = asked.length;
-      assert.strictEqual(mapCtx.frame(stub, bad), false,
+      assert.strictEqual(flying.frame({ fitBounds: () => asked.push({}) }, bad), false,
         `${JSON.stringify(bad)} is refused rather than framed`);
       assert.strictEqual(asked.length, before, 'and nothing was asked of the map');
     });
     ok('frame() calls fitBounds with the real box, and refuses every shape that is not one');
+  }
+  {
+    // **The branch a test with motion on never runs.** Losing the `true` from it costs exactly
+    // the readers who cannot see the flight: aim() reads false, falls through, and moves the
+    // camera a second time on top of the framing it had just done.
+    const jumped = [];
+    const still = inMap(true);
+    assert.strictEqual(still.frame({ fitBounds: (b, o) => jumped.push(o) }, box), true,
+      'a reduced-motion reader is framed too, so aim() does not then move the map a second time');
+    assert.strictEqual(jumped.length, 1, 'and is framed exactly once');
+    assert.strictEqual(jumped[0].duration, 0, 'without the flight');
+    assert.strictEqual(jumped[0].padding, PADDING, 'and with the same padding as everyone else');
+    ok('prefers-reduced-motion gets the framing without the journey, and reports that it did');
+  }
 
-    console.log(`\nf1 framing: all ${passed} checks passed — every circuit is drawn at the zoom the map opens at`);
-  });
-}
+  console.log(`\nf1 framing: all ${passed} checks passed — every circuit is drawn at the zoom the map opens at`);
+})().catch((err) => { console.error(err); process.exitCode = 1; });

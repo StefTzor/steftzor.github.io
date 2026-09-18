@@ -218,6 +218,11 @@ export function goTo(map, center, zoom) {
  * `maxZoom` is a guard rather than a preference. A degenerate box - two identical corners, which
  * a malformed outline would give - solves to the maximum zoom the projection has, and the result
  * is a reader staring at four grey pixels wondering what broke.
+ *
+ * @param {object} map
+ * @param {number[]} bbox - [west, south, east, north]
+ * @returns {boolean} whether the box was usable. **False means fall back** - unlike goTo above,
+ *   which returns the map, this answers a question, because the caller has somewhere else to go.
  */
 export function frame(map, bbox) {
   // **Checked before it is destructured, which is this codebase's rule and not defensiveness for
@@ -233,7 +238,12 @@ export function frame(map, bbox) {
   const [west, south, east, north] = bbox;
   const bounds = [[west, south], [east, north]];
   const fit = { padding: 56, maxZoom: 15 };
-  if (stillness()) return map.fitBounds(bounds, { ...fit, duration: 0 }), true;
-  map.fitBounds(bounds, { ...fit, speed: 0.8, curve: 1.4, essential: false });
+  // Both branches written the same plain way. The first draft returned `map.fitBounds(...), true`
+  // here and a bare `true` below, which is the cleverer line hiding in the branch a test running
+  // with prefers-reduced-motion off never executes - and losing the `true` from it costs exactly
+  // the readers who cannot see a flight: aim() reads false, falls through, and moves the camera a
+  // second time on top of the framing it just did.
+  if (stillness()) map.fitBounds(bounds, { ...fit, duration: 0 });
+  else map.fitBounds(bounds, { ...fit, speed: 0.8, curve: 1.4, essential: false });
   return true;
 }
