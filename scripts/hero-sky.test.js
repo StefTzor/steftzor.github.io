@@ -193,6 +193,23 @@ function block(selector, contains) {
   const WASHES = ['--wx-sun', '--wx-night', '--wx-veil',
     '--wx-rain-wash', '--wx-rain-streak', '--wx-storm-wash', '--wx-storm-streak', '--wx-flash'];
 
+  // The skyline is ink too and runs the full width under the text, so the background the digest
+  // actually sits on includes it. Declared as channels plus a separate alpha rather than as one
+  // colour, so it is assembled here.
+  //
+  // **It is part of the composite, not a tripwire, and the difference is worth stating.** Pushed
+  // to 96% it still passes: the scrim is 81% opaque where the digest ends, so the city underneath
+  // cannot reach the text whatever it does. Measured because leaving it out would model a
+  // background that is not the real one; the thing that would actually fail here is the scrim
+  // giving up, which the washes above already catch.
+  const cityInk = (source) => {
+    const ch = source.match(/--wx-city:\s*([\d ]+);/);
+    const al = source.match(/--wx-city-alpha:\s*([\d.]+)%/);
+    assert.ok(ch && al, 'could not read the city ink - this test is now guessing, so it fails');
+    const [r, g, b] = ch[1].trim().split(/\s+/).map(Number);
+    return { r, g, b, a: Number(al[1]) / 100 };
+  };
+
   // The discs stay out of the text column, which is what lets them be as bright as they are.
   const discs = [...CSS.matchAll(/radial-gradient\(circle at (\d+)% \d+%, var\((--wx-disc|--wx-moon)\)/g)];
   assert.strictEqual(discs.length, 2, 'expected exactly two discs, the sun and the moon');
@@ -205,8 +222,10 @@ function block(selector, contains) {
     const text = token(mode === 'light' ? root : palette, '--color-text');
     const muted = token(mode === 'light' ? root : palette, '--color-muted');
 
-    WASHES.forEach((name) => {
-      const wash = token(ink, name);
+    const measured = WASHES.map((name) => [name, token(ink, name)]);
+    measured.push(['--wx-city (the skyline)', cityInk(ink)]);
+
+    measured.forEach(([name, wash]) => {
       // surface, then the wash across it, then the scrim over that.
       const behind = over({ ...surface, a: scrimAlpha }, over(wash, surface));
       const onHeading = ratio({ ...text, a: 1 }, behind);

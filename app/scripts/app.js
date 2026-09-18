@@ -585,9 +585,13 @@ function setupGeo(usingMine, home) {
       note.textContent =
         // PERMISSION_DENIED is a decision, not a failure, and must not be argued with.
         code === 1 ? "No problem \u2014 staying with the fixed location. You can allow location access in your browser's site settings if you change your mind."
-        // POSITION_UNAVAILABLE. On a desktop this is usually the browser itself having no location
-        // service to ask rather than anything about this page, and saying so saves a hunt.
-        : code === 2 ? "Your browser could not work out where you are, so the fixed location is still shown. On a desktop that usually means the browser has no location service available, rather than anything about this page."
+        // POSITION_UNAVAILABLE, and the message matters because the obvious conclusion is wrong.
+        // Permission and ability are different things: the browser asks its own location service
+        // and reports this when that service does not answer usefully. Observed on Vivaldi as
+        // "Response was malformed" WITH permission already granted for this site, which sends
+        // somebody hunting through site settings that were never the problem. So it names the
+        // thing that does work instead.
+        : code === 2 ? "Your browser allowed the request but could not work out where you are, so the fixed location is still shown. That is the browser's own location service rather than this page or your permission for it — some desktop browsers ship without a working one. Setting a home place on your profile is the reliable way to pick where the forecast is for."
         : code === 3 ? "Your browser took too long to find a position, so the fixed location is still shown. Trying again sometimes works."
         : "Your location could not be determined, so the fixed location is still being shown.";
       setBusy(false);

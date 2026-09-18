@@ -332,7 +332,11 @@
     --wx-flash: rgb(49 46 129 / 34%);        /* Indigo 900 */
     --wx-snow: 100 116 139;                  /* Slate 500, as channels */
     --wx-city: 71 85 105;                    /* Slate 600, as channels */
-    --wx-city-alpha: 26%;
+    /* **Raised from 26%, which is the whole reason the cities were not recognised.** The drawings
+       were fine and nobody could see them: at a quarter opacity a cathedral is a smudge the shape
+       of a cathedral. The layer sits UNDER the scrim, so the text column barely notices - and the
+       contrast check in scripts/hero-sky.test.js measures this ink now rather than only the sky. */
+    --wx-city-alpha: 50%;
   }
 
   .dark .hero,
@@ -350,7 +354,7 @@
     --wx-flash: rgb(224 242 254 / 40%);      /* here it brightens, as lightning does */
     --wx-snow: 226 232 240;
     --wx-city: 148 163 184;
-    --wx-city-alpha: 30%;
+    --wx-city-alpha: 55%;
   }
 
   .hero-body {
