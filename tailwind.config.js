@@ -25,6 +25,11 @@ module.exports = {
           // a lighter edge - and disappeared in light mode, where muted is dark and the same
           // wash is a smudge. One token per theme is the whole elevation system.
           border: 'rgb(var(--color-border) / <alpha-value>)',
+          // The /f1/ map key's swatches, so the legend and the dots it describes cannot drift:
+          // both sides read the same two custom properties. See src/input.css for the measured
+          // separations and why `past` is not simply `muted`.
+          'map-past': 'rgb(var(--color-map-past) / <alpha-value>)',
+          'map-now': 'rgb(var(--color-map-now) / <alpha-value>)',
         },
       },
     },

@@ -434,7 +434,7 @@ function addRounds() {
     source: SOURCE,
     paint: {
       "circle-radius": 4.5,
-      "circle-color": ["case", ["get", "over"], ink("muted"), ink("accent")],
+      "circle-color": ["case", ["get", "over"], ink("map-past"), ink("accent")],
       "circle-opacity": ["case", ["get", "over"], 0.7, 1],
       "circle-stroke-width": 1.5,
       "circle-stroke-color": ink("surface"),
@@ -447,7 +447,12 @@ function addRounds() {
     source: SOURCE,
     paint: {
       "circle-radius": 8,
-      "circle-color": ink("hover"),
+      // Amber, not a second green. This was `hover` - one step along the same ramp as the accent
+      // the future rounds are drawn in - which measured 7.7 apart where 15 is the floor for two
+      // colours a reader can tell apart at all. Three states on one map is a CATEGORY, and a
+      // category wants distinct hues; stepping one hue is what a magnitude does. Tokens, so the
+      // key below the map draws its swatch from the same two custom properties these do.
+      "circle-color": ink("map-now"),
       "circle-stroke-width": 3,
       "circle-stroke-color": ink("surface"),
     },

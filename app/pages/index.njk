@@ -122,16 +122,12 @@ signOut: true
      It refreshes when you come back to the tab and the numbers have gone stale, and when asked. #}
   <section id="departures" aria-labelledby="dep-heading" class="mt-8" data-card="loading">
     <div class="flex flex-wrap items-end justify-between gap-x-4 gap-y-1 mb-1">
-      {# The badge is filled in from the board's own `operator` field, not written here: this
-         card is pointed at whichever stop you chose, and hardcoding "UL" would keep saying UL
-         after you pointed it at a stop in Stockholm. Empty until the data says otherwise. #}
+      {# The icon leads, and it is the same one /transit/ leads with - so this card reads as a
+         preview of that page rather than as a different thing about buses. The operator moved
+         down to the stop line, where the other facts the board reports already are. #}
       <h2 id="dep-heading" class="flex items-center gap-2 text-xl font-bold text-brand-text">
+        {% icon "fa-solid-bus", "h-5 w-5 shrink-0 text-brand-accent" %}
         <span>Next departures</span>
-        {# Its box is held from the first paint rather than appearing with the board: 40px of
-           heading arriving is enough to wrap the whole row at some widths. `invisible` rather
-           than `hidden`, so it occupies the space it will need. Last rather than first, so the
-           space it holds is trailing - leading, it indented the heading away from the card. #}
-        <span id="depOperator" class="card-badge invisible min-w-[2.25rem]" aria-hidden="true"></span>
       </h2>
       {# The stop name and the controls are two lines rather than one wrapping line.
 
@@ -144,7 +140,7 @@ signOut: true
          nothing. setting textContent replaces it, the same way the lists work. #}
       <div class="text-sm text-brand-muted md:flex md:items-end md:gap-x-2">
         <p class="min-h-5">
-          <span id="depStop"><span class="skel inline-block h-4 w-40 align-middle" aria-hidden="true"></span></span><span id="depAge" class="tabular-nums"></span>
+          <span id="depStop"><span class="skel inline-block h-4 w-40 align-middle" aria-hidden="true"></span></span><span id="depOperator"></span><span id="depAge" class="tabular-nums"></span>
         </p>
         <p class="-ml-1.5 md:ml-0">
           <button type="button" id="depChange" class="link-action">Change stop</button>
@@ -190,8 +186,12 @@ signOut: true
      own timezone by the browser, which is the only thing that knows what that is. #}
   <section id="f1" aria-labelledby="f1-heading" class="mt-8" data-card="loading">
     <div class="mb-1 sm:flex sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-4 sm:gap-y-1">
+      {# The chequered flag rather than an "F1" badge, for the same reason as the bus above: it
+         is the icon /f1/ itself leads with, so the two home cards and the two pages they preview
+         all say the same thing the same way. It also stops one heading leading with a coloured
+         box while the other trailed one. #}
       <h2 id="f1-heading" class="flex items-center gap-2 text-xl font-bold text-brand-text">
-        <span class="card-badge" aria-hidden="true">F1</span>
+        {% icon "fa-solid-flag-checkered", "h-5 w-5 shrink-0 text-brand-accent" %}
         <span>Next race weekend</span>
       </h2>
       {# Stacked below sm for the same reason as the departures card: the location arriving is

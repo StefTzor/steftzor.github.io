@@ -50,6 +50,17 @@
     /* A boundary, not text, so the 4.5:1 rule does not apply and 1.8:1 against a white card is
        deliberate: enough to read as an edge, not so much that every card looks boxed in. */
     --color-border: 182 194 210;  /* #b6c2d2 — 1.6:1 on bg, 1.8:1 on surface */
+
+    /* The three states of a round on the /f1/ globe, and the only tokens here tuned against a
+       BASEMAP rather than against the page. Measured on positron's land (#f2efe9), all pairs:
+       now-past 16.3, now-future 15.9, future-past 15.7. The floor is 15, below which two colours
+       are hard to tell apart with full colour vision. The pair that used to fail was
+       future-past at 9.5 - both dark and desaturated on a pale map - which is why `past` is its
+       own token and not `muted`: muted is #475569 and reads as a second dark dot.
+       `now` is a warm hue on purpose. The chosen round used to be `hover`, one step of the same
+       green as `future`, measuring 7.7: a value ramp doing a category's job. */
+    --color-map-past: 124 135 152; /* #7c8798 - recedes on a pale map and still clears 3:1 */
+    --color-map-now:  161 98 7;    /* #a16207 - amber; nothing else on this map is warm */
   }
 
   /* `.dark` is the theme on <html>. `.chrome-dark` is the same palette applied to a SUBTREE, and
@@ -73,6 +84,16 @@
     --color-hover: 52 211 153;    /* Emerald 400 — lighter accent for button hover */
     --color-onaccent: 15 23 42;   /* Deep Navy on accent — 7.04:1 */
     --color-border: 51 65 85;     /* #334155 — 1.7:1 on bg, 1.4:1 on surface */
+
+    /* Dark's own three, measured on the re-inked basemap's land (#334155): now-past 18.9,
+       now-future 17.1, future-past 15.6. `past` keeps muted's value here because on a dark map a
+       light grey already recedes, helped by the 0.7 opacity the layer carries.
+       CVD: future-past is 7.2 for deuteranopia, inside the 6-8 band the palette guidance allows
+       ONLY with a second encoding. There are three - the chosen dot is nearly twice the radius,
+       the past ones are drawn at 0.7, and the key below the map names all three in words. Colour
+       is never the only thing saying which is which. */
+    --color-map-past: 148 163 184; /* #94a3b8 */
+    --color-map-now:  251 191 36;  /* #fbbf24 - amber-400 */
   }
 
   html {

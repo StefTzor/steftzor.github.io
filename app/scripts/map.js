@@ -153,9 +153,25 @@ function basemapToggle(onChange) {
       button.style.padding = "0 8px";
       button.style.font = "inherit";
       button.style.fontSize = "11px";
+      button.style.fontWeight = "600";
+      // **An explicit colour, because this one is not a brand surface.** MapLibre's controls are
+      // its own white in BOTH themes - nothing in this app themes `.maplibregl-ctrl` - while
+      // `color` is inherited from the page, which in dark mode is nearly white. The result was a
+      // white button with white text, invisible until pressed. A brand token would be the same
+      // bug with more steps: brand-text is light in dark mode for exactly the right reason.
+      // These two are MapLibre's own control-icon greys, so the button matches the zoom and
+      // fullscreen buttons it sits with rather than inventing a third look.
+      const ON = "#0b6b4f";   // the pressed state reads as on without a second control
+      const OFF = "#333";
+      const paint = (on) => {
+        button.style.color = on ? ON : OFF;
+        button.style.background = on ? "rgba(11,107,79,0.12)" : "";
+      };
+      paint(false);
       button.addEventListener("click", () => {
         const on = button.getAttribute("aria-pressed") !== "true";
         button.setAttribute("aria-pressed", String(on));
+        paint(on);
         onChange(on);
       });
       box.appendChild(button);

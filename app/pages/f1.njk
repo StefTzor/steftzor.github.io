@@ -78,7 +78,7 @@ bodyScripts:
      box, and a circuit you have zoomed into needs room to be a circuit rather than a squiggle. #}
   <section aria-labelledby="map-heading" class="mb-10">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-3">
-      <h2 id="map-heading" class="text-xl font-bold text-brand-text">Where it is raced</h2>
+      <h2 id="map-heading" class="text-xl font-bold text-brand-text">Where the season goes</h2>
       <p id="circuitName" class="text-sm text-brand-muted"></p>
     </div>
     {# A flex column whose map is the part that grows, because the fullscreen button hands this
@@ -96,14 +96,14 @@ bodyScripts:
          exactly when somebody is trying to work out why the map has not. #}
       <ul class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 px-2 pb-1 text-xs text-brand-muted">
         <li class="flex items-center gap-2">
-          <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-hover ring-2 ring-brand-surface"
-            aria-hidden="true"></span>the round shown here
+          <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-map-now ring-2 ring-brand-surface"
+            aria-hidden="true"></span>this round
         </li>
         <li class="flex items-center gap-2">
-          <span class="h-2 w-2 shrink-0 rounded-full bg-brand-accent" aria-hidden="true"></span>still to come
+          <span class="h-2 w-2 shrink-0 rounded-full bg-brand-accent" aria-hidden="true"></span>coming up
         </li>
         <li class="flex items-center gap-2">
-          <span class="h-2 w-2 shrink-0 rounded-full bg-brand-muted opacity-70" aria-hidden="true"></span>already raced
+          <span class="h-2 w-2 shrink-0 rounded-full bg-brand-map-past opacity-70" aria-hidden="true"></span>already raced
         </li>
         {# The outline takes its colour from the same raced/still-to-come flag as the dot beneath
            it, so this row describes a shape and not a fourth colour - and says so, because a
@@ -115,7 +115,7 @@ bodyScripts:
            still the first thing to go when you pull back, which is what the row says instead. #}
         <li class="flex items-center gap-2">
           <span class="h-0.5 w-5 shrink-0 rounded-full bg-brand-accent"
-            aria-hidden="true"></span>the circuit itself, in those same two colours, until you zoom out
+            aria-hidden="true"></span>the track itself, until you zoom out
         </li>
       </ul>
 

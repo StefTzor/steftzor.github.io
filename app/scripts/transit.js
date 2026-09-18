@@ -51,13 +51,17 @@ function renderBoard(data) {
   el("board-heading").textContent = shortStop(data.stop) || "This stop";
   el("trAge").textContent = data.stale ? "last known" : "";
 
+  // The operator, reported by the board rather than written here - point this at a stop in Skane
+  // and it stops saying UL. It reads as " · UL" beside the stop name: a fact about the board,
+  // among the other facts about the board.
+  //
+  // It used to be a badge next to the heading, which forced an empty reserved box from first
+  // paint so that its arrival would not wrap the title. Down here nothing is reserved and
+  // nothing moves, because the line it joins is already waiting for its own text.
   const operator = data.departures.map((d) => d.operator).find(Boolean);
   const badge = el("trOperator");
-  badge.textContent = operator || "";
-  // `invisible`, not `hidden`: the badge holds its box from the first paint, so revealing
-  // it adds no width and wraps nothing. display:none would give the space back and put
-  // the shift right back in.
-  badge.classList.toggle("invisible", !operator);
+  badge.className = operator ? "text-brand-muted" : "";
+  badge.textContent = operator ? ` · ${operator}` : "";
 
   if (!data.departures.length) {
     el("trNote").textContent = arrivals
@@ -307,7 +311,16 @@ function caption() {
     ? `This stop, and the ${around.length} nearest to you. The distances are in the list below.`
     : "This stop. Change stop, then Near me, puts the stops around you on it as well.");
 
-  if (!picked) return routeNote("");
+  // **The unpicked state names the action.** The route drawing shipped working and undiscovered:
+  // nothing on the map said a departure could be pressed, the hint lived in the section's
+  // description two paragraphs up, and there is no hover on a phone to suggest a row is a
+  // button. Saying it here puts it where somebody is already looking - and it says it only while
+  // nothing is picked, so it disappears the moment it has been acted on.
+  if (!picked) {
+    return routeNote(el("trList").querySelector("button[aria-pressed]")
+      ? "Press a departure above to see where it goes."
+      : "");
+  }
 
   // The same name the row shows, so the sentence and the row somebody just pressed agree. Both
   // halves are filtered because a board row can arrive without a destination on it, and the word

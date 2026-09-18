@@ -30,8 +30,6 @@ bodyScripts:
     <h1 class="flex items-center gap-3 text-3xl font-bold text-brand-text">
       {% icon "fa-solid-bus", "h-7 w-7 text-brand-accent" %}
       <span>Transit</span>
-      {# Filled in from the board, and empty until it says. See app/scripts/transit.js. #}
-      <span id="trOperator" class="card-badge invisible min-w-[2.25rem]" aria-hidden="true"></span>
     </h1>
 
     {# Departures and arrivals are two boards for one stop, so they are one control with two
@@ -50,8 +48,13 @@ bodyScripts:
      beside it rather than in a toolbar of their own: there are two of them. #}
   <div class="flex flex-wrap items-end justify-between gap-x-4 gap-y-1 mb-1">
     <h2 id="board-heading" class="text-xl font-bold text-brand-text">&nbsp;</h2>
+    {# The operator sits with the stop, not in the heading. It is a fact the board reports - it
+       changes when you point this at a stop in Skane - so it belongs where the other facts about
+       the board are. As a badge beside the title it had to reserve an empty box from first paint
+       to avoid wrapping the heading when it arrived, which is the gap that box was. Here it
+       arrives with the rest of the line and nothing moves. #}
     <div class="text-sm text-brand-muted sm:flex sm:items-end sm:gap-x-2">
-      <p class="min-h-5"><span id="trAge" class="tabular-nums"></span></p>
+      <p class="min-h-5"><span id="trOperator"></span><span id="trAge" class="tabular-nums"></span></p>
       <p class="-ml-1.5 sm:ml-0">
         <button type="button" id="trChange" class="link-action">Change stop</button>
         <button type="button" id="trRefresh" class="link-action ml-1">Refresh</button>
@@ -147,9 +150,8 @@ bodyScripts:
        of the bus on departures, behind it on arrivals. The note under the map names the direction
        in full once a row has been pressed. #}
     <p class="text-sm text-brand-muted mb-4">
-      Where the stop is, and where one journey on the board above runs either side of it: choose a
-      row. The dots are places and the dashes between them are the order they are called at, not
-      the roads the bus drives.
+      Press any departure above and its route appears here. The dots are the stops it calls at;
+      the dashes are the order they come in, not the roads the bus drives.
     </p>
 
     {# Hidden until there is a coordinate to centre it on and a library to draw it with; the note
