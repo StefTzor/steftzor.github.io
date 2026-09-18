@@ -36,9 +36,16 @@ module.exports = function (eleventyConfig) {
       // and which it picks is a function of the browser rather than of this code. Allowing one
       // and not the other produces a map that works in some browsers.
       //
-      // These two are the only third parties either property talks to, and adding the second one
-      // is why /privacy/ 3.3 and /cookies/ 4 both grew a row: a request this code cannot make on
-      // a reader's behalf is one they can only learn about by being told.
+      // These two are the only TILE hosts, and the only third parties the browser reaches directly
+      // rather than through the API - which is not the same as the only third parties full stop.
+      // gstatic is four lines above in script-src and three googleapis hosts are in this very
+      // array. The sentence said "the only third parties either property talks to" and was wrong
+      // by three; believed literally by the next person adding a googleapis-shaped host, it would
+      // have argued that host needed no privacy row. Firebase does have one, in /privacy/ 3 and 5.
+      //
+      // Adding the second tile host is why /privacy/ 3.3 and /cookies/ 4 both grew a row: a
+      // request this code cannot make on a reader's behalf is one they can only learn about by
+      // being told.
       "connect-src": ["'self'", "https://api.tzortzoglou.eu",
         "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com",
         "https://firestore.googleapis.com", "https://tiles.openfreemap.org",

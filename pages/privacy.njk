@@ -281,9 +281,13 @@ sitemapPriority: "0.3"
   <li><strong>What they receive:</strong> your <strong>IP address</strong>, your user-agent, which tiles you asked
     for, and the fact that you were on <code>app.tzortzoglou.eu</code> when you asked. Those tile numbers are
     themselves a location: not where you are, but which part of the world the map is showing you and how closely you
-    are looking at it. The address of the page you were on is <em>not</em> sent &mdash; this application sets a
-    referrer policy of <code>strict-origin-when-cross-origin</code>, so a request leaving it carries the site's name
-    and never the path, which is the same trimming the page-view counter does in section 2.2 for the same reason.
+    are looking at it. The address of the page you were on is <em>not</em> sent: this application sets a referrer
+    policy of <code>strict-origin-when-cross-origin</code>, so the <strong>Referer header</strong> on a request
+    reaching them carries the site's name and never the path. That is a narrower statement than it may look, and
+    deliberately so: it is about the header, not about every request this application makes. The page-view
+    counter in <a href="#analytics">section 2.2</a> sends a path on purpose, to my own server, and the trimming
+    described there is a different one: my server reducing a referring address after it arrives, rather than your
+    browser withholding one before it leaves.
     Nothing about your account goes with the request: it carries no token, no name and no email address, because it is
     an ordinary image request and there is nowhere in one to put them.</li>
   <li><strong>When:</strong> only on those two pages, only once a map is actually drawn there, and only for someone

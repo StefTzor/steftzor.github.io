@@ -260,6 +260,14 @@ export async function createMap(container, {
   // the right answer for two palettes of one cartography and the wrong answer for a photograph:
   // without this, turning satellite on and then switching theme silently put the vector map back,
   // and the button would have gone on claiming otherwise.
+  //
+  // **What this knowingly leaves stale.** A caller's own layers are re-inked in its `style.load`
+  // handler, and refusing to setStyle means no style.load fires - so with satellite showing, a
+  // theme change leaves the dots and the circuit outline in the previous theme's palette until
+  // the button is pressed again. Seen rather than missed: it is cosmetic, it heals itself on the
+  // next toggle, and the outline and its casing go stale together so the contrast argument they
+  // were built for is unaffected. Closing it would need a re-ink hook this file does not have and
+  // one caller would use.
   const watch = new MutationObserver(() => {
     const next = isDark() ? "dark" : "light";
     if (next === theme) return;

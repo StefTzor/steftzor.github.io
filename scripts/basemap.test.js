@@ -82,6 +82,32 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
   ok('satellite is offered on /f1/ and withheld from /transit/, which is the decision that was made');
 }
 
+// --- the option is actually wired to a control --------------------------------
+{
+  // **The one mutation the rest of this file survives.** Everything above checks that the style
+  // exists, that its credit matches it, that the CSP allows the host and that `satellite: true` is
+  // passed on one page and not the other. None of that notices `createMap` ignoring the option:
+  // delete the whole `if (satellite)` block and the build passes, both suites pass, the CSP still
+  // allows EOX, /f1/ still renders - and the button is gone, while /privacy/, /cookies/, /docs/
+  // and the upstream list all go on describing a control the application no longer has. That is
+  // this repo's own named defect, arriving in silence.
+  //
+  // A text check like the four above, because the framing suite cannot reach this either: it
+  // stubs createMap, and its docstring already says why module linkage is invisible there.
+  assert.ok(/function basemapToggle\(/.test(MAP), 'the toggle control exists');
+  // Sliced from the guard to the closing brace at its own indent, rather than matched with a
+  // bounded regex - the block is over 500 characters and a `{0,400}` quantifier failed to reach
+  // the end of it, which would have made this whole check refuse rather than assert.
+  const at = MAP.indexOf('if (satellite) {');
+  assert.notStrictEqual(at, -1, 'createMap must guard the control on the `satellite` option');
+  const wired = MAP.slice(at, MAP.indexOf('\n  }', at));
+  assert.ok(/addControl\(\s*basemapToggle\(/.test(wired),
+    'and the guarded block must actually add the toggle - an option nothing reads is four '
+    + 'documents describing a button that is not there');
+  assert.ok(/setStyle\(/.test(wired), 'and the toggle must swap the style');
+  ok('createMap wires the satellite option to a control that swaps the basemap');
+}
+
 // --- the imagery has a resolution, and the style says so ----------------------
 {
   const maxzoom = Number((MAP.match(/maxzoom:\s*(\d+)/) || [])[1]);
