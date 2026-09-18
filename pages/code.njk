@@ -241,8 +241,26 @@ sitemapPriority: "0.8"
             {%- endfor %}{% endfor %}
         </div>
     </div>
-    <p class="mt-4 text-sm text-brand-muted">
-        {{ contributions.total }} contributions in the last year.
+    {# A key, because a colour ramp with nothing naming its ends is five shades of nothing. The
+       convention is borrowed from GitHub and widely read, which is an argument for keeping the
+       ramp and not for leaving it unlabelled - a reader who has never seen one of these grids
+       has no way in. Marked aria-hidden and the words are repeated in the sentence below, so a
+       screen reader gets "quieter" and "busier" as language rather than as five empty boxes.
+       The same key is under the hour grid on /admin/analytics/, drawn from this same ramp. #}
+    <p class="mt-4 flex items-center gap-2 text-xs text-brand-muted" aria-hidden="true">
+        <span>Fewer</span>
+        <span class="flex gap-[3px]">
+            <span class="contrib-day h-3 w-3"></span>
+            <span class="contrib-day h-3 w-3" data-level="1"></span>
+            <span class="contrib-day h-3 w-3" data-level="2"></span>
+            <span class="contrib-day h-3 w-3" data-level="3"></span>
+            <span class="contrib-day h-3 w-3" data-level="4"></span>
+        </span>
+        <span>More</span>
+    </p>
+    <p class="mt-3 text-sm text-brand-muted">
+        {{ contributions.total }} contributions in the last year, a darker square being a busier
+        day.
         <a href="{{ contributions.profile }}" target="_blank" rel="noopener noreferrer"
             class="text-brand-accent underline hover:no-underline">See the profile on GitHub</a>.
     </p>
