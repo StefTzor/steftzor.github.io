@@ -68,7 +68,14 @@ export function count() {
   if (counted) return;
   counted = true;
 
-  const body = JSON.stringify({ path: location.pathname, referrer: fromElsewhere() });
+  // `w` is window.innerWidth, and the server keeps only which of four brackets it fell into. The
+  // viewport rather than the screen: innerWidth is the width this page was laid out in, which is
+  // the question, while screen.width is a fact about the machine and a sharper fingerprint. The
+  // public site's beacon sends the same three fields, deliberately - two counters sending
+  // different things would be two datasets the panel pretends are one.
+  const body = JSON.stringify({
+    path: location.pathname, referrer: fromElsewhere(), w: window.innerWidth,
+  });
 
   try {
     // sendBeacon survives the page being closed mid-flight, which fetch() only does with

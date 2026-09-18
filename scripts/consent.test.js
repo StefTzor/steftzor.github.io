@@ -66,6 +66,10 @@ function run(stored, opts) {
   const ctx = {
     document: doc,
     location: { hostname: 'tzortzoglou.eu', pathname: '/about/' },
+    // A viewport, because the beacon reads one. `opts.width` lets a test choose it; the default
+    // is a laptop. This is the only browser global the counting path touches that is not one of
+    // the four already faked below, and leaving it out is how the field was found missing.
+    window: { innerWidth: opts.width === undefined ? 1280 : opts.width },
     Blob: class { constructor(parts, o) { this.text = parts.join(''); this.type = o && o.type; } },
     navigator: opts.beacon === false ? {} : {
       sendBeacon(url, blob) {
@@ -123,8 +127,20 @@ assert.strictEqual(hit.url, ENDPOINT, 'must post to the first-party endpoint ove
 // application/json would cost a preflight per page view and nothing would otherwise notice.
 assert.strictEqual(hit.type, 'text/plain');
 const body = JSON.parse(hit.body);
-assert.deepStrictEqual(Object.keys(body).sort(), ['path', 'referrer'],
-  'the body carries the page and the referrer and nothing else — no id, no session, no client-chosen property');
+// This assertion is a tripwire on the one thing /privacy/ enumerates: what the browser sends.
+// It fired on purpose when `w` was added, and it is meant to fire again for the next field. A
+// fourth key here without a fourth entry in the privacy notice is the failure it exists to catch.
+assert.deepStrictEqual(Object.keys(body).sort(), ['path', 'referrer', 'w'],
+  'the body carries the page, the referrer and the window width — no id, no session, no client-chosen property');
+// The identifier is computed on the server from things the browser did not choose to send. It is
+// not in this body and must never be: a client-supplied visitor number would be a value anybody
+// could set to anybody else's.
+assert.ok(!('visitorId' in body) && !('id' in body), 'the visitor number is the server’s, not the client’s');
+assert.strictEqual(body.w, 1280, 'the width is the viewport the page was laid out in');
+// The number itself, not a bracket. The bucketing is the server's, because a client that decided
+// its own bracket would be a client deciding what is stored about it - the same reason `property`
+// is read from the Origin rather than taken from the body.
+assert.strictEqual(typeof body.w, 'number', 'sent as a number, bucketed on the server');
 assert.strictEqual(body.path, '/about/', 'the path must arrive without a query string or fragment');
 
 // 4. Returning visitor who accepted: count once, do not re-ask.
@@ -171,4 +187,4 @@ assert.strictEqual(t.sent.length, 1, 'accepting counts even when the choice cann
 assert.strictEqual(t.text('consent-state'), 'Analytics is ON. You accepted.',
   'the in-memory fallback must hold the choice for the page it was made on');
 
-console.log('consent.js: all 8 checks passed — counting is opt-in, refusal sticks, one page load is one view, and the beacon carries no identifier');
+console.log('consent.js: all 8 checks passed — counting is opt-in, refusal sticks, one page load is one view, and the beacon still chooses no identifier of its own');

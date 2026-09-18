@@ -59,7 +59,16 @@
     if (counted) return;
     counted = true;
     var url = API_BASE + '/hit';
-    var body = JSON.stringify({ path: location.pathname, referrer: fromElsewhere() });
+    // `w` is the third and last field, and it is window.innerWidth. The server keeps which of
+    // four brackets it fell into and throws the number away, which is the whole reason to send a
+    // width rather than a screen size: innerWidth is the viewport this page was actually laid out
+    // in, and screen.width is a property of the machine. A pixel count sitting next to a visitor
+    // number is a fingerprinting dimension; a bracket answers the only question the panel asks.
+    // Nothing else was added with it - not language, not timezone, not the platform hints - and
+    // /privacy/ lists what arrives, so a fourth field here is a fourth field there.
+    var body = JSON.stringify({
+      path: location.pathname, referrer: fromElsewhere(), w: window.innerWidth,
+    });
     try {
       // sendBeacon survives the page being closed the instant after this runs; keepalive
       // gives the fetch fallback the same property.
