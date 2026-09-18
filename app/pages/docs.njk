@@ -121,13 +121,16 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">Postgres</h3>
         <p class="hint mt-1">
-          Four tables: contact submissions, a row per process start, which migrations have run, and
+          Five tables: contact submissions, a row per process start, which migrations have run,
+          the one-row table holding the secret behind the visitor number below, and
           one row per page view: path, which of the two properties, the referring host, the time,
           a coarse browser, OS, device class and width bracket, and a visitor number that is a
           64-bit hash of a 24-hour secret, the address, the User-Agent and the property. The server
           feeds the address and the User-Agent into that hash and stores neither. It cuts the
           referring URL down to its host, sets no cookie, and erases the number from the row after
-          30 days.
+          30 days. The secret is replaced every 24 hours and the old one is destroyed rather than
+          kept, which is what stops one day's numbers being matched to the next day's; it is the
+          one thing in this database the data view will not show you.
           Browsable on
           <a href="/admin/data/" class="text-brand-accent underline hover:no-underline">the data view</a>
           if you are an admin. A contact submission can be deleted one row at a time from

@@ -5,9 +5,14 @@ import { api, profile } from "./shell.js";
  *
  * What this deliberately is not: a query box. The API accepts no SQL from anywhere, so there is
  * nothing here to type one into. That is a decision about blast radius rather than about effort —
- * losing this screen to a stolen session should cost a read of three tables, not a psql
+ * losing this screen to a stolen session should cost a read of four tables, not a psql
  * prompt against production. An Admin session is worth plenty more than this screen; what is
  * bounded here is this screen.
+ *
+ * The list is the server's, not this file's, which is what keeps it honest as the schema grows:
+ * a table the API has no policy for is not listed and is refused if asked for by name, so the
+ * one-row table holding the analytics secret is invisible here without this screen needing to
+ * know it exists.
  *
  * Everything the grid can do, the server decides it may do. The column list, what may be sorted,
  * what may be filtered and how many rows come back are all checked there against the real catalog;
