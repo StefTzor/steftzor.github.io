@@ -516,7 +516,11 @@ function addRounds() {
       source: TRACKS,
       layout: { "line-join": "round", "line-cap": "round" },
       paint: {
-        "line-color": ["case", ["get", "over"], ink("muted"), ink("accent")],
+        // The same two tokens as the dots, which is what the key below the map promises: an
+        // outline describes a shape rather than a fourth state. When the dots moved to
+        // `map-past` and this did not, a raced round drew a #7c8798 dot on a #475569 outline -
+        // the exact pair the retokenising set out to kill, still live one layer down.
+        "line-color": ["case", ["get", "over"], ink("map-past"), ink("accent")],
         "line-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0, 11, 1],
         "line-width": ["interpolate", ["linear"], ["zoom"], 8, 1, 14, 3],
       },

@@ -49,19 +49,18 @@ function renderBoard(data) {
   unpick();
 
   el("board-heading").textContent = shortStop(data.stop) || "This stop";
-  el("trAge").textContent = data.stale ? "last known" : "";
 
   // The operator, reported by the board rather than written here - point this at a stop in Skane
-  // and it stops saying UL. It reads as " · UL" beside the stop name: a fact about the board,
-  // among the other facts about the board.
+  // and it stops saying UL. It used to be a badge beside the heading, which forced an empty
+  // reserved box from first paint so its arrival would not wrap the title; that box was the gap.
   //
-  // It used to be a badge next to the heading, which forced an empty reserved box from first
-  // paint so that its arrival would not wrap the title. Down here nothing is reserved and
-  // nothing moves, because the line it joins is already waiting for its own text.
+  // **It leads this line here and follows one on the home card**, so the separator belongs to
+  // whichever of them is second, not to the operator. Written the other way round it rendered
+  // an orphan middot with nothing to its left - and, on a stale board, `· ULlast known`, because
+  // `trAge` had never needed a separator of its own when it was the only text in the line.
   const operator = data.departures.map((d) => d.operator).find(Boolean);
-  const badge = el("trOperator");
-  badge.className = operator ? "text-brand-muted" : "";
-  badge.textContent = operator ? ` · ${operator}` : "";
+  el("trOperator").textContent = operator || "";
+  el("trAge").textContent = data.stale ? (operator ? " · last known" : "last known") : "";
 
   if (!data.departures.length) {
     el("trNote").textContent = arrivals
@@ -316,9 +315,15 @@ function caption() {
   // description two paragraphs up, and there is no hover on a phone to suggest a row is a
   // button. Saying it here puts it where somebody is already looking - and it says it only while
   // nothing is picked, so it disappears the moment it has been acted on.
+  //
+  // **Board-agnostic, deliberately.** Every other sentence in this function turns round with the
+  // board because each makes a claim about direction, and on an arrivals board the passlist is
+  // where the vehicle has BEEN. "Press a departure to see where it goes" would be the exact
+  // falsehood the rest of this function exists to avoid. A sentence that names no direction does
+  // not need a second branch to keep it true.
   if (!picked) {
     return routeNote(el("trList").querySelector("button[aria-pressed]")
-      ? "Press a departure above to see where it goes."
+      ? "Press a row above to see its route."
       : "");
   }
 

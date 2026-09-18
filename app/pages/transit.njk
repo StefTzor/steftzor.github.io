@@ -52,7 +52,12 @@ bodyScripts:
        changes when you point this at a stop in Skane - so it belongs where the other facts about
        the board are. As a badge beside the title it had to reserve an empty box from first paint
        to avoid wrapping the heading when it arrived, which is the gap that box was. Here it
-       arrives with the rest of the line and nothing moves. #}
+       arrives with the rest of the line and nothing moves.
+
+       **No `aria-hidden` any more, and that is the change.** As a badge it was hidden, because
+       "U L Next departures" is a worse heading than one that does not mention it. In the stop
+       line it reads as "Slussen, UL", which is the operator being useful rather than interrupting
+       - and it now matches the age beside it, which has always been announced. #}
     <div class="text-sm text-brand-muted sm:flex sm:items-end sm:gap-x-2">
       <p class="min-h-5"><span id="trOperator"></span><span id="trAge" class="tabular-nums"></span></p>
       <p class="-ml-1.5 sm:ml-0">
@@ -150,8 +155,8 @@ bodyScripts:
        of the bus on departures, behind it on arrivals. The note under the map names the direction
        in full once a row has been pressed. #}
     <p class="text-sm text-brand-muted mb-4">
-      Press any departure above and its route appears here. The dots are the stops it calls at;
-      the dashes are the order they come in, not the roads the bus drives.
+      Press any row above and its route appears here. The dots are the stops, and the dashes are
+      the order they are called at, not the roads the bus drives.
     </p>
 
     {# Hidden until there is a coordinate to centre it on and a library to draw it with; the note

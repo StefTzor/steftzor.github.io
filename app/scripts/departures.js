@@ -79,9 +79,6 @@ function render(data) {
 
   el("depStop").textContent = shortStop(data.stop);
 
-  // Whoever is actually running these buses, from the board rather than from a constant: the
-  // stop is yours to change, and a badge that still said UL at a stop in Skåne would be a lie
-  // the card told confidently. Hidden when the upstream did not say.
   // The operator, reported by the board rather than written here - point this at a stop in Skane
   // and it stops saying UL. It reads as " · UL" beside the stop name: a fact about the board,
   // among the other facts about the board.
@@ -90,9 +87,9 @@ function render(data) {
   // paint so that its arrival would not wrap the title. Down here nothing is reserved and
   // nothing moves, because the line it joins is already waiting for its own text.
   const operator = next.map((d) => d.operator).find(Boolean);
-  const badge = el("depOperator");
-  badge.className = operator ? "text-brand-muted" : "";
-  badge.textContent = operator ? ` · ${operator}` : "";
+  // The separator belongs to the operator here, because on this card it FOLLOWS the stop name.
+  // On /transit/ it leads its line and the separator moves to whatever comes after it.
+  el("depOperator").textContent = operator ? ` · ${operator}` : "";
 
   // Stale is said, not hidden: a departure board that is two minutes old is a departure board
   // that is wrong, and the reader is the one who should decide whether that matters.

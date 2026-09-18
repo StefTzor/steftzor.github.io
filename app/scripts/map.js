@@ -159,8 +159,9 @@ function basemapToggle(onChange) {
       // `color` is inherited from the page, which in dark mode is nearly white. The result was a
       // white button with white text, invisible until pressed. A brand token would be the same
       // bug with more steps: brand-text is light in dark mode for exactly the right reason.
-      // These two are MapLibre's own control-icon greys, so the button matches the zoom and
-      // fullscreen buttons it sits with rather than inventing a third look.
+      // `OFF` is MapLibre's own control-icon grey, so the button matches the zoom and fullscreen
+      // buttons it sits with rather than inventing a third look. `ON` is not MapLibre's: it is
+      // the tint that says the button is pressed, and it reads 5.4:1 on the background it makes.
       const ON = "#0b6b4f";   // the pressed state reads as on without a second control
       const OFF = "#333";
       const paint = (on) => {

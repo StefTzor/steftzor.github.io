@@ -53,13 +53,20 @@
 
     /* The three states of a round on the /f1/ globe, and the only tokens here tuned against a
        BASEMAP rather than against the page. Measured on positron's land (#f2efe9), all pairs:
-       now-past 16.3, now-future 15.9, future-past 15.7. The floor is 15, below which two colours
-       are hard to tell apart with full colour vision. The pair that used to fail was
-       future-past at 9.5 - both dark and desaturated on a pale map - which is why `past` is its
-       own token and not `muted`: muted is #475569 and reads as a second dark dot.
-       `now` is a warm hue on purpose. The chosen round used to be `hover`, one step of the same
-       green as `future`, measuring 7.7: a value ramp doing a category's job. */
-    --color-map-past: 124 135 152; /* #7c8798 - recedes on a pale map and still clears 3:1 */
+       now-past 16.3, now-future 15.9, future-past 15.7. **The metric is OKLab distance x100**,
+       which is what the palette validator this was checked with reports - not CIE dE2000 or
+       dE76, under which the same three separate by two to three times as much. The floor on that
+       scale is 15, below which two colours are hard to tell apart with full colour vision.
+
+       The pair that used to fail was future-past at 9.5 - both dark and desaturated on a pale
+       map - which is why `past` is its own token and not `muted`: muted is #475569 and reads as a
+       second dark dot. `now` is a warm hue on purpose; the chosen round used to be `hover`, one
+       step of the same green as `future`, measuring 7.7 - a value ramp doing a category's job.
+
+       The 3:1 below is the TOKEN against the land. The layer draws `past` at 0.7 opacity, which
+       composites to 2.1:1 - what actually finds the dot is the full-strength ring of surface
+       colour around it, the same trick the circuit outline's casing uses. */
+    --color-map-past: 124 135 152; /* #7c8798 - recedes on a pale map; 3.2:1 before the 0.7 */
     --color-map-now:  161 98 7;    /* #a16207 - amber; nothing else on this map is warm */
   }
 
@@ -92,7 +99,7 @@
        ONLY with a second encoding. There are three - the chosen dot is nearly twice the radius,
        the past ones are drawn at 0.7, and the key below the map names all three in words. Colour
        is never the only thing saying which is which. */
-    --color-map-past: 148 163 184; /* #94a3b8 */
+    --color-map-past: 148 163 184; /* #94a3b8 - 4.0:1 before the layer's 0.7 */
     --color-map-now:  251 191 36;  /* #fbbf24 - amber-400 */
   }
 
@@ -499,12 +506,6 @@
            text-[10px] font-semibold text-brand-muted;
   }
 
-  /* The badge before a card's heading: "UL", "F1".
-
-     A word rather than a logo, because an operator's mark is theirs and a portfolio has no
-     licence to print it. It is `aria-hidden` wherever it is used - the heading beside it already
-     says "Next departures", and a screen reader announcing "U L Next departures" is worse than
-     one that does not mention the badge at all. */
   /* A text control sitting in a line of prose - "Change stop", "Refresh", "Full board".
 
      They were bare underlined words 20px tall, which is under the 24px minimum this site claims
@@ -514,11 +515,6 @@
     @apply inline-flex min-h-[32px] items-center rounded px-1.5 -mx-0.5 underline
            hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2
            focus-visible:ring-brand-accent;
-  }
-
-  .card-badge {
-    @apply inline-flex h-6 shrink-0 items-center rounded bg-brand-accent/10 px-1.5
-           text-[11px] font-bold uppercase tracking-wide text-brand-accent;
   }
 
   /* A row of the full board on /transit/. Grid, so the clock times line up down the page and
