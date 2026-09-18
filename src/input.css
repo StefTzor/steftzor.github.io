@@ -422,20 +422,27 @@
   }
 
   /* Clear and mostly clear: a warm low sun, and this time an actual disc rather than only its
-     glow. The hard stop at 20px is what makes it a sun instead of a smudge. */
+     glow. The hard stop at 20px is what makes it a sun instead of a smudge.
+
+     **Placed to clear the weather chip, which is the one thing that sits over this corner.** The
+     first version put it at 84% 24%, directly behind the chip, so on a clear day the sun was
+     hidden by the widget describing the clear day. It sits below the chip now and left of it, and
+     the glow is centred on the disc rather than off the top corner so the two read as one light.
+     The floor on how far right it may go is asserted in scripts/hero-sky.test.js: too far the
+     other way and it starts lighting the text. */
   .hero[data-wx="clear"] .hero-sky,
   .hero[data-wx="partly"] .hero-sky {
     background:
-      radial-gradient(circle at 84% 24%, var(--wx-disc) 0 20px, transparent 21px),
-      radial-gradient(60% 120% at 88% -20%, var(--wx-sun), transparent 70%);
+      radial-gradient(circle at 74% 47%, var(--wx-disc) 0 22px, transparent 23px),
+      radial-gradient(58% 130% at 74% 42%, var(--wx-sun), transparent 72%);
     animation: hero-breathe 9s ease-in-out infinite;
   }
 
-  /* Night: the same disc, cooler and higher, with a dimmer sky behind it. */
+  /* Night: the same disc, cooler and smaller, with a dimmer sky behind it. */
   .hero[data-wx="night"] .hero-sky {
     background:
-      radial-gradient(circle at 84% 22%, var(--wx-moon) 0 16px, transparent 17px),
-      radial-gradient(50% 110% at 85% -25%, var(--wx-night), transparent 72%);
+      radial-gradient(circle at 74% 45%, var(--wx-moon) 0 17px, transparent 18px),
+      radial-gradient(52% 120% at 74% 40%, var(--wx-night), transparent 74%);
     animation: hero-breathe 12s ease-in-out infinite;
   }
 

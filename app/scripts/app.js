@@ -530,19 +530,35 @@ function setupGeo(usingMine, home) {
   }
   show();
 
+  /**
+   * Busy without losing focus.
+   *
+   * `disabled` on the button you are standing on hands focus to the body, which fires the panel's
+   * own focusout and closes it - so the button disabled itself and took its explanation with it.
+   * `aria-disabled` says the same thing to assistive technology and keeps the element focusable;
+   * the handler's own guard is what actually refuses the second press.
+   */
+  let busy = false;
+  const setBusy = (on) => {
+    busy = on;
+    btn.setAttribute("aria-disabled", String(on));
+    btn.classList.toggle("opacity-60", on);
+  };
+
   btn.addEventListener("click", async () => {
+    if (busy) return;
     if (mine) {
       setGeo(false);
       mine = false;
       show();
-      btn.disabled = true;
+      setBusy(true);
       try {
         await load(home ? { lat: home.lat, lon: home.lon } : null, home ? home.name : null);
       } catch (e) { unavailable(); }
-      btn.disabled = false;
+      setBusy(false);
       return;
     }
-    btn.disabled = true;
+    setBusy(true);
     btn.textContent = "Locating\u2026";
     try {
       const pos = await position();
@@ -558,7 +574,7 @@ function setupGeo(usingMine, home) {
         ? "No problem \u2014 staying with the fixed location. You can allow location access in your browser's site settings if you change your mind."
         : "Your location could not be determined, so the fixed location is still being shown.";
     }
-    btn.disabled = false;
+    setBusy(false);
   });
 }
 
@@ -625,7 +641,12 @@ function setupPanel() {
   // Escape do nothing visible - it closed, then `chip.focus()` fired focusin and reopened it in
   // the same tick. Closing has to be able to win.
   wrap.addEventListener("focusout", (e) => {
-    if (!wrap.contains(e.relatedTarget)) set(false);
+    // **A null relatedTarget is not somebody leaving.** It means focus left the document
+    // altogether: a permission prompt, a switch to another window, devtools. Treating that as a
+    // decision to close is what made "Use my location" look broken - the browser's own location
+    // prompt took focus, this shut the panel behind it, and the answer was then written into
+    // something nobody could see. Closing needs somewhere the focus actually WENT.
+    if (e.relatedTarget && !wrap.contains(e.relatedTarget)) set(false);
   });
   wrap.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;

@@ -256,4 +256,29 @@ function block(selector, contains) {
   ok(`prefers-reduced-motion silences every animated layer (${[...carriers].join(', ')})`);
 }
 
+// --- 5. the panel survives the browser asking for permission ------------------
+//
+// Not about the sky, and here anyway: it is the one control that sits on this card, and the
+// alternative is a third test file holding two assertions. Both of these were live bugs, both
+// were invisible from the code, and both made "Use my location" look broken without failing.
+{
+  // `disabled` on the button you are standing on hands focus to the body, which fires the panel's
+  // own focusout and shuts it - so the button hid its own explanation the moment it was pressed.
+  const geo = APP.slice(APP.indexOf('function setupGeo('), APP.indexOf('\n}', APP.indexOf('function setupGeo(')));
+  assert.ok(!/btn\.disabled\s*=/.test(geo),
+    'setupGeo must not set `disabled` on the geo button: disabling the focused element moves focus '
+    + 'to the body, the panel closes on focusout, and the answer is written where nobody can read it. '
+    + 'Use aria-disabled and a guard.');
+  assert.ok(/aria-disabled/.test(geo), 'and it must still say it is busy to assistive technology');
+  assert.ok(/if \(busy\) return;/.test(geo), 'and actually refuse the second press');
+
+  // A null relatedTarget means focus left the document - a permission prompt, another window -
+  // which is not a decision to close anything.
+  const out = APP.slice(APP.indexOf('wrap.addEventListener("focusout"'), APP.indexOf('});', APP.indexOf('wrap.addEventListener("focusout"')));
+  assert.ok(/e\.relatedTarget &&/.test(out),
+    'the panel\'s focusout must ignore a null relatedTarget, or the browser\'s own location prompt '
+    + 'closes the panel behind itself');
+  ok('the weather panel stays open while the browser asks for permission, and the button keeps its focus');
+}
+
 console.log(`\nhero sky: all ${passed} checks passed — every condition draws, every city is drawn, and the text keeps its contrast`);
