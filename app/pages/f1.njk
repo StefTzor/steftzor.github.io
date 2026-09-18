@@ -49,11 +49,16 @@ bodyScripts:
      it throws itself around the world between one round and the next. Every round of the season
      is a dot and the chosen one is lit; changing the round turns the globe to it.
 
-     Zoom in and the circuit itself is drawn over its dot, traced from OpenStreetMap - because at
-     that range a dot has stopped saying which place this is and the shape of the track is the only
-     thing that distinguishes one from the next. The dots stay: they are what keeps the chosen
-     round findable at every zoom, and the outline is an addition to them rather than a
-     replacement for them.
+     The map opens framed to the chosen circuit's own outline, traced from OpenStreetMap, because
+     at that range a dot has stopped saying which place this is and the shape of the track is the
+     only thing that distinguishes one from the next. Framed to the shape and not set to a zoom:
+     Monaco is 3.3 km of street and Spa is 7 km through a forest, so any one number is too close
+     for one and too far for the other, and the box each outline already carries solves for the
+     number that fits it. Zooming out is how you get the world back, and the flight between two
+     rounds arcs out through it on the way.
+
+     The dots stay: they are what keeps the chosen round findable at every zoom, and the outline
+     is an addition to them rather than a replacement for them.
 
      The dots are drawn into a canvas and no screen reader can reach them, so the canvas is hidden
      from one and the round selector at the top of the page is their text alternative - it names
@@ -95,11 +100,14 @@ bodyScripts:
         {# The outline takes its colour from the same raced/still-to-come flag as the dot beneath
            it, so this row describes a shape and not a fourth colour - and says so, because a
            swatch in the accent beside the word "circuit" would otherwise read as a fourth state.
-           It is not drawn at the zoom the map opens at: five kilometres of tarmac is a third of a
-           pixel from up there. #}
+
+           This row used to end "once you zoom in", which was true and was the bug: the map opened
+           at zoom 4 and the outline fades in between 8 and 11, so it was never once seen without
+           a reader going looking for it. The map now arrives framed to the circuit. The line is
+           still the first thing to go when you pull back, which is what the row says instead. #}
         <li class="flex items-center gap-2">
           <span class="h-0.5 w-5 shrink-0 rounded-full bg-brand-accent"
-            aria-hidden="true"></span>the circuit itself, in those same two colours, once you zoom in
+            aria-hidden="true"></span>the circuit itself, in those same two colours, until you zoom out
         </li>
       </ul>
 

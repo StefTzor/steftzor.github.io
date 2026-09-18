@@ -201,3 +201,27 @@ export function goTo(map, center, zoom) {
   if (stillness()) return map.jumpTo({ center, zoom });
   return map.flyTo({ center, zoom, speed: 0.8, curve: 1.4, essential: false });
 }
+
+/**
+ * Move so that a bounding box fills the map, honouring somebody who asked not to be moved.
+ *
+ * **A zoom number cannot answer "show me this circuit".** The thing being framed has a size, and
+ * on this calendar that size varies by more than two to one - Monaco is 3.3 km of street and Spa
+ * is 7 km through a forest - so any single zoom is too close for one and too far for the other.
+ * A box is the honest input: fitBounds solves for the zoom that makes it fit, which is a
+ * different number for every circuit and the right one for each.
+ *
+ * `padding` is what stops the shape touching the edges, and it is the difference between a
+ * circuit and a circuit somewhere: at 56px the track fills most of the card and still sits in
+ * enough of its surroundings to be recognisably at a place rather than floating.
+ *
+ * `maxZoom` is a guard rather than a preference. A degenerate box - two identical corners, which
+ * a malformed outline would give - solves to the maximum zoom the projection has, and the result
+ * is a reader staring at four grey pixels wondering what broke.
+ */
+export function frame(map, [west, south, east, north]) {
+  const bounds = [[west, south], [east, north]];
+  const fit = { padding: 56, maxZoom: 15 };
+  if (stillness()) return map.fitBounds(bounds, { ...fit, duration: 0 });
+  return map.fitBounds(bounds, { ...fit, speed: 0.8, curve: 1.4, essential: false });
+}

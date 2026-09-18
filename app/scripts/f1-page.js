@@ -1,7 +1,7 @@
 import { api, profile } from "./shell.js";
 import { el, say } from "./admin-status.js";
 import { teamColour } from "./f1-teams.js";
-import { createMap, goTo } from "./map.js";
+import { createMap, goTo, frame } from "./map.js";
 
 /**
  * The Formula 1 page: pick a round, see its sessions or its results, and both championships.
@@ -258,8 +258,22 @@ const TRACK_BED = "circuit-outline-casing";
  */
 const OUTLINES = "/vendor/f1-circuits.json";
 
-// Close enough to place a circuit in its country, far enough that the globe still reads as one.
-const CIRCUIT_ZOOM = 4;
+/**
+ * Where the camera lands for a round whose circuit this file has no outline for.
+ *
+ * **This used to be 4 and it was the wrong answer to the question the map exists to ask.** Four
+ * placed a circuit in its country and kept the globe reading as a globe, which sounds right and
+ * meant the outline was never once seen: the shape fades in between zoom 8 and 11, so the map
+ * opened seven levels short of the thing it had just downloaded 133 KB to draw, and every reader
+ * had to find that out by zooming. A round WITH an outline is now framed to the circuit's own
+ * box (see aim), which is a different and better number for each one.
+ *
+ * Eleven is the fallback and it is a locality: close enough to see the streets around wherever
+ * the round is, far enough not to imply a precision the API's single coordinate does not have.
+ * The flight still shows the world turning either way - flyTo arcs out and back in, so changing
+ * round is the same journey it always was, and it now ends somewhere worth arriving at.
+ */
+const PLACE_ZOOM = 11;
 
 let globe = null;     // the map itself, once it exists and only if it ever does
 let located = [];     // the calendar rounds that came back with a coordinate
@@ -335,8 +349,11 @@ async function circuitOutlines(rounds) {
     const shape = circuits.find((f) => apart(here, middle(f)) < NEAR);
     // `over` replaces the file's own properties, none of which this page reads. It is the same
     // flag the dots carry, so an outline is painted by the same expression as the dot it sits
-    // under and the key below the map goes on describing both.
-    if (shape) features.push({ ...shape, properties: { over: Boolean(r.over) } });
+    // under and the key below the map goes on describing both. `round` rides along so that aim()
+    // can find the shape belonging to the chosen round and frame the map to it - the spread keeps
+    // the file's own `bbox`, which is the box being framed and the reason none of this needs a
+    // second pass over the geometry.
+    if (shape) features.push({ ...shape, properties: { over: Boolean(r.over), round: Number(r.round) } });
   });
   return { type: "FeatureCollection", features };
 }
@@ -530,7 +547,13 @@ function aim() {
     return mapNote("This round came back without a location, so the globe has not turned to it.");
   }
   mapNote("");
-  goTo(globe, target, CIRCUIT_ZOOM);
+  // The circuit's own box when there is one, so Monaco and Spa each fill the card rather than
+  // sharing a zoom that suits neither. Falling back to a coordinate and a zoom is the same
+  // fallback the outline itself has: a round this file could not match keeps its dot and loses
+  // only the shape, and that is exactly the case where a box does not exist to frame.
+  const shape = tracks && tracks.features.find((f) => f.properties.round === chosen);
+  if (shape && shape.bbox) return frame(globe, shape.bbox);
+  goTo(globe, target, PLACE_ZOOM);
 }
 
 /**
@@ -574,7 +597,7 @@ async function startGlobe(rounds) {
     globe = await createMap(el("f1Map"), {
       globe: true,
       center: target || [0, 0],
-      zoom: target ? CIRCUIT_ZOOM : 1,
+      zoom: target ? PLACE_ZOOM : 1,
     });
   } catch (err) {
     console.error("f1: map", err);
