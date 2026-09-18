@@ -284,9 +284,9 @@ sitemapPriority: "0.3"
     are looking at it. The address of the page you were on is <em>not</em> sent: this application sets a referrer
     policy of <code>strict-origin-when-cross-origin</code>, so the <strong>Referer header</strong> on a request
     reaching them carries the site's name and never the path. That is a narrower statement than it may look, and
-    deliberately so: it is about the header, not about every request this application makes. The page-view
-    counter in <a href="#analytics">section 2.2</a> sends a path on purpose, to my own server, and the trimming
-    described there is a different one: my server reducing a referring address after it arrives, rather than your
+    deliberately so: it is about the header, not about every request this application makes. The counter described in
+    <a href="#app-analytics">section 3.2</a>, which runs on these very pages, sends a path on purpose, to my own
+    server. And the trimming described in <a href="#analytics">section 2.2</a> is a different trimming: my server reducing a referring address after it arrives, rather than your
     browser withholding one before it leaves.
     Nothing about your account goes with the request: it carries no token, no name and no email address, because it is
     an ordinary image request and there is nowhere in one to put them.</li>

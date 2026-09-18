@@ -36,12 +36,13 @@ module.exports = function (eleventyConfig) {
       // and which it picks is a function of the browser rather than of this code. Allowing one
       // and not the other produces a map that works in some browsers.
       //
-      // These two are the only TILE hosts, and the only third parties the browser reaches directly
-      // rather than through the API - which is not the same as the only third parties full stop.
-      // gstatic is four lines above in script-src and three googleapis hosts are in this very
-      // array. The sentence said "the only third parties either property talks to" and was wrong
-      // by three; believed literally by the next person adding a googleapis-shaped host, it would
-      // have argued that host needed no privacy row. Firebase does have one, in /privacy/ 3 and 5.
+      // These two are the only TILE hosts, and the only entries on the upstream list the browser
+      // fetches for itself rather than through the API. **Not the only third parties**, which is
+      // what this comment claimed twice before getting it right: gstatic serves the Firebase
+      // modules four lines above in script-src, and the three googleapis hosts in this very array
+      // are talked to from the page - a host proxied through the API would never need to be in a
+      // browser's CSP at all, so their presence here is the proof. They are documented in
+      // /privacy/ 3 and 5; it is only the upstream list they are absent from.
       //
       // Adding the second tile host is why /privacy/ 3.3 and /cookies/ 4 both grew a row: a
       // request this code cannot make on a reader's behalf is one they can only learn about by

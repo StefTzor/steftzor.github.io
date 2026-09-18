@@ -100,7 +100,14 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
   // the end of it, which would have made this whole check refuse rather than assert.
   const at = MAP.indexOf('if (satellite) {');
   assert.notStrictEqual(at, -1, 'createMap must guard the control on the `satellite` option');
-  const wired = MAP.slice(at, MAP.indexOf('\n  }', at));
+  // **Both ends refused rather than defaulted.** `slice(at, -1)` does not return empty or throw,
+  // it slices to one character before the end of the file - so a missing end marker would hand
+  // the assertions below the whole rest of the module to find their strings in, including the
+  // theme observer's own `map.setStyle(...)`. Passing on text from outside the block is the same
+  // silent weakening this check exists to prevent, by a shorter route.
+  const end = MAP.indexOf('\n  }', at);
+  assert.notStrictEqual(end, -1, 'could not find the end of the `if (satellite)` block');
+  const wired = MAP.slice(at, end);
   assert.ok(/addControl\(\s*basemapToggle\(/.test(wired),
     'and the guarded block must actually add the toggle - an option nothing reads is four '
     + 'documents describing a button that is not there');
