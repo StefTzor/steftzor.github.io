@@ -32,7 +32,7 @@ const person = {
     "image": "https://tzortzoglou.eu/images/stefanos_profile.png",
     "jobTitle": [
       "Technical Customer Success Manager",
-      "Implementation Lead",
+      "Implementation Consultant",
       "Technical Account Manager"
     ],
     "knowsAbout": [
