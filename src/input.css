@@ -337,6 +337,22 @@
        of a cathedral. The layer sits UNDER the scrim, so the text column barely notices - and the
        contrast check in scripts/hero-sky.test.js measures this ink now rather than only the sky. */
     --wx-city-alpha: 50%;
+
+    /* **The strip at the bottom of the card that belongs to the skyline, and to nothing else.**
+       It is reserved by padding on .hero-body rather than carved out of whatever happens to be
+       left, because what is left is nothing: measured on the built page, a 390px card is 292px
+       tall with a 290px text block in it - the chip goes full width below the digest and fills
+       the card. The old layer was "the bottom two thirds" of a card that had no spare two
+       thirds, which is why the city was never visible at any width. Reserving it costs height
+       on a phone and that is the honest price of drawing anything down there.
+
+       **It grows with the card, and that is not decoration.** The art is 10:1. `slice` crops
+       whichever axis has slack, so a band shorter than a tenth of the card's width crops the
+       TOP - which is where the spire is, and which is the exact failure `meet` was chosen to
+       avoid in the first version of this card. A fixed 4rem band is 18:1 at 1280px and was
+       cutting 43% off the top of Uppsala cathedral. At these three sizes the band is never
+       flatter than the art by more than a few percent, so the crop is always horizontal. */
+    --wx-band: 4rem;
   }
 
   .dark .hero,
@@ -359,6 +375,16 @@
 
   .hero-body {
     @apply relative flex flex-wrap items-start justify-between gap-4 p-6 sm:p-8;
+    padding-bottom: calc(1.5rem + var(--wx-band));
+  }
+
+  @media (min-width: 640px) {
+    .hero { --wx-band: 7rem; }
+    .hero-body { padding-bottom: calc(2rem + var(--wx-band)); }
+  }
+
+  @media (min-width: 1280px) {
+    .hero { --wx-band: 9rem; }
   }
 
   .hero-digest {
@@ -393,6 +419,32 @@
     @apply pointer-events-none absolute inset-0 overflow-hidden rounded-2xl;
   }
 
+  /* **The scrim is masked away above the band, and that is the whole composition.**
+
+     It used to cover the card, so it covered the city as well: measured on the built page, only
+     12 of 1153 columns showed the skyline at a strength anybody could see, and that held at
+     every width from 390 to 1920. Painting the city on top of the scrim instead is not the fix
+     - the digest has to clear 4.5:1, which caps the city ink at about 25% alpha, and 25% is
+     precisely the invisible version this started as. So the two stop overlapping.
+
+     A mask rather than `bottom: var(--wx-band)`, because the scrim has two gradients - one that
+     runs down the card and one that runs across it - and shortening the box would leave the
+     horizontal one with a hard edge along the top of the band. This fades whichever gradient is
+     in force, in one place.
+
+     The stops are in the band's own units, for the same reason the wide scrim's are in the
+     text's: percentages were measured against a card whose height changes with the text in it,
+     and were wrong everywhere but where they were tuned. Measured on the built page, the text
+     clears the band by 24px at 360 and by 50px at 768 and up, so holding the mask solid to 8px
+     above the band covers every word at every width. */
+  .hero-scrim {
+    --wx-mask: linear-gradient(180deg,
+      #000 calc(100% - var(--wx-band) - 0.5rem),
+      transparent calc(100% - var(--wx-band) + 0.5rem));
+    -webkit-mask-image: var(--wx-mask);
+    mask-image: var(--wx-mask);
+  }
+
   /* The skyline. It fades in when app.js has worked out which city this is, so nobody sees a
      generic town for half a second and then the right one. */
   .hero-city {
@@ -405,12 +457,17 @@
     opacity: 1;
   }
 
-  /* The LAYER is the bottom two thirds; the drawing inside it is much shorter than that. The
-     symbols are 1200x200 with `xMidYMax meet`, so the silhouette letterboxes to a 6:1 band pinned
-     to the bottom of this box - about a quarter of the card's height on a wide one. Worth saying,
-     because reasoning from "two thirds" leads to wrong conclusions about what the scrim covers. */
+  /* The drawing fills the band exactly, and the band is the whole of what it gets.
+
+     `xMidYMax slice` in the markup, not `meet`. The art is 10:1 and the band is 10:1 on a wide
+     card but nearer 4:1 on a phone, so on a phone `slice` crops the SIDES and keeps the full
+     height - at 2.4x the size a letterboxed version would have managed. It can only crop
+     horizontally, never vertically, because the box is never wider than the art; the spires are
+     safe in a way they would not be if this were the other way round. The API centres the frame
+     on the tallest building for exactly this reason: whatever the crop keeps, it keeps that. */
   .hero-city svg {
-    @apply absolute inset-x-0 bottom-0 h-2/3 w-full;
+    @apply absolute inset-x-0 bottom-0 w-full;
+    height: var(--wx-band);
   }
 
   /* The text's contrast, bought back explicitly.
@@ -428,9 +485,9 @@
   .hero-scrim {
     background: linear-gradient(180deg,
       rgb(var(--color-surface)) 0%,
-      rgb(var(--color-surface) / 95%) 68%,
-      rgb(var(--color-surface) / 40%) 84%,
-      transparent 96%);
+      rgb(var(--color-surface)) 78%,
+      rgb(var(--color-surface) / 50%) 90%,
+      transparent 100%);
   }
 
   /* **The horizontal scrim waits for `xl`, and its stops are measured in text, not in percent.**

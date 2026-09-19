@@ -258,6 +258,18 @@ sitemapPriority: "0.3"
 
 <h3 id="map-tiles">3.3 Map tiles inside the application</h3>
 <p>
+  <strong>Since 19 September 2026 the map service is also read by my server, and that is a different thing from
+  everything else in this section.</strong> The home page of the application draws a silhouette of your city behind
+  the weather. It is computed from the heights OpenStreetMap holds for the buildings around your home area, and
+  <strong>my server fetches those, not your browser</strong>. Nine map squares, once, kept for a month, for a place
+  the server already knows because it fetches your forecast for it. Your browser never contacts the tile service on
+  that page and nothing about you reaches it: the request leaves my server's address, which is the same address for
+  everyone. What is kept is the finished outline and a key naming the map square, about 1.2&nbsp;km across and
+  coarser than the coordinate itself, which already arrives rounded to about a kilometre. Everyone in the same square
+  shares one stored answer. If OpenStreetMap has too little for your area, nothing is drawn.
+  The rest of this section is about the other case, where your browser is the one asking.
+</p>
+<p>
   Two pages in the application draw a map: the race location on <strong>/f1/</strong> and the stops on
   <strong>/transit/</strong>. The map software is served from my own domain, but the map picture is not. Your browser
   fetches it a square at a time, as you pan and zoom, straight from <strong>tiles.openfreemap.org</strong>:

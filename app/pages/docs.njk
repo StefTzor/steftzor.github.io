@@ -47,9 +47,12 @@ bodyScripts:
     <p class="hint mt-3 max-w-prose">
       Everything that needs a key, a database or an identity goes through the API: two of the five
       upstreams need a credential, and a key in a page is a key anyone can read with View Source.
-      The one thing that does not is the basemap. Map tiles are fetched one per square as you pan,
-      so your browser asks OpenFreeMap for them directly. Forwarding a few hundred of them a session
-      would mean running a tile server. Satellite on /f1/ is a second host on the same terms, EOX's
+      The one thing that does not is the basemap, on the two pages that draw a map. Tiles there are
+      fetched one per square as you pan, so your browser asks OpenFreeMap for them directly;
+      forwarding a few hundred of them a session would mean running a tile server. The home
+      card&rsquo;s skyline is the same service read the other way round, nine tiles fetched once on the
+      server, because there the tile numbers would be where you live rather than where you chose
+      to look. Satellite on /f1/ is a second host on the same terms, EOX's
       Sentinel-2 composite, and it is reached only after the Satellite control is turned on. Those
       two are the only upstreams your browser contacts itself, so the diagram names them as the
       exception: their arrows would have to leave from the top of the picture, and every other
@@ -239,10 +242,11 @@ bodyScripts:
     <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-1">The five upstreams, in detail</h2>
     <p class="text-sm text-brand-muted mb-6 max-w-prose">
       Four of them are proxied. Two of those need a credential, which has to stay on the server;
-      the other two so that one call serves every reader. The fifth is the basemap, and it is not
-      proxied at all: your browser fetches its tiles itself, which makes it the only one of
-      the five your browser has ever heard of. Each one below lists what is called, how long an answer
-      is held, and how their field names become ours.
+      the other two so that one call serves every reader. The fifth is the basemap, and it is read
+      both ways: your browser fetches the tiles for the two maps itself, which makes it the only
+      one of the five your browser has ever heard of, while the home card&rsquo;s skyline is computed
+      from the same service on the server and never leaves your browser at all. Each one below lists
+      what is called, how long an answer is held, and how their field names become ours.
     </p>
     <p class="text-sm text-brand-muted mb-6 max-w-prose">
       In the mapping tables, theirs is on the left and ours on the right. A row marked

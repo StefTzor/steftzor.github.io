@@ -21,7 +21,6 @@ signOut: true
 <section class="app-page">
 
   {% include "chrome/weather-icons.njk" %}
-  {% include "chrome/city-skylines.njk" %}
 
   {# The hero.
 
@@ -36,10 +35,17 @@ signOut: true
   <div id="hero" class="hero" data-wx="unknown">
     <div class="hero-sky" aria-hidden="true"></div>
 
-    {# `href` is set by app.js once it knows which city this is, and `data-city` on the card
-       fades the layer in. Empty until then, so nobody watches a generic town turn into Uppsala. #}
+    {# The skyline of wherever the forecast is for, computed by the API from OpenStreetMap
+       building heights and delivered as integers, never as markup - app.js bounds-checks them
+       and builds the `d` itself. `data-city` on the card fades the layer in, so nothing appears
+       until there is a real city to show, and nothing at all appears for a place with no
+       skyline worth drawing. `slice` rather than `meet`: the box is narrower than the art, so
+       it crops the sides and keeps the full height - the frame is already centred on the
+       tallest thing, which is what the crop is guaranteed to keep. #}
     <div class="hero-city" aria-hidden="true">
-      <svg focusable="false"><use id="cityArt"></use></svg>
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="xMidYMax slice" focusable="false">
+        <path id="cityArt" fill="currentColor"></path>
+      </svg>
     </div>
 
     <div class="hero-fall" aria-hidden="true"></div>

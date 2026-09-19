@@ -118,64 +118,83 @@ function greet(me) {
 }
 
 /**
- * Which skyline stands behind the hero card.
+ * The skyline behind the hero card.
  *
- * **Matched on position, not on the name**, for two reasons. The saved home is a display string
- * that profile.js flattens out of the geocoder's structured answer - "Uppsala, Uppsala län, SE" -
- * so matching text means guessing at "Gamla Uppsala", a stop name, or a localised spelling. And
- * the name is missing entirely in the case that matters most: somebody who granted the browser
- * their location has coordinates and no label at all, and the chip beside this says "Your
- * location".
+ * **Computed from OpenStreetMap, not drawn.** This used to point a <use> at one of three
+ * hand-drawn symbols - Uppsala, Stockholm, and a generic town for everywhere else. It failed
+ * the way hand-drawing always fails here: two cities is not "most places", and the two that
+ * existed were not recognisable anyway. The API derives a real one now, from the heights of
+ * the actual buildings, for anywhere OpenStreetMap has mapped.
  *
- * Thirty kilometres is far coarser than the coordinates themselves, which are already rounded to
- * two decimals on both sides of the wire, so this reads nothing more precise than the page holds.
+ * The request goes to our own API and not to a tile host, because the tile numbers ARE where
+ * the reader lives and this is the page everybody lands on. /privacy/ 3.3 names the two pages
+ * that draw a map and this is not one of them.
  *
- * Anything unmatched gets `generic`, which is a skyline too. A card with no city on it would look
- * half-built rather than deliberately plain.
+ * Failure is silent on purpose: the layer simply stays hidden and the card is the weather. A
+ * decorative background is never worth an error message.
  */
-const CITIES = [
-  { id: "uppsala", lat: 59.86, lon: 17.64 },
-  { id: "stockholm", lat: 59.33, lon: 18.07 },
-];
-const CITY_RADIUS_KM = 30;
+const SKY_STEPS_MAX = 4096;
 
-/** Equirectangular, which is exact enough at 30 km and needs no trigonometry beyond one cosine. */
-function nearestCity(coords) {
-  if (!coords || !Number.isFinite(coords.lat) || !Number.isFinite(coords.lon)) return null;
-  let best = null;
-  for (const city of CITIES) {
-    const dy = (city.lat - coords.lat) * 111;
-    const dx = (city.lon - coords.lon) * 111 * Math.cos((coords.lat * Math.PI) / 180);
-    const km = Math.sqrt(dx * dx + dy * dy);
-    if (km <= CITY_RADIUS_KM && (!best || km < best.km)) best = { id: city.id, km };
+/**
+ * Upstream numbers to a path, with the numbers checked.
+ *
+ * The rule this file has kept throughout is that nothing upstream becomes markup - everything
+ * is createElement and textContent, and the weather sprite exists so that a weather code can
+ * only ever select a shape somebody already drew. A `d` string handed over by an API and set on
+ * a <path> would be the first exception, so the API does not send one: it sends integers, and
+ * the string is built here out of values that have been bounds-checked first.
+ *
+ * @returns {string|null} null if anything is out of shape, which draws nothing.
+ */
+function skylinePath(steps, w, h) {
+  if (!Array.isArray(steps) || !steps.length || steps.length > SKY_STEPS_MAX) return null;
+  if (!Number.isInteger(w) || !Number.isInteger(h) || w <= 0 || h <= 0) return null;
+  let d = `M0 ${h}`;
+  let previous = -1;
+  for (const step of steps) {
+    if (!Array.isArray(step) || step.length !== 2) return null;
+    const [x, up] = step;
+    // Integers, inside the box, and left to right. A step that goes backwards would fold the
+    // silhouette over itself; one outside the box would paint over the text.
+    if (!Number.isInteger(x) || !Number.isInteger(up)) return null;
+    if (x < 0 || x > w || up < 0 || up > h) return null;
+    if (x <= previous) return null;
+    previous = x;
+    d += `H${x}V${h - up}`;
   }
-  return best && best.id;
-}
-
-/** The fallback for the third state: no coordinates at all, and the API named its own place. */
-function cityFromName(name) {
-  if (typeof name !== "string") return null;
-  const town = name.split(",")[0].trim().toLowerCase();
-  if (!town) return null;
-  const hit = CITIES.find((c) => town === c.id || town.startsWith(c.id) || town.endsWith(c.id));
-  return hit && hit.id;
+  return `${d}H${w}V${h}z`;
 }
 
 /**
- * Point the card's skyline at one of the symbols in chrome/city-skylines.njk.
+ * Ask for the skyline of wherever the forecast is for, and draw it if there is one.
  *
- * Sets `href` and nothing else: the script never builds SVG, so a place name cannot become
- * markup. `data-city` on the card is what fades the layer in, so the skyline appears once it is
- * the right one rather than a generic town correcting itself a moment later.
+ * `sparse` is a real answer, not a failure: a hamlet with four sheds and the middle of the
+ * Atlantic both come back that way, and drawing four sheds would be worse than drawing nothing.
  */
-function drawCity(data) {
+async function drawCity(query) {
   const art = el("cityArt");
   const hero = el("hero");
-  if (!art || !hero) return;
-  const id = nearestCity(at) || cityFromName(label) || cityFromName(data && data.place) || "generic";
-  art.setAttribute("href", `#city-${id}`);
-  art.setAttributeNS(XLINK, "xlink:href", `#city-${id}`);
-  hero.dataset.city = id;
+  // The <svg> is read here rather than with closest() further down, where a missing wrapper
+  // would throw INSIDE an async function nobody awaits - an unhandled rejection, where the
+  // paragraph above promises a card that is simply the weather.
+  const frame = art && art.ownerSVGElement;
+  if (!art || !hero || !frame) return;
+
+  let data;
+  try {
+    data = await api("/skyline" + query);
+  } catch {
+    return;
+  }
+  if (!data || data.sparse) return;
+
+  const d = skylinePath(data.steps, data.width, data.height);
+  if (!d) return;
+  art.setAttribute("d", d);
+  frame.setAttribute("viewBox", `0 0 ${data.width} ${data.height}`);
+  // Presence, not a value: the id is gone and there is nothing left to name. It fades the layer
+  // in, so the skyline appears when it is the right one rather than a moment before.
+  hero.dataset.city = "";
 }
 
 // WMO codes, grouped rather than enumerated: the difference between slight and moderate
@@ -344,7 +363,6 @@ function renderChip(data) {
     // afternoon. `isDay` is a boolean from the API, and an absent one reads as day.
     hero.dataset.night = now.isDay === false ? "true" : "false";
   }
-  drawCity(data);
   lastWeather = { temp: now.temperature, text: what.text, place: label ? label.split(",")[0].trim()
     : (data.precise ? "your location" : (data.place || "")) };
   paintDigest();
@@ -487,19 +505,14 @@ const coarse = (n) => Number(n.toFixed(2));
  */
 let label = null;
 
-/**
- * And where it is for, kept for the same reason the label is: the response does not echo the
- * coordinates back, so if this page does not remember what it asked about, nothing does. The
- * skyline is matched on this.
- */
-let at = null;
-
 async function load(coords, name) {
   label = name || null;
-  at = coords || null;
   const q = coords
     ? `?lat=${encodeURIComponent(coarse(coords.lat))}&lon=${encodeURIComponent(coarse(coords.lon))}`
     : "";
+  // Side by side rather than one after the other, and the skyline is not awaited: the forecast
+  // is the thing somebody is waiting to read, and a background must never hold it up.
+  drawCity(q);
   renderWeather(await api("/weather" + q));
 }
 

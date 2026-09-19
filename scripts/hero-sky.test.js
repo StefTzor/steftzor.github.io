@@ -14,8 +14,12 @@
  *   1. **A condition with no sky draws a blank card.** `describe()` is the only thing that picks
  *      the value, and it is total - every WMO code lands on one of nine strings. Add a tenth and
  *      the card simply stops reacting, with nothing in the console to say so.
- *   2. **A city in the table with no drawing is an empty box**, and a drawing nothing points at is
- *      dead weight in every page load. They have to arrive together.
+ *   2. **The skyline arrives from the API as numbers, and numbers are the only thing this page
+ *      will accept.** Everything on this card is createElement and textContent; the weather
+ *      sprite exists so a weather code can only ever choose a shape somebody already drew. The
+ *      skyline is the one drawing that comes from outside, so the boundary is the check: the
+ *      client builds the `d` itself out of integers it has bounds-checked, and a `d` handed
+ *      over by the API would be the first upstream string in this file to become markup.
  *   3. **Contrast is the price of the whole change.** The card is allowed to be loud because the
  *      scrim buys the text column back. Weaken the scrim or raise a wash and the greeting goes
  *      with it, and no build step would notice.
@@ -32,7 +36,6 @@ const path = require('path');
 const read = (p) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
 const CSS = read('src/input.css');
 const APP = read('app/scripts/app.js');
-const SKYLINES = read('_includes/chrome/city-skylines.njk');
 const PAGE = read('app/pages/index.njk');
 
 let passed = 0;
@@ -85,33 +88,86 @@ function block(selector, contains) {
   ok(`all ${icons.length} conditions describe() can return have a sky, and nothing else does`);
 }
 
-// --- 2. the cities and their drawings arrive together -------------------------
+// --- 2. the skyline crosses the boundary as numbers, and lands in its own band ---
 {
-  const table = APP.slice(APP.indexOf('const CITIES = ['), APP.indexOf('];', APP.indexOf('const CITIES = [')));
-  const ids = [...table.matchAll(/id:\s*"([a-z-]+)"/g)].map((m) => m[1]);
-  assert.ok(ids.length >= 1, 'CITIES is empty, so this test is measuring nothing');
+  // The client builds the path. If it ever takes one, this is the line that notices.
+  assert.ok(/setAttribute\("d", /.test(APP),
+    'app.js must build the skyline path itself');
+  assert.ok(!/\bdata\.(d|path)\b/.test(APP) && !/setAttribute\("d", *(data|res|json)/.test(APP),
+    'app.js must never set `d` from something the API sent - the whole point of shipping integers '
+    + 'is that no upstream string becomes markup on this page');
 
-  const drawn = [...SKYLINES.matchAll(/<symbol id="city-([a-z-]+)"/g)].map((m) => m[1]);
-  assert.ok(drawn.includes('generic'),
-    'there must be a `generic` skyline: it is what an unmatched place falls back to, and without '
-    + 'it the card would show nothing at all rather than something deliberately plain');
+  // Every guard the boundary depends on, named individually: dropping any one of them lets a
+  // different malformed answer through, and none of them fails loudly at runtime.
+  const guard = APP.slice(APP.indexOf('function skylinePath('), APP.indexOf('async function drawCity'));
+  assert.ok(guard.length > 200, 'could not find skylinePath - this test is now guessing, so it fails');
+  [
+    // Named on the STEP's own values, not just `Number.isInteger`: the box dimensions are
+    // checked on an earlier line with the same call, so matching the bare name kept passing
+    // after the step check was deleted.
+    ['Number.isInteger(x)', 'a non-integer x would put a float, or NaN, straight into the path'],
+    ['Number.isInteger(up)', 'a non-integer height would do the same, one axis over'],
+    ['Array.isArray', 'a string in place of the steps array would be iterated character by character'],
+    ['x < 0', 'a negative x would draw left of the box'],
+    ['> w', 'an x past the width would paint outside the band'],
+    ['> h', 'a height past the box would paint up through the text'],
+    ['x <= previous', 'steps that go backwards fold the silhouette over itself'],
+  ].forEach(([needle, why]) => assert.ok(guard.includes(needle),
+    `skylinePath no longer checks \`${needle}\`: ${why}`));
 
-  ids.forEach((id) => assert.ok(drawn.includes(id),
-    `CITIES lists "${id}" and chrome/city-skylines.njk has no <symbol id="city-${id}"> - the card `
-    + 'would fade in an empty box'));
+  assert.ok(/return null/.test(guard) && /if \(!d\) return;/.test(APP),
+    'a rejected skyline must draw nothing at all, not a partial path');
 
-  // `generic` is reachable through the fallback rather than the table, so it is excluded here.
-  drawn.filter((d) => d !== 'generic').forEach((d) => assert.ok(ids.includes(d),
-    `chrome/city-skylines.njk draws "${d}" and nothing in CITIES can select it - it ships on every `
-    + 'page load and is never seen'));
+  assert.ok(/<path id="cityArt"/.test(PAGE) && !/<use id="cityArt"/.test(PAGE),
+    'the page ships an empty <path>, so nothing is drawn before there is a real city');
+  assert.ok(/preserveAspectRatio="xMidYMax slice"/.test(PAGE),
+    'the skyline must be xMidYMax slice: bottom-anchored, and cropping the sides rather than the '
+    + 'top, which is where the landmark is');
 
-  // The script may only ever point at one of these, never build one.
-  assert.ok(/art\.setAttribute\("href", `#city-\$\{id\}`\)/.test(APP),
-    'drawCity must set an href on the existing <use> - building SVG from a place name is the one '
-    + 'thing the sprite exists to prevent');
-  assert.ok(/<use id="cityArt">/.test(PAGE),
-    'the page must ship the <use> empty, so no city is drawn before the right one is known');
-  ok(`every city in the table is drawn (${ids.join(', ')}), every drawing is reachable, and the script only points at one`);
+  // **The band and the scrim may not overlap.** This is the composition, and it is the thing
+  // that was broken: with the scrim over the whole card, 12 of 1153 columns showed the city at
+  // a strength anybody could see. The mask is what keeps them apart, and it has to be measured
+  // in the band's own units - a percentage is measured against a card whose height changes with
+  // the text in it, which is the same mistake the wide scrim's stops were written to avoid.
+  const scrim = block('.hero-scrim', 'mask-image');
+  const mask = scrim.slice(scrim.indexOf('--wx-mask:'), scrim.indexOf(';', scrim.indexOf('--wx-mask:')));
+  assert.ok(mask.length > 20, 'could not read --wx-mask - this test is now guessing, so it fails');
+  // BOTH stops, and no percentage anywhere in it. Checking only that the band is mentioned kept
+  // passing when the transparent stop was changed back to `96%` - which is the original mistake,
+  // a stop measured against a card whose height changes with the text in it.
+  assert.strictEqual((mask.match(/var\(--wx-band\)/g) || []).length, 2,
+    `both of the mask's stops must be measured from the band; found ${(mask.match(/var\(--wx-band\)/g) || []).length}`);
+  // A BARE percentage stop - `transparent 96%`. The `100%` inside each calc() is fine and is the
+  // point of them: it means the bottom of the card, which is what the band is measured back from.
+  const bare = mask.match(/(?:#[0-9a-f]{3,8}|transparent)\s+\d+%/i);
+  assert.ok(!bare,
+    `the mask has a bare percentage stop in it ("${bare && bare[0]}"); percentages are measured `
+    + 'against the card, whose height changes with the text in it, and were wrong at every width '
+    + 'but the one they were tuned at');
+  assert.ok(/[^-]mask-image:\s*var\(--wx-mask\)/.test(scrim) && /-webkit-mask-image:/.test(scrim),
+    'the mask needs both the plain and the -webkit- property, or it does nothing in Safari and '
+    + 'the scrim covers the city there and nowhere else');
+
+  // And the band has to be reserved rather than borrowed from whatever is left over, because at
+  // 390px there is nothing left over: the card is 356px tall and the text block is 354px of it.
+  // Twice: once unconditionally and once at `sm`, where the padding itself changes. Reading one
+  // block found the `sm` copy and stayed green when the unconditional one was deleted - which is
+  // the phone, and the phone is the width with no spare room at all.
+  const reserved = [...CSS.matchAll(/padding-bottom:\s*calc\([^)]*var\(--wx-band\)\)/g)];
+  assert.ok(reserved.length >= 2,
+    `.hero-body reserves the band in ${reserved.length} place(s); it needs one for the base case `
+    + 'and one for `sm`, or the text sits on top of the skyline at whichever width is missing');
+
+  // The band grows with the card. A 10:1 drawing in a band flatter than 10:1 is cropped at the
+  // TOP by `slice`, and the top is the landmark: a fixed 4rem band took 43% off Uppsala
+  // cathedral at 1280px. Three sizes, each within a few percent of the art's own aspect.
+  const bands = [...CSS.matchAll(/--wx-band:\s*([\d.]+)rem/g)].map((m) => Number(m[1]));
+  assert.ok(bands.length >= 3,
+    `the band is declared at ${bands.length} sizes; it has to grow with the card or the widest `
+    + 'one crops the spire off the top');
+  assert.deepStrictEqual([...bands].sort((a, b) => a - b), bands,
+    `the band sizes must increase with the breakpoints, got ${bands.join(', ')}`);
+  ok('the skyline crosses as checked integers, and the band it lands in is reserved and unscrimmed');
 }
 
 // --- 3. what the effect costs the text ----------------------------------------
@@ -197,8 +253,11 @@ function block(selector, contains) {
    * stays at nine, and the reported worst case IMPROVES because the biggest contributor to it has
    * gone. So the palette is the checklist: anything declared has to be painted somewhere.
    */
+  // --wx-city, --wx-city-alpha and --wx-band are not ink in this stack: the first two paint the
+  // skyline, which is in the band and under no text, and the third is the band's height.
+  const NOT_INK = ['--wx-city', '--wx-city-alpha', '--wx-band', '--wx-mask'];
   const declared = [...new Set([...block('.hero', '--wx-sun').matchAll(/(--wx-[a-z0-9-]+):/g)].map((m) => m[1]))]
-    .filter((t) => !POSITIONAL.includes(t) && t !== '--wx-city' && t !== '--wx-city-alpha');
+    .filter((t) => !POSITIONAL.includes(t) && !NOT_INK.includes(t));
   // **The palette count, because a regex that cannot see a digit shrinks this list in silence.**
   // `[a-z-]+` stops at `veil` and then fails on the `2`, so `--wx-veil2` appeared in neither list
   // and the guard below compared two sets that were both missing it - passing vacuously, which is
@@ -228,14 +287,19 @@ function block(selector, contains) {
   const snowRule = block('.hero[data-wx="snow"] .hero-fall', 'radial-gradient');
   const snowAlpha = Math.max(...[...snowRule.matchAll(/--wx-snow\)\s*\/\s*(\d+)%/g)].map((m) => +m[1])) / 100;
 
-  // The skyline is ink too and runs the full width under the text, so it is in every stack.
-  const cityInk = (source) => {
-    const ch = source.match(/--wx-city:\s*([\d ]+);/);
-    const al = source.match(/--wx-city-alpha:\s*([\d.]+)%/);
-    assert.ok(ch && al, 'could not read the city ink - this test is now guessing, so it fails');
-    const [r, g, b] = ch[1].trim().split(/\s+/).map(Number);
-    return { r, g, b, a: Number(al[1]) / 100 };
-  };
+  /**
+   * **The skyline is NOT in these stacks any more, and that is a claim worth checking.**
+   *
+   * It used to be: the layer covered the card, so it sat under the text and had to be counted.
+   * It now lives in the band, which contains no text at all - which is exactly why the ink could
+   * be raised to a strength somebody can see. Read straight from the stylesheet rather than
+   * assumed, because if the drawing ever escapes the band it is back in the stack and every
+   * ratio below is measuring a card that no longer exists.
+   */
+  const cityBox = block('.hero-city svg', 'height:');
+  assert.ok(/bottom-0/.test(cityBox) && /height:\s*var\(--wx-band\)/.test(cityBox),
+    'the skyline must be exactly the band, pinned to the bottom. If it covers more than that it '
+    + 'is under the text again, and the contrast measured below is not the contrast on the page');
 
   /**
    * **The wide scrim is checked structurally, because it is now built not to need a sample point.**
@@ -252,7 +316,7 @@ function block(selector, contains) {
    * measure, the text is on plain surface and the ratio is the palette's own. What is asserted is
    * that the three numbers still agree with the three the layout uses.
    */
-  const wide = block('@media (min-width: 1280px)', 'linear-gradient(100deg');
+  const wide = block('@media (min-width: 1280px)', 'background: linear-gradient(100deg');
   const opaque = wide.match(/rgb\(var\(--color-surface\)\)\s+calc\(([^)]*)\)/);
   assert.ok(opaque, 'the wide scrim must hold full opacity to a calc() stop, not to a percentage');
   const measure = opaque[1].replace(/\s+/g, '');
@@ -269,13 +333,22 @@ function block(selector, contains) {
 
   /**
    * The narrow scrim still needs a point, because it runs down the card and the text's height is
-   * what varies. MEASURED, not computed: the arithmetic said 52% of a 208px card; a browser at
-   * 360 and 390px says the card is 268px there - the digest wraps to three lines and the chip
-   * drops below it - and the last line ends 66% down. Two attempts at deriving this from the
-   * markup were optimistic in the same direction, so it comes from the browser now.
+   * what varies. MEASURED, not computed: two attempts at deriving this from the markup were
+   * optimistic in the same direction, so it comes from the browser. At 360px with the longest
+   * digest paintDigest() can compose - three clauses, wrapping to five lines - the card is 488px
+   * tall and the digest ends 68% down.
+   *
+   * **The chip below it is not the sample point, and taking it as one is a mistake this made.**
+   * It sits lower - 82% at 360 - but it is a `.wx-chip`, with its own surface and its own border
+   * painted over everything here, so the scrim owes it nothing. Measuring to the chip reported
+   * dark/thunder at 4.16:1 while the rendered page was at 5.71:1.
    */
   const LAYOUTS = [
-    { name: 'narrow', at: 0.66, gradient: block('.hero-scrim', 'linear-gradient(180deg') },
+    // `background:` and not just `linear-gradient(180deg`: the mask is a 180deg gradient too,
+    // and matching on the function name alone returned the MASK's rule - whose stops are in
+    // calc() and matched nothing, so the check died rather than measuring the wrong thing. It
+    // could just as easily have measured the wrong thing.
+    { name: 'narrow', at: 0.68, gradient: block('.hero-scrim', 'background: linear-gradient(180deg') },
   ];
 
   let worst = { ratio: Infinity };
@@ -323,10 +396,9 @@ function block(selector, contains) {
           }
           return over(token(ink, name), bg);
         };
-        // The card's own paint order: sky, then the city, then whatever falls past it, then the
-        // scrim that buys the text back.
+        // The card's own paint order where the TEXT is: sky, then whatever falls past it, then
+        // the scrim. The city is not in it - it is in the band, below every word on this card.
         let bg = tokens.filter((t) => t.layer === 'sky').reduce((acc, t) => paint(acc, t.token), surface);
-        bg = over(cityInk(ink), bg);
         bg = tokens.filter((t) => t.layer === 'fall').reduce((acc, t) => paint(acc, t.token), bg);
         bg = over({ ...surface, a: scrimAlpha }, bg);
 
@@ -336,12 +408,12 @@ function block(selector, contains) {
         if (onDigest < worst.ratio) worst = { ratio: onDigest, where };
 
         assert.ok(onHeading >= 4.5,
-          `${where}: the greeting is ${onHeading.toFixed(2)}:1 over ${tokens.map((t) => t.token).join(' + ')} + the `
-          + 'skyline; large text may legally sit at 3:1 but this card has never been near that');
+          `${where}: the greeting is ${onHeading.toFixed(2)}:1 over ${tokens.map((t) => t.token).join(' + ')}; `
+          + 'large text may legally sit at 3:1 but this card has never been near that');
         assert.ok(onDigest >= 4.5,
-          `${where}: the digest is ${onDigest.toFixed(2)}:1 over ${tokens.map((t) => t.token).join(' + ')} + the `
-          + 'skyline, below the 4.5:1 body text needs. Every layer in that stack can be fine alone '
-          + 'and the sum still fail, which is why the stack is what is measured');
+          `${where}: the digest is ${onDigest.toFixed(2)}:1 over ${tokens.map((t) => t.token).join(' + ')}, `
+          + 'below the 4.5:1 body text needs. Every layer in that stack can be fine alone and the '
+          + 'sum still fail, which is why the stack is what is measured');
       });
     });
   });
@@ -413,4 +485,4 @@ function block(selector, contains) {
   ok('the weather panel stays open while the browser asks for permission, and the button keeps its focus');
 }
 
-console.log(`\nhero sky: all ${passed} checks passed — every condition draws, every city is drawn, and the text keeps its contrast`);
+console.log(`\nhero sky: all ${passed} checks passed — every condition draws, the skyline crosses as checked numbers into a band of its own, and the text keeps its contrast`);

@@ -8,7 +8,7 @@
     The lanes group by what a thing is FOR rather than by which file it lives in, which is the
     question somebody looking at an architecture picture is actually asking. -#}
       <svg viewBox="0 0 700 446" class="w-full min-w-[560px]" role="img"
-        aria-label="Four layers. You, in a browser. Two static sites that hold no secrets. One API that verifies the token, re-reads the role and holds every key. Below it Firebase for identity, Postgres for the two things worth keeping, and four upstream services, two of which need a credential. The app’s map tiles are the one thing the browser fetches itself.">
+        aria-label="Four layers. You, in a browser. Two static sites that hold no secrets. One API that verifies the token, re-reads the role and holds every key. Below it Firebase for identity, Postgres for the two things worth keeping, and five upstream services, two of which need a credential. The tiles for the app’s two maps are the one thing the browser fetches itself.">
         <defs>
           <marker id="flow-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
             <path d="M0,0 L8,4 L0,8 z" class="dg-arrow"/>
@@ -65,16 +65,21 @@
           <text x="350" y="360" text-anchor="middle" class="dg-sub">messages · restarts</text>
 
           <rect x="450" y="326" width="140" height="46" rx="8" class="dg-box-key"/>
-          <text x="520" y="345" text-anchor="middle" class="dg-label">Four upstreams</text>
+          <text x="520" y="345" text-anchor="middle" class="dg-label">Five upstreams</text>
           <text x="520" y="360" text-anchor="middle" class="dg-sub">two need a key</text>
 
-          <text x="350" y="396" text-anchor="middle" class="dg-sub">Open-Meteo · Trafiklab ResRobot · Jolpica · GitHub Actions</text>
-          <text x="350" y="411" text-anchor="middle" class="dg-sub">none of these four is ever called from your browser</text>
-          {#- The exception, named rather than left off. The app's map tiles are fetched by the
-              browser itself, because a tile is asked for one square at a time as you pan and
-              standing in front of a few hundred of those would mean running a tile server. It is
-              not drawn as a box because it hangs off the browser at the top, not off the API at
+          <text x="350" y="396" text-anchor="middle" class="dg-sub">Open-Meteo · Trafiklab ResRobot · Jolpica · GitHub Actions · OpenFreeMap</text>
+          <text x="350" y="411" text-anchor="middle" class="dg-sub">none of these five is ever called from your browser</text>
+          {#- The exception, named rather than left off. The app's MAPS fetch their tiles in the
+              browser, because a tile is asked for one square at a time as you pan and standing in
+              front of a few hundred of those would mean running a tile server. The same service
+              also appears above, because the home card's skyline is computed from its tiles on
+              the server - one place, once, for a coordinate the API already has. That is why the
+              line below says "the maps" and not "the tiles": the host is on both sides now, and
+              which side it is on depends on which page you are looking at.
+
+              Not drawn as a box because it hangs off the browser at the top, not off the API at
               the bottom, and an arrow that long would cross every layer to say one thing. -#}
-          <text x="350" y="426" text-anchor="middle" class="dg-sub">the app’s map tiles are the one exception, fetched by your browser itself</text>
+          <text x="350" y="426" text-anchor="middle" class="dg-sub">the app’s two maps are the one exception: those tiles your browser fetches itself</text>
         </g>
       </svg>
