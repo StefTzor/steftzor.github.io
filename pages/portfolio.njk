@@ -12,7 +12,9 @@ sitemapPriority: "0.8"
         <h1 class="text-4xl md:text-5xl font-bold mb-6">Technical <span class="text-brand-accent">Case
                 Studies</span></h1>
         <p class="text-lg text-brand-muted leading-relaxed">
-            A selection of the implementations and technical problems I have resolved, and how.
+            A selection of the implementations and technical problems I have resolved, and how. Most of them are
+            enterprise onboardings onto a <strong class="text-brand-text">Customer Data Platform (CDP)</strong>,
+            where the work is getting a client's ticketing, e-commerce and CRM data to agree on what a customer is.
         </p>
         <p class="mt-6 text-sm text-brand-muted border-l-4 border-brand-accent pl-4 py-1 text-left">
             <strong class="text-brand-text">A note on these case studies.</strong> Clients are described in
@@ -42,15 +44,15 @@ sitemapPriority: "0.8"
                 <h2 class="text-2xl font-bold text-brand-text mb-3">Reverse-Engineering Global Ticketing APIs</h2>
 
                 <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                    <strong>The Challenge:</strong> A global ticketing giant needed its legacy, multi-layered event data
-                    integrated into our platform. Documentation was fragmented, and venues and events were related in ways the structure did not make obvious.
+                    <strong>The Challenge:</strong> A global ticketing platform needed its legacy, multi-layered event data
+                    integrated into our CDP. Documentation was fragmented, and venues and events were related in ways the structure did not make obvious.
                     <br><br>
                     <strong>My Solution:</strong> I manually mapped the API logic, reverse-engineering the data
                     relationships. I designed the JSON transformation schema and guided Engineering on the exact
-                    implementation path to standardize millions of data points.
+                    implementation path, so their whole event catalogue could be standardised at once.
                     <br><br>
-                    <strong>The Outcome:</strong> Enabled real-time segmentation on massive event datasets without
-                    breaking the legacy dependency.
+                    <strong>The Outcome:</strong> Real-time segmentation across their full event history, with the
+                    legacy dependency still intact.
                 </p>
 
                 <div class="border-t border-brand-border pt-4 mt-auto">
@@ -80,8 +82,8 @@ sitemapPriority: "0.8"
                 <h2 class="text-2xl font-bold text-brand-text mb-3">Sports League Bi-Directional Sync</h2>
 
                 <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                    <strong>The Challenge:</strong> Onboarding a multi-tenant Sports League (10+ clubs) with a
-                    volatile ecosystem. They required a bi-directional sync between B2B CRMs, mobile apps, and
+                    <strong>The Challenge:</strong> Onboarding a multi-tenant sports league of 10+ clubs, each running
+                    its own tools and changing them without notice. They required a bi-directional sync between B2B CRMs, mobile apps, and
                     gamification platforms. We had to handle conflicting data edits and push segmented audiences
                     back to their CRM.
                     <br><br>
@@ -89,7 +91,8 @@ sitemapPriority: "0.8"
                     conflicts (Source of Truth logic). I coordinated the integration across Ticketing, E-commerce,
                     and Membership systems to ensure data consistency.
                     <br><br>
-                    <strong>The Outcome:</strong> Clubs could push targeted segments from our platform back into their CRM and sell against them.
+                    <strong>The Outcome:</strong> Clubs could push targeted segments from the CDP back into their own
+                    CRM and sell against them.
                 </p>
 
                 <div class="border-t border-brand-border pt-4 mt-auto">
@@ -121,10 +124,10 @@ sitemapPriority: "0.8"
 
                 <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
                     <strong>The Challenge:</strong> A Fortune 500 client with rigid Data Lake pipelines needed to
-                    onboard massive "Non-Adult" membership datasets. Under strict legal constraints, marketing had to reach parents and guardians without exposing any minor's personal data.
+                    onboard its entire under-18 membership base. Under strict legal constraints, marketing had to reach parents and guardians without exposing any minor's personal data.
                     <br><br>
                     <strong>My Solution:</strong> Led the technical discovery with their Data Engineers. I designed
-                    a "Parent/Guardian" entity model that routed all communications to authorized adults while
+                    a "Parent/Guardian" entity model in the CDP that routed all communications to authorised adults while
                     keeping the non-adult profile data strictly siloed for analysis only.
                     <br><br>
                     <strong>The Outcome:</strong> The model was signed off by the client's own data-protection and
@@ -159,8 +162,8 @@ sitemapPriority: "0.8"
                 <h2 class="text-2xl font-bold text-brand-text mb-3">Technical Utility Scripts</h2>
 
                 <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                    A collection of automation scripts and experimental projects I use to sharpen my technical
-                    skills. Includes exercises in API manipulation, data formatting, and frontend experiments.
+                    Automation scripts and API experiments I write outside work: parsing, data formatting, and
+                    small utilities.
                 </p>
 
                 <div class="border-t border-brand-border pt-4 mt-auto flex justify-between items-center">
@@ -170,7 +173,7 @@ sitemapPriority: "0.8"
                         <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Python</span>
                     </div>
                     <a href="https://github.com/steftzor" target="_blank"
-                        class="text-sm font-bold text-brand-accent hover:underline" rel="noopener noreferrer">View Github {% icon "fa-solid-arrow-right", "ml-1" %}</a>
+                        class="text-sm font-bold text-brand-accent hover:underline" rel="noopener noreferrer">View on GitHub {% icon "fa-solid-arrow-right", "ml-1" %}</a>
                 </div>
             </div>
         </div>
