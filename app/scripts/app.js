@@ -117,86 +117,6 @@ function greet(me) {
   el("greeting").textContent = `${part}, ${firstName(me)}`;
 }
 
-/**
- * The skyline behind the hero card.
- *
- * **Computed from OpenStreetMap, not drawn.** This used to point a <use> at one of three
- * hand-drawn symbols - Uppsala, Stockholm, and a generic town for everywhere else. It failed
- * the way hand-drawing always fails here: two cities is not "most places", and the two that
- * existed were not recognisable anyway. The API derives a real one now, from the heights of
- * the actual buildings, for anywhere OpenStreetMap has mapped.
- *
- * The request goes to our own API and not to a tile host, because the tile numbers ARE where
- * the reader lives and this is the page everybody lands on. /privacy/ 3.3 names the two pages
- * that draw a map and this is not one of them.
- *
- * Failure is silent on purpose: the layer simply stays hidden and the card is the weather. A
- * decorative background is never worth an error message.
- */
-const SKY_STEPS_MAX = 4096;
-
-/**
- * Upstream numbers to a path, with the numbers checked.
- *
- * The rule this file has kept throughout is that nothing upstream becomes markup - everything
- * is createElement and textContent, and the weather sprite exists so that a weather code can
- * only ever select a shape somebody already drew. A `d` string handed over by an API and set on
- * a <path> would be the first exception, so the API does not send one: it sends integers, and
- * the string is built here out of values that have been bounds-checked first.
- *
- * @returns {string|null} null if anything is out of shape, which draws nothing.
- */
-function skylinePath(steps, w, h) {
-  if (!Array.isArray(steps) || !steps.length || steps.length > SKY_STEPS_MAX) return null;
-  if (!Number.isInteger(w) || !Number.isInteger(h) || w <= 0 || h <= 0) return null;
-  let d = `M0 ${h}`;
-  let previous = -1;
-  for (const step of steps) {
-    if (!Array.isArray(step) || step.length !== 2) return null;
-    const [x, up] = step;
-    // Integers, inside the box, and left to right. A step that goes backwards would fold the
-    // silhouette over itself; one outside the box would paint over the text.
-    if (!Number.isInteger(x) || !Number.isInteger(up)) return null;
-    if (x < 0 || x > w || up < 0 || up > h) return null;
-    if (x <= previous) return null;
-    previous = x;
-    d += `H${x}V${h - up}`;
-  }
-  return `${d}H${w}V${h}z`;
-}
-
-/**
- * Ask for the skyline of wherever the forecast is for, and draw it if there is one.
- *
- * `sparse` is a real answer, not a failure: a hamlet with four sheds and the middle of the
- * Atlantic both come back that way, and drawing four sheds would be worse than drawing nothing.
- */
-async function drawCity(query) {
-  const art = el("cityArt");
-  const hero = el("hero");
-  // The <svg> is read here rather than with closest() further down, where a missing wrapper
-  // would throw INSIDE an async function nobody awaits - an unhandled rejection, where the
-  // paragraph above promises a card that is simply the weather.
-  const frame = art && art.ownerSVGElement;
-  if (!art || !hero || !frame) return;
-
-  let data;
-  try {
-    data = await api("/skyline" + query);
-  } catch {
-    return;
-  }
-  if (!data || data.sparse) return;
-
-  const d = skylinePath(data.steps, data.width, data.height);
-  if (!d) return;
-  art.setAttribute("d", d);
-  frame.setAttribute("viewBox", `0 0 ${data.width} ${data.height}`);
-  // Presence, not a value: the id is gone and there is nothing left to name. It fades the layer
-  // in, so the skyline appears when it is the right one rather than a moment before.
-  hero.dataset.city = "";
-}
-
 // WMO codes, grouped rather than enumerated: the difference between slight and moderate
 // drizzle is not worth thirty lines on a personal dashboard. Each group names a word and a
 // symbol in _includes/chrome/weather-icons.njk.
@@ -510,9 +430,6 @@ async function load(coords, name) {
   const q = coords
     ? `?lat=${encodeURIComponent(coarse(coords.lat))}&lon=${encodeURIComponent(coarse(coords.lon))}`
     : "";
-  // Side by side rather than one after the other, and the skyline is not awaited: the forecast
-  // is the thing somebody is waiting to read, and a background must never hold it up.
-  drawCity(q);
   renderWeather(await api("/weather" + q));
 }
 

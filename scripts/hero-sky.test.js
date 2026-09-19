@@ -14,12 +14,13 @@
  *   1. **A condition with no sky draws a blank card.** `describe()` is the only thing that picks
  *      the value, and it is total - every WMO code lands on one of nine strings. Add a tenth and
  *      the card simply stops reacting, with nothing in the console to say so.
- *   2. **The skyline arrives from the API as numbers, and numbers are the only thing this page
- *      will accept.** Everything on this card is createElement and textContent; the weather
- *      sprite exists so a weather code can only ever choose a shape somebody already drew. The
- *      skyline is the one drawing that comes from outside, so the boundary is the check: the
- *      client builds the `d` itself out of integers it has bounds-checked, and a `d` handed
- *      over by the API would be the first upstream string in this file to become markup.
+ *   2. **The skyline is a drawing with three properties, and losing any of them makes it a bar
+ *      again.** This is the third attempt at it. Hand-drawn per city read as interchangeable
+ *      towns; computed per city from real building heights was honest and looked worse than
+ *      either, because an upper envelope has ink in every column, one weight, and no depth.
+ *      What separates a cityscape from a footer is checkable - sky between the buildings, two
+ *      inks, and an aspect ratio wide enough that the crop can never take the top off - so it
+ *      is checked here rather than left to whoever looks at it next.
  *   3. **Contrast is the price of the whole change.** The card is allowed to be loud because the
  *      scrim buys the text column back. Weaken the scrim or raise a wash and the greeting goes
  *      with it, and no build step would notice.
@@ -37,6 +38,7 @@ const read = (p) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
 const CSS = read('src/input.css');
 const APP = read('app/scripts/app.js');
 const PAGE = read('app/pages/index.njk');
+const SKY = read('_includes/chrome/city-skylines.njk');
 
 let passed = 0;
 const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
@@ -88,86 +90,150 @@ function block(selector, contains) {
   ok(`all ${icons.length} conditions describe() can return have a sky, and nothing else does`);
 }
 
-// --- 2. the skyline crosses the boundary as numbers, and lands in its own band ---
+// --- 2. the three things that make the skyline a city rather than a bar ---
 {
-  // The client builds the path. If it ever takes one, this is the line that notices.
-  assert.ok(/setAttribute\("d", /.test(APP),
-    'app.js must build the skyline path itself');
-  assert.ok(!/\bdata\.(d|path)\b/.test(APP) && !/setAttribute\("d", *(data|res|json)/.test(APP),
-    'app.js must never set `d` from something the API sent - the whole point of shipping integers '
-    + 'is that no upstream string becomes markup on this page');
+  /**
+   * The x-extent of each subpath, for exactly the commands this drawing uses.
+   *
+   * Every shape in it starts and ends on the ground as its own subpath, so one subpath is one
+   * building's footprint, and the union of them is how much of the width carries ink.
+   */
+  const spans = (d) => {
+    const out = [];
+    let x = 0, start = 0, lo = Infinity, hi = -Infinity;
+    const note = (v) => { if (v < lo) lo = v; if (v > hi) hi = v; };
+    const close = () => { if (lo !== Infinity) out.push([lo, hi]); lo = Infinity; hi = -Infinity; };
+    const re = /([MLHVAhvz])([^MLHVAhvz]*)/g;
+    let m;
+    while ((m = re.exec(d))) {
+      const a = (m[2].match(/-?\d*\.?\d+/g) || []).map(Number);
+      switch (m[1]) {
+        case 'M': close(); x = a[0]; start = x; note(x); break;
+        case 'L': x = a[0]; note(x); break;
+        case 'H': x = a[0]; note(x); break;
+        case 'A': x = a[5]; note(x); break;
+        case 'h': x += a[0]; note(x); break;
+        case 'z': x = start; break;
+        default: break;                                   // V and v move only in y
+      }
+    }
+    close();
+    return out;
+  };
 
-  // Every guard the boundary depends on, named individually: dropping any one of them lets a
-  // different malformed answer through, and none of them fails loudly at runtime.
-  const guard = APP.slice(APP.indexOf('function skylinePath('), APP.indexOf('async function drawCity'));
-  assert.ok(guard.length > 200, 'could not find skylinePath - this test is now guessing, so it fails');
-  [
-    // Named on the STEP's own values, not just `Number.isInteger`: the box dimensions are
-    // checked on an earlier line with the same call, so matching the bare name kept passing
-    // after the step check was deleted.
-    ['Number.isInteger(x)', 'a non-integer x would put a float, or NaN, straight into the path'],
-    ['Number.isInteger(up)', 'a non-integer height would do the same, one axis over'],
-    ['Array.isArray', 'a string in place of the steps array would be iterated character by character'],
-    ['x < 0', 'a negative x would draw left of the box'],
-    ['> w', 'an x past the width would paint outside the band'],
-    ['> h', 'a height past the box would paint up through the text'],
-    ['x <= previous', 'steps that go backwards fold the silhouette over itself'],
-  ].forEach(([needle, why]) => assert.ok(guard.includes(needle),
-    `skylinePath no longer checks \`${needle}\`: ${why}`));
+  /** How much of [from, to] any subpath covers, with overlaps counted once. */
+  const coverage = (list, from, to) => {
+    const clipped = list
+      .map(([a, b]) => [Math.max(a, from), Math.min(b, to)])
+      .filter(([a, b]) => b > a)
+      .sort((p, q) => p[0] - q[0]);
+    let total = 0, a = null, b = null;
+    for (const [s0, e0] of clipped) {
+      if (a === null) { a = s0; b = e0; } else if (s0 <= b) { b = Math.max(b, e0); } else { total += b - a; a = s0; b = e0; }
+    }
+    if (a !== null) total += b - a;
+    return total / (to - from);
+  };
 
-  assert.ok(/return null/.test(guard) && /if \(!d\) return;/.test(APP),
-    'a rejected skyline must draw nothing at all, not a partial path');
+  const view = SKY.match(/viewBox="0 0 (\d+) (\d+)"/);
+  assert.ok(view, 'could not read the skyline viewBox - this test is now guessing, so it fails');
+  const [, W, H] = view.map(Number);
 
-  assert.ok(/<path id="cityArt"/.test(PAGE) && !/<use id="cityArt"/.test(PAGE),
-    'the page ships an empty <path>, so nothing is drawn before there is a real city');
-  assert.ok(/preserveAspectRatio="xMidYMax slice"/.test(PAGE),
-    'the skyline must be xMidYMax slice: bottom-anchored, and cropping the sides rather than the '
-    + 'top, which is where the landmark is');
+  const path = (cls) => {
+    const m = SKY.match(new RegExp(`class="${cls}" d="([^"]+)"`));
+    assert.ok(m, `chrome/city-skylines.njk has no .${cls} path`);
+    return spans(m[1]);
+  };
+  const far = path('sky-far');
+  const near = path('sky-near');
+  assert.ok(far.length >= 8 && near.length >= 12,
+    `far has ${far.length} shapes and near has ${near.length}; too few for this to be measuring a skyline`);
 
-  // **The band and the scrim may not overlap.** This is the composition, and it is the thing
-  // that was broken: with the scrim over the whole card, 12 of 1153 columns showed the city at
-  // a strength anybody could see. The mask is what keeps them apart, and it has to be measured
-  // in the band's own units - a percentage is measured against a card whose height changes with
-  // the text in it, which is the same mistake the wide scrim's stops were written to avoid.
+  // 1. SKY BETWEEN THE BUILDINGS. The near layer must come back to the ground, repeatedly. A
+  //    silhouette with ink in every column is a footer, and that is precisely what the computed
+  //    version was - an upper envelope covers 100% by construction and no opacity rescues it.
+  const nearCover = coverage(near, 0, W);
+  assert.ok(nearCover < 0.85,
+    `the near layer covers ${(nearCover * 100).toFixed(0)}% of the width; above about 85% there `
+    + 'is no sky left between the buildings and it reads as a bar rather than a city');
+  assert.ok(nearCover > 0.5,
+    `the near layer covers only ${(nearCover * 100).toFixed(0)}%; below about half it stops `
+    + 'reading as a town and becomes scattered sheds');
+
+  // 2. THE FAR RIDGE IS CONTINUOUS, because it is the mass seen THROUGH those gaps. A gap in
+  //    both layers at the same x is a hole straight to the card, which reads as a mistake.
+  const farCover = coverage(far, 0, W);
+  assert.ok(farCover > 0.98,
+    `the far ridge covers ${(farCover * 100).toFixed(0)}% and has to be continuous - the near `
+    + 'layer\'s gaps are supposed to show it, not show through to nothing');
+
+  // 3. TWO WEIGHTS. The ratio is the depth; at one ink the layers merge into a single shape.
+  [['light', block('.hero', '--wx-sun')], ['dark', block('.chrome-dark .hero', '--wx-sun')]]
+    .forEach(([mode, source]) => {
+      const f = source.match(/--wx-city-far:\s*([\d.]+)%/);
+      const nr = source.match(/--wx-city-near:\s*([\d.]+)%/);
+      assert.ok(f && nr, `${mode} declares no --wx-city-far/--wx-city-near pair`);
+      assert.ok(Number(f[1]) <= Number(nr[1]) / 2,
+        `${mode}: the far ridge is ${f[1]}% against the near layer's ${nr[1]}%. At much above `
+        + 'half there is no depth left and the two layers read as one shape');
+    });
+
+  // Both layers must overrun the box on BOTH sides, or a horizontal crop finds an end and the
+  // skyline stops mid-card with a vertical seam. The first version did exactly that at 1920.
+  [['far', far], ['near', near]].forEach(([name, list]) => {
+    const xs = list.flat();
+    assert.ok(Math.min(...xs) < 0 && Math.max(...xs) > W,
+      `the ${name} layer runs ${Math.min(...xs)}..${Math.max(...xs)} inside a 0..${W} box; it has `
+      + 'to overrun both edges so that a crop never finds the end of the drawing');
+  });
+
+  // **The aspect ratio, against the worst case the layout can produce.**
+  // `slice` crops whichever axis has slack, and when the band is FLATTER than the art it crops
+  // the TOP - where the spire is. Widest card this layout produces is 1472px, measured on the
+  // built page at a 1920 viewport; the tallest band is the largest --wx-band.
+  const WIDEST_CARD = 1472;
+  const bands = [...CSS.matchAll(/--wx-band:\s*([\d.]+)rem/g)].map((m) => Number(m[1]) * 16);
+  assert.ok(bands.length >= 2, `only ${bands.length} band size(s) found; this test is now guessing`);
+  const worst = WIDEST_CARD / Math.max(...bands);
+  assert.ok(W / H > worst,
+    `the art is ${(W / H).toFixed(1)}:1 and the widest band case is ${worst.toFixed(1)}:1. Flatter `
+    + 'than the box means `slice` crops the top of the drawing, which is where the spire is');
+
+  assert.ok(/preserveAspectRatio="xMidYMax slice"/.test(SKY),
+    'the skyline must be xMidYMax slice: sitting on the bottom edge, cropping sideways');
+  assert.ok(/{% include "chrome\/city-skylines.njk" %}/.test(PAGE),
+    'the page must include the skyline; it is static markup and needs no script');
+  assert.ok(!/cityArt|skylinePath|drawCity/.test(APP),
+    'app.js must have no skyline code left in it - the drawing is the same for everybody, so '
+    + 'there is nothing to fetch, nothing to choose and nothing that can arrive late');
+
+  // **The composition that makes any of this visible, re-asserted here.**
+  // The scrim used to cover the whole card, and the city with it: 12 of 1153 columns showed at
+  // a strength anybody could see. What fixed it is the band being reserved rather than borrowed,
+  // and the scrim being masked away above it in the BAND's units - a percentage is measured
+  // against a card whose height changes with the text in it, which is a bug this stylesheet has
+  // already shipped once. These three went missing when this section was rewritten.
   const scrim = block('.hero-scrim', 'mask-image');
   const mask = scrim.slice(scrim.indexOf('--wx-mask:'), scrim.indexOf(';', scrim.indexOf('--wx-mask:')));
   assert.ok(mask.length > 20, 'could not read --wx-mask - this test is now guessing, so it fails');
-  // BOTH stops, and no percentage anywhere in it. Checking only that the band is mentioned kept
-  // passing when the transparent stop was changed back to `96%` - which is the original mistake,
-  // a stop measured against a card whose height changes with the text in it.
   assert.strictEqual((mask.match(/var\(--wx-band\)/g) || []).length, 2,
     `both of the mask's stops must be measured from the band; found ${(mask.match(/var\(--wx-band\)/g) || []).length}`);
-  // A BARE percentage stop - `transparent 96%`. The `100%` inside each calc() is fine and is the
-  // point of them: it means the bottom of the card, which is what the band is measured back from.
   const bare = mask.match(/(?:#[0-9a-f]{3,8}|transparent)\s+\d+%/i);
   assert.ok(!bare,
-    `the mask has a bare percentage stop in it ("${bare && bare[0]}"); percentages are measured `
-    + 'against the card, whose height changes with the text in it, and were wrong at every width '
-    + 'but the one they were tuned at');
+    `the mask has a bare percentage stop ("${bare && bare[0]}"). The 100% inside each calc() is `
+    + 'the bottom of the card and is fine; a stop written as a plain percentage is measured '
+    + 'against a height that changes with the text, and was wrong at every width but one');
   assert.ok(/[^-]mask-image:\s*var\(--wx-mask\)/.test(scrim) && /-webkit-mask-image:/.test(scrim),
     'the mask needs both the plain and the -webkit- property, or it does nothing in Safari and '
-    + 'the scrim covers the city there and nowhere else');
+    + 'the scrim covers the skyline there and nowhere else');
 
-  // And the band has to be reserved rather than borrowed from whatever is left over, because at
-  // 390px there is nothing left over: the card is 356px tall and the text block is 354px of it.
-  // Twice: once unconditionally and once at `sm`, where the padding itself changes. Reading one
-  // block found the `sm` copy and stayed green when the unconditional one was deleted - which is
-  // the phone, and the phone is the width with no spare room at all.
   const reserved = [...CSS.matchAll(/padding-bottom:\s*calc\([^)]*var\(--wx-band\)\)/g)];
   assert.ok(reserved.length >= 2,
     `.hero-body reserves the band in ${reserved.length} place(s); it needs one for the base case `
     + 'and one for `sm`, or the text sits on top of the skyline at whichever width is missing');
 
-  // The band grows with the card. A 10:1 drawing in a band flatter than 10:1 is cropped at the
-  // TOP by `slice`, and the top is the landmark: a fixed 4rem band took 43% off Uppsala
-  // cathedral at 1280px. Three sizes, each within a few percent of the art's own aspect.
-  const bands = [...CSS.matchAll(/--wx-band:\s*([\d.]+)rem/g)].map((m) => Number(m[1]));
-  assert.ok(bands.length >= 3,
-    `the band is declared at ${bands.length} sizes; it has to grow with the card or the widest `
-    + 'one crops the spire off the top');
-  assert.deepStrictEqual([...bands].sort((a, b) => a - b), bands,
-    `the band sizes must increase with the breakpoints, got ${bands.join(', ')}`);
-  ok('the skyline crosses as checked integers, and the band it lands in is reserved and unscrimmed');
+  ok(`the skyline is a city: ${(nearCover * 100).toFixed(0)}% near cover so ${(100 - nearCover * 100).toFixed(0)}% is sky, `
+    + `a continuous ridge behind it, two inks, and ${(W / H).toFixed(0)}:1 against a ${worst.toFixed(1)}:1 worst case`);
 }
 
 // --- 3. what the effect costs the text ----------------------------------------
@@ -253,9 +319,9 @@ function block(selector, contains) {
    * stays at nine, and the reported worst case IMPROVES because the biggest contributor to it has
    * gone. So the palette is the checklist: anything declared has to be painted somewhere.
    */
-  // --wx-city, --wx-city-alpha and --wx-band are not ink in this stack: the first two paint the
-  // skyline, which is in the band and under no text, and the third is the band's height.
-  const NOT_INK = ['--wx-city', '--wx-city-alpha', '--wx-band', '--wx-mask'];
+  // The city tokens and --wx-band are not ink in THIS stack: the first three paint the skyline,
+  // which lives in the band and sits under no text at all, and the last is the band's height.
+  const NOT_INK = ['--wx-city', '--wx-city-far', '--wx-city-near', '--wx-band', '--wx-mask'];
   const declared = [...new Set([...block('.hero', '--wx-sun').matchAll(/(--wx-[a-z0-9-]+):/g)].map((m) => m[1]))]
     .filter((t) => !POSITIONAL.includes(t) && !NOT_INK.includes(t));
   // **The palette count, because a regex that cannot see a digit shrinks this list in silence.**
@@ -296,7 +362,7 @@ function block(selector, contains) {
    * assumed, because if the drawing ever escapes the band it is back in the stack and every
    * ratio below is measuring a card that no longer exists.
    */
-  const cityBox = block('.hero-city svg', 'height:');
+  const cityBox = block('.hero-city-art', 'height:');
   assert.ok(/bottom-0/.test(cityBox) && /height:\s*var\(--wx-band\)/.test(cityBox),
     'the skyline must be exactly the band, pinned to the bottom. If it covers more than that it '
     + 'is under the text again, and the contrast measured below is not the contrast on the page');
@@ -485,4 +551,4 @@ function block(selector, contains) {
   ok('the weather panel stays open while the browser asks for permission, and the button keeps its focus');
 }
 
-console.log(`\nhero sky: all ${passed} checks passed — every condition draws, the skyline crosses as checked numbers into a band of its own, and the text keeps its contrast`);
+console.log(`\nhero sky: all ${passed} checks passed — every condition draws, the skyline is a city rather than a bar, and the text keeps its contrast`);

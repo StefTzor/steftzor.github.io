@@ -332,11 +332,11 @@
     --wx-flash: rgb(49 46 129 / 34%);        /* Indigo 900 */
     --wx-snow: 100 116 139;                  /* Slate 500, as channels */
     --wx-city: 71 85 105;                    /* Slate 600, as channels */
-    /* **Raised from 26%, which is the whole reason the cities were not recognised.** The drawings
-       were fine and nobody could see them: at a quarter opacity a cathedral is a smudge the shape
-       of a cathedral. The layer sits UNDER the scrim, so the text column barely notices - and the
-       contrast check in scripts/hero-sky.test.js measures this ink now rather than only the sky. */
-    --wx-city-alpha: 50%;
+    /* **Two alphas off one hue, and the ratio between them is the depth.** The far ridge at
+       roughly a third of the near layer is what makes one read as behind the other; at one
+       weight the whole thing is a bar, which is exactly what the computed version was. */
+    --wx-city-far: 16%;
+    --wx-city-near: 42%;
 
     /* **The strip at the bottom of the card that belongs to the skyline, and to nothing else.**
        It is reserved by padding on .hero-body rather than carved out of whatever happens to be
@@ -346,13 +346,17 @@
        thirds, which is why the city was never visible at any width. Reserving it costs height
        on a phone and that is the honest price of drawing anything down there.
 
-       **It grows with the card, and that is not decoration.** The art is 10:1. `slice` crops
-       whichever axis has slack, so a band shorter than a tenth of the card's width crops the
-       TOP - which is where the spire is, and which is the exact failure `meet` was chosen to
-       avoid in the first version of this card. A fixed 4rem band is 18:1 at 1280px and was
-       cutting 43% off the top of Uppsala cathedral. At these three sizes the band is never
-       flatter than the art by more than a few percent, so the crop is always horizontal. */
-    --wx-band: 4rem;
+       **Down from 4/7/9rem, which was the whole of what was wrong with the last version.** At
+       9rem the band was 144px of a 302px card - half the hero given to a silhouette, and the
+       card had grown from 240px to make room for it. Visible is not the same as good. At these
+       sizes the card is back to about 240px on a desktop and the weather is the loud thing
+       again, which is what it was asked to be.
+
+       It still grows with the card, but for a smaller reason than it used to. `slice` crops the
+       top when the band is flatter than the art, so the band and the art's 24:1 have to stay in
+       a sane relationship; the test checks that against the largest value declared here rather
+       than against a number in a comment, so this cannot drift out of true silently. */
+    --wx-band: 3rem;
   }
 
   .dark .hero,
@@ -370,7 +374,8 @@
     --wx-flash: rgb(224 242 254 / 40%);      /* here it brightens, as lightning does */
     --wx-snow: 226 232 240;
     --wx-city: 148 163 184;
-    --wx-city-alpha: 55%;
+    --wx-city-far: 18%;
+    --wx-city-near: 48%;
   }
 
   .hero-body {
@@ -379,12 +384,12 @@
   }
 
   @media (min-width: 640px) {
-    .hero { --wx-band: 7rem; }
+    .hero { --wx-band: 4.5rem; }
     .hero-body { padding-bottom: calc(2rem + var(--wx-band)); }
   }
 
   @media (min-width: 1280px) {
-    .hero { --wx-band: 9rem; }
+    .hero { --wx-band: 5rem; }
   }
 
   .hero-digest {
@@ -445,27 +450,27 @@
     mask-image: var(--wx-mask);
   }
 
-  /* The skyline. It fades in when app.js has worked out which city this is, so nobody sees a
-     generic town for half a second and then the right one. */
-  .hero-city {
-    color: rgb(var(--wx-city) / var(--wx-city-alpha));
-    opacity: 0;
-    transition: opacity 700ms ease-out;
+  /* The skyline. Static markup, so there is nothing to fade in and nothing to wait for. */
+  .sky-far {
+    fill: rgb(var(--wx-city) / var(--wx-city-far));
   }
 
-  .hero[data-city] .hero-city {
-    opacity: 1;
+  .sky-near {
+    fill: rgb(var(--wx-city) / var(--wx-city-near));
   }
 
   /* The drawing fills the band exactly, and the band is the whole of what it gets.
 
-     `xMidYMax slice` in the markup, not `meet`. The art is 10:1 and the band is 10:1 on a wide
-     card but nearer 4:1 on a phone, so on a phone `slice` crops the SIDES and keeps the full
-     height - at 2.4x the size a letterboxed version would have managed. It can only crop
-     horizontally, never vertically, because the box is never wider than the art; the spires are
-     safe in a way they would not be if this were the other way round. The API centres the frame
-     on the tallest building for exactly this reason: whatever the crop keeps, it keeps that. */
-  .hero-city svg {
+     `xMidYMax slice` in the markup, not `meet`. The art is 24:1 and the widest band this layout
+     produces is 18.4:1 - a 1472px card against an 80px band - so the box is never flatter than
+     the art and `slice` can only ever crop the SIDES. That margin is the whole point: crop the
+     other way and it takes the top off, which is where the spire is, and that has happened
+     twice. scripts/hero-sky.test.js asserts the ratio against the largest --wx-band rather than
+     against a number written down here, so shrinking the band cannot quietly re-break it.
+
+     Cropping sideways costs nothing now that the skyline is nobody's city in particular: any
+     slice of it is a town, which is the one real compensation for giving up the per-city claim. */
+  .hero-city-art {
     @apply absolute inset-x-0 bottom-0 w-full;
     height: var(--wx-band);
   }
@@ -639,16 +644,13 @@
 
   /* Weather is decoration here - the chip beside it states the condition in words. Somebody who
      asked not to be moved keeps every tint, the sun, the moon and the whole skyline, and loses
-     only the movement. The skyline stops fading in and is simply there. */
+     only the movement. The skyline never moved and never faded: it is static markup, so there
+     is nothing here to silence for it. */
   @media (prefers-reduced-motion: reduce) {
     .hero-sky,
     .hero-fall,
     .hero-fall::after {
       animation: none !important;
-    }
-
-    .hero-city {
-      transition: none !important;
     }
   }
 

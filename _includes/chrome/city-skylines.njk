@@ -1,0 +1,40 @@
+{#
+  The skyline behind the hero card. One drawing, everywhere, and deliberately nobody in
+  particular.
+
+  **Three attempts got here.** Hand-drawn per city read as three interchangeable towns. Computed
+  per city from OpenStreetMap building heights was honest, correct, and looked worse than either:
+  an upper envelope has ink in every column, one flat weight across the whole width, and no near
+  or far - so whatever the opacity, it is a bar rather than a cityscape. That is a property of
+  taking an envelope, not a thing that can be tuned out of one.
+
+  What makes this read as a city is the three things an envelope cannot have:
+
+    1. **Sky between the buildings.** The near layer returns to the ground repeatedly, and those
+       gaps are where the far ridge shows. A silhouette with no gaps is a footer.
+    2. **Two weights.** The far ridge is inked at about a third of the near layer, which is the
+       whole of the depth. It is continuous on purpose: it is the mass you see THROUGH the gaps.
+    3. **Variety, then restraint.** Pitched roofs, a stepped block, a chimney, two cupolas, a
+       sawtooth works and one church spire with air either side of it. A row of rectangles at
+       different heights is the version of this that looks generated, and it is what the first
+       attempt was.
+
+  **2400 x 100, which is 24:1, and that ratio is load-bearing.** The band is
+  `xMidYMax slice`, and slice crops whichever axis has slack - when the band is FLATTER than the
+  art, it crops the top, which is where the spire is. That has bitten twice. The widest card this
+  layout produces is 1472px against an 80px band, which is 18.4:1, so drawing at
+  24:1 leaves margin and the crop is always horizontal. Both layers run from -260 to 2660
+  rather than 0 to 2400, so a horizontal crop can never find an end and leave a seam.
+
+  A generic skyline is the one thing that can be cropped anywhere without loss, which is the real
+  compensation for giving up the per-city claim: on a phone you see about a quarter of it, and any
+  quarter is a town.
+
+  Filled from CSS rather than with `currentColor`, because the two layers need two different
+  alphas off one hue and both themes have to re-ink them.
+#}
+<svg class="hero-city-art" viewBox="0 0 2400 100" preserveAspectRatio="xMidYMax slice"
+  aria-hidden="true" focusable="false">
+  <path class="sky-far" d="M-260 100V80H-47V100zM-50 100V72H83V100zM80 100V84H243V100zM240 100V68H338V100zM335 100V78H513V100zM510 100V62H633V100zM630 100V82H838V100zM835 100V74H978V100zM975 100V66H1143V100zM1140 100V80H1248V100zM1245 100V72H1433V100zM1430 100V76H1578V100zM1575 100V64H1703V100zM1700 100V82H1878V100zM1875 100V70H2033V100zM2030 100V78H2148V100zM2145 100V74H2343V100zM2340 100V68H2478V100zM2475 100V80H2643V100zM2640 100V72H2768V100zM560 66h4v-16h-4zM1712 70h4v-20h-4z"/>
+  <path class="sky-near" d="M-260 100V70H-110V100zM-90 100V74L-38 50L14 74V100zM30 100V30H88V100zM190 100V66H275.6V18H328V100zM345 100V76H411V100zM470 100V70H598V100zM562.2 70h5v-40h-5zM618 100V78L676 52L734 78V100zM790 100V12H840V100zM900 100V66A48 20 0 0 1 996 66V100zM1014 100V74H1092V100zM1110 100V78L1128.6 67L1147.2 78L1165.8 67L1184.4 78L1203 67L1221.6 78L1240.2 67L1258.8 78L1277.4 67L1296 78V100zM1340 100V52L1370 22L1400 52V100zM1368.3 22h3.5v-34h-3.5zM1470 100V72H1598V100zM1618 100V60H1678.8V28H1770V100zM1810 100V76L1864 54L1918 76V100zM1938 100V42H2000V100zM2050 100V70A42 18 0 0 1 2134 70V100zM2154 100V56H2270V100zM2310 100V60L2336 34L2362 60V100zM2334.3 34h3.5v-26h-3.5zM2400 100V74L2460 50L2520 74V100zM2540 100V64H2670V100z"/>
+</svg>

@@ -35,17 +35,10 @@ signOut: true
   <div id="hero" class="hero" data-wx="unknown">
     <div class="hero-sky" aria-hidden="true"></div>
 
-    {# The skyline of wherever the forecast is for, computed by the API from OpenStreetMap
-       building heights and delivered as integers, never as markup - app.js bounds-checks them
-       and builds the `d` itself. `data-city` on the card fades the layer in, so nothing appears
-       until there is a real city to show, and nothing at all appears for a place with no
-       skyline worth drawing. `slice` rather than `meet`: the box is narrower than the art, so
-       it crops the sides and keeps the full height - the frame is already centred on the
-       tallest thing, which is what the crop is guaranteed to keep. #}
+    {# The skyline. Static markup and no script at all: it is the same drawing for everybody,
+       so there is nothing to fetch, nothing to choose and nothing that can arrive late. #}
     <div class="hero-city" aria-hidden="true">
-      <svg viewBox="0 0 1200 120" preserveAspectRatio="xMidYMax slice" focusable="false">
-        <path id="cityArt" fill="currentColor"></path>
-      </svg>
+      {% include "chrome/city-skylines.njk" %}
     </div>
 
     <div class="hero-fall" aria-hidden="true"></div>

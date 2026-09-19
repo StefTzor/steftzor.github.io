@@ -14,11 +14,7 @@
  * Not in `npm test` because it needs Chrome and a server, and the suite runs on a CI box with
  * neither. It is the authority all the same: scripts/hero-sky.test.js models this, and the model
  * was wrong three times before this existed.
- *
- * The probe page also needs a `<script id="cities" type="application/json">` holding one real
- * answer from the API's /skyline, keyed by name, because the skyline is no longer a symbol in
- * the markup - it arrives as integers and the client builds the path. Measuring the card without
- * one would be measuring a card with no city on it, which is not the card anybody sees.
+
  *
  * Serves the real built app so Poppins actually loads - a file:// render falls back to Liberation
  * Sans, whose `ch` is 0.55em against Poppins' 0.625em, which is how the sample point was derived
@@ -41,17 +37,6 @@ for (const w of WIDTHS) {
     const out = await p.evaluate(async (st) => {
       const hero = document.getElementById('hero');
       hero.dataset.wx = st; hero.dataset.night = 'false';
-      const city = JSON.parse(document.getElementById('cities').textContent).Uppsala;
-      let outline = `M0 ${city.height}`;
-      for (const [x, up] of city.steps) outline += `H${x}V${city.height - up}`;
-      document.getElementById('cityArt')
-        .setAttribute('d', outline + `H${city.width}V${city.height}z`);
-      hero.dataset.city = '';
-      // The layer fades in over 700ms and a screenshot does not wait for it. Measuring mid-fade
-      // once reported a card with no city on it as 0% visible, which was true of the frame and
-      // false of the page.
-      const layer = hero.querySelector('.hero-city');
-      layer.style.transition = 'none'; layer.style.opacity = '1';
       // freeze every animation at its most intense frame, then hide the text
       document.querySelectorAll('.hero-sky,.hero-fall').forEach(e => { e.style.animationPlayState='paused'; });
       const d = document.getElementById('digest');

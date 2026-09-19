@@ -7,9 +7,8 @@
  * upstream changes shape.
  *
  * Four of them are proxied by the API, which is what keeps them off the browser's network tab
- * entirely. The fifth, the basemap, is read BOTH ways - proxied for the home card's skyline and
- * not proxied for the maps on /f1/ and /transit/ - and that split is the most interesting fact
- * in this file, so it is stated in the entry rather than left for a reader to notice.
+ * entirely. The fifth, the basemap, is not, and that difference is the most interesting fact in
+ * this file - so it is stated in the entry rather than left for a reader to notice.
  *
  * `derived` marks a field nobody sent us. Those are the interesting ones: they are decisions,
  * not transport. An entry with no mapping at all carries `mappingNote` instead, because an empty
@@ -118,30 +117,27 @@ module.exports = [
   },
   {
     name: "OpenFreeMap",
-    what: "Two different things from one service. The map under the circuit on /f1/ and under the stops on /transit/: vector tiles cut to the OpenMapTiles schema, from OpenStreetMap's data, in a light and a dark palette; /f1/ can also swap it for satellite imagery, which comes from a second host — see the notes. And, separately, the buildings the home card's skyline is computed from, which the API reads on the server and the browser never asks for.",
+    what: "The map under the circuit on /f1/ and under the stops on /transit/: vector tiles cut to the OpenMapTiles schema, from OpenStreetMap's data, in a light and a dark palette. /f1/ can also swap it for satellite imagery, which comes from a second host - see the notes.",
     key: false,
-    cache: "browser, for the maps; the API, for a month, for the skyline",
-    why: "The only upstream a browser talks to itself, and, since the home card's skyline, the only one read both ways. The maps are not proxied because tiles are images, fetched one per square as you pan and zoom, and standing in front of a few hundred images a session would not be forwarding a call — it would be running a tile server. What that trade costs belongs here rather than in a footnote: the request carries the reader's IP address and, in the tile numbers themselves, roughly which part of the world they are looking at and how closely, to a service neither they nor this site has any relationship with. The skyline is the opposite case and so it is proxied: nine tiles, once, at one zoom, for a place the API already knows. The tile numbers there would not be somewhere a reader chose to look. They would be where the reader lives, sent on every load of the page everybody lands on. Nothing is pressed to reach that page, so nothing about it should leave a browser.",
+    cache: "by your browser, never by the API",
+    why: "The one upstream that is not proxied, and so the only one of the five a browser talks to itself. The other four are proxied precisely so that it never has to; this one is the exception because tiles are images, fetched one per tile as you pan and zoom, and standing in front of a few hundred images a session would not be forwarding a call — it would be running a tile server. What that trade costs belongs here rather than in a footnote: the request carries the reader's IP address and, in the tile numbers themselves, roughly which part of the world they are looking at and how closely, to a service neither they nor this site has any relationship with. It is also the only entry on this list this code never sees happen, because nothing of it passes through the API — which is why it is written down here, on the privacy notice and on the cookies page rather than left to a network tab.",
     calls: [
-      { path: "/styles/{positron|dark}", note: "the style document, chosen from the theme. Browser" },
-      { path: "/planet/{version}/{z}/{x}/{y}.pbf", note: "one vector tile per square, as you pan. Browser" },
-      { path: "/fonts/{fontstack}/{range}.pbf", note: "glyph ranges, only for the labels actually drawn. Browser" },
-      { path: "/sprites/…", note: "one sheet of icons for the whole style. Browser" },
-      { path: "/planet/{version}/14/{x}/{y}.pbf", note: "nine tiles around your home area, for the skyline. The API, once a month at most" },
+      { path: "/styles/{positron|dark}", note: "the style document, chosen from the theme" },
+      { path: "/planet/{version}/{z}/{x}/{y}.pbf", note: "one vector tile per square, as you pan" },
+      { path: "/fonts/{fontstack}/{range}.pbf", note: "glyph ranges, only for the labels actually drawn" },
+      { path: "/sprites/…", note: "one sheet of icons for the whole style" },
     ],
     mapping: [],
     mappingNote:
-      "For the maps, nothing is mapped, because nothing arrives to be mapped. A tile is geometry to be drawn, not a document with fields, so there is no field of theirs that became a field of ours - the only decision here is which of the two styles to ask for, and that is read off the theme. The coordinates these maps are pointed AT come from the Trafiklab and Jolpica entries above, never from here. The skyline is the one place a field does cross over: `render_height` on the building layer, the height in metres OpenStreetMap holds for each building, becomes the height of that building in the drawing. Nothing else from the tile is read - not a name, not an address, not a street.",
+      "Nothing is mapped, because nothing arrives to be mapped. A tile is geometry to be drawn, not a document with fields, so there is no field of theirs that became a field of ours - the only decision here is which of the two styles to ask for, and that is read off the theme. The coordinates these maps are pointed AT come from the Trafiklab and Jolpica entries above, never from here.",
     notes: [
       "Satellite is a SECOND tile host, offered behind a toggle on /f1/ only - EOX's Sentinel-2 cloudless, at tiles.maps.eox.at. Everything this entry says about the trade applies to it identically: the browser asks, the request carries an IP address and the tile numbers say which part of the world is being looked at. Two differences worth naming. Their licence requires a credit naming the year of the Copernicus data, which the map renders in its own attribution control and which the code builds from the same constant as the tile URL, so the imagery and the crediting of it cannot come apart. And it is free for non-commercial use only - a condition this site was read against rather than assumed past.",
       "It is on /f1/ and deliberately not on /transit/. A photograph of Spa is a pale ribbon through a forest and a photograph of Monza is an unmistakable oval; a photograph of a bus stop is a roof. Satellite hides the street name, the stop label and which way the road runs, which is the whole of what a departure board's map is for.",
       "Only the picture is theirs. MapLibre itself is served from /vendor, so no third party is in script-src on any page — which is the distinction that gets lost the moment somebody says \u201ca third-party map\u201d, and it is the half that would actually matter.",
-      "Needing no key is the only reason a browser can be the one asking. The two keyless upstreams above are still proxied, because one call there serves every reader; a tile fetched by one browser serves that browser and nobody else, so proxying would buy nothing and cost a tile server. The skyline is the case where that reasoning runs the other way: one answer per town, kept for a month, serves everybody in it, so it is proxied like the rest.",
-      "The skyline's cache key is the z14 tile, not the coordinate. That square is about 1.2 km across, which is coarser than the two decimal places the coordinate already arrives rounded to, so what the API keeps is a worse record of where somebody lives than what it was sent. Two people in the same town share one entry and one fetch between them.",
-      "A place OpenStreetMap has barely mapped gets no skyline rather than a bad one. Under twelve buildings, or nothing taller than twelve metres, and the answer says so and the card is simply the weather. A village drawn accurately is four sheds.",
+      "Needing no key is the only reason a browser can be the one asking. The two keyless upstreams above are still proxied, because one call there serves every reader; a tile fetched by one browser serves that browser and nobody else, so proxying would buy nothing and cost a tile server.",
       "The provider was chosen by rendering one, which is the only way this particular thing can be checked. CARTO answers without a key and then prints \u201cAPI KEY REQUIRED\u201d across every tile - a 200 to curl and a ruined map to a person. OpenStreetMap\u2019s own tiles are clean and keyless, but their usage policy says plainly they are not for an app\u2019s basemap, and testing against them was throttled within minutes, which is that policy working rather than failing. This one asks for no key and sets no limit, and says so as its purpose.",
       "Both maps are an addition to a page that already works without one. Blocked, missing or failing, the library takes nothing down with it: the departures and the results still draw, and a place whose coordinate did not resolve says it has none rather than drawing an empty ocean at 0,0.",
-      "This is written down twice more on purpose, and the privacy notice and the cookies page both name the host. A request this code cannot see is one a reader can only learn about by being told, so being told is the whole control they have. The skyline's call is the opposite: this code does see it, and it is written down anyway, because \"the server did it\" is not the same as nobody needing to know.",
+      "This is written down twice more on purpose — the privacy notice and the cookies page both name the host. A request this code cannot see is one a reader can only learn about by being told, so being told is the whole control they have.",
     ],
   },
 ];
