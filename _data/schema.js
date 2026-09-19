@@ -37,13 +37,15 @@ const person = {
     ],
     "knowsAbout": [
       "SaaS Implementation",
+      "Implementation Planning",
+      "Customer Data Platform",
       "API Architecture",
       "Data Strategy",
       "SQL",
       "Snowflake",
       "Enterprise Customer Success",
-    "Project Management",
-    "Stakeholder Management"
+      "Project Management",
+      "Stakeholder Management"
     ],
   
     "name": "Stefanos Tzortzoglou",
