@@ -77,7 +77,10 @@
 
 <body{% if redirectWhenAuthed %} data-redirect-when-authed="1"{% endif %} class="{{ bodyClass | default('bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col') }}">
 
-  <a href="#main-content" class="skip-link">Skip to content</a>
+  {# No skip link here: chrome/header.njk emits one ("Skip to main content") and it is the first
+     focusable element on the page. A second one to the same target made every app page open with
+     two tab stops that do the same thing, and made /accessibility/ section 2, which describes a
+     single skip link, untrue of this property. #}
 
   {# The bar is the same file the public site uses, so the two properties cannot drift apart.
      What differs is only which links it is given. #}
