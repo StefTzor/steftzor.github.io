@@ -137,7 +137,7 @@ function showUnreachable(status) {
   const p = document.createElement("p");
   p.className = "text-brand-muted";
   p.textContent = status === 429
-    ? "The API is rate-limiting this address. You are still signed in — wait a minute and try again."
+    ? "The API is rate-limiting this address. You are still signed in. Wait a minute and try again."
     : "You are still signed in. The API did not answer, which is usually brief.";
   const again = document.createElement("button");
   again.type = "button";

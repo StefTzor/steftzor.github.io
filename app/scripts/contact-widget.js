@@ -87,7 +87,7 @@ profile.then((me) => {
 
     const text = message.value.trim();
     if (text.length < 10) {
-      fieldError(message, "Tell me a little more — at least ten characters.");
+      fieldError(message, "Tell me a little more: at least ten characters.");
       message.focus();
       return;
     }
@@ -100,7 +100,7 @@ profile.then((me) => {
     const elapsed = Date.now() - openedAt;
     if (elapsed < MIN_FILL_MS) {
       // Honest about it rather than sending something the server will drop while answering ok.
-      say(`One moment — the form needs ${Math.ceil((MIN_FILL_MS - elapsed) / 1000)}s more.`, null);
+      say(`One moment. The form needs ${Math.ceil((MIN_FILL_MS - elapsed) / 1000)}s more.`, null);
       setTimeout(() => say(""), 2500);
       return;
     }
@@ -130,7 +130,7 @@ profile.then((me) => {
       } else {
         form.reset();
         openedAt = Date.now();
-        say("Sent — thank you. I will reply by email.", "ok");
+        say("Sent, thank you. I will reply by email.", "ok");
       }
     } catch (err) {
       say("That could not be sent. Please try again.", "error");

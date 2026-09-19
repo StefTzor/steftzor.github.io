@@ -53,7 +53,7 @@ profile.then(() => {
       console.error("admin: invite failed", err.status, err.code);
       field.setAttribute("aria-invalid", "true");
       say(err.code === "already_exists"
-        ? "That address already has an account — look for it on Accounts."
+        ? "That address already has an account. Look for it on Accounts."
         : err.code === "invalid_email" ? "That is not a valid email address."
         : err.code === "bad_name" ? "A name must be between 1 and 60 characters."
         : err.status === 403 ? "This account is not allowed to send invitations."

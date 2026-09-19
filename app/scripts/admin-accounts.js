@@ -137,15 +137,15 @@ async function reload() {
 async function change(u, patch, control) {
   const what = patch.status ? `${patch.status} ${u.email || u.uid}` : `set ${u.email || u.uid} to ${patch.role}`;
   control.disabled = true;
-  say(`Saving — ${what}…`);
+  say(`Saving ${what}…`);
   try {
     const res = await api(`/admin/users/${encodeURIComponent(u.uid)}`, {
       method: "POST",
       body: JSON.stringify(patch),
     });
     say(res.sessionsRevoked
-      ? `Done — ${what}. Their sessions were ended immediately.`
-      : `Done — ${what}.`, "ok");
+      ? `Done: ${what}. Their sessions were ended immediately.`
+      : `Done: ${what}.`, "ok");
     // Refresh outside the try. The change is already committed by this point, and a hiccup on
     // the reload would otherwise be reported as the change having failed - leaving the admin
     // looking at a stale row, believing the opposite of what happened.
@@ -154,7 +154,7 @@ async function change(u, patch, control) {
     console.error("admin: change failed", err.status, err.code);
     say(err.code === "self_target"
       ? "You cannot change your own role or status."
-      : `That change could not be saved${err.status === 403 ? " — you are not allowed to make it." : "."}`, "error");
+      : `That change could not be saved${err.status === 403 ? ". You are not allowed to make it." : "."}`, "error");
     control.disabled = false;
   }
 }

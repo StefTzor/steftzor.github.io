@@ -531,7 +531,7 @@ function setupGeo(usingMine, home) {
   panel.classList.remove("hidden");
 
   const back = home ? home.name : "the default location";
-  const FIXED_NOTE = `Showing ${back}. Use your device's location for this visit \u2014 it is ` +
+  const FIXED_NOTE = `Showing ${back}. Use your device's location for this visit: it is ` +
     "rounded to about a kilometre before it is sent, never stored, and your saved home is not changed.";
   const MINE_NOTE = "Showing the forecast for your device's location, rounded to about a kilometre.";
 
@@ -597,14 +597,14 @@ function setupGeo(usingMine, home) {
       const code = err && err.code;
       note.textContent =
         // PERMISSION_DENIED is a decision, not a failure, and must not be argued with.
-        code === 1 ? "No problem \u2014 staying with the fixed location. You can allow location access in your browser's site settings if you change your mind."
+        code === 1 ? "No problem. Staying with the fixed location. You can allow location access in your browser's site settings if you change your mind."
         // POSITION_UNAVAILABLE, and the message matters because the obvious conclusion is wrong.
         // Permission and ability are different things: the browser asks its own location service
         // and reports this when that service does not answer usefully. Observed on Vivaldi as
         // "Response was malformed" WITH permission already granted for this site, which sends
         // somebody hunting through site settings that were never the problem. So it names the
         // thing that does work instead.
-        : code === 2 ? "Your browser allowed the request but could not work out where you are, so the fixed location is still shown. That is the browser's own location service rather than this page or your permission for it — some desktop browsers ship without a working one. Setting a home place on your profile is the reliable way to pick where the forecast is for."
+        : code === 2 ? "Your browser allowed the request but could not work out where you are, so the fixed location is still shown. That is the browser's own location service rather than this page or your permission for it, and some desktop browsers ship without a working one. Setting a home place on your profile is the reliable way to pick where the forecast is for."
         : code === 3 ? "Your browser took too long to find a position, so the fixed location is still shown. Trying again sometimes works."
         : "Your location could not be determined, so the fixed location is still being shown.";
       setBusy(false);
@@ -628,7 +628,7 @@ function setupGeo(usingMine, home) {
       console.error("geo: the forecast for that position failed", err && err.status, err && err.code, err);
       show();
       note.textContent = "Found you, but the forecast for that position could not be fetched just "
-        + "now. Your location is still the one being used — try again in a moment.";
+        + "now. Your location is still the one being used. Try again in a moment.";
       unavailable();
     }
     setBusy(false);

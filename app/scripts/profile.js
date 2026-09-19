@@ -121,7 +121,7 @@ function wireEmail(me) {
       say(wrongPassword ? "That password is not right."
         : err.code === "same_email" ? "That is already your address."
         : err.code === "invalid_email" ? "That is not a valid email address."
-        : err.code === "reauth_required" ? "Please try again — your sign-in needs refreshing."
+        : err.code === "reauth_required" ? "Please try again: your sign-in needs refreshing."
         : "That could not be sent.", "error");
       if (wrongPassword) { fieldError(password, "That password is not right."); password.focus(); }
     }
@@ -139,7 +139,7 @@ function wireTheme() {
   const paint = () => {
     const dark = document.documentElement.classList.contains("dark");
     value.textContent = dark ? "Dark" : "Light";
-    btn.setAttribute("aria-label", dark ? "Switch to the light theme" : "Switch to the dark theme");
+    btn.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
   };
   paint();
 
@@ -171,7 +171,7 @@ function wireLocation(me) {
   function paintHome() {
     currentLine.textContent = home
       ? `Currently showing ${home.name}.`
-      : "No home location saved — the weather shows the default.";
+      : "No home location saved, so the weather shows the default.";
     clear.classList.toggle("hidden", !home);
   }
   paintHome();

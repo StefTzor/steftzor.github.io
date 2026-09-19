@@ -86,7 +86,7 @@ el("nameForm").addEventListener("submit", async (e) => {
   } catch (err) {
     console.error("account: name failed", err.status, err.code);
     say(err.code === "bad_name" ? "A name must be between 1 and 60 characters."
-      : err.code === "self_target" ? "This is your own account — your name is on your profile page."
+      : err.code === "self_target" ? "This is your own account. Your name is on your profile page."
       : "That could not be saved.", "error");
   } finally {
     btn.disabled = false;
@@ -156,7 +156,7 @@ el("emailForm").addEventListener("submit", async (e) => {
     });
     emailBox.classList.add("hidden");
     el("accEmail").value = "";
-    say(`Asked ${res.pending} to confirm. Nothing has changed yet — ${res.from} still signs in, ` +
+    say(`Asked ${res.pending} to confirm. Nothing has changed yet: ${res.from} still signs in, ` +
       "and has been told you asked.", "ok");
   } catch (err) {
     console.error("account: email change failed", err.status, err.code);
@@ -170,7 +170,7 @@ el("emailForm").addEventListener("submit", async (e) => {
 function reason(err, fallback) {
   switch (err.code) {
     case "reauth_required":
-      return "Sign in again before changing someone else's account — this one needs a recent sign-in.";
+      return "Sign in again before changing someone else's account. This one needs a recent sign-in.";
     case "self_target":
       return "This is your own account. Use your profile page.";
     case "already_exists":

@@ -14,8 +14,8 @@
 
   // One generic failure message. A form that reports "that address is already known" or
   // echoes a provider error tells a prober more than it tells a visitor.
-  var FAILED = "Sorry — the message could not be sent. Please email stefanos@tzortzoglou.eu instead.";
-  var SENT = "Thank you. Your message has been sent — I will reply to the address you gave.";
+  var FAILED = "Sorry, the message could not be sent. Please email stefanos@tzortzoglou.eu instead.";
+  var SENT = "Thank you. Your message has been sent. I will reply to the address you gave.";
 
   document.addEventListener("DOMContentLoaded", function () {
     var form = document.getElementById("contactForm");

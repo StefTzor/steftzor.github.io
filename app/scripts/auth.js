@@ -30,7 +30,7 @@ let formLoadedAt = 0;
 // Shown both on a successful registration AND when the address already has an
 // account, so the form cannot be used to test whether an address is registered.
 const PENDING_MESSAGE =
-  "Thanks — your request has been received. Access is granted manually, so you will not be able to sign in until it is approved.";
+  "Thanks, your request has been received. Access is granted manually, so you will not be able to sign in until it is approved.";
 
 // Same reasoning: one message whichever half of the credentials was wrong.
 const SIGNIN_FAILED = "That email and password combination is not correct.";
@@ -217,7 +217,7 @@ async function handleRegister(e) {
     return;
   }
   if (Date.now() - formLoadedAt < 3000) {
-    fail("That was too quick — please take a moment and try again.");
+    fail("That was too quick. Please take a moment and try again.");
     return;
   }
 
