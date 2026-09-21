@@ -20,7 +20,7 @@
   <title>{{ title }}</title>
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link href="/dist/output.css" rel="stylesheet">
-  <script>location.replace({{ to | dump | safe }});</script>
+  <script>location.replace({{ to | jsonInScript | safe }});</script>
 </head>
 
 <body class="bg-brand-bg text-brand-text antialiased min-h-screen flex items-center justify-center">

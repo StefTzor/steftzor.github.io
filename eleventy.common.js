@@ -82,6 +82,33 @@ module.exports = function (eleventyConfig, { cspOverrides = {} } = {}) {
   }));
 
   /**
+   * JSON for embedding inside a <script> element, which is not the same thing as JSON.
+   *
+   * `dump` is `JSON.stringify`, and it escapes quotes and backslashes but not `<`. Inside a
+   * `<script>` the HTML parser is still looking for `</script`, so a string containing that
+   * sequence closes the element early and everything after it parses as markup. `| safe` is
+   * mandatory at these call sites (without it the JSON is HTML-escaped, and a browser does not
+   * HTML-decode inside `<script>`, so the block breaks either way), which means autoescape
+   * cannot be the thing that saves us. This filter is.
+   *
+   * `\u003c` is valid JSON and parses back to `<`, so a consumer reads exactly what was meant.
+   * U+2028 and U+2029 are escaped for the one call site that is a real script rather than
+   * `application/ld+json` (`redirect.njk`): they are literal line terminators in a JS string
+   * before ES2019 and would break the statement.
+   *
+   * This replaces guardrail 12's "nothing in _data/schema.js may contain `</script`", which
+   * asked a human to remember something a function can enforce.
+   *
+   * One behaviour change worth knowing: this throws on `undefined`, where `dump` emitted the
+   * bare token `undefined` into the JSON. A page missing a `title` or `description` now fails
+   * the build instead of shipping a block that does not parse. Louder is correct here.
+   */
+  eleventyConfig.addFilter("jsonInScript", (value) => JSON.stringify(value)
+    .replace(/</g, "\\u003c")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029"));
+
+  /**
    * Cache-busting. Rewrites every /dist and /scripts URL in the built HTML to carry a
    * ?v= content hash, so a deploy cannot leave a visitor running last week's auth.js,
    * consent.js or stylesheet. Done as a transform rather than per-template so nothing

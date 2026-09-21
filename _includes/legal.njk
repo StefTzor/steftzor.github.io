@@ -40,8 +40,8 @@
   {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": {{ title | dump | safe }},
-    "description": {{ description | dump | safe }},
+    "name": {{ title | jsonInScript | safe }},
+    "description": {{ description | jsonInScript | safe }},
     "url": "https://tzortzoglou.eu{{ page.url }}",
     "dateModified": "{{ buildDateTime }}",
     "inLanguage": "en",
