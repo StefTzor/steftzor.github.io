@@ -16,3 +16,7 @@ cover_letters
 # neither platform has an API for a banner, so they are exports rather than build output.
 # og-cover.png IS committed, because the site serves it.
 dist-cards/
+
+# Temp pages the card renderer writes beside its template. Cleaned up in a finally, ignored
+# as well, because a Chrome that dies hard should not be able to leave one in a commit.
+scripts/cards/.render-*.html

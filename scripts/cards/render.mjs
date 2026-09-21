@@ -81,17 +81,27 @@ for (const key of todo) {
 
   // Written beside the template so the relative font and photo paths resolve.
   const page = join(HERE, `.render-${key}.html`);
-  writeFileSync(page, template.replace('<div id="card"></div>', card.html));
+  // A function replacement, not a string: `$&`, `` $` `` and `$'` in the second argument of
+  // String.replace are substitution patterns, and esc() does not neutralise them — it turns `&`
+  // into `&amp;`, which leaves `$&` live. A `` $` `` in any identity string would splice the
+  // whole preceding template, stylesheet and all, into the card, and the dimension assertion
+  // below would still pass because the page size is fixed in CSS.
+  writeFileSync(page, template.replace('<div id="card"></div>', () => card.html));
 
   // --force-device-scale-factor=1 and an exact window: the screenshot must be the declared
   // pixel size, not whatever the display would have chosen.
-  execFileSync(CHROME, [
-    '--headless', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
-    '--force-device-scale-factor=1', `--window-size=${w},${h}`,
-    '--virtual-time-budget=8000', `--screenshot=${card.out}`, `file://${page}`,
-  ], { stdio: 'pipe' });
-
-  rmSync(page, { force: true });
+  // finally, because a Chrome that exits non-zero would otherwise leave .render-*.html sitting
+  // in a tracked source directory, where the house rule of staging by path would eventually
+  // sweep it into a commit.
+  try {
+    execFileSync(CHROME, [
+      '--headless', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
+      '--force-device-scale-factor=1', `--window-size=${w},${h}`,
+      '--virtual-time-budget=8000', `--screenshot=${card.out}`, `file://${page}`,
+    ], { stdio: 'pipe' });
+  } finally {
+    rmSync(page, { force: true });
+  }
 
   // Trust the file, not the exit code: read the PNG header back and assert the real dimensions.
   const buf = readFileSync(card.out);
