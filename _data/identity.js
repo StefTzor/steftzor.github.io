@@ -35,4 +35,12 @@ module.exports = {
 
   /** Where the work happens. Kept out of the GitHub banner, which is tight for width. */
   place: 'Stockholm',
+
+  /**
+   * The GitHub bio field, 160 characters hard limit. Written out rather than derived from the
+   * parts above: it is the one string where the character budget decides the wording, and a
+   * template that silently produced 163 characters would be truncated by GitHub without saying
+   * so. `npm run cards` fails if this grows past the limit.
+   */
+  bio: 'Technical Customer Success Manager. I build the enterprise integrations most CSMs escalate: SQL, REST APIs, CDP and CRM/ERP data mapping.',
 };
