@@ -2,7 +2,7 @@
 layout: base.njk
 permalink: /portfolio/
 title: "Technical Case Studies | Stefanos Tzortzoglou"
-description: "Explore technical case studies by Stefanos Tzortzoglou, covering API architecture, complex SaaS integrations, and enterprise data governance."
+description: "Technical case studies by Stefanos Tzortzoglou: reverse-engineering ticketing APIs, a multi-club bi-directional sync, a data model that protects minors, and an AI-driven segmentation migration."
 personSchema: true
 sitemapOrder: 30
 sitemapChangefreq: monthly
@@ -15,6 +15,9 @@ sitemapPriority: "0.8"
             A selection of the implementations and technical problems I have resolved, and how. Most of them are
             enterprise onboardings onto a <strong class="text-brand-text">Customer Data Platform (CDP)</strong>,
             where the work is getting a client's ticketing, e-commerce and CRM data to agree on what a customer is.
+            I have worked on more than forty of them, for sports clubs, leagues and federations in 13 countries in
+            Europe and the US. <a href="/process/" class="text-brand-accent underline hover:no-underline">How I run
+            one</a> is written up separately.
         </p>
         <p class="mt-6 text-sm text-brand-muted border-l-4 border-brand-accent pl-4 py-1 text-left">
             <strong class="text-brand-text">A note on these case studies.</strong> Clients are described in
@@ -89,7 +92,7 @@ sitemapPriority: "0.8"
                     <br><br>
                     <strong>My Solution:</strong> Architected the logic flow for a 2-way sync to resolve data
                     conflicts (Source of Truth logic). I coordinated the integration across Ticketing, E-commerce,
-                    and Membership systems to ensure data consistency.
+                    and Membership systems.
                     <br><br>
                     <strong>The Outcome:</strong> Clubs could push targeted segments from the CDP back into their own
                     CRM and sell against them.
@@ -115,19 +118,22 @@ sitemapPriority: "0.8"
                 <div class="flex justify-between items-start mb-4">
                     <div
                         class="bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-emerald-500/40">
-                        Enterprise Governance
+                        Data Privacy
                     </div>
                     {% icon "fa-solid-shield-alt", "text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" %}
                 </div>
 
-                <h2 class="text-2xl font-bold text-brand-text mb-3">Fortune 500 Data Lake Strategy</h2>
+                <h2 class="text-2xl font-bold text-brand-text mb-3">US Sports League: Protecting Minors' Data</h2>
 
                 <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                    <strong>The Challenge:</strong> A Fortune 500 client with rigid Data Lake pipelines needed to
-                    onboard its entire under-18 membership base. Under strict legal constraints, marketing had to reach parents and guardians without exposing any minor's personal data.
+                    <strong>The Challenge:</strong> A US professional sports league with a nationwide youth club
+                    network, and rigid data lake pipelines, needed to onboard its entire under-18 membership base.
+                    Under strict legal constraints, marketing had to reach parents and guardians without exposing any
+                    minor's personal data.
                     <br><br>
-                    <strong>My Solution:</strong> Led the technical discovery with their Data Engineers. I designed
-                    a "Parent/Guardian" entity model in the CDP that routed all communications to authorised adults while
+                    <strong>My Solution:</strong> Led the technical discovery with their data engineers and
+                    structured their data sources with them. I designed the account's identity resolution and a
+                    "Parent/Guardian" entity model in the CDP that routed all communications to authorised adults while
                     keeping the non-adult profile data strictly siloed for analysis only.
                     <br><br>
                     <strong>The Outcome:</strong> The model was signed off by the client's own data-protection and
@@ -138,11 +144,11 @@ sitemapPriority: "0.8"
                 <div class="border-t border-brand-border pt-4 mt-auto">
                     <div class="flex flex-wrap gap-2">
                         <span
-                            class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Privacy/GDPR</span>
+                            class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Minors' Privacy</span>
                         <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Data
                             Modeling</span>
-                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">ETL
-                            Strategy</span>
+                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Identity
+                            Resolution</span>
                     </div>
                 </div>
             </div>
