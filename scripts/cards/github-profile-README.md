@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="banner.png" alt="Stefanos Tzortzoglou — Technical CSM. SQL, REST APIs, CDP and CRM/ERP integrations." width="100%" />
+  <img src="banner.png" alt="Stefanos Tzortzoglou, Technical CSM: SQL, REST APIs, CDP and CRM/ERP integrations." width="100%" />
 </div>
 
 <div align="center">
