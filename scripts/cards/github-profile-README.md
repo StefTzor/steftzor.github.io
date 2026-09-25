@@ -18,11 +18,12 @@
 
 ### 👋 I build the enterprise integrations most CSMs escalate
 
-I am a **Technical Customer Success Manager** who sits at the intersection of revenue and code. When an onboarding stalls on an API nobody documented or a data model that will not map, I am the one who takes it apart.
+I am a **Technical Customer Success Manager**, and the person to bring into the meeting where a customer's business goals meet their technical reality. When an onboarding stalls on an API nobody documented or a data model that will not map, I am the one who takes it apart.
 
-Most of my work is enterprise onboarding onto a **Customer Data Platform**: getting a client's ticketing, e-commerce and CRM data to agree on what a customer is. I set the scope and the milestone plan at kickoff, track the dependencies that decide whether the date holds, and configure the integrations myself rather than filing them as engineering work.
+Most of my work is enterprise onboarding onto a **Customer Data Platform**, for 40+ sports clubs, leagues and federations across 13 countries in Europe and the US so far: getting a client's ticketing, e-commerce and CRM data to agree on what a customer is. I set the scope and the milestone plan at kickoff, run the technical meetings with the providers myself, and track the dependencies that decide whether the date holds. The method is written up at [tzortzoglou.eu/process](https://tzortzoglou.eu/process/).
 
-- 🧩 **What that looks like:** SQL against legacy client data, REST API integrations across ticketing, e-commerce, CRM and ERP, and the data mapping that makes a migration survive contact with production.
+- 🧩 **What that looks like:** SQL against legacy client data, REST API integrations across 20+ ticketing, e-commerce and CRM platforms, identity resolution for up to half a million contacts per account, and the dashboards and segments customers actually use.
+- 🤖 **Playbook and AI:** onboarding standardised from a Jira framework into reusable integration and mapping schemas, and an AI toolkit that migrates customer accounts to a new segmentation engine through the platform's API.
 - 🐧 **Philosophy:** pragmatist, security-conscious, and an advocate for **Linux** and open source. Transparency beats proprietary black boxes.
 - 🔨 **Recent build:** [tzortzoglou.eu](https://tzortzoglou.eu) and the signed-in app behind it. Three deployables, four data stores, five upstreams. Firebase auth, a Postgres-backed Express API, first-party privacy-first analytics, and automated deploys that verify the build actually arrived rather than that the request was accepted. The full architecture is written up at [app.tzortzoglou.eu/docs](https://app.tzortzoglou.eu/docs/).
 

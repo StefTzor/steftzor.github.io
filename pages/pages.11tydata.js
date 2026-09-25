@@ -12,6 +12,7 @@ module.exports = {
     { label: "Home", href: "/", navKey: "home" },
     { label: "About", href: "/about/", navKey: "about" },
     { label: "Portfolio", href: "/portfolio/", navKey: "portfolio" },
+    { label: "Process", href: "/process/", navKey: "process" },
     { label: "Code", href: "/code/", navKey: "code" },
     { label: "Contact", href: "/contact/", navKey: "contact" },
   ],

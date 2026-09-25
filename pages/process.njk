@@ -1,0 +1,119 @@
+---
+layout: base.njk
+permalink: /process/
+title: "How I Run an Enterprise Onboarding | Stefanos Tzortzoglou"
+description: "How Stefanos Tzortzoglou runs enterprise SaaS onboarding from kickoff to go-live: scope, provider meetings, data mapping, identity resolution, UAT and handover, and what goes wrong at each step."
+personSchema: true
+sitemapOrder: 25
+sitemapChangefreq: monthly
+sitemapPriority: "0.8"
+---
+{% set phases = [
+  {
+    n: "1",
+    name: "Kickoff and requirements",
+    own: "The scope, the milestone plan, and the full list of systems that will feed the platform.",
+    with: "The customer's commercial lead, their IT or data contact, and our account CSM.",
+    out: "A scoped plan: every data source, every integration, the go-live date, and who owns each piece.",
+    risk: "The goal arrives as a feature (\"we want segments\") instead of a result, and the system list is missing the one nobody mentions. I ask what they will do with the data on day one, and ask for the system list in writing, including the systems \"nobody uses anymore\"."
+  },
+  {
+    n: "2",
+    name: "Data mapping and integration design",
+    own: "The technical meetings with each provider, the integration method, and the data schema.",
+    with: "Ticketing, e-commerce and CRM providers, the customer's IT, and our developers when something new has to be built.",
+    out: "A specification per source: endpoints, fields, schema, the logic that derives anything the source does not send, and calls I have already tested.",
+    risk: "Documentation is missing or wrong, or an endpoint does not return what the commercial goal needs. I test the endpoints myself before a developer touches them, and when data is missing I add logic to the schema to derive it rather than wait for the provider."
+  },
+  {
+    n: "3",
+    name: "Build and configuration",
+    own: "Standard integrations from the library, the per-customer data warehouse configuration, and the identity resolution design.",
+    with: "Developers, only for integrations that do not exist yet.",
+    out: "Data flowing on schedule and contacts resolving into single customer profiles.",
+    risk: "Credentials and access arrive late, which is the most common reason a date slips, and identity resolution merges too much or too little. I track credentials as a dependency from the kickoff, and check profile counts on the first load against each source's own numbers."
+  },
+  {
+    n: "4",
+    name: "Testing and go-live",
+    own: "Validation against the source systems and the go-live call.",
+    with: "The customer's data owner, who signs off the numbers.",
+    out: "Reconciled counts, a signed-off setup, and a live account.",
+    risk: "The first dashboard disagrees with a report the customer already trusts, and confidence goes with it. I reconcile against their own reports before they see anything, and explain the differences, such as duplicates merged, before they have to ask."
+  },
+  {
+    n: "5",
+    name: "Handover and adoption",
+    own: "Analytics dashboards, segment training, and the handover to whoever runs the account day to day.",
+    with: "The customer's marketing and CRM team.",
+    out: "Working dashboards, a team that builds its own target segments, and a documented setup.",
+    risk: "The platform is live and nobody uses it. Training is built on their own goals, so the first segments they create in the session are ones they will actually send."
+  }
+] %}
+    <section class="max-w-4xl mx-auto mb-16">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6">How I run an <span class="text-brand-accent">enterprise onboarding</span></h1>
+        <div class="prose dark:prose-invert max-w-none text-lg text-brand-muted leading-relaxed">
+            <p class="mb-4">
+                Most onboardings I lead take a sports club, league or federation onto a
+                <strong class="text-brand-text">Customer Data Platform (CDP)</strong>: their ticketing, e-commerce, CRM
+                and app data, merged into one profile per fan. I have worked on more than forty of them across 13 countries in Europe
+                and the US, usually with a few running at once.
+            </p>
+            <p class="mb-4">
+                The method below is the same every time. The phases are what I own, who I bring in, what each one
+                produces, and the thing that usually goes wrong at that point, caught early instead of at go-live.
+            </p>
+        </div>
+    </section>
+
+    <ol class="max-w-4xl mx-auto space-y-8 mb-16">
+        {% for p in phases %}
+        <li class="bg-brand-surface rounded-xl shadow-sm border border-brand-border p-6 md:p-8">
+            <h2 class="text-2xl font-bold text-brand-text mb-5 flex items-center gap-4">
+                <span class="w-10 h-10 rounded-full bg-brand-accent text-brand-bg flex items-center justify-center text-lg font-bold shrink-0" aria-hidden="true">{{ p.n }}</span>
+                <span><span class="sr-only">Phase {{ p.n }}: </span>{{ p.name }}</span>
+            </h2>
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm leading-relaxed">
+                <div>
+                    <dt class="font-semibold text-brand-text uppercase tracking-wider text-xs mb-1">What I own</dt>
+                    <dd class="text-brand-muted">{{ p.own }}</dd>
+                </div>
+                <div>
+                    <dt class="font-semibold text-brand-text uppercase tracking-wider text-xs mb-1">Who I bring in</dt>
+                    <dd class="text-brand-muted">{{ p.with }}</dd>
+                </div>
+                <div class="md:col-span-2">
+                    <dt class="font-semibold text-brand-text uppercase tracking-wider text-xs mb-1">What it produces</dt>
+                    <dd class="text-brand-muted">{{ p.out }}</dd>
+                </div>
+                <div class="md:col-span-2 border-l-4 border-brand-accent pl-4">
+                    <dt class="font-semibold text-brand-text uppercase tracking-wider text-xs mb-1">What goes wrong, and how I catch it</dt>
+                    <dd class="text-brand-muted">{{ p.risk }}</dd>
+                </div>
+            </dl>
+        </li>
+        {% endfor %}
+    </ol>
+
+    <section class="max-w-4xl mx-auto mb-16">
+        <h2 class="text-2xl font-bold mb-6">What carries over to the next one</h2>
+        <div class="prose dark:prose-invert max-w-none text-brand-muted leading-relaxed space-y-4">
+            <p>
+                Every onboarding leaves something behind for the next. It started as a step-by-step onboarding
+                framework in Jira, so nothing was forgotten, and grew into standard analytics setups, integration
+                methods and mapping schemas. With the integrations library that followed, a known integration now
+                takes hours to set up instead of the four to six weeks an onboarding took when I started.
+            </p>
+            <p>
+                The latest layer is an AI toolkit I built on a knowledge library of how the platform is configured.
+                It migrated customer accounts to a new segmentation engine through the portal's API, and it now
+                builds dashboards and analytics tables from a customer's raw data sources.
+                <a href="/portfolio/" class="text-brand-accent underline hover:no-underline">The case studies</a>
+                show the method on real projects.
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-4 mt-8">
+            <a href="/contact/" class="btn btn-primary">{% icon "fa-solid-envelope", "mr-2" %} Get in touch</a>
+            <a href="/about/" class="btn btn-secondary">Read the full profile</a>
+        </div>
+    </section>

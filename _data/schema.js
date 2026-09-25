@@ -43,6 +43,8 @@ const person = {
       "Data Strategy",
       "SQL",
       "Snowflake",
+      "Identity Resolution",
+      "Audience Segmentation",
       "Enterprise Customer Success",
       "Project Management",
       "Stakeholder Management"
