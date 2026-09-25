@@ -1,4 +1,5 @@
 import { api, profile } from "./shell.js";
+import { liveSearch } from "./stop-search.js";
 import { inWords, shortStop, towardsOf } from "./stop-format.js";
 import { remember } from "./rows.js";
 
@@ -188,18 +189,17 @@ profile.then(() => {
   el("depChange").addEventListener("click", openPicker);
   el("depCancel").addEventListener("click", closePicker);
 
-  el("depPicker").addEventListener("submit", async (e) => {
+  // Results as you type (stop-search.js); Enter still searches at once.
+  const search = liveSearch({
+    input: el("depSearch"),
+    list: el("depResults"),
+    fetchStops: async (q) => (await api("/departures/stops?q=" + encodeURIComponent(q))).stops,
+    render: renderResults,
+    note: pickNote,
+  });
+  el("depPicker").addEventListener("submit", (e) => {
     e.preventDefault();
-    const q = el("depSearch").value.trim();
-    if (!q) return;
-    pickNote("Searching…");
-    try {
-      const { stops } = await api("/departures/stops?q=" + encodeURIComponent(q));
-      renderResults(stops);
-    } catch (err) {
-      console.error("departures: search failed", err.status, err.code);
-      pickNote("The search could not be run.");
-    }
+    search.now();
   });
 
   // Coming back to the tab with something stale on screen is the one moment a refresh is

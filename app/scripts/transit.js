@@ -1,4 +1,5 @@
 import { api, profile } from "./shell.js";
+import { liveSearch } from "./stop-search.js";
 import { inWords, shortStop, towardsOf } from "./stop-format.js";
 import { remember } from "./rows.js";
 import { createMap, goTo, homeTo } from "./map.js";
@@ -912,18 +913,17 @@ profile.then(() => {
   el("trCancel").addEventListener("click", closePicker);
   el("trNear").addEventListener("click", near);
 
-  el("trPicker").addEventListener("submit", async (e) => {
+  // Results as you type (stop-search.js); Enter still searches at once.
+  const search = liveSearch({
+    input: el("trSearch"),
+    list: el("trResults"),
+    fetchStops: async (q) => (await api("/departures/stops?q=" + encodeURIComponent(q))).stops,
+    render: renderResults,
+    note: pickNote,
+  });
+  el("trPicker").addEventListener("submit", (e) => {
     e.preventDefault();
-    const q = el("trSearch").value.trim();
-    if (!q) return;
-    pickNote("Searching…");
-    try {
-      const { stops } = await api("/departures/stops?q=" + encodeURIComponent(q));
-      renderResults(stops);
-    } catch (err) {
-      console.error("transit: search failed", err.status, err.code);
-      pickNote("The search could not be run.");
-    }
+    search.now();
   });
 
   document.addEventListener("visibilitychange", () => {
