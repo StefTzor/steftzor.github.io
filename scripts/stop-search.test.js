@@ -80,6 +80,23 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
       assert.strictEqual(t.drawn.length, 2, 'but is drawn again, from memory');
       ok('backspacing over a letter redraws from memory rather than asking again');
     }
+    {
+      const t = setup();
+      t.input.value = 'upps';
+      const p = t.s.now();
+      t.pending[0].res([{ name: 'Uppsala Centralstation' }, { name: 'UPPSALA' }]);
+      await p;
+      let prevented = 0;
+      const tab = { key: 'Tab', shiftKey: false, preventDefault() { prevented += 1; } };
+      t.input.listeners.keydown(tab);
+      assert.strictEqual(t.input.value, 'Uppsala Centralstation', 'Tab fills in the top suggestion');
+      assert.strictEqual(prevented, 1, 'and keeps focus in the box to do it');
+      t.input.listeners.keydown(tab);
+      assert.strictEqual(prevented, 1, 'a second Tab is left alone, so focus moves on as usual');
+      t.input.listeners.keydown({ key: 'Tab', shiftKey: true, preventDefault() { prevented += 1; } });
+      assert.strictEqual(prevented, 1, 'and Shift+Tab is never taken');
+      ok('Tab completes to the top stop, like a terminal, and never traps the keyboard');
+    }
     console.log(`\nstop-search: all checks passed (${passed}) - quiet on the quota, and never out of order`);
   } catch (err) {
     console.error('\nFAILED:', err.message);

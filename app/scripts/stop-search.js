@@ -13,6 +13,10 @@
  * Enter still searches at once, for anyone who types the whole name. The down arrow moves from
  * the box into the results and up and down moves between them, so the list can be used without
  * a pointer; the results are buttons, so Enter or Space picks one.
+ *
+ * **Tab completes, like a terminal:** it fills the box with the top suggestion. Only when the box
+ * does not already say exactly that, so a second Tab moves focus on as it always does - a
+ * keyboard user is never trapped in the field.
  */
 const WAIT_MS = 250;
 const MIN_CHARS = 3;
@@ -29,24 +33,31 @@ export function liveSearch({ input, list, fetchStops, render, note }) {
   const seen = new Map();
   let timer = 0;
   let latest = 0;
+  let top = null; // the first stop currently drawn, which Tab completes to
+
+  const show = (stops) => {
+    top = stops.length ? stops[0] : null;
+    render(stops);
+  };
 
   async function run(raw) {
     const q = raw.trim();
     const mine = ++latest;
     if (q.length < MIN_CHARS) {
+      top = null;
       list.textContent = "";
       note(q ? `Keep typing: ${MIN_CHARS} letters or more.` : "");
       return;
     }
     if (seen.has(q.toLowerCase())) {
-      render(seen.get(q.toLowerCase()));
+      show(seen.get(q.toLowerCase()));
       return;
     }
     note("Searching…");
     try {
       const stops = await fetchStops(q);
       seen.set(q.toLowerCase(), stops);
-      if (mine === latest) render(stops);
+      if (mine === latest) show(stops);
     } catch (err) {
       console.error("stop search failed", err.status, err.code);
       if (mine === latest) note("The search could not be run.");
@@ -61,6 +72,13 @@ export function liveSearch({ input, list, fetchStops, render, note }) {
 
   const buttons = () => [...list.querySelectorAll("button")];
   input.addEventListener("keydown", (e) => {
+    if (e.key === "Tab" && !e.shiftKey && top && input.value !== top.name) {
+      e.preventDefault();
+      input.value = top.name;
+      clearTimeout(timer);
+      run(input.value);
+      return;
+    }
     if (e.key === "ArrowDown" && buttons().length) {
       e.preventDefault();
       buttons()[0].focus();
