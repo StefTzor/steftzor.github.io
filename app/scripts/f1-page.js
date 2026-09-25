@@ -43,14 +43,22 @@ function when(iso) {
 
 // --- the round ---------------------------------------------------------------
 
-function sessionList(race) {
+/**
+ * Sessions as times, the ones already run struck through - the same treatment as the home card.
+ *
+ * A practice never gets replaced by a table: the upstream publishes no practice classification,
+ * so a start time is the only thing this page will ever know about Friday. Striking it rather
+ * than dropping it is what keeps a finished weekend saying the practices happened at all.
+ */
+function sessionList(sessions) {
   const list = document.createElement("ul");
   list.className = "card divide-y divide-brand-border";
-  race.sessions.forEach((s) => {
+  sessions.forEach((s) => {
     const li = document.createElement("li");
     li.className = "flex items-baseline justify-between gap-4 py-2 first:pt-0 last:pb-0";
     li.append(text("span", "text-sm text-brand-text", s.label),
-      text("time", "shrink-0 text-sm text-brand-muted tabular-nums", when(s.at)));
+      text("time", "shrink-0 text-sm text-brand-muted tabular-nums" +
+        (Date.parse(s.at) < Date.now() ? " line-through" : ""), when(s.at)));
     list.appendChild(li);
   });
   return list;
@@ -145,10 +153,10 @@ function renderRound(data) {
   if (data.raceResults) blocks.push(["Race", "result", data.raceResults]);
 
   if (!blocks.length) {
-    body.appendChild(sessionList(race));
+    body.appendChild(sessionList(race.sessions));
     body.appendChild(text("p", "hint mt-3",
       data.over ? "This weekend has been and gone, but no results were published for it."
-        : "Nothing has run yet. Times are in your timezone."));
+        : "No results yet. Times are in your timezone."));
     return;
   }
 
@@ -163,24 +171,17 @@ function renderRound(data) {
     }
   });
 
-  // Anything still to come keeps its time.
-  const done = new Set(blocks.map(([l]) => l === "Race" ? "Race" : l));
-  const remaining = race.sessions.filter((s) => !done.has(s.label) &&
-    !(s.label === "Qualifying" && data.qualifying) && Date.parse(s.at) > Date.now());
-  if (remaining.length) {
+  // Every session no table above covers: the practices, which have no result to be replaced by,
+  // and anything not yet run. Both at once on a finished weekend, so the heading says which.
+  // `blocks` labels are the session labels, so the set needs no translation between them.
+  const done = new Set(blocks.map(([label]) => label));
+  const rest = race.sessions.filter((s) => !done.has(s.label));
+  if (rest.length) {
     const still = document.createElement("div");
     still.className = "mt-4";
-    still.appendChild(text("h3", "font-semibold text-brand-text mb-2", "Still to come"));
-    const list = document.createElement("ul");
-    list.className = "card divide-y divide-brand-border";
-    remaining.forEach((s) => {
-      const li = document.createElement("li");
-      li.className = "flex items-baseline justify-between gap-4 py-2 first:pt-0 last:pb-0";
-      li.append(text("span", "text-sm text-brand-text", s.label),
-        text("time", "shrink-0 text-sm text-brand-muted tabular-nums", when(s.at)));
-      list.appendChild(li);
-    });
-    still.appendChild(list);
+    still.appendChild(text("h3", "font-semibold text-brand-text mb-2",
+      rest.every((s) => Date.parse(s.at) > Date.now()) ? "Still to come" : "Sessions"));
+    still.appendChild(sessionList(rest));
     body.appendChild(still);
   }
 }
