@@ -817,7 +817,11 @@ function near() {
     try {
       const { latitude, longitude } = pos.coords;
       const { stops } = await api(`/departures/nearby?lat=${latitude}&lon=${longitude}`);
-      pickNote(stops.length ? "" : "No stops within a kilometre and a half.");
+      // Never the empty string on success. This note is the only thing in view when the button is
+      // pressed, and blanking it was the page's way of saying nothing happened.
+      pickNote(stops.length
+        ? `${stops.length} stop${stops.length === 1 ? "" : "s"} near you, listed below.`
+        : "No stops within a kilometre and a half.");
 
       const list = el("trNearList");
       list.textContent = "";
@@ -828,6 +832,30 @@ function near() {
         list.appendChild(li);
       });
       el("trNearby").classList.toggle("hidden", !stops.length);
+
+      /**
+       * Go to the list that was just filled.
+       *
+       * **"Stops near you" is at the bottom of the page and the button that fills it is at the
+       * top.** The board, the lines and a 28rem map sit in between, so on a phone this shipped as
+       * a button that did nothing whatsoever: the note cleared, the picker stayed open, and the
+       * answer arrived three screens below the fold. Filling a list is not telling anyone about
+       * it, and the list is where it is for a good reason - it carries distances and sits beside
+       * the map plotting the same stops - so the reader is moved to it rather than it to them.
+       *
+       * Focus and not only a scroll, because the answer is a list of buttons and a button is what
+       * was pressed to get it: the keyboard and the screen reader have to arrive as well.
+       *
+       * Instant rather than smooth, and so no prefers-reduced-motion branch: three screens of
+       * animated scrolling is exactly the motion that setting exists to refuse, and nothing here
+       * is worth watching on the way past. `preventScroll` so the focus does not then scroll a
+       * second time to a different place than the one just chosen.
+       */
+      const first = list.querySelector("button");
+      if (first) {
+        el("trNearby").scrollIntoView({ block: "start" });
+        first.focus({ preventScroll: true });
+      }
 
       // The same stops as dots, best effort. The list above is already right and does not depend
       // on this; a map that could not be drawn has already said so underneath itself.
