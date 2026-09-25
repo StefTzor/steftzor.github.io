@@ -126,7 +126,9 @@ bodyScripts:
           Five tables: contact submissions, a row per process start, which migrations have run,
           the one-row table holding the secret behind the visitor number below, and
           one row per page view: path, which of the two properties, the referring host, the time,
-          a coarse browser, OS, device class and width bracket, and a visitor number that is a
+          a coarse browser, OS, device class and width bracket, the country as two letters (looked up
+          on the server from the address; IP geolocation by
+          <a href="https://db-ip.com" class="underline">DB-IP</a>, CC BY 4.0), and a visitor number that is a
           64-bit hash of a 24-hour secret, the address, the User-Agent and the property. The server
           feeds the address and the User-Agent into that hash and stores neither. It cuts the
           referring URL down to its host, sets no cookie, and erases the number from the row after

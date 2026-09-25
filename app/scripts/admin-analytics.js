@@ -52,7 +52,18 @@ const DIMENSIONS = [
   ["byOs", "Operating system"],
   ["byDevice", "Device"],
   ["byScreen", "Window width"],
+  ["byCountry", "Country"],
 ];
+
+// The API stores two letters (SE); the browser already knows every country's name in English.
+// "unknown" is a view with no country: the lookup had no data, or the file had not loaded yet.
+const REGION = (() => {
+  try { return new Intl.DisplayNames(["en"], { type: "region" }); } catch { return null; }
+})();
+const countryName = (code) => {
+  if (code === "unknown") return "Unknown";
+  try { return (REGION && REGION.of(code)) || code; } catch { return code; }
+};
 
 // The width brackets, said as a person would. The API stores the bracket name; this is the only
 // place that turns it into something with a number in it, so the boundaries live in one file on
@@ -403,7 +414,8 @@ function dimension(list, title) {
     return card;
   }
 
-  const named = (r) => (title === "Window width" ? label(SCREEN, r.value) : r.value);
+  const named = (r) => (title === "Window width" ? label(SCREEN, r.value)
+    : title === "Country" ? countryName(r.value) : r.value);
   const top1 = list[0];
   card.append(
     node("p", "hint mt-1", `${named(top1)} leads, ${pct(top1.views / total)} of ${count(total)} views.`),
@@ -414,7 +426,7 @@ function dimension(list, title) {
   return card;
 }
 
-/** The four dimensions, each as its own card. */
+/** The five dimensions, each as its own card. */
 function agents(data) {
   const grid = node("div", "grid gap-4 sm:grid-cols-2");
   DIMENSIONS.forEach(([key, title]) => grid.appendChild(dimension(data[key] || [], title)));

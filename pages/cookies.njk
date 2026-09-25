@@ -5,8 +5,8 @@ title: "Cookies & Local Storage | Stefanos Tzortzoglou"
 heading: "Cookies & Local Storage"
 description: "This site sets no cookies. Here is exactly what is stored in your browser, what the page-view counter stores and what it discards, which third parties your browser contacts, and how to change your analytics choice."
 summary: "This site sets no cookies. The only thing you could reasonably object to is the page-view counter, so that is what the banner asks about. It stays off until you say yes. Since 18 September 2026 a counted page view carries a visitor number that changes every 24 hours and is erased from the row after 30 days."
-updated: "2026-09-18"
-updatedLabel: "18 September 2026"
+updated: "2026-09-26"
+updatedLabel: "26 September 2026"
 sitemapOrder: 70
 sitemapChangefreq: yearly
 sitemapPriority: "0.3"
@@ -119,10 +119,13 @@ sitemapPriority: "0.3"
   <li>the <strong>time</strong></li>
   <li>a coarse browser name, a coarse operating system name, whether you are on a phone, a tablet or a desktop, and
     which of a handful of width brackets your window falls into</li>
+  <li>since 26 September 2026, the <strong>country</strong> your IP address belongs to, as two letters, looked up on
+    my own server</li>
 </ul>
 <p><strong>What reaches my server and is not stored:</strong></p>
 <ul>
-  <li>your <strong>IP address</strong>, an input to the hash and a rate-limiter key, held in memory both times</li>
+  <li>your <strong>IP address</strong>, an input to the hash, a rate-limiter key and the source of the country, held
+    in memory each time</li>
   <li>your full <strong>User-Agent string</strong>, the other input taken from your browser</li>
   <li>the full referring URL, which my server reads a host off and then drops, because a full referring address can
     carry someone's search terms in its query string</li>

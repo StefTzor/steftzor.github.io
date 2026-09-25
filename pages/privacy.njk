@@ -5,8 +5,8 @@ title: "Privacy Policy | Stefanos Tzortzoglou"
 heading: "Privacy Policy"
 description: "How tzortzoglou.eu handles personal data: what is collected, why, the legal basis under GDPR, who processes it, and how to exercise your rights."
 summary: "This site is a personal portfolio. It sets no cookies and runs no advertising. Since 18 September 2026 a counted page view carries a visitor number that is the same for your browser all day, different tomorrow, and erased from the row after 30 days; section 2.2 sets out exactly what it is. Everything else stored here is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form."
-updated: "2026-09-18"
-updatedLabel: "18 September 2026"
+updated: "2026-09-26"
+updatedLabel: "26 September 2026"
 sitemapOrder: 60
 sitemapChangefreq: yearly
 sitemapPriority: "0.3"
@@ -87,9 +87,12 @@ sitemapPriority: "0.3"
     time, and four coarse facts about your browser: its name (Firefox, Safari), its operating system (Windows,
     Android), whether it is a phone, a tablet or a desktop, and which of a handful of width brackets its window falls
     into. The window width is the one new thing your browser sends, and my server keeps only which bracket it fell
-    into.</li>
+    into. <strong>Since 26 September 2026</strong> it also records the <strong>country</strong> your IP address
+    belongs to, as a two-letter code (<code>SE</code>, <code>DE</code>). My server looks it up in a country list
+    from DB-IP that it downloads and holds itself, so your address is never sent to DB-IP or anyone else.</li>
   <li><strong>What it uses and discards:</strong> your IP address and the full User-Agent string. Both are inputs to
-    the hash and neither is written to the page view.</li>
+    the hash and neither is written to the page view. The IP address is also where the country comes from; only the
+    two letters are kept.</li>
   <li><strong>What it still does not record:</strong> no cookie, no fingerprint read off your hardware, fonts or
     canvas, and never the full referring URL. The full URL is the one place a search term can ride: your browser hands
     the referring address over in full, as it does to every site you click through to, and my server reduces it to its
@@ -99,9 +102,9 @@ sitemapPriority: "0.3"
     counted at all.</li>
   <li><strong>Where the request goes:</strong> to that server, which I run, so unlike the hosting logs in
     <a href="#hosting-logs">section 2.1</a>, this one connection is to me, not to GitHub. Your IP address arrives
-    with it, because every request carries one, and it is used twice, both times in memory: as the key a rate limiter
-    counts against, so that the endpoint cannot be hammered, and as one of the four inputs to the hash. It is never
-    written to the page view and never stored.</li>
+    with it, because every request carries one, and it is used three times, all in memory: as the key a rate limiter
+    counts against, so that the endpoint cannot be hammered, as one of the four inputs to the hash, and to look up
+    which country it belongs to. It is never written to the page view and never stored.</li>
   <li><strong>If you ask me to find what I hold about you:</strong> the answer here used to be that there was nothing
     to find. Within the current day, a row could in principle be matched to you: someone with your IP address and your
     User-Agent could recompute the hash while that day's secret still exists and see which rows come out equal. Once
@@ -229,8 +232,8 @@ sitemapPriority: "0.3"
   <strong>This changed on 18 September 2026 too.</strong> A counted page load used to hold no identifier. It now
   carries the same visitor number as the public site, computed the same way from the same four inputs, with the
   application standing in as the second of the two sites. A row here holds the number, the path, that it was the
-  application and not the public site, the referring host, the time, and the same four coarse facts about the browser:
-  name, operating system, device class and width bracket. It still does not record <em>which account</em> was signed
+  application and not the public site, the referring host, the time, the same four coarse facts about the browser
+  (name, operating system, device class and width bracket), and, since 26 September 2026, the country as two letters. It still does not record <em>which account</em> was signed
   in, and the counter is never told.
 </p>
 <p>
@@ -238,7 +241,7 @@ sitemapPriority: "0.3"
   grouping sits inside an audience of strangers. Here it sits inside a handful of approved accounts, which is a much
   smaller crowd. A day's rows for one browser, read next to the list of people who had access that day, could come
   down to one person. The number is erased from the row after 30 days, as it is on the public site, and a row is then
-  a path, a time and four coarse browser facts with nothing joining it to any other row.
+  a path, a time, four coarse browser facts and a country, with nothing joining it to any other row.
 </p>
 <ul>
   <li><strong>Why you are not asked:</strong> the public site's counter measures an audience of strangers, which is
