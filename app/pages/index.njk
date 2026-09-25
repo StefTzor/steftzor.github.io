@@ -33,6 +33,9 @@ signOut: true
      are decoration and none of them is reachable - the chip says the weather in words, and the
      skyline says nothing the place name beside it does not already say. #}
   <div id="hero" class="hero" data-wx="unknown">
+    {# The daylight: dawn, day, golden hour, dusk or night from the reader's own sunrise and
+       sunset (app/scripts/sky-phase.js). Under everything, so the weather paints on top of it. #}
+    <div class="hero-daylight" aria-hidden="true"></div>
     <div class="hero-sky" aria-hidden="true"></div>
 
     {# The skyline. Static markup and no script at all: it is the same drawing for everybody,

@@ -1,5 +1,6 @@
 import { api, profile, GEO_KEY } from "./shell.js";
 import { pendingAccounts, unreadMessages } from "./queues.js";
+import { skyPhase } from "./sky-phase.js";
 
 /**
  * The home view. The shell owns identity, navigation and signing out; this owns the greeting
@@ -333,6 +334,12 @@ function renderWeather(data) {
 
   const now = data.current || {};
   const today = (data.daily || [])[0] || {};
+
+  // The daylight behind the hero, from today's sunrise and sunset. Set once per forecast, and the
+  // forecast refreshes, so a tab left open drifts at most one refresh behind the real light.
+  const hero = el("hero");
+  const phase = skyPhase(today.sunrise, today.sunset);
+  if (hero && phase) hero.dataset.phase = phase;
 
   // The panel has room for both: which place this is, and when it was measured. The chip shows
   // only the town, so this is where "which Uppsala?" gets an answer.

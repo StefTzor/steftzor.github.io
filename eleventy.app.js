@@ -95,6 +95,7 @@ module.exports = function (eleventyConfig) {
     "app/scripts/email.js": "scripts/email.js",
     "app/scripts/app.js": "scripts/app.js",
     "app/scripts/queues.js": "scripts/queues.js",
+    "app/scripts/sky-phase.js": "scripts/sky-phase.js",
     "app/scripts/private.js": "scripts/private.js",
     "app/scripts/admin-status.js": "scripts/admin-status.js",
     "app/scripts/admin-accounts.js": "scripts/admin-accounts.js",

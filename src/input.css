@@ -338,6 +338,17 @@
     --wx-city-far: 16%;
     --wx-city-near: 42%;
 
+    /* The daylight phases. Light mode inks with the deep end of each hue, as the weather does. */
+    --ph-dawn-hi: rgb(236 72 153 / 10%);    /* Pink 500 */
+    --ph-dawn-lo: rgb(245 158 11 / 26%);    /* Amber 500 */
+    --ph-day: rgb(14 165 233 / 20%);        /* Sky 500 */
+    --ph-gold-hi: rgb(245 158 11 / 10%);
+    --ph-gold-lo: rgb(234 88 12 / 26%);     /* Orange 600 */
+    --ph-dusk-hi: rgb(124 58 237 / 14%);    /* Violet 600 */
+    --ph-dusk-lo: rgb(225 29 72 / 20%);     /* Rose 600 */
+    --ph-night-hi: rgb(30 27 75 / 16%);     /* Indigo 950 */
+    --ph-night-lo: rgb(49 46 129 / 6%);
+
     /* **The strip at the bottom of the card that belongs to the skyline, and to nothing else.**
        It is reserved by padding on .hero-body rather than carved out of whatever happens to be
        left, because what is left is nothing: measured on the built page, a 390px card is 292px
@@ -376,6 +387,15 @@
     --wx-city: 148 163 184;
     --wx-city-far: 18%;
     --wx-city-near: 48%;
+    --ph-dawn-hi: rgb(244 114 182 / 14%);
+    --ph-dawn-lo: rgb(252 211 77 / 22%);
+    --ph-day: rgb(56 189 248 / 16%);
+    --ph-gold-hi: rgb(251 191 36 / 10%);
+    --ph-gold-lo: rgb(251 146 60 / 24%);
+    --ph-dusk-hi: rgb(167 139 250 / 18%);
+    --ph-dusk-lo: rgb(251 113 133 / 18%);
+    --ph-night-hi: rgb(2 6 23 / 55%);       /* Slate 950: deeper than the navy card */
+    --ph-night-lo: rgb(30 27 75 / 30%);
   }
 
   .hero-body {
@@ -417,11 +437,35 @@
   /* Four layers, in paint order: the sky and whatever hangs in it, the city, whatever falls past
      the city, and a scrim that buys the text back its contrast. Each clips ITSELF, because .hero
      must not - see above. */
+  .hero-daylight,
   .hero-sky,
   .hero-city,
   .hero-fall,
   .hero-scrim {
     @apply pointer-events-none absolute inset-0 overflow-hidden rounded-2xl;
+  }
+
+  /* **The daylight: the reader's own time of day, under the weather.** Each phase is a sky seen
+     from the ground - its colour overhead at the top, the horizon's at the bottom - so the scrim,
+     which clears the text from the top down on narrow cards and from the left on wide ones, lets
+     through exactly the horizon, which is where dawn and dusk actually happen. Same fork as the
+     weather: geometry once, ink per theme. */
+  .hero[data-phase="dawn"] .hero-daylight {
+    background: linear-gradient(180deg, var(--ph-dawn-hi), transparent 45%, var(--ph-dawn-lo));
+  }
+  /* Day's blue sits low like the others: the scrim owns the top of the card on narrow widths, so
+     an overhead blue would be drawn and never seen. */
+  .hero[data-phase="day"] .hero-daylight {
+    background: linear-gradient(180deg, transparent 35%, var(--ph-day));
+  }
+  .hero[data-phase="golden"] .hero-daylight {
+    background: linear-gradient(180deg, var(--ph-gold-hi), transparent 40%, var(--ph-gold-lo));
+  }
+  .hero[data-phase="dusk"] .hero-daylight {
+    background: linear-gradient(180deg, var(--ph-dusk-hi), transparent 40%, var(--ph-dusk-lo));
+  }
+  .hero[data-phase="night"] .hero-daylight {
+    background: linear-gradient(180deg, var(--ph-night-hi), var(--ph-night-lo));
   }
 
   /* **The scrim is masked away above the band, and that is the whole composition.**

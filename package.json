@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "cards": "node scripts/cards/render.mjs",
-    "test": "node scripts/consent.test.js && node scripts/analytics-render.test.js && node scripts/f1-framing.test.js && node scripts/f1-sessions.test.js && node scripts/basemap.test.js && node scripts/map-reset.test.js && node scripts/transit-nearby.test.js && node scripts/hero-sky.test.js && node scripts/auth.security.test.js && node scripts/contact.security.test.js && node scripts/email.security.test.js && node scripts/app-headers.test.js",
+    "test": "node scripts/consent.test.js && node scripts/analytics-render.test.js && node scripts/f1-framing.test.js && node scripts/f1-sessions.test.js && node scripts/basemap.test.js && node scripts/map-reset.test.js && node scripts/transit-nearby.test.js && node scripts/hero-sky.test.js && node scripts/sky-phase.test.js && node scripts/auth.security.test.js && node scripts/contact.security.test.js && node scripts/email.security.test.js && node scripts/app-headers.test.js",
     "build": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify && eleventy && node scripts/cachebust.test.js && node scripts/urls.test.js && node scripts/csp.test.js _site && node scripts/assets.test.js _site && node scripts/jsonld.test.js _site --expect-blocks",
     "watch": "concurrently \"tailwindcss -i ./src/input.css -o ./dist/output.css --watch\" \"eleventy --serve\"",
     "dev": "npm run watch",
