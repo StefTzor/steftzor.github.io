@@ -52,8 +52,15 @@ const DIMENSIONS = [
   ["byOs", "Operating system"],
   ["byDevice", "Device"],
   ["byScreen", "Window width"],
-  ["byCountry", "Country"],
 ];
+
+/** What the chart draws, chosen by the Visitors and Views figures in the headline strip. */
+let metric = "visitors";
+let lastData = null;
+
+/** A flag from two letters: each letter's regional-indicator symbol. Nothing for "unknown". */
+const flag = (code) => (/^[A-Z]{2}$/.test(code)
+  ? String.fromCodePoint(...[...code].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65)) : "");
 
 // The API stores two letters (SE); the browser already knows every country's name in English.
 // "unknown" is a view with no country: the lookup had no data, or the file had not loaded yet.
@@ -161,14 +168,15 @@ function srTable(caption, rows, headers) {
 function barList(rows, unit) {
   const ul = node("ul", "mt-3 space-y-1");
   const max = Math.max(...rows.map((r) => r[1]), 1);
-  rows.forEach(([name, value]) => {
+  rows.forEach(([name, value, tag]) => {
     const li = node("li", "relative overflow-hidden rounded");
     const fill = node("div", "absolute inset-y-0 left-0 bg-brand-accent/15");
     fill.style.width = `${Math.max(2, (value / max) * 100)}%`;
     fill.setAttribute("aria-hidden", "true");
     const line = node("div", "relative flex items-baseline justify-between gap-4 px-2 py-1.5");
-    line.append(
-      node("span", "min-w-0 flex-1 truncate text-sm text-brand-text", name),
+    const left = node("span", "min-w-0 flex-1 truncate text-sm text-brand-text", name);
+    if (tag) left.appendChild(node("span", "ml-2 text-[11px] text-brand-muted", tag));
+    line.append(left,
       node("span", "shrink-0 text-xs text-brand-muted tabular-nums",
         `${count(value)}${unit ? " " + unit : ""}`),
     );
@@ -176,6 +184,31 @@ function barList(rows, unit) {
     ul.appendChild(li);
   });
   return ul;
+}
+
+/**
+ * The first ten rows, and a button for the rest. A panel that grows to fifty rows pushes its
+ * neighbour's row of the grid apart; the whole list is still one click away, and still in the
+ * table a screen reader gets.
+ */
+const CAP = 10;
+function capped(rows, unit) {
+  if (rows.length <= CAP + 2) return barList(rows, unit);
+  const wrap = node("div", "");
+  const short = barList(rows.slice(0, CAP), unit);
+  const full = barList(rows, unit);
+  full.hidden = true;
+  const more = node("button", "mt-2 text-xs font-semibold text-brand-accent hover:underline",
+    `Show all ${count(rows.length)}`);
+  more.setAttribute("type", "button");
+  more.addEventListener("click", () => {
+    const open = full.hidden;
+    full.hidden = !open;
+    short.hidden = open;
+    more.textContent = open ? "Show fewer" : `Show all ${count(rows.length)}`;
+  });
+  wrap.append(short, full, more);
+  return wrap;
 }
 
 /**
@@ -198,115 +231,167 @@ function barList(rows, unit) {
  */
 function chart(daily) {
   const host = el("chart");
+  // An API that predates visitors-per-day sends no such field. That is not a count of nought,
+  // and drawing it as one would print "nothing counted" over a window full of views - so an
+  // ABSENT field falls back to views, while a present zero is still drawn as the zero it is.
+  const shown = daily.some((d) => d[metric] !== undefined) ? metric : "views";
+  const noun = shown === "visitors" ? "visitors" : "views";
+  const head = node("div", "an-panel-head");
+  head.append(
+    node("h2", "an-panel-title", shown === "visitors" ? "Unique visitors per day" : "Views per day"),
+    node("p", "text-xs text-brand-muted", "Every day in the range, including the empty ones."),
+  );
 
+  const values = daily.map((d) => Number(d[shown]) || 0);
   if (!daily.length) {
-    nothing(host, "Nothing counted in this window yet.");
+    only(host, head, node("p", "mt-3 text-sm text-brand-muted", "Nothing counted in this window yet."));
     return;
   }
-
-  const max = Math.max(...daily.map((d) => d.views));
+  const max = Math.max(...values);
   if (!max) {
-    nothing(host, "Nothing counted in this window yet. Every day in the range is empty.");
+    only(host, head, node("p", "mt-3 text-sm text-brand-muted",
+      "Nothing counted in this window yet. Every day in the range is empty."));
     return;
   }
   // One day is a number, not a shape. A single point would read as a trend, and the only trend a
   // one-day window contains is the one the reader invents.
   if (daily.length < 2) {
-    nothing(host, `${count(daily[0].views)} views on ${dayLabel(daily[0].day)}.`);
+    only(host, head, node("p", "mt-3 text-sm text-brand-muted",
+      `${count(values[0])} ${noun} on ${dayLabel(daily[0].day)}.`));
     return;
   }
 
+  // Round gridlines: 1, 2 or 5 times a power of ten, four steps at most, so the axis reads
+  // 0 / 25 / 50 / 75 / 100 rather than 0 / 23.75 / 47.5.
+  const raw = max / 4;
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const stepV = [1, 2, 5, 10].map((k) => k * mag).find((v) => v >= raw) || mag * 10;
+  const top = Math.ceil(max / stepV) * stepV;
+  const ticks = [];
+  for (let v = 0; v <= top + 1e-9; v += stepV) ticks.push(v);
+
+  // The plot is stretched to its box (preserveAspectRatio none), so every stroke carries
+  // vector-effect and stays one weight at any width; the area has no stroke to distort. Text
+  // never goes in the SVG - stretched text is illegible - so the axes and tooltip are HTML.
   const W = daily.length * 10;
   const H = 100;
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-  svg.setAttribute("class", "w-full h-40 text-brand-accent");
+  svg.setAttribute("preserveAspectRatio", "none");
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
 
-  // **No preserveAspectRatio="none" here, and that is the difference between this and the bars
-  // it replaced.** Non-uniform scaling cannot make a rect look wrong, so the old chart could
-  // stretch to any width for free. A stroked curve cannot: stretching it horizontally thins the
-  // stroke to a hairline at one end of the range and fattens it at the other. So the drawing
-  // keeps its aspect and `vector-effect` below keeps the line one pixel wherever it lands.
   const x = (i) => (i / (daily.length - 1)) * W;
-  const y = (v) => H - 2 - (v / max) * (H - 6);
+  const y = (v) => H - (v / top) * H;
 
-  // A Catmull-Rom spline converted to cubic Béziers, which is four lines of arithmetic and the
-  // reason there is still no chart library in this repository. It passes THROUGH every point
-  // rather than near it - a smoothing that moved the days would be a chart drawing numbers
-  // nobody counted - and the tension is the standard 1/6, which is the value that makes the
-  // curve match a circular arc through three evenly spaced points.
-  const pts = daily.map((d, i) => [x(i), y(d.views)]);
+  ticks.forEach((t) => {
+    const g = document.createElementNS(SVG_NS, "line");
+    g.setAttribute("x1", "0");
+    g.setAttribute("x2", String(W));
+    g.setAttribute("y1", String(y(t)));
+    g.setAttribute("y2", String(y(t)));
+    g.setAttribute("class", "an-grid");
+    g.setAttribute("vector-effect", "non-scaling-stroke");
+    svg.appendChild(g);
+  });
+
+  // A soft fill that fades to nothing at the baseline, in chart ink.
+  const defs = document.createElementNS(SVG_NS, "defs");
+  const grad = document.createElementNS(SVG_NS, "linearGradient");
+  grad.setAttribute("id", "anFill");
+  grad.setAttribute("x1", "0");
+  grad.setAttribute("x2", "0");
+  grad.setAttribute("y1", "0");
+  grad.setAttribute("y2", "1");
+  [["0", "0.28"], ["1", "0"]].forEach(([at, op]) => {
+    const stop = document.createElementNS(SVG_NS, "stop");
+    stop.setAttribute("offset", at);
+    stop.setAttribute("stop-color", "currentColor");
+    stop.setAttribute("stop-opacity", op);
+    grad.appendChild(stop);
+  });
+  defs.appendChild(grad);
+  svg.appendChild(defs);
+
+  // A Catmull-Rom spline converted to cubic Béziers. It passes THROUGH every point rather than
+  // near it - a smoothing that moved the days would be a chart drawing numbers nobody counted.
+  const pts = values.map((v, i) => [x(i), y(v)]);
   let path = `M ${pts[0][0]} ${pts[0][1]}`;
   for (let i = 0; i < pts.length - 1; i += 1) {
     const p0 = pts[i - 1] || pts[i];
     const p1 = pts[i];
     const p2 = pts[i + 1];
     const p3 = pts[i + 2] || p2;
-    path += ` C ${p1[0] + (p2[0] - p0[0]) / 6} ${p1[1] + (p2[1] - p0[1]) / 6},`
-      + ` ${p2[0] - (p3[0] - p1[0]) / 6} ${p2[1] - (p3[1] - p1[1]) / 6},`
+    // Clamped to the plot, so the curve cannot overshoot below zero between two quiet days.
+    const cy = (v) => Math.min(H, Math.max(0, v));
+    path += ` C ${p1[0] + (p2[0] - p0[0]) / 6} ${cy(p1[1] + (p2[1] - p0[1]) / 6)},`
+      + ` ${p2[0] - (p3[0] - p1[0]) / 6} ${cy(p2[1] - (p3[1] - p1[1]) / 6)},`
       + ` ${p2[0]} ${p2[1]}`;
   }
 
-  // The fill first, so the line draws over its own edge rather than under it.
   const area = document.createElementNS(SVG_NS, "path");
   area.setAttribute("d", `${path} L ${W} ${H} L 0 ${H} Z`);
-  area.setAttribute("fill", "currentColor");
-  area.setAttribute("opacity", "0.12");
+  area.setAttribute("fill", "url(#anFill)");
   svg.appendChild(area);
 
   const line = document.createElementNS(SVG_NS, "path");
   line.setAttribute("d", path);
   line.setAttribute("fill", "none");
   line.setAttribute("stroke", "currentColor");
-  line.setAttribute("stroke-width", "1.5");
+  line.setAttribute("stroke-width", "2");
   line.setAttribute("stroke-linecap", "round");
   line.setAttribute("stroke-linejoin", "round");
-  // One CSS pixel however the viewBox is scaled, which is what keeps a 365-day window from
-  // drawing a line too fine to see.
   line.setAttribute("vector-effect", "non-scaling-stroke");
   svg.appendChild(line);
 
-  // The busiest day gets a dot, because the caption names it and a name with nothing to point
-  // at is a sentence about a picture rather than a label on one.
-  const peak = daily.reduce((a, b, i) => (b.views > daily[a].views ? i : a), 0);
-  const dot = document.createElementNS(SVG_NS, "circle");
-  dot.setAttribute("cx", String(x(peak)));
-  dot.setAttribute("cy", String(y(daily[peak].views)));
-  dot.setAttribute("r", "2");
-  dot.setAttribute("fill", "currentColor");
-  svg.appendChild(dot);
-
-  // **The bars had a tooltip per day and the spline lost it.** A line is one shape, so there is
-  // nothing to hover - which left the values reachable only from the table underneath, and a
-  // table is the accessible twin of a chart rather than a substitute for reading one. A
-  // transparent rect per day, full height, restores what the bars had for the cost of one
-  // element each: a wide target that does not need the pointer anywhere near the curve, and a
-  // native tooltip that needs no JavaScript to show or hide.
-  const step = W / daily.length;
-  daily.forEach((d, i) => {
-    const hit = document.createElementNS(SVG_NS, "rect");
-    hit.setAttribute("x", String(i * step));
-    hit.setAttribute("y", "0");
-    hit.setAttribute("width", String(step));
-    hit.setAttribute("height", String(H));
-    hit.setAttribute("fill", "transparent");
-    const title = document.createElementNS(SVG_NS, "title");
-    title.textContent = `${dayLabel(d.day)}: ${count(d.views)} views`;
-    hit.appendChild(title);
-    svg.appendChild(hit);
+  const plot = node("div", "an-plot");
+  plot.appendChild(svg);
+  ticks.forEach((t) => {
+    const tick = node("span", "an-ytick", count(t));
+    tick.style.top = `${(1 - t / top) * 100}%`;
+    tick.setAttribute("aria-hidden", "true");
+    plot.appendChild(tick);
   });
 
-  const busiest = daily[peak];
-  const figure = node("figure");
-  const caption = node("figcaption", "mt-3 text-sm text-brand-muted",
-    `${dayLabel(daily[0].day)} to ${dayLabel(daily[daily.length - 1].day)}. `
-    + `Busiest day ${dayLabel(busiest.day)}, ${count(busiest.views)} views.`);
+  // The hover layer: a crosshair, a dot on the line and a tooltip, positioned in percent so the
+  // plot can be any width. For a mouse; the table under the figure is what a screen reader reads.
+  const cross = node("div", "an-cross");
+  const dot = node("div", "an-dot");
+  const tip = node("div", "an-tip");
+  [cross, dot, tip].forEach((n) => { n.setAttribute("aria-hidden", "true"); n.hidden = true; plot.appendChild(n); });
+  const show = (i) => {
+    const left = `${(i / (daily.length - 1)) * 100}%`;
+    cross.style.left = left;
+    dot.style.left = left;
+    dot.style.top = `${(1 - values[i] / top) * 100}%`;
+    tip.style.left = left;
+    tip.style.top = "-0.5rem";
+    tip.style.transform = `translate(${i > daily.length * 0.8 ? "-100%" : i < daily.length * 0.2 ? "0" : "-50%"}, -100%)`;
+    only(tip, node("div", "font-semibold text-brand-text", dayLabel(daily[i].day)),
+      node("div", "text-brand-muted", `${count(values[i])} ${noun}`));
+    [cross, dot, tip].forEach((n) => { n.hidden = false; });
+  };
+  plot.addEventListener("pointermove", (e) => {
+    const box = plot.getBoundingClientRect();
+    const i = Math.round(((e.clientX - box.left) / box.width) * (daily.length - 1));
+    show(Math.min(daily.length - 1, Math.max(0, i)));
+  });
+  plot.addEventListener("pointerleave", () => { [cross, dot, tip].forEach((n) => { n.hidden = true; }); });
 
-  figure.append(svg, caption,
-    srTable("Views per day", daily.map((d) => [dayLabel(d.day), `${count(d.views)} views`])));
-  only(host, figure);
+  const axis = node("div", "an-xaxis");
+  axis.setAttribute("aria-hidden", "true");
+  const mid = Math.floor((daily.length - 1) / 2);
+  [0, mid, daily.length - 1].forEach((i) => axis.appendChild(node("span", "", dayLabel(daily[i].day))));
+
+  const peak = values.reduce((a, v, i) => (v > values[a] ? i : a), 0);
+  const figure = node("figure");
+  const caption = node("figcaption", "mt-3 text-xs text-brand-muted",
+    `${dayLabel(daily[0].day)} to ${dayLabel(daily[daily.length - 1].day)}. `
+    + `Busiest day ${dayLabel(daily[peak].day)}, ${count(values[peak])} ${noun}.`);
+  figure.append(plot, axis, caption,
+    srTable(shown === "visitors" ? "Unique visitors per day" : "Views per day",
+      daily.map((d, i) => [dayLabel(d.day), `${count(values[i])} ${noun}`])));
+  only(host, head, figure);
 }
 
 /**
@@ -405,8 +490,8 @@ function heatmap(hours) {
  * about Firefox is a darker green than Safari.
  */
 function dimension(list, title) {
-  const card = node("section", "card");
-  card.appendChild(node("h3", "font-semibold text-brand-text", title));
+  const card = node("div", "");
+  card.appendChild(node("h3", "sr-only", title));
 
   const total = list.reduce((n, r) => n + r.views, 0);
   if (!total) {
@@ -414,8 +499,7 @@ function dimension(list, title) {
     return card;
   }
 
-  const named = (r) => (title === "Window width" ? label(SCREEN, r.value)
-    : title === "Country" ? countryName(r.value) : r.value);
+  const named = (r) => (title === "Window width" ? label(SCREEN, r.value) : r.value);
   const top1 = list[0];
   card.append(
     node("p", "hint mt-1", `${named(top1)} leads, ${pct(top1.views / total)} of ${count(total)} views.`),
@@ -426,30 +510,92 @@ function dimension(list, title) {
   return card;
 }
 
-/** The five dimensions, each as its own card. */
+/**
+ * A row of tabs over a set of panels, built here rather than in the template because the panels
+ * are. Arrow keys move between tabs, as the WAI-ARIA tabs pattern expects.
+ */
+let tabSeq = 0;
+function tabs(label, items) {
+  const bar = node("div", "an-tabs");
+  bar.setAttribute("role", "tablist");
+  bar.setAttribute("aria-label", label);
+  const buttons = [];
+  const panels = [];
+  items.forEach(([name, content], i) => {
+    const id = `antab${(tabSeq += 1)}`;
+    const b = node("button", "an-tab", name);
+    b.setAttribute("type", "button");
+    b.setAttribute("role", "tab");
+    b.setAttribute("id", id);
+    b.setAttribute("aria-selected", i === 0 ? "true" : "false");
+    if (i) b.setAttribute("tabindex", "-1");
+    const panel = node("div", "");
+    panel.setAttribute("role", "tabpanel");
+    panel.setAttribute("aria-labelledby", id);
+    panel.hidden = i !== 0;
+    panel.appendChild(content);
+    buttons.push(b);
+    panels.push(panel);
+    bar.appendChild(b);
+  });
+  const select = (k) => buttons.forEach((b, i) => {
+    b.setAttribute("aria-selected", i === k ? "true" : "false");
+    if (i === k) b.removeAttribute("tabindex"); else b.setAttribute("tabindex", "-1");
+    panels[i].hidden = i !== k;
+  });
+  buttons.forEach((b, i) => {
+    b.addEventListener("click", () => select(i));
+    b.addEventListener("keydown", (e) => {
+      const k = e.key === "ArrowRight" ? (i + 1) % buttons.length
+        : e.key === "ArrowLeft" ? (i - 1 + buttons.length) % buttons.length : -1;
+      if (k >= 0) { select(k); buttons[k].focus(); }
+    });
+  });
+  return { bar, panels };
+}
+
+/** The four device dimensions, one tab each. */
 function agents(data) {
-  const grid = node("div", "grid gap-4 sm:grid-cols-2");
-  DIMENSIONS.forEach(([key, title]) => grid.appendChild(dimension(data[key] || [], title)));
-  only(el("agents"), grid);
+  const { bar, panels } = tabs("Devices", DIMENSIONS.map(([key, title]) =>
+    [title === "Operating system" ? "OS" : title === "Window width" ? "Width" : title,
+      dimension(data[key] || [], title)]));
+  const wrap = node("div", "");
+  const head = node("div", "mt-2");
+  head.appendChild(bar);
+  wrap.append(head, ...panels);
+  only(el("agents"), wrap);
+}
+
+/** Where page views came from, as flags and English names. */
+function countries(list) {
+  const host = el("countries");
+  const total = list.reduce((n, r) => n + r.views, 0);
+  if (!total) {
+    nothing(host, "Nothing counted in this window yet.");
+    return;
+  }
+  const rows = list.map((r) => [
+    r.value === "unknown" ? "Unknown" : `${flag(r.value)} ${countryName(r.value)}`, r.views]);
+  only(host, barList(rows), srTable("Countries", list.map((r) => [countryName(r.value),
+    `${count(r.views)} views`, pct(r.views / total)]), ["Country", "Views", "Share"]));
 }
 
 /** Where visits began, and where they stopped. Two lists of the same shape, side by side. */
 function journeys(entryPages, exitPages) {
   const grid = node("div", "grid gap-4 sm:grid-cols-2");
-  [["Entry pages", entryPages, "Where visits began."],
-   ["Exit pages", exitPages, "The last page before the visit ended."]].forEach(([title, list, hint]) => {
-    const card = node("section", "card");
-    card.append(node("h3", "font-semibold text-brand-text", title), node("p", "hint mt-1", hint));
+  [["Entry pages", entryPages], ["Exit pages", exitPages]].forEach(([title, list]) => {
+    const col = node("div", "");
+    col.appendChild(node("h3", "mt-3 text-xs font-semibold uppercase tracking-wide text-brand-muted", title));
     if (!list.length) {
-      card.appendChild(node("p", "mt-3 text-sm text-brand-muted", "Nothing counted in this window yet."));
+      col.appendChild(node("p", "mt-2 text-sm text-brand-muted", "Nothing counted in this window yet."));
     } else {
-      card.append(
-        barList(list.map((r) => [r.path, r.visits]), "visits"),
+      col.append(
+        capped(list.map((r) => [r.path, r.visits]), "visits"),
         srTable(title, list.map((r) => [r.path, `${count(r.visits)} visits`,
           label(PROPERTY, r.property)]), ["Page", "Visits", "Site"]),
       );
     }
-    grid.appendChild(card);
+    grid.appendChild(col);
   });
   only(el("journeys"), grid);
 }
@@ -468,7 +614,7 @@ function recentVisits(list) {
     nothing(host, "Nothing counted in this window yet.");
     return;
   }
-  const card = node("section", "card overflow-x-auto");
+  const card = node("div", "overflow-x-auto");
   const table = node("table", "w-full text-sm");
   const head = node("thead", "text-left text-xs uppercase tracking-wide text-brand-muted");
   const hr = node("tr");
@@ -501,33 +647,25 @@ function recentVisits(list) {
   only(host, card);
 }
 
-/** One card per property, so a silent property reads as silent rather than as absent. */
+/**
+ * Every page read, busiest first. With both sites selected each row says which one it belongs to,
+ * because "/" on the site and "/" in the app are different pages that print the same.
+ */
 function paths(topPaths, byProperty) {
-  const grid = node("div", "grid gap-4 sm:grid-cols-2");
-
-  [...PROPERTY.keys()].forEach((key) => {
-    const total = byProperty.find((p) => p.property === key);
-    const views = total ? total.views : 0;
-    const rows = topPaths.filter((p) => p.property === key);
-
-    const card = node("section", "card");
-    card.append(
-      node("h3", "font-semibold text-brand-text", label(PROPERTY, key)),
-      node("p", "hint mt-1", views
-        ? `${count(views)} views · ${label(PROPERTY_HOST, key)}`
-        : `Nothing counted here in this window yet · ${label(PROPERTY_HOST, key)}`),
-    );
-    if (rows.length) {
-      card.append(
-        barList(rows.map((r) => [r.path, r.views])),
-        srTable(`${label(PROPERTY, key)}: which pages are read`,
-          rows.map((r) => [r.path, `${count(r.views)} views`]), ["Page", "Views"]),
-      );
-    }
-    grid.appendChild(card);
-  });
-
-  only(el("paths"), grid);
+  const host = el("paths");
+  if (!topPaths.length) {
+    nothing(host, "Nothing counted in this window yet.");
+    return;
+  }
+  const both = new Set(topPaths.map((p) => p.property)).size > 1;
+  const rows = [...topPaths].sort((a, b) => b.views - a.views)
+    .map((r) => [r.path, r.views, both ? label(PROPERTY_HOST, r.property) : ""]);
+  const split = byProperty.map((p) => `${label(PROPERTY, p.property)} ${count(p.views)}`).join(" · ");
+  only(host,
+    node("p", "an-panel-hint", split ? `Views by site: ${split}.` : ""),
+    capped(rows),
+    srTable("Which pages are read", topPaths.map((r) => [r.path, `${count(r.views)} views`,
+      label(PROPERTY, r.property)]), ["Page", "Views", "Site"]));
 }
 
 function referrers(list) {
@@ -536,7 +674,7 @@ function referrers(list) {
     nothing(host, "Nothing counted in this window yet.");
     return;
   }
-  const card = node("section", "card");
+  const card = node("div", "");
   // A null host is a real and common answer - somebody typed the address, or the browser was
   // told not to send a referrer. Calling it "direct" and leaving it at that would claim more
   // than is known, so the row says both.
@@ -649,8 +787,10 @@ function render(data) {
       + `on this page is wrong in the same direction.`;
   }
 
+  lastData = data;
   chart(data.daily || []);
   heatmap(data.hours || []);
+  countries(data.byCountry || []);
   agents(data);
   paths(data.topPaths || [], data.byProperty || []);
   journeys(data.entryPages || [], data.exitPages || []);
@@ -659,7 +799,7 @@ function render(data) {
 }
 
 const FIGURES = ["visitors", "visits", "views", "live", "perVisit", "bounce", "duration", "linkedin"];
-const PANELS = ["chart", "heatmap", "agents", "paths", "journeys", "referrers", "recent"];
+const PANELS = ["chart", "heatmap", "agents", "countries", "paths", "journeys", "referrers", "recent"];
 
 /** Every panel says why it is empty, rather than each one quietly drawing nothing. */
 function unavailable(message) {
@@ -714,5 +854,28 @@ async function load() {
 
 profile.then(() => {
   ["range", "property"].forEach((id) => el(id).addEventListener("change", load));
+
+  // Visitors and Views choose what the chart draws; the choice survives a change of window.
+  const pickers = [...document.querySelectorAll("[data-metric]")];
+  pickers.forEach((b) => b.addEventListener("click", () => {
+    metric = b.getAttribute("data-metric");
+    pickers.forEach((p) => p.setAttribute("aria-pressed", p === b ? "true" : "false"));
+    if (lastData) chart(lastData.daily || []);
+  }));
+
+  // The Pages card's two tabs are in the template, so they are wired here.
+  const pageTabs = [el("tab-paths"), el("tab-journeys")];
+  const pick = (k) => pageTabs.forEach((t, i) => {
+    t.setAttribute("aria-selected", i === k ? "true" : "false");
+    if (i === k) t.removeAttribute("tabindex"); else t.setAttribute("tabindex", "-1");
+    el(t.getAttribute("aria-controls")).hidden = i !== k;
+  });
+  pageTabs.forEach((t, i) => {
+    t.addEventListener("click", () => pick(i));
+    t.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") { pick(1 - i); pageTabs[1 - i].focus(); }
+    });
+  });
+
   load();
 });

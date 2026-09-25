@@ -50,7 +50,11 @@ function makeDom() {
       setAttribute(k, v) { this.attrs[k] = String(v); },
       getAttribute(k) { return k in this.attrs ? this.attrs[k] : null; },
       removeAttribute(k) { delete this.attrs[k]; },
-      addEventListener() {},
+      // Recorded, so a test can fire the chart's hover the way a pointer would.
+      listeners: {},
+      addEventListener(type, fn) { this.listeners[type] = fn; },
+      // A plot 290px wide at the page's left edge: one day every ten pixels across 30 days.
+      getBoundingClientRect() { return { left: 0, width: 290 }; },
     };
     return node;
   }
@@ -260,43 +264,37 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
     `the shares of one dimension add up to a whole: ${browserShares.join(' + ')} = ${sum}`);
   ok('a nominal dimension is bars of one colour, the ramp is gone, and the shares still sum to a whole');
 
-  // The spline's hover, which the bar chart had and the curve lost: one transparent full-height
-  // target per day, so a value is reachable by pointing at the column rather than at the line.
-  const hits = tags(byId.get('chart'), 'rect').filter((r) => r.attrs.fill === 'transparent');
-  assert.strictEqual(hits.length, DAILY.length, 'one hover target per day');
-  // Every one of them, and the text as well as its presence. The first version of this checked
-  // `hits[0]` for the existence of a <title> and printed a message claiming it had checked all
-  // thirty for their contents - an assertion weaker than the sentence beside it, which is the
-  // kind that reads as coverage and is not.
+  // The hover: one handler on the plot rather than a target per day, which puts a crosshair, a
+  // dot and a tooltip on whichever day is nearest the pointer. Fired here for EVERY day, and the
+  // tooltip's text checked against the day and count it should name - not just its presence.
   //
-  // **Composed from the module's own formatters, not matched against a shape.** The second
-  // version used /^\d+ \w+: [\d,]+ views$/, which passes here and fails on any machine whose
-  // locale disagrees: `toLocaleDateString` gives "1 Aug" here, "Aug 1" in en-US and "1. Aug." in
-  // de-DE, and `toLocaleString` separates thousands with a space in sv-SE. A test that is green
-  // because of the developer's locale is the same fault in a different coat.
-  //
-  // The expected string is built here rather than read off the module, and that is deliberate as
-  // well as necessary - `dayLabel` and `count` are `const`, so `vm` never puts them on the
-  // context the way it does the function declarations. Restating the format means a change to
-  // either formatter fails this test and has to be made on purpose, which is the job. Both sides
-  // go through the same Intl call on the same runtime, so the locale cancels out.
+  // **Composed from the same Intl calls, not matched against a shape.** `toLocaleDateString`
+  // gives "1 Aug" here, "Aug 1" in en-US and "1. Aug." in de-DE, and `toLocaleString` separates
+  // thousands with a space in sv-SE; a regex would be green because of the developer's locale.
+  // Both sides go through the same call on the same runtime, so the locale cancels out.
+  const plot = find(byId.get('chart'), (n) => n.className === 'an-plot')[0];
+  assert.ok(plot && plot.listeners.pointermove && plot.listeners.pointerleave,
+    'the plot answers a pointer and lets it go');
+  const tip = find(plot, (n) => n.className && n.className.includes('an-tip'))[0];
+  const dot = find(plot, (n) => n.className && n.className.includes('an-dot'))[0];
+  assert.strictEqual(tip.hidden, true, 'the tooltip is hidden until something is pointed at');
   const expected = (d) => `${new Date(d.day + 'T12:00:00')
     .toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}`
-    + `: ${d.views.toLocaleString()} views`;
-  hits.forEach((hit, i) => {
-    const titles = tags(hit, 'title');
-    assert.strictEqual(titles.length, 1, `day ${i} has exactly one tooltip`);
-    assert.strictEqual(titles[0].textContent, expected(DAILY[i]),
-      `day ${i}'s tooltip names its own day and its own count`);
+    + `${d.views.toLocaleString()} views`;
+  DAILY.forEach((day, i) => {
+    plot.listeners.pointermove({ clientX: i * 10 });
+    assert.strictEqual(tip.hidden, false, `day ${i} shows the tooltip`);
+    assert.strictEqual(tip.textContent, expected(day), `day ${i}'s tooltip names its own day and count`);
+    assert.ok(/^[\d.]+%$/.test(dot.style.top), `day ${i}'s dot sits at a finite height`);
   });
-  assert.ok(hits.every((h) => Number(h.attrs.width) > 0 && Number(h.attrs.height) === 100),
-    'and each target is the full height of the plot, so the pointer need not find the curve');
+  plot.listeners.pointerleave();
+  assert.strictEqual(tip.hidden, true, 'and hides again when the pointer leaves');
 
   // A sequential ramp with no key is five shades of nothing.
   const swatches = find(byId.get('heatmap'), (n) => n.className === 'contrib-day h-3 w-3');
   assert.strictEqual(swatches.length, 5, 'the heatmap carries a scale key');
   assert.ok(text(byId.get('heatmap')).includes('Quieter'), 'with both ends labelled');
-  ok('the spline can be hovered and the heatmap says what darker means');
+  ok('every day of the chart can be hovered to its own value, and the heatmap says what darker means');
 
   // The heatmap: 7 rows of 24, and a cell with nothing in it keeps level 0 rather than being
   // given the faintest green - an empty hour has to read as an absence.

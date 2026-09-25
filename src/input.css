@@ -1010,6 +1010,85 @@
   /* A number worth acting on, wrapped in the link that acts on it. Grid rather than flex so
      the number sits in a row of its own fixed height: the figure arrives a second after the
      page does, and a slot that grows when it lands moves everything below it. */
+  /* ---- Admin → Analytics, as a dashboard ------------------------------------------------
+
+     Plausible-shaped: one strip of headline figures, a full-width chart, then a grid of panels.
+     The chart ink is its own token rather than --color-accent: the accent was tuned as TEXT and
+     the dataviz validator fails it as a mark in both themes (too grey in light, outside the
+     lightness band in dark). Emerald 600/500-ish passes both; text keeps the accent. */
+  .an-wrap { @apply mx-auto w-full max-w-6xl; }
+  .an-wrap { --chart: 5 150 105; }                 /* #059669 Emerald 600 */
+  .dark .an-wrap, .chrome-dark .an-wrap { --chart: 13 159 110; }  /* #0d9f6e */
+
+  .an-live {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-brand-border
+           bg-brand-surface px-3 py-1 text-sm font-medium text-brand-text tabular-nums;
+  }
+  .an-live-dot {
+    @apply h-2 w-2 rounded-full;
+    background: rgb(var(--chart));
+    box-shadow: 0 0 0 0 rgb(var(--chart) / 60%);
+    animation: an-pulse 2s ease-out infinite;
+  }
+  @keyframes an-pulse {
+    0% { box-shadow: 0 0 0 0 rgb(var(--chart) / 55%); }
+    70% { box-shadow: 0 0 0 7px rgb(var(--chart) / 0%); }
+    100% { box-shadow: 0 0 0 0 rgb(var(--chart) / 0%); }
+  }
+
+  /* The headline strip: one card, six figures, hairlines between them. */
+  .an-kpis { @apply grid grid-cols-2 p-0 sm:grid-cols-3 lg:grid-cols-6; }
+  .an-kpi {
+    @apply flex flex-col items-start gap-1 border-brand-border p-4 text-left;
+    border-bottom-width: 1px;
+  }
+  @media (min-width: 1024px) {
+    .an-kpi { border-bottom-width: 0; border-right-width: 1px; }
+    .an-kpi:last-child { border-right-width: 0; }
+  }
+  button.an-kpi { @apply transition-colors hover:bg-brand-bg/60; }
+  button.an-kpi:focus-visible { @apply outline-none ring-2 ring-inset ring-brand-accent; }
+  .an-kpi-label { @apply text-xs font-semibold uppercase tracking-wide text-brand-muted; }
+  .an-kpi-number { @apply text-2xl font-bold text-brand-text tabular-nums sm:text-3xl; }
+  .an-kpi-note { @apply text-xs leading-snug text-brand-muted; }
+  /* The selected metric is underlined in chart ink, the way the chart itself is drawn. */
+  button.an-kpi[aria-pressed="true"] { box-shadow: inset 0 -3px 0 rgb(var(--chart)); }
+  button.an-kpi[aria-pressed="true"] .an-kpi-label { color: rgb(var(--chart)); }
+
+  .an-panel { @apply flex flex-col; }
+  .an-panel-head { @apply flex flex-wrap items-center justify-between gap-2; }
+  .an-panel-title { @apply text-base font-semibold text-brand-text; }
+  .an-panel-hint { @apply mt-1 text-xs text-brand-muted; }
+
+  .an-tabs { @apply flex gap-1 rounded-lg bg-brand-bg p-0.5; }
+  .an-tab {
+    @apply rounded-md px-2.5 py-1 text-xs font-medium text-brand-muted transition-colors
+           hover:text-brand-text focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-brand-accent;
+  }
+  .an-tab[aria-selected="true"] { @apply bg-brand-surface text-brand-text shadow-sm; }
+
+  /* The chart: an SVG stretched to the plot, with HTML for everything that has text in it. */
+  .an-plot { @apply relative mt-4 h-64 select-none; margin-left: 2.5rem; }
+  .an-plot svg { @apply absolute inset-0 h-full w-full overflow-visible; color: rgb(var(--chart)); }
+  .an-ytick { @apply absolute -left-10 w-8 -translate-y-1/2 text-right text-[11px] text-brand-muted tabular-nums; }
+  /* The heatmap's cells borrow .contrib-day, which is square; at dashboard width a square cell is
+     48px tall and the grid becomes the page. A fixed height keeps it a strip. */
+  .an-heat .contrib-day { aspect-ratio: auto; height: 1.35rem; border-radius: 3px; }
+  .an-plot .an-grid { stroke: rgb(var(--color-muted) / 22%); stroke-width: 1; }
+  .an-xaxis { @apply mt-2 flex justify-between text-[11px] text-brand-muted; margin-left: 2.5rem; }
+  .an-cross { @apply pointer-events-none absolute inset-y-0 w-px bg-brand-muted/40; }
+  .an-dot {
+    @apply pointer-events-none absolute h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full;
+    background: rgb(var(--chart));
+    box-shadow: 0 0 0 2px rgb(var(--color-surface));
+  }
+  .an-tip {
+    @apply pointer-events-none absolute z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border
+           border-brand-border bg-brand-surface px-3 py-2 text-xs shadow-lg;
+  }
+  @media (prefers-reduced-motion: reduce) { .an-live-dot { animation: none; } }
+
   .stat-card {
     @apply grid gap-1 rounded-lg border border-brand-border bg-brand-surface p-5
            transition-colors duration-200

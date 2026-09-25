@@ -10,101 +10,155 @@ bodyScripts:
     type: "module"
 ---
 <section class="app-page">
-  <div class="app-prose">
+  <div class="an-wrap">
 
   {% include "chrome/admin-sections.njk" %}
 
-  <h1 class="text-3xl font-bold text-brand-text mb-2">Analytics</h1>
-  <p class="text-brand-muted mb-8 max-w-prose">
-    Who reads the public site, what they read, and how they got there, and the same for the app.
-    Counted on my own server. A row holds a path, which of the two sites it was on, the host a reader
-    arrived from, the time, a coarse browser, OS and device, and a visitor number that one browser
-    keeps for 24 hours and that is erased from the row after 30 days. No address, no cookie, no
-    User-Agent string.
-  </p>
-
-  {# Two controls, and everything below is drawn from the one answer they fetch together - so
-     nothing on this page can be showing a different window, or a different property, from
-     anything else on it. The property filter is a real parameter rather than a filter applied
-     here: a visit that crossed from the site to the app is two visits in two properties, so a
-     total filtered in the browser would be right for the lists and wrong for every rate. #}
-  <div class="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-    <div class="flex items-center gap-2">
-      <label for="range" class="text-sm text-brand-muted">Last</label>
-      <select id="range" class="field w-auto py-1.5 text-sm">
-        <option value="7">7 days</option>
-        <option value="30" selected>30 days</option>
-        <option value="90">90 days</option>
-        <option value="365">365 days</option>
-      </select>
+  {# A dashboard, not a document: the page takes the full width like the other admin grids, and
+     what used to be a paragraph per figure is a one-line description here plus the notes at the
+     bottom. Every rule the old layout stated still holds and is enforced in admin-analytics.js:
+     an unmeasured figure is a dash, an empty window says so in words, every chart has a table. #}
+  <header class="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-bold text-brand-text">Analytics</h1>
+      <p class="mt-1 text-sm text-brand-muted">
+        Both properties, counted on my own server. No cookie, no address, no User-Agent string.
+      </p>
     </div>
-    <div class="flex items-center gap-2">
-      <label for="property" class="text-sm text-brand-muted">Site</label>
+
+    {# Two controls, and everything below is drawn from the one answer they fetch together - so
+       nothing on this page can be showing a different window, or a different property, from
+       anything else on it. The property filter is a real parameter rather than a filter applied
+       here: a visit that crossed from the site to the app is two visits in two properties, so a
+       total filtered in the browser would be right for the lists and wrong for every rate. #}
+    <div class="flex flex-wrap items-center gap-3">
+      {# Right now: the last five minutes, whatever the window says. #}
+      <span class="an-live" title="The last five minutes, whatever the window says.">
+        <span class="an-live-dot" aria-hidden="true"></span>
+        <span id="live" data-loading>—</span>
+        <span>now</span>
+        <span id="liveNote" class="sr-only">The last five minutes, whatever the window says.</span>
+      </span>
+      <label for="range" class="sr-only">Window</label>
+      <select id="range" class="field w-auto py-1.5 text-sm">
+        <option value="7">Last 7 days</option>
+        <option value="30" selected>Last 30 days</option>
+        <option value="90">Last 90 days</option>
+        <option value="365">Last 365 days</option>
+      </select>
+      <label for="property" class="sr-only">Site</label>
       <select id="property" class="field w-auto py-1.5 text-sm">
-        <option value="all" selected>Both</option>
+        <option value="all" selected>Both sites</option>
         <option value="site">Public site</option>
         <option value="app">App</option>
       </select>
     </div>
+  </header>
+
+  <div id="status" role="status" aria-live="polite" class="mb-4 text-sm"></div>
+
+  {# The headline strip. Every figure starts as an em dash marked `data-loading`, never as a
+     zero: a zero is a measurement and these have not been measured yet. Visitors and Views are
+     buttons because they choose what the chart below draws; the rest are figures only. #}
+  <div class="card an-kpis mb-4">
+    <button type="button" class="an-kpi" data-metric="visitors" aria-pressed="true">
+      <span class="an-kpi-label">Unique visitors</span>
+      <span class="an-kpi-number" id="visitors" data-loading>—</span>
+      <span class="an-kpi-note" id="visitorsNote">Browsers, counted once a day each.</span>
+    </button>
+    <div class="an-kpi">
+      <span class="an-kpi-label">Visits</span>
+      <span class="an-kpi-number" id="visits" data-loading>—</span>
+      <span class="an-kpi-note" id="visitsNote">A gap of 30 minutes starts a new one.</span>
+    </div>
+    <button type="button" class="an-kpi" data-metric="views" aria-pressed="false">
+      <span class="an-kpi-label">Total views</span>
+      <span class="an-kpi-number" id="views" data-loading>—</span>
+      <span class="an-kpi-note" id="viewsNote">In this window.</span>
+    </button>
+    <div class="an-kpi">
+      <span class="an-kpi-label">Views per visit</span>
+      <span class="an-kpi-number" id="perVisit" data-loading>—</span>
+      <span class="an-kpi-note" id="perVisitNote">Pages read before leaving.</span>
+    </div>
+    <div class="an-kpi">
+      <span class="an-kpi-label">Bounce rate</span>
+      <span class="an-kpi-number" id="bounce" data-loading>—</span>
+      <span class="an-kpi-note" id="bounceNote">Visits that read one page.</span>
+    </div>
+    <div class="an-kpi">
+      <span class="an-kpi-label">Average visit</span>
+      <span class="an-kpi-number" id="duration" data-loading>—</span>
+      <span class="an-kpi-note" id="durationNote">Between the first and last page.</span>
+    </div>
   </div>
 
-  <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
-
-  {# Every figure starts as an em dash marked `data-loading`, never as a zero. A zero is a
-     measurement and these have not been measured yet; the dash is the page saying it does not
-     know. The same rule is what the empty window does below: "nothing yet" is an answer, and a
-     nought drawn where no counting has happened is an invention. #}
-  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4">
-    <div class="stat-card">
-      <span class="stat-label">Visitors</span>
-      <span class="stat-number" id="visitors" data-loading>—</span>
-      <span class="stat-note" id="visitorsNote">Browsers, counted once a day each.</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Visits</span>
-      <span class="stat-number" id="visits" data-loading>—</span>
-      <span class="stat-note" id="visitsNote">A gap of 30 minutes starts a new one.</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Views</span>
-      <span class="stat-number" id="views" data-loading>—</span>
-      <span class="stat-note" id="viewsNote">In this window.</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Right now</span>
-      <span class="stat-number" id="live" data-loading>—</span>
-      <span class="stat-note" id="liveNote">The last five minutes, whatever the window says.</span>
-    </div>
+  <div id="chart" class="card mb-4">
+    <p class="text-sm text-brand-muted">Loading…</p>
   </div>
 
-  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-    <div class="stat-card">
-      <span class="stat-label">Views per visit</span>
-      <span class="stat-number" id="perVisit" data-loading>—</span>
-      <span class="stat-note" id="perVisitNote">Pages read before leaving.</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Bounce rate</span>
-      <span class="stat-number" id="bounce" data-loading>—</span>
-      <span class="stat-note" id="bounceNote">Visits that read one page.</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Average visit</span>
-      <span class="stat-number" id="duration" data-loading>—</span>
-      <span class="stat-note" id="durationNote">Between the first and last page.</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">From LinkedIn</span>
-      <span class="stat-number" id="linkedin" data-loading>—</span>
-      <span class="stat-note" id="linkedinNote">Views whose referrer was a LinkedIn domain.</span>
-    </div>
+  <div class="grid gap-4 lg:grid-cols-2 mb-4">
+    <section class="card an-panel">
+      <div class="an-panel-head">
+        <h2 class="an-panel-title">Top sources</h2>
+        <p class="text-xs text-brand-muted">
+          From LinkedIn: <strong id="linkedin" class="text-brand-text" data-loading>—</strong>
+          <span id="linkedinNote" class="sr-only">Views whose referrer was a LinkedIn domain.</span>
+        </p>
+      </div>
+      <p class="an-panel-hint">The host only; the rest of a referring URL is dropped before anything is written.</p>
+      <div id="referrers"><p class="text-sm text-brand-muted">Loading…</p></div>
+    </section>
+
+    <section class="card an-panel">
+      <div class="an-panel-head">
+        <h2 class="an-panel-title">Pages</h2>
+        <div class="an-tabs" role="tablist" aria-label="Pages">
+          <button type="button" role="tab" class="an-tab" aria-selected="true" aria-controls="paths" id="tab-paths">Top pages</button>
+          <button type="button" role="tab" class="an-tab" aria-selected="false" aria-controls="journeys" id="tab-journeys" tabindex="-1">Entry &amp; exit</button>
+        </div>
+      </div>
+      <div id="paths" role="tabpanel" aria-labelledby="tab-paths"><p class="text-sm text-brand-muted">Loading…</p></div>
+      <div id="journeys" role="tabpanel" aria-labelledby="tab-journeys" hidden><p class="text-sm text-brand-muted">Loading…</p></div>
+    </section>
+
+    <section class="card an-panel">
+      <div class="an-panel-head">
+        <h2 class="an-panel-title">Countries</h2>
+      </div>
+      <p class="an-panel-hint">Two letters looked up from the address, which is then discarded. Since 26 September 2026.</p>
+      <div id="countries"><p class="text-sm text-brand-muted">Loading…</p></div>
+    </section>
+
+    <section class="card an-panel">
+      <div class="an-panel-head">
+        <h2 class="an-panel-title">Devices</h2>
+      </div>
+      <div id="agents"><p class="text-sm text-brand-muted">Loading…</p></div>
+    </section>
   </div>
+
+  <section class="card mb-4">
+    <div class="an-panel-head">
+      <h2 class="an-panel-title">When it is read</h2>
+      <p class="text-xs text-brand-muted">Day against hour, in UTC</p>
+    </div>
+    <div id="heatmap" class="an-heat mt-3"><p class="text-sm text-brand-muted">Loading…</p></div>
+  </section>
+
+  <section class="card">
+    <div class="an-panel-head">
+      <h2 class="an-panel-title">The last twenty visits</h2>
+      <p class="text-xs text-brand-muted">No visitor number: what a visit read, not who</p>
+    </div>
+    <div id="recent" class="mt-3"><p class="text-sm text-brand-muted">Loading…</p></div>
+  </section>
 
   {# The five things about these numbers that are artefacts of how they are made rather than
      facts about readers. Written on the page and not only in the code, because a dashboard that
      prints "average visit 41s" beside "bounce 62%" without saying the second one produced the
      first is a dashboard that misleads its only reader. #}
-  <details class="card mb-10">
+  <details class="card mt-6">
     <summary class="cursor-pointer text-sm font-semibold text-brand-text">
       What these figures cannot tell you
     </summary>
@@ -127,69 +181,6 @@ bodyScripts:
     </ul>
   </details>
 
-  <h2 class="text-xl font-bold text-brand-text mb-1">Views per day</h2>
-  <p class="text-sm text-brand-muted mb-4 max-w-prose">
-    Every day in the range, including the ones with nothing on them.
-  </p>
-  <div id="chart" class="card mb-10">
-    <p class="text-sm text-brand-muted">Loading…</p>
+
   </div>
-
-  <h2 class="text-xl font-bold text-brand-text mb-1">When it is read</h2>
-  <p class="text-sm text-brand-muted mb-4 max-w-prose">
-    Day of the week against hour, in UTC - the same clock every other figure here uses, so a
-    reader in another zone should add their own offset rather than trust the column heading.
-  </p>
-  <div id="heatmap" class="card mb-10">
-    <p class="text-sm text-brand-muted">Loading…</p>
-  </div>
-
-  <h2 class="text-xl font-bold text-brand-text mb-1">What they are reading on</h2>
-  <p class="text-sm text-brand-muted mb-4 max-w-prose">
-    Four coarse facts, each from a short closed list. The browser's own version string is never
-    stored and neither is the exact window width; what is kept is the name and the bracket.
-  </p>
-  <div id="agents" class="mb-10">
-    <p class="text-sm text-brand-muted">Loading…</p>
-  </div>
-
-  <h2 class="text-xl font-bold text-brand-text mb-1">Which pages are read</h2>
-  <p class="text-sm text-brand-muted mb-4 max-w-prose">
-    Split by property, because "which of the two sites" is the first question and a merged list
-    of paths cannot answer it.
-  </p>
-  <div id="paths" class="mb-10">
-    <p class="text-sm text-brand-muted">Loading…</p>
-  </div>
-
-  <h2 class="text-xl font-bold text-brand-text mb-1">Where visits start and end</h2>
-  <p class="text-sm text-brand-muted mb-4 max-w-prose">
-    Not the same question as the busiest pages: a page can be read constantly and entered almost
-    never. These count visits, not views.
-  </p>
-  <div id="journeys" class="mb-10">
-    <p class="text-sm text-brand-muted">Loading…</p>
-  </div>
-
-  <h2 class="text-xl font-bold text-brand-text mb-1">Where readers came from</h2>
-  <p class="text-sm text-brand-muted mb-4 max-w-prose">
-    The host only. A full referring URL can carry somebody's search terms in its query string, so
-    the API keeps the host and throws the rest away before anything is written down.
-  </p>
-  <div id="referrers" class="mb-10">
-    <p class="text-sm text-brand-muted">Loading…</p>
-  </div>
-
-  <h2 class="text-xl font-bold text-brand-text mb-1">The last twenty visits</h2>
-  <p class="text-sm text-brand-muted mb-4 max-w-prose">
-    The one thing here that is not an aggregate. It carries no visitor number: what a visit read
-    and for how long is the question, and the handle that joins two visits together is not part
-    of it.
-  </p>
-  <div id="recent">
-    <p class="text-sm text-brand-muted">Loading…</p>
-  </div>
-
-</div>
-
 </section>
