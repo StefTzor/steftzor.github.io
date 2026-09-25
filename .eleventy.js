@@ -9,7 +9,8 @@ module.exports = function(eleventyConfig) {
     "scripts/chrome.js": "scripts/chrome.js",
     "scripts/hero.js": "scripts/hero.js",
     "scripts/consent.js": "scripts/consent.js",
-    "scripts/contact.js": "scripts/contact.js"
+    "scripts/contact.js": "scripts/contact.js",
+    "scripts/status.js": "scripts/status.js"
   });
   eleventyConfig.addPassthroughCopy({ "CNAME": "CNAME" });
   eleventyConfig.addPassthroughCopy("robots.txt");

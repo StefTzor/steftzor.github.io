@@ -1089,6 +1089,25 @@
   }
   @media (prefers-reduced-motion: reduce) { .an-live-dot { animation: none; } }
 
+  /* ---- /status/ ------------------------------------------------------------------------
+     Status colours are reserved for state and always sit beside a word ("Up", "Down"). Green is
+     the validated chart ink; amber and rose are the Tailwind 500/600 steps. */
+  .st-banner { @apply flex items-center gap-3 px-5 py-4; }
+  .st-dot { @apply inline-block h-2.5 w-2.5 rounded-full bg-brand-muted/50; }
+  .st-dot[data-state="up"], .st-banner[data-state="up"] .st-dot { background: #059669; }
+  .st-dot[data-state="down"], .st-banner[data-state="down"] .st-dot { background: #e11d48; }
+  .st-banner[data-state="up"] .st-dot { box-shadow: 0 0 0 4px rgb(5 150 105 / 20%); }
+  .st-banner[data-state="down"] .st-dot { box-shadow: 0 0 0 4px rgb(225 29 72 / 20%); }
+  .st-word[data-state="up"] { color: #059669; }
+  .st-word[data-state="down"] { color: #e11d48; }
+  .dark .st-word[data-state="up"] { color: #34d399; }
+  .dark .st-word[data-state="down"] { color: #fb7185; }
+  .st-strip { @apply flex gap-[3px]; }
+  .st-cell { @apply h-7 flex-1 rounded-sm bg-brand-muted/20; }
+  .st-cell[data-level="up"] { background: #059669; }
+  .st-cell[data-level="partial"] { background: #f59e0b; }
+  .st-cell[data-level="down"] { background: #e11d48; }
+
   .stat-card {
     @apply grid gap-1 rounded-lg border border-brand-border bg-brand-surface p-5
            transition-colors duration-200

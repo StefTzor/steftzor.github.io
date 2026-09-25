@@ -147,6 +147,16 @@ sitemapPriority: "0.3"
   pages do, including a map, which <a href="#map-tiles">section 3.3</a> is about.
 </p>
 
+<h3 id="status-page">2.4 The status page</h3>
+<p>
+  <strong>Added 26 September 2026.</strong> Opening <a href="/status/">/status/</a> makes your browser ask
+  <strong>api.tzortzoglou.eu</strong>, my own server, for the latest health checks, and ask again every minute while
+  the page stays open. It is not the page-view counter and needs no consent, because nothing about you is recorded:
+  the request carries your IP address, as every request does, and it is used only in memory, as the key the rate
+  limiter counts against. The answer holds only the state of each service. The checks themselves are made by the
+  server, not by you.
+</p>
+
 <h2 id="account">3. If you create an account</h2>
 
 <p>

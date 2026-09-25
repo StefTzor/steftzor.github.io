@@ -1,0 +1,52 @@
+---
+layout: base.njk
+permalink: /status/
+title: "Status | Stefanos Tzortzoglou"
+description: "Live status of tzortzoglou.eu, the app, the API and the services they depend on, with response times and 24-hour and 7-day uptime."
+bodyScripts:
+  - src: "/scripts/status.js"
+sitemapOrder: 85
+sitemapChangefreq: daily
+sitemapPriority: "0.3"
+---
+{# The status page lives on the public site on purpose: GitHub Pages is not the server it
+   reports on, so this page still loads when that server does not, and says so. The checks
+   themselves run on the API every five minutes (api src/status.js); this page only reads them.
+   Design language: references/design-language.md in the portfolio skill. #}
+<div class="an-wrap px-4 py-10 sm:px-6">
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold text-brand-text">Status</h1>
+    <p class="mt-1 max-w-prose text-sm text-brand-muted">
+      Every part of this site and the services it depends on, checked every five minutes. This
+      page is served separately, from GitHub Pages, so it still loads when the rest is down.
+    </p>
+  </header>
+
+  <div id="stBanner" class="card st-banner mb-6" role="status" aria-live="polite" data-state="loading">
+    <span class="st-dot" aria-hidden="true"></span>
+    <span id="stBannerText" class="font-semibold text-brand-text">Checking…</span>
+  </div>
+
+  <section class="card mb-4">
+    <div class="an-panel-head">
+      <h2 class="an-panel-title">This site and app</h2>
+      <p class="text-xs text-brand-muted">Last 24 hours, one cell an hour</p>
+    </div>
+    <ul id="stStack" class="mt-2 divide-y divide-brand-border"></ul>
+  </section>
+
+  <section class="card mb-4">
+    <div class="an-panel-head">
+      <h2 class="an-panel-title">Services the app depends on</h2>
+      <p class="text-xs text-brand-muted">Last 24 hours, one cell an hour</p>
+    </div>
+    <ul id="stUpstream" class="mt-2 divide-y divide-brand-border"></ul>
+  </section>
+
+  <p class="text-xs text-brand-muted">
+    Transit is recorded from the app's real requests rather than probed, so that checking it
+    spends none of its quota; between trips it reads "no recent data". Checks run from the same
+    server as the API, so if that server is down, only this page can tell you.
+    <span id="stUpdated"></span>
+  </p>
+</div>
