@@ -77,8 +77,8 @@ sitemapPriority: "0.8"
                     this site and the API behind it.
                 </p>
                 <p>
-                    This site is built with 11ty, Nunjucks and Tailwind CSS and deployed by GitHub Actions; the signed-in app
-                    is described in full further down. For backend utilities and data formatting, I default
+                    I build this site with 11ty, Nunjucks and Tailwind CSS, and GitHub Actions deploys it. The
+                    signed-in app has its own section further down. For backend utilities and data formatting, I default
                     to JavaScript and Python.
                 </p>
             </div>
@@ -170,9 +170,9 @@ sitemapPriority: "0.8"
                     <h4 class="font-bold text-brand-text">Four APIs, twenty-six fields, one shape</h4>
                     <p class="mt-2 text-sm text-brand-muted leading-relaxed">
                         Weather, Swedish transit, Formula 1 and GitHub Actions each answer in their own
-                        vocabulary. Twenty-six fields are mapped into one internal shape. The calculated
-                        ones (a delay in minutes, a position gained, which step of a build failed) are
-                        labelled as calculated, so nobody reads a derivation as a measurement.
+                        vocabulary. I map twenty-six fields into one internal shape, and label the calculated
+                        ones (a delay in minutes, a position gained, which step of a build failed) as
+                        calculated, so nobody reads a derivation as a measurement.
                     </p>
                 </div>
 
@@ -181,7 +181,7 @@ sitemapPriority: "0.8"
                     <p class="mt-2 text-sm text-brand-muted leading-relaxed">
                         Every bus departure showed two hours out. The transit feed sends Swedish
                         wall-clock time with no offset and the container runs in UTC, so the times
-                        parsed as the wrong instant. They are resolved against Europe/Stockholm now,
+                        parsed as the wrong instant. The API now resolves them against Europe/Stockholm,
                         with tests across both daylight-saving changeovers. The vendor's data was
                         correct the whole time.
                     </p>
@@ -202,8 +202,8 @@ sitemapPriority: "0.8"
                     <p class="mt-2 text-sm text-brand-muted leading-relaxed">
                         Administrators can read the tables. There is nowhere to type SQL, the readable
                         tables are an allowlist rather than whatever the catalogue reports, and the
-                        columns holding a sender's IP address are never selected at all. Losing this screen to a
-                        stolen session costs a read, not a prompt.
+                        columns holding a sender's IP address are never selected at all. Someone who steals a session
+                        on this screen can read tables and cannot run a query.
                     </p>
                 </div>
             </div>
