@@ -1108,6 +1108,37 @@
   .st-cell[data-level="partial"] { background: #f59e0b; }
   .st-cell[data-level="down"] { background: #e11d48; }
 
+  /* The footer badge. The footer is chrome-dark in both themes, so these are the dark steps. */
+  .st-badge {
+    @apply mt-8 inline-flex items-center gap-3 rounded-full border border-brand-border
+           bg-brand-surface/60 py-2 pl-4 pr-5 transition-colors duration-200 hover:border-brand-accent;
+  }
+  .st-pulse { @apply relative inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-brand-muted/60; }
+  .st-badge[data-state="up"] .st-pulse { background: #34d399; }
+  .st-badge[data-state="down"] .st-pulse { background: #fb7185; }
+  .st-badge[data-state="up"] .st-pulse::after,
+  .st-badge[data-state="down"] .st-pulse::after {
+    content: ""; position: absolute; inset: 0; border-radius: 9999px;
+    background: inherit; animation: st-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  @keyframes st-ping { 75%, 100% { transform: scale(2.6); opacity: 0; } }
+  .st-mini { @apply hidden h-6 items-end gap-[2px] sm:flex; }
+  .st-mini > span {
+    @apply block w-[3px] rounded-sm bg-brand-muted/30;
+    height: 100%;
+    transform-origin: bottom;
+    animation: st-grow 0.5s ease-out both;
+    animation-delay: calc(var(--i) * 25ms);
+  }
+  .st-mini > span[data-level="up"] { background: #34d399; }
+  .st-mini > span[data-level="partial"] { background: #fbbf24; }
+  .st-mini > span[data-level="down"] { background: #fb7185; }
+  .st-mini > span[data-level="none"] { height: 30%; }
+  @keyframes st-grow { from { transform: scaleY(0); } }
+  @media (prefers-reduced-motion: reduce) {
+    .st-pulse::after, .st-mini > span { animation: none !important; }
+  }
+
   .stat-card {
     @apply grid gap-1 rounded-lg border border-brand-border bg-brand-surface p-5
            transition-colors duration-200

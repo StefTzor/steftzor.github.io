@@ -110,4 +110,58 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll(`[data-nav="${key}"]`).forEach((link) => {
     link.setAttribute('aria-current', 'page');
   });
+
+  // --- the status badge in the footer --------------------------------------
+  // Asks the API's /status only once the footer is on screen, and at most once a page: the
+  // answer is cached for 30 seconds by the browser, and /status/ itself keeps the live view.
+  // A failure leaves the badge as the plain link it is without script.
+  const badge = document.getElementById('stBadge');
+  if (badge && 'IntersectionObserver' in window) {
+    const api = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+      ? 'http://localhost:3000' : 'https://api.tzortzoglou.eu';
+    const seen = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      seen.disconnect();
+      fetch(api + '/status')
+        .then((res) => (res.ok ? res.json() : Promise.reject(new Error('status ' + res.status))))
+        .then((data) => drawBadge(badge, data))
+        .catch(() => { badge.dataset.state = 'unknown'; });
+    });
+    seen.observe(badge);
+  }
 });
+
+/** Fills the footer badge from a /status answer. Every string is set with textContent. */
+function drawBadge(badge, data) {
+  const all = Array.isArray(data && data.components) ? data.components : [];
+  if (!all.length) { badge.dataset.state = 'unknown'; return; }
+  const down = all.filter((c) => c.status === 'down');
+  badge.dataset.state = down.length ? 'down' : 'up';
+  document.getElementById('stBadgeTitle').textContent = down.length
+    ? (down.length === 1 ? down[0].name + ' is down' : down.length + ' services down')
+    : 'All systems working';
+
+  // Uptime of the stack itself (site, app, API, database), over the week.
+  const week = all.filter((c) => c.group === 'stack' && typeof c.uptime7d === 'number').map((c) => c.uptime7d);
+  const uptime = week.length ? week.reduce((a, b) => a + b, 0) / week.length : null;
+  const parts = [];
+  if (uptime !== null) parts.push((uptime >= 0.9995 ? '100' : (uptime * 100).toFixed(2)) + '% uptime, 7 days');
+  const last = Math.max(...all.map((c) => (c.checkedAt ? Date.parse(c.checkedAt) : 0)));
+  if (last > 0) {
+    const mins = Math.max(0, Math.round((Date.now() - last) / 60000));
+    parts.push(mins < 1 ? 'checked just now' : 'checked ' + mins + ' min ago');
+  }
+  if (parts.length) document.getElementById('stBadgeMeta').textContent = parts.join(' · ');
+
+  // 24 hourly bars, every component together: the worst share answered in that hour.
+  const strip = document.getElementById('stBadgeStrip');
+  strip.textContent = '';
+  for (let i = 0; i < 24; i++) {
+    const hour = all.map((c) => (Array.isArray(c.hours) ? c.hours[i] : null)).filter((h) => typeof h === 'number');
+    const worst = hour.length ? Math.min(...hour) : null;
+    const bar = document.createElement('span');
+    bar.dataset.level = worst === null ? 'none' : worst === 1 ? 'up' : worst === 0 ? 'down' : 'partial';
+    bar.style.setProperty('--i', i);
+    strip.appendChild(bar);
+  }
+}

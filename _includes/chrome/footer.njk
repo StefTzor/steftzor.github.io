@@ -48,15 +48,25 @@
       </a>
     </div>
 
+    {# The live status badge. Without script it is a plain link to /status/; scripts/chrome.js
+       fills it in from the API's /status once the footer scrolls into view, so a reader who
+       never reaches the footer sends nothing. #}
+    <a id="stBadge" href="{{ siteBase }}/status/" class="st-badge" data-state="loading">
+      <span class="st-pulse" aria-hidden="true"></span>
+      <span class="grid text-left leading-tight">
+        <span id="stBadgeTitle" class="text-sm font-semibold text-brand-text">System status</span>
+        <span id="stBadgeMeta" class="text-xs text-brand-muted tabular-nums">Live checks of the site, app and API</span>
+      </span>
+      <span id="stBadgeStrip" class="st-mini" aria-hidden="true"></span>
+    </a>
+
     <nav aria-label="Legal" class="mt-8">
       <ul class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
         <li><a href="{{ siteBase }}/privacy/" class="text-brand-muted hover:text-brand-accent underline">Privacy Policy</a></li>
         <li><a href="{{ siteBase }}/cookies/" class="text-brand-muted hover:text-brand-accent underline">Cookies &amp; Local
             Storage</a></li>
         <li><a href="{{ siteBase }}/terms/" class="text-brand-muted hover:text-brand-accent underline">Terms of Use</a></li>
-        <li><a href="{{ siteBase }}/accessibility/" class="text-brand-muted hover:text-brand-accent underline">Accessibility</a></li>
-        <li><a href="{{ siteBase }}/status/" class="text-brand-muted hover:text-brand-accent underline">Status</a></li>
-      </ul>
+        <li><a href="{{ siteBase }}/accessibility/" class="text-brand-muted hover:text-brand-accent underline">Accessibility</a></li>      </ul>
     </nav>
 
     {# Site operator / data controller identity (GDPR Art. 13(1)(a)). It belongs on the app at
