@@ -1,0 +1,51 @@
+# The post-deploy smoke test: production, in a real browser (scripts/smoke.mjs).
+#
+# Runs after either deploy finishes, so it checks what readers are actually served rather than
+# the build, and once a day, because the pages depend on services that change without a deploy.
+# The screenshots are uploaded whatever the result, for a person to look at.
+#
+# The signed-in pages use the plain test user, never the admin account: a public repository's
+# secrets should not open the admin views, which show other people's data.
+name: Smoke test production
+
+on:
+  workflow_run:
+    workflows: ["Deploy to GitHub Pages", "Deploy the app to Dokploy"]
+    types: [completed]
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Both deploys finish within a minute of each other on a push; the second run supersedes the first.
+concurrency:
+  group: smoke
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Load every page in Chrome
+        env:
+          SMOKE_USER_EMAIL: ${{ secrets.SMOKE_USER_EMAIL }}
+          SMOKE_USER_PASSWORD: ${{ secrets.SMOKE_USER_PASSWORD }}
+        run: CHROME="$(command -v google-chrome)" node scripts/smoke.mjs smoke-out
+
+      - name: Upload the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-screenshots
+          path: smoke-out/
+          retention-days: 7

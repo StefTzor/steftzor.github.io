@@ -27,12 +27,14 @@ sitemapPriority: "0.3"
     <span id="stBannerText" class="font-semibold text-brand-text">Checking…</span>
   </div>
 
+  {# Each list reserves the height of its four rows (84px each on desktop, 128px on a phone,
+     measured), so the rows arriving do not push the page down. scripts/smoke.mjs checks it. #}
   <section class="card mb-4">
     <div class="an-panel-head">
       <h2 class="an-panel-title">This site and app</h2>
       <p class="text-xs text-brand-muted">Last 24 hours, one cell an hour</p>
     </div>
-    <ul id="stStack" class="mt-2 divide-y divide-brand-border"></ul>
+    <ul id="stStack" class="mt-2 min-h-[28rem] divide-y divide-brand-border sm:min-h-[21rem]"></ul>
   </section>
 
   <section class="card mb-4">
@@ -40,7 +42,7 @@ sitemapPriority: "0.3"
       <h2 class="an-panel-title">Services the app depends on</h2>
       <p class="text-xs text-brand-muted">Last 24 hours, one cell an hour</p>
     </div>
-    <ul id="stUpstream" class="mt-2 divide-y divide-brand-border"></ul>
+    <ul id="stUpstream" class="mt-2 min-h-[28rem] divide-y divide-brand-border sm:min-h-[21rem]"></ul>
   </section>
 
   <p class="text-xs text-brand-muted">
