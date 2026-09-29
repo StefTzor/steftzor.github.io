@@ -412,8 +412,12 @@
     .hero { --wx-band: 5rem; }
   }
 
+  /* One line held open before anything arrives, like the greeting's &nbsp;: the weather sentence
+     lands after first paint, and an empty paragraph reserves nothing. On a phone that line
+     arriving moved the whole page by 0.05 (smoke test, 2026-09-29). A second line, when the
+     condition is long, can still move it; reserving two would leave a gap on most days. */
   .hero-digest {
-    @apply mt-2 max-w-prose text-brand-muted;
+    @apply mt-2 max-w-prose min-h-6 text-brand-muted;
   }
 
   .hero-digest a {
