@@ -207,7 +207,7 @@ sitemapPriority: "0.3"
       <td>To decide which parts of the application the account may see. Only I can set it.</td>
     </tr>
     <tr>
-      <td>Preferences you choose to save: a home location, a home stop and favourite teams (team numbers, not names)</td>
+      <td>Preferences you choose to save: a home location, a home stop and favourite teams (team names)</td>
       <td>Cloud Firestore</td>
       <td>So the forecast, the departures and the match list open on what you picked, on any device. Each is optional.</td>
     </tr>
@@ -314,7 +314,7 @@ sitemapPriority: "0.3"
   <li><strong>When:</strong> only on those two pages, only once a map is actually drawn there, and only for someone
     signed in; no page on the public site contacts them at all.</li>
   <li><strong>Why it is not proxied like everything else:</strong> every outside service this application takes data
-    from (the weather, the departures, the Formula 1 results, the football and hockey fixtures) is called by my server, so your browser never meets
+    from (the weather, the departures, the Formula 1 results, the football and hockey fixtures and tables, the sports headlines) is called by my server, so your browser never meets
     it. Map tiles are the exception because they are images, a few
     hundred of them in a session of panning around, and putting my server in front of those would mean running a tile
     service instead of passing a message along. I chose a map over that, and this paragraph is the price of choosing

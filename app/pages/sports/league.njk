@@ -1,0 +1,65 @@
+---
+layout: app-shell.njk
+pagination:
+  data: sportsLeagues
+  size: 1
+  alias: league
+permalink: "/sports/{{ league.slug }}/"
+eleventyComputed:
+  title: "{{ league.name }} | Sports"
+shell: true
+bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
+navDrawerOnly: true
+signOut: true
+bodyScripts:
+  - src: "/scripts/sports-league.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+  - src: "/scripts/palette.js"
+    type: "module"
+---
+{# One league: table, live games, results, what is next, headlines. The page knows its slug from
+   data-league; everything else comes from api /sports/league/:slug. #}
+<section class="app-page an-wrap" id="league" data-league="{{ league.slug }}" data-sport="{{ league.sport }}">
+  <p class="mb-2 text-sm"><a href="/sports/" class="link-action text-brand-accent">← Sports</a></p>
+  <h1 class="mb-1 text-3xl font-bold text-brand-text">{{ league.name }}</h1>
+  <p id="lgMeta" class="mb-6 min-h-5 text-sm text-brand-muted"></p>
+
+  <div id="status" role="status" aria-live="polite" class="mb-4 text-sm"></div>
+
+  <div class="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+    <section class="card an-panel min-w-0" aria-labelledby="lgTableTitle">
+      <h2 id="lgTableTitle" class="an-panel-title">Table</h2>
+      <div class="mt-2 overflow-x-auto">
+        <table class="w-full text-sm tabular-nums">
+          <thead id="lgHead" class="text-xs text-brand-muted"></thead>
+          <tbody id="lgTable" class="divide-y divide-brand-border"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="space-y-4">
+      <section id="lgLiveWrap" class="card an-panel hidden" aria-labelledby="lgLiveTitle">
+        <h2 id="lgLiveTitle" class="an-panel-title">Live</h2>
+        <ul id="lgLive" class="mt-2 space-y-1"></ul>
+      </section>
+      <section class="card an-panel" aria-labelledby="lgNextTitle">
+        <h2 id="lgNextTitle" class="an-panel-title">Next up</h2>
+        <ul id="lgNext" class="mt-2 min-h-[12rem] space-y-1"></ul>
+      </section>
+      <section class="card an-panel" aria-labelledby="lgResultsTitle">
+        <h2 id="lgResultsTitle" class="an-panel-title">Results</h2>
+        <ul id="lgResults" class="mt-2 min-h-[12rem] space-y-1"></ul>
+      </section>
+      <section class="card an-panel" aria-labelledby="lgNewsTitle">
+        <div class="an-panel-head">
+          <h2 id="lgNewsTitle" class="an-panel-title">Headlines</h2>
+          <span class="text-xs text-brand-muted">Expressen</span>
+        </div>
+        <ul id="lgNews" class="mt-2 space-y-2"></ul>
+      </section>
+    </div>
+  </div>
+  <p id="lgSource" class="mt-6 text-xs text-brand-muted"></p>
+</section>

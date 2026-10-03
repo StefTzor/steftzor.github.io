@@ -250,7 +250,7 @@
        reload. It can only ever hide, and writing the key at all needs script on this origin, so
        this is a bound on the damage rather than a gate. #}
     <script>(function(){try{var r=JSON.parse(localStorage.getItem("app-rows")||"null");
-    if(!r||typeof r!=="object")return;var OK=["depList","f1Sessions","trList","trLines"];
+    if(!r||typeof r!=="object")return;var OK=["depList","f1Sessions","trList","trLines","sportsRows"];
     Object.keys(r).forEach(function(id){if(OK.indexOf(id)<0)return;var u=document.getElementById(id);
     if(!u)return;var n=r[id];if(typeof n!=="number"||n<0)return;
     for(var i=n;i<u.children.length;i++)u.children[i].style.display="none";});}catch(e){}})();</script>

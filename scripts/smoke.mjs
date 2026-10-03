@@ -28,7 +28,7 @@ const SITE = process.env.SMOKE_SITE || 'https://tzortzoglou.eu'; // a local prev
 const APP = 'https://app.tzortzoglou.eu';
 const PUBLIC = ['/', '/about/', '/portfolio/', '/process/', '/data-mapping/', '/code/', '/contact/', '/status/', '/privacy/'];
 const APP_OUT = ['/login/'];
-const APP_IN = ['/', '/transit/', '/f1/', '/profile/'];
+const APP_IN = ['/', '/transit/', '/f1/', '/sports/', '/sports/shl/', '/profile/'];
 const VIEWPORTS = {
   desktop: { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false },
   phone: { width: 390, height: 844, deviceScaleFactor: 2, mobile: true },

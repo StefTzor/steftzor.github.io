@@ -1126,6 +1126,8 @@
   .dm-tag { @apply text-xs font-semibold text-brand-muted; }
   .dm-step[data-won="true"] .dm-tag { color: rgb(var(--chart)); }
   .dm-result { @apply rounded-md bg-brand-bg p-3; }
+  /* A favourite's row in a league table, lit in chart ink like a favourite's game. */
+  .lg-fav { background: rgb(var(--chart) / 10%); }
 
   /* ---- /status/ ------------------------------------------------------------------------
      Status colours are reserved for state and always sit beside a word ("Up", "Down"). Green is
