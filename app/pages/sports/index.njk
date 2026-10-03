@@ -36,19 +36,20 @@ bodyScripts:
 
   <div id="status" role="status" aria-live="polite" class="mb-4 text-sm"></div>
 
-  {# --- bulletin: stories from the data on the left, headlines on the right. Reserved height, so
-     the matches below do not move when it arrives. #}
+  {# --- bulletin: stories from the data on the left, headlines on the right. Reserved height
+     (seven stories, six headlines; taller on a phone, where they wrap), so the matches below do
+     not move when it arrives. scripts/smoke.mjs checks it. #}
   <div class="mb-6 grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
     <section class="card an-panel" aria-labelledby="spStoriesTitle">
       <h2 id="spStoriesTitle" class="an-panel-title">The big stories</h2>
-      <ul id="spStories" class="mt-2 min-h-[14rem] space-y-1"></ul>
+      <ul id="spStories" class="mt-2 min-h-[36rem] space-y-1 sm:min-h-[31rem]"></ul>
     </section>
     <section class="card an-panel" aria-labelledby="spNewsTitle">
       <div class="an-panel-head">
         <h2 id="spNewsTitle" class="an-panel-title">Headlines</h2>
         <span class="text-xs text-brand-muted">Expressen</span>
       </div>
-      <ul id="spNews" class="mt-2 min-h-[14rem] space-y-2"></ul>
+      <ul id="spNews" class="mt-2 min-h-[27rem] space-y-2 lg:min-h-[14rem]"></ul>
     </section>
   </div>
 

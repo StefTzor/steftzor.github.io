@@ -20,7 +20,9 @@ bodyScripts:
     type: "module"
 ---
 {# One league: table, live games, results, what is next, headlines. The page knows its slug from
-   data-league; everything else comes from api /sports/league/:slug. #}
+   data-league; everything else comes from api /sports/league/:slug. The table and both game
+   lists reserve their height (sixteen rows; twelve games, two lines each on a phone), because
+   on a phone the table comes first and everything below would move when it arrived. #}
 <section class="app-page an-wrap" id="league" data-league="{{ league.slug }}" data-sport="{{ league.sport }}">
   <p class="mb-2 text-sm"><a href="/sports/" class="link-action text-brand-accent">← Sports</a></p>
   <h1 class="mb-1 text-3xl font-bold text-brand-text">{{ league.name }}</h1>
@@ -31,7 +33,7 @@ bodyScripts:
   <div class="grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
     <section class="card an-panel min-w-0" aria-labelledby="lgTableTitle">
       <h2 id="lgTableTitle" class="an-panel-title">Table</h2>
-      <div class="mt-2 overflow-x-auto">
+      <div class="mt-2 min-h-[34rem] overflow-x-auto">
         <table class="w-full text-sm tabular-nums">
           <thead id="lgHead" class="text-xs text-brand-muted"></thead>
           <tbody id="lgTable" class="divide-y divide-brand-border"></tbody>
@@ -46,11 +48,11 @@ bodyScripts:
       </section>
       <section class="card an-panel" aria-labelledby="lgNextTitle">
         <h2 id="lgNextTitle" class="an-panel-title">Next up</h2>
-        <ul id="lgNext" class="mt-2 min-h-[12rem] space-y-1"></ul>
+        <ul id="lgNext" class="mt-2 min-h-[40rem] space-y-1 sm:min-h-[28rem]"></ul>
       </section>
       <section class="card an-panel" aria-labelledby="lgResultsTitle">
         <h2 id="lgResultsTitle" class="an-panel-title">Results</h2>
-        <ul id="lgResults" class="mt-2 min-h-[12rem] space-y-1"></ul>
+        <ul id="lgResults" class="mt-2 min-h-[40rem] space-y-1 sm:min-h-[28rem]"></ul>
       </section>
       <section class="card an-panel" aria-labelledby="lgNewsTitle">
         <div class="an-panel-head">
