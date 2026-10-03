@@ -210,7 +210,15 @@ async function main() {
   const report = (name, problems) => {
     if (problems.length) failed += 1;
     console.log(`${problems.length ? 'FAIL' : 'pass'}  ${name}`);
-    problems.forEach((p) => console.log('        ' + p));
+    // One line each, always: a console message from a page can contain a newline, and a line that
+    // starts with :: is a workflow command to the runner.
+    problems.forEach((p) => console.log('        ' + String(p).replace(/[\r\n]+/g, ' ')));
+    // In CI, each failure is also a workflow annotation. The run log needs a signed-in GitHub
+    // session to read; annotations do not, and they reach the failure notification, so a red run
+    // says why without anyone opening the log. The repository is public, and so is this text.
+    if (problems.length && process.env.GITHUB_ACTIONS) {
+      console.log(`::error title=smoke ${esc(name)}::${esc(problems.join(' | ').slice(0, 1500))}`);
+    }
   };
 
   for (const r of runs.filter((x) => wanted(x.name))) {
@@ -247,4 +255,11 @@ async function main() {
   process.exit(failed ? 1 : 0);
 }
 
-main().catch((err) => { console.error('smoke:', err.message); process.exit(2); });
+/** GitHub's own escaping for a workflow command's message, so page text stays one message. */
+function esc(t) { return String(t).replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A'); }
+
+main().catch((err) => {
+  console.error('smoke:', String(err.message).replace(/[\r\n]+/g, ' '));
+  if (process.env.GITHUB_ACTIONS) console.log(`::error title=smoke could not run::${esc(err.message)}`);
+  process.exit(2);
+});
