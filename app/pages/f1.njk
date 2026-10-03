@@ -54,7 +54,11 @@ bodyScripts:
       <h2 id="round-heading" class="min-h-7 text-xl font-bold text-brand-text"></h2>
       <p id="roundWhere" class="min-h-5 text-sm text-brand-muted"></p>
     </div>
-    <div id="roundBody"></div>
+    {# 36rem pushes everything below past the first screen on a phone (starts at ~361px of 844)
+       and on desktop (~247px of 800), so the round growing to a results table, or to a finished
+       weekend's 1478px, moves nothing on screen. Before a weekend the sessions list is shorter
+       and the space stays empty; that is the price. scripts/smoke.mjs checks it. #}
+    <div id="roundBody" class="min-h-[36rem]"></div>
   </section>
 
   {# --- where in the world -------------------------------------------------

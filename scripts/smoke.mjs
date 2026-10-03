@@ -37,8 +37,10 @@ const VIEWPORTS = {
 const CLS_MAX = 0.05;
 // Known debts, capped at what was measured so they cannot get worse. Lower each one as it is fixed.
 // /transit/ reserves twelve board rows and at night there are fewer departures, so the board
-// shrinks; /f1/ cannot reserve the round, which is 200px of sessions or 836px of results.
-const CLS_KNOWN = { 'app-in-transit-': 0.3, 'app-in-f1-': 0.6 }; // measured 2026-09-26
+// shrinks. /f1/ was capped at 0.6 until 2026-10-03, when the round started reserving enough to
+// push everything below it past the first screen: 0 in three runs against 0.326 and 0.542 before.
+// Its cap is now Google's "good", a margin rather than a debt.
+const CLS_KNOWN = { 'app-in-transit-': 0.3, 'app-in-f1-': 0.1 }; // transit measured 2026-09-26
 const OURS = /^https:\/\/(app\.|api\.)?tzortzoglou\.eu\//;
 const OUT = process.argv[2] || 'smoke-out';
 const ONLY = process.env.SMOKE_ONLY ? new RegExp(process.env.SMOKE_ONLY) : null;

@@ -5,8 +5,8 @@ title: "Cookies & Local Storage | Stefanos Tzortzoglou"
 heading: "Cookies & Local Storage"
 description: "This site sets no cookies. Here is exactly what is stored in your browser, what the page-view counter stores and what it discards, which third parties your browser contacts, and how to change your analytics choice."
 summary: "This site sets no cookies. The only thing you could reasonably object to is the page-view counter, so that is what the banner asks about. It stays off until you say yes. Since 18 September 2026 a counted page view carries a visitor number that changes every 24 hours and is erased from the row after 30 days."
-updated: "2026-09-26"
-updatedLabel: "26 September 2026"
+updated: "2026-10-03"
+updatedLabel: "3 October 2026"
 sitemapOrder: 70
 sitemapChangefreq: yearly
 sitemapPriority: "0.3"
@@ -70,14 +70,47 @@ sitemapPriority: "0.3"
         Firebase.</td>
       <td>Until you log out or the token expires.</td>
     </tr>
+    <tr>
+      <td><code>app-profile</code></td>
+      <td><code>localStorage</code></td>
+      <td>Your role in the application (for example <code>User</code>) and nothing else, so the next page can draw
+        its menu before the server has answered. It decides nothing: the server checks your role again on every
+        request. Only under <code>app.tzortzoglou.eu</code>, written once you sign in.</td>
+      <td>Until you sign out, which removes it.</td>
+    </tr>
+    <tr>
+      <td><code>auth-ui</code></td>
+      <td><code>localStorage</code></td>
+      <td>The value <code>1</code> while you are signed in, so the sign-in page can send you straight on. Only under
+        <code>app.tzortzoglou.eu</code>.</td>
+      <td>Until you sign out, which removes it.</td>
+    </tr>
+    <tr>
+      <td><code>weather-geo</code></td>
+      <td><code>localStorage</code></td>
+      <td>The value <code>1</code> if you chose to use your device's location for the forecast, so you are not asked
+        on every visit. Your coordinates themselves are never stored. Only under <code>app.tzortzoglou.eu</code>.</td>
+      <td>Until you turn the choice off, which removes it.</td>
+    </tr>
+    <tr>
+      <td><code>app-rows</code></td>
+      <td><code>localStorage</code></td>
+      <td>How many rows a few lists had last time (a number per list, such as how many departures were showing),
+        so their placeholders take the right space and the page does not jump. Only under
+        <code>app.tzortzoglou.eu</code>.</td>
+      <td>Until you sign out, which removes it.</td>
+    </tr>
   </tbody>
 </table>
 
 <p>
   You can delete any of these at any time by clearing site data in your browser settings. Browser storage is
-  per-site, so the first two are cleared under <code>tzortzoglou.eu</code> and the third under
-  <code>app.tzortzoglou.eu</code>. Clearing the theme key simply resets that site to its default appearance;
-  clearing the Firebase entry logs you out.
+  per-site: <code>theme</code> and <code>theme-at</code> are kept by each of the two sites,
+  <code>analytics-consent</code> under <code>tzortzoglou.eu</code>, and everything else under
+  <code>app.tzortzoglou.eu</code>, only once you have an account and sign in. Clearing the theme keys resets that
+  site to its default appearance; clearing the Firebase entry logs you out; clearing the other application keys
+  costs nothing but a moment's redraw. None of them is a cookie, so your browser never attaches one to a
+  request by itself.
 </p>
 
 <h2 id="choice">3. Your analytics choice</h2>
