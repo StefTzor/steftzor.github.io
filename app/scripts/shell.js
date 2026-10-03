@@ -151,7 +151,7 @@ function showUnreachable(status) {
 /**
  * Remembers who you were, so the next page can draw the rail before it has asked anyone.
  *
- * A hint for rendering only, exactly like the `auth-ui` flag on the public site. Anyone can
+ * A hint for rendering only. Anyone can
  * write "Admin" into their own localStorage and the API will still refuse them, because it
  * re-reads role and approval from Firestore on every single request.
  */
@@ -167,12 +167,12 @@ function remember(me) {
 }
 
 function forget() {
-  try { localStorage.removeItem("app-profile"); } catch (e) { /* nothing to do */ }
+  try { localStorage.removeItem("app-profile"); localStorage.removeItem("auth-ui"); } catch (e) { /* nothing to do */ }
   forgetRows();
 }
 
 /**
- * The location preference key, read by the weather view and written by the profile page.
+ * The location preference key, read and written by the forecast on the home view (app.js).
  * Exported so there is one definition rather than a copy per file.
  */
 export const GEO_KEY = "weather-geo";

@@ -324,10 +324,9 @@ async function handleLogout(e) {
 }
 
 function handleAuthStateChanged(user) {
-  try {
-    if (user) localStorage.setItem("auth-ui", "1");
-    else localStorage.removeItem("auth-ui");
-  } catch (err) { /* private mode: the hint is optional */ }
+  // `auth-ui` was a "signed in" hint that nothing reads any more. Removed rather than written, so
+  // the key leaves browsers that still hold it; /cookies/ no longer lists it.
+  try { localStorage.removeItem("auth-ui"); } catch (err) { /* private mode: nothing to remove */ }
 
   // Someone already signed in has no reason to look at a sign-in form.
   if (user && document.body.dataset.redirectWhenAuthed === "1") window.location.href = "/";

@@ -79,18 +79,11 @@ sitemapPriority: "0.3"
       <td>Until you sign out, which removes it.</td>
     </tr>
     <tr>
-      <td><code>auth-ui</code></td>
-      <td><code>localStorage</code></td>
-      <td>The value <code>1</code> while you are signed in, so the sign-in page can send you straight on. Only under
-        <code>app.tzortzoglou.eu</code>.</td>
-      <td>Until you sign out, which removes it.</td>
-    </tr>
-    <tr>
       <td><code>weather-geo</code></td>
       <td><code>localStorage</code></td>
       <td>The value <code>1</code> if you chose to use your device's location for the forecast, so you are not asked
         on every visit. Your coordinates themselves are never stored. Only under <code>app.tzortzoglou.eu</code>.</td>
-      <td>Until you turn the choice off, which removes it.</td>
+      <td>Until you turn the choice off, or a location lookup fails, either of which removes it.</td>
     </tr>
     <tr>
       <td><code>app-rows</code></td>
