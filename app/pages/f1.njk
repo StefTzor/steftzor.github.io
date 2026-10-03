@@ -35,7 +35,8 @@ bodyScripts:
      exist, so the bar never offers a table this round does not have. Plain anchors: the targets
      carry scroll-mt so the sticky header does not cover the heading you jumped to. #}
   <nav aria-label="On this page" class="mb-4">
-    <ul id="f1Toc" class="flex flex-wrap gap-2 text-sm">
+    {# Two lines reserved on a phone: the round's own links arrive after load and wrap there. #}
+    <ul id="f1Toc" class="flex min-h-[4.25rem] flex-wrap content-start gap-2 text-sm sm:min-h-0">
       <li><a href="#results" class="toc-link">This round</a></li>
       <li id="f1TocTables" class="contents"></li>
       <li><a href="#map" class="toc-link">Map</a></li>
