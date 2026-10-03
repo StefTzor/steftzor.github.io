@@ -721,6 +721,11 @@
   .dg-label {
     @apply fill-brand-text text-[11px] font-semibold;
   }
+  /* /code/'s diagram, lit from /status: the status page's two colours, shown only once known. */
+  .dg-live { display: none; }
+  .dg-live[data-state] { display: inline; fill: rgb(var(--color-muted) / 50%); }
+  .dg-live[data-state="up"] { fill: #059669; }
+  .dg-live[data-state="down"] { fill: #e11d48; }
   .dg-sub {
     @apply fill-brand-muted text-[10px];
   }

@@ -5,6 +5,8 @@ title: "Code & Architecture | Stefanos Tzortzoglou"
 description: "Review the technical stack, Open Source philosophy, and live GitHub telemetry of Stefanos Tzortzoglou."
 personSchema: true
 mainClass: "flex-grow container mx-auto py-16 px-4"
+bodyScripts:
+  - src: "/scripts/arch-live.js"
 pageStyle: |
   /* Contribution grid. The data is fetched at build time (_data/contributions.js) and the
      markup is ours, so this styles real elements rather than overriding a vendor stylesheet. */
@@ -164,6 +166,9 @@ sitemapPriority: "0.8"
             <div class="mt-8 overflow-x-auto">
                 {% include "chrome/architecture.njk" %}
             </div>
+            {# Filled by scripts/arch-live.js from the status page's data; a reserved height, so the
+               words arriving do not move what is below. #}
+            <p id="archLive" class="mt-3 min-h-[3.75rem] sm:min-h-[1.25rem] text-xs text-brand-muted" aria-live="polite"></p>
 
             <div class="mt-10 grid gap-6 md:grid-cols-2">
                 <div>

@@ -68,6 +68,15 @@
           <text x="520" y="345" text-anchor="middle" class="dg-label">Four upstreams</text>
           <text x="520" y="360" text-anchor="middle" class="dg-sub">two need a key</text>
 
+          {#- Live state, drawn only where a page loads scripts/arch-live.js (/code/). Hidden until
+              a state arrives, so /docs/ in the app and a failed read both show the plain drawing.
+              The words for each dot are in the line under the diagram, never colour alone. -#}
+          <circle cx="258" cy="124" r="4.5" class="dg-live" data-live="site"/>
+          <circle cx="558" cy="124" r="4.5" class="dg-live" data-live="app"/>
+          <circle cx="568" cy="224" r="4.5" class="dg-live" data-live="api"/>
+          <circle cx="408" cy="338" r="4.5" class="dg-live" data-live="database"/>
+          <circle cx="578" cy="338" r="4.5" class="dg-live" data-live="upstreams"/>
+
           <text x="350" y="396" text-anchor="middle" class="dg-sub">Open-Meteo · Trafiklab ResRobot · Jolpica · GitHub Actions</text>
           <text x="350" y="411" text-anchor="middle" class="dg-sub">none of these four is ever called from your browser</text>
           {#- The exception, named rather than left off. The app's map tiles are fetched by the
