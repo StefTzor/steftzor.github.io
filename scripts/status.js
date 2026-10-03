@@ -203,8 +203,60 @@
       });
   }
 
+  // ---- Data drift: the shape of each upstream's answers, and what changed.
+
+  var SOURCE = { weather: "Weather", transit: "Swedish transit", formula: "Formula 1", github: "GitHub", geocode: "Place search" };
+  var KIND = { "new": "First seen", type: "New type", gone: "Not seen for 7 days" };
+
+  function loadDrift() {
+    var sources = el("stDriftSources");
+    var changes = el("stDrift");
+    fetch(API_BASE + "/status/drift")
+      .then(function (res) { if (!res.ok) throw new Error("drift " + res.status); return res.json(); })
+      .then(function (data) {
+        if (!data || !data.sources || !Array.isArray(data.changes)) throw new Error("shape");
+        sources.textContent = "";
+        changes.textContent = "";
+        var ids = Object.keys(data.sources);
+        if (!ids.length) {
+          sources.appendChild(node("li", "py-3 text-sm text-brand-muted", "Nothing observed yet."));
+        }
+        ids.forEach(function (id) {
+          var s = data.sources[id];
+          var li = node("li", "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2");
+          li.appendChild(node("span", "font-medium text-brand-text", SOURCE[id] || id));
+          var right = node("span", "flex flex-wrap gap-x-3 text-xs text-brand-muted tabular-nums");
+          right.appendChild(node("span", "whitespace-nowrap", s.fields + " fields"));
+          right.appendChild(node("span", "whitespace-nowrap", s.endpoints + (s.endpoints === 1 ? " endpoint" : " endpoints")));
+          if (s.lastSeen) right.appendChild(node("span", "whitespace-nowrap", "seen " + ago(s.lastSeen)));
+          li.appendChild(right);
+          sources.appendChild(li);
+        });
+        if (!data.changes.length) {
+          changes.appendChild(node("li", "py-2 text-sm text-brand-muted",
+            "No changes in the last 30 days. A new service is watched for a day before anything counts."));
+        }
+        data.changes.forEach(function (c) {
+          var li = node("li", "py-2");
+          var top = node("div", "flex flex-wrap items-baseline justify-between gap-x-4");
+          top.appendChild(node("span", "text-sm font-medium text-brand-text",
+            (KIND[c.kind] || c.kind) + " · " + (SOURCE[c.source] || c.source)));
+          top.appendChild(node("span", "text-xs text-brand-muted tabular-nums", ago(c.at)));
+          li.appendChild(top);
+          li.appendChild(node("p", "break-all font-mono text-xs text-brand-muted", c.path + "  " + c.detail));
+          changes.appendChild(li);
+        });
+      })
+      .catch(function () {
+        sources.textContent = "";
+        changes.textContent = "";
+        sources.appendChild(node("li", "py-3 text-sm text-brand-muted", "Drift history is unavailable right now."));
+      });
+  }
+
   load();
   loadDeploys();
+  loadDrift();
   // A page left open keeps itself current, at the pace the checks themselves run.
   setInterval(load, 60000);
   setInterval(loadDeploys, 120000);

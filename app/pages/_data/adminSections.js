@@ -55,6 +55,12 @@ module.exports = [
     icon: "fa-solid-shield-alt",
   },
   {
+    label: "Webhooks",
+    href: "/admin/webhooks/",
+    navKey: "admin-webhooks",
+    icon: "fa-solid-network-wired",
+  },
+  {
     label: "Analytics",
     href: "/admin/analytics/",
     navKey: "admin-analytics",

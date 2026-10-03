@@ -1,0 +1,65 @@
+---
+permalink: /admin/webhooks/
+title: "Webhooks | Admin"
+bodyScripts:
+  - src: "/scripts/admin-webhooks.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+  - src: "/scripts/palette.js"
+    type: "module"
+---
+{# The webhook inspector. GitHub posts to api.tzortzoglou.eu/webhooks/github; a delivery is kept
+   only if its HMAC-SHA256 signature verifies (api src/webhooks.js). Each one is shown three ways
+   side by side: as GitHub sent it, how it was verified, and the record it maps to. Admin-only
+   because payloads from the private API repository name its commits. #}
+<section class="app-page an-wrap">
+
+  {% include "chrome/admin-sections.njk" %}
+
+  <h1 class="text-3xl font-bold text-brand-text mb-2">Webhooks</h1>
+  <p class="text-brand-muted mb-6 max-w-prose">
+    GitHub deliveries for the site and API repositories. A delivery is kept only when its
+    signature matches; anything unsigned is refused and only counted.
+  </p>
+
+  <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
+
+  <div class="card an-kpis mb-6 lg:grid-cols-3">
+    <div class="an-kpi"><span class="an-kpi-label">Secret</span><span id="whConfigured" class="an-kpi-number" data-loading>—</span><span class="an-kpi-note">set on both sides</span></div>
+    <div class="an-kpi"><span class="an-kpi-label">Verified</span><span id="whCount" class="an-kpi-number" data-loading>—</span><span class="an-kpi-note">last 30 days</span></div>
+    <div class="an-kpi"><span class="an-kpi-label">Refused</span><span id="whRejected" class="an-kpi-number" data-loading>—</span><span class="an-kpi-note">since the API restarted</span></div>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
+    <section class="card an-panel min-w-0" aria-labelledby="whListTitle">
+      <h2 id="whListTitle" class="an-panel-title">Deliveries</h2>
+      <ul id="whList" class="mt-2 space-y-1"></ul>
+    </section>
+
+    <div class="grid min-w-0 gap-4 md:grid-cols-2">
+      <section class="card an-panel min-w-0 md:col-span-2" aria-labelledby="whRawTitle">
+        <h2 id="whRawTitle" class="an-panel-title">As GitHub sent it</h2>
+        <pre id="whRaw" class="mt-2 max-h-[24rem] overflow-auto whitespace-pre text-xs text-brand-text"></pre>
+      </section>
+      <section class="card an-panel min-w-0" aria-labelledby="whVerifyTitle">
+        <h2 id="whVerifyTitle" class="an-panel-title">Verification</h2>
+        <dl id="whVerify" class="mt-2 space-y-2 text-sm"></dl>
+      </section>
+      <section class="card an-panel min-w-0" aria-labelledby="whMappedTitle">
+        <h2 id="whMappedTitle" class="an-panel-title">Mapped record</h2>
+        <dl id="whMapped" class="mt-2 space-y-2 text-sm"></dl>
+      </section>
+    </div>
+  </div>
+
+  <details class="card mt-4 text-sm text-brand-muted">
+    <summary class="cursor-pointer font-semibold text-brand-text">How a delivery is checked</summary>
+    <p class="mt-2 max-w-prose">
+      GitHub signs the exact bytes of each body with HMAC-SHA256 and a secret both sides hold. The
+      API reads the body raw, computes the same signature and compares the two in constant time
+      before it parses anything. A delivery that does not match gets a 401 and is never written
+      down. A redelivery of one already kept is recognised by its delivery id and ignored.
+    </p>
+  </details>
+</section>

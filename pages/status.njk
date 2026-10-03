@@ -53,6 +53,21 @@ sitemapPriority: "0.3"
     <ul id="stDeploys" class="mt-2 min-h-[34rem] divide-y divide-brand-border sm:min-h-[30rem]"></ul>
   </section>
 
+  <section class="card mb-4">
+    <div class="an-panel-head">
+      <h2 class="an-panel-title">Data drift</h2>
+      <p class="text-xs text-brand-muted">What each service sends, and what changed in 30 days</p>
+    </div>
+    <ul id="stDriftSources" class="mt-2 min-h-[10rem] divide-y divide-brand-border sm:min-h-[8rem]"></ul>
+    <h3 class="mt-4 text-sm font-semibold text-brand-text">Changes</h3>
+    <ul id="stDrift" class="mt-1 min-h-[3rem] divide-y divide-brand-border"></ul>
+    <p class="an-panel-hint">
+      Learned from the answers the app already receives: field names and types only, never a
+      value. A field seen for the first time, arriving as a new type, or missing for seven days is
+      listed here, because a service changing its data without notice is how integrations break.
+    </p>
+  </section>
+
   <p class="text-xs text-brand-muted">
     Transit is recorded from the app's real requests rather than probed, so that checking it
     spends none of its quota; between trips it reads "no recent data". Checks run from the same
