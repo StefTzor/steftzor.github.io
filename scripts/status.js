@@ -131,7 +131,81 @@
       });
   }
 
+  // ---- Recent deploys: read beside the uptime, so a dip can be matched to the deploy behind it.
+
+  var RESULT = { success: ["up", "Deployed"], failure: ["down", "Failed"], cancelled: ["unknown", "Cancelled"] };
+
+  function ago(iso) {
+    var mins = Math.round((Date.now() - Date.parse(iso)) / 60000);
+    if (!isFinite(mins)) return "";
+    if (mins < 60) return mins <= 1 ? "just now" : mins + " min ago";
+    var hours = Math.round(mins / 60);
+    if (hours < 48) return hours + " h ago";
+    return Math.round(hours / 24) + " days ago";
+  }
+
+  function deployRow(d) {
+    var r = RESULT[d.result] || ["unknown", d.result === "in_progress" || d.result === "queued" ? "In progress" : d.result];
+    var li = node("li", "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3");
+    var left = node("div", "flex min-w-0 items-baseline gap-2");
+    var dot = node("span", "st-dot shrink-0");
+    dot.setAttribute("data-state", r[0]);
+    dot.setAttribute("aria-hidden", "true");
+    left.appendChild(dot);
+    left.appendChild(node("span", "font-medium text-brand-text", d.part));
+    // A link only to GitHub, whatever the API sends: it is a run page, nothing else.
+    if (d.message && typeof d.url === "string" && d.url.indexOf("https://github.com/") === 0) {
+      var a = node("a", "truncate text-xs text-brand-muted underline decoration-brand-border hover:text-brand-text", d.message);
+      a.href = d.url;
+      a.rel = "noopener";
+      left.appendChild(a);
+    } else if (!d.message) {
+      left.appendChild(node("span", "truncate text-xs text-brand-muted", "private repository"));
+    }
+    var right = node("div", "flex flex-wrap items-baseline gap-x-3 text-xs text-brand-muted tabular-nums");
+    var word = node("span", "st-word font-semibold", r[1]);
+    word.setAttribute("data-state", r[0]);
+    right.appendChild(word);
+    if (d.browser) {
+      right.appendChild(node("span", "whitespace-nowrap", d.browser === "success" ? "checked in a browser" : "browser check failed"));
+    }
+    if (d.durationMs !== null && d.durationMs !== undefined) {
+      right.appendChild(node("span", "whitespace-nowrap", Math.max(1, Math.round(d.durationMs / 1000)) + " s"));
+    }
+    if (d.startedAt) right.appendChild(node("span", "whitespace-nowrap", ago(d.startedAt)));
+    li.appendChild(left);
+    li.appendChild(right);
+    return li;
+  }
+
+  function loadDeploys() {
+    var list = el("stDeploys");
+    fetch(API_BASE + "/status/deploys")
+      .then(function (res) {
+        if (!res.ok) throw new Error("deploys " + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data || !Array.isArray(data.deploys)) throw new Error("shape");
+        list.textContent = "";
+        if (!data.deploys.length) {
+          list.appendChild(node("li", "py-3 text-sm text-brand-muted", "No deploys in the recent history."));
+        }
+        data.deploys.forEach(function (d) { list.appendChild(deployRow(d)); });
+        if (data.unreachable && data.unreachable.length) {
+          list.appendChild(node("li", "py-3 text-sm text-brand-muted",
+            "Could not read the history of: " + data.unreachable.join(", ") + "."));
+        }
+      })
+      .catch(function () {
+        list.textContent = "";
+        list.appendChild(node("li", "py-3 text-sm text-brand-muted", "Deploy history is unavailable right now."));
+      });
+  }
+
   load();
+  loadDeploys();
   // A page left open keeps itself current, at the pace the checks themselves run.
   setInterval(load, 60000);
+  setInterval(loadDeploys, 120000);
 })();
