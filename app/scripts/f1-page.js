@@ -153,6 +153,7 @@ function renderRound(data) {
   if (data.raceResults) blocks.push(["Race", "result", data.raceResults]);
 
   if (!blocks.length) {
+    el("f1TocTables").textContent = "";
     body.appendChild(sessionList(race.sessions));
     body.appendChild(text("p", "hint mt-3",
       data.over ? "This weekend has been and gone, but no results were published for it."
@@ -160,15 +161,25 @@ function renderRound(data) {
     return;
   }
 
-  // The race table is the one worth paginating; the others are shown whole.
+  // The race table is the one worth paginating; the others are shown whole. Each table is an
+  // anchor (#qualifying, #sprint, #race), which is what the home card's session links aim at.
+  const toc = el("f1TocTables");
+  toc.textContent = "";
   blocks.forEach(([label, kind, rows]) => {
+    let table;
     if (label === "Race") {
-      body.appendChild(resultsTable(rows, "Race result"));
+      table = resultsTable(rows, "Race result");
     } else if (kind === "result") {
-      body.appendChild(withSpacing(resultsTableWhole(rows, `${label} result`)));
+      table = withSpacing(resultsTableWhole(rows, `${label} result`));
     } else {
-      body.appendChild(withSpacing(qualifyingTable(rows)));
+      table = withSpacing(qualifyingTable(rows));
     }
+    table.id = label.toLowerCase();
+    table.classList.add("scroll-mt-24");
+    body.appendChild(table);
+    const link = text("a", "toc-link", label);
+    link.href = "#" + table.id;
+    toc.appendChild(link);
   });
 
   // Every session no table above covers: the practices, which have no result to be replaced by,
@@ -724,9 +735,24 @@ profile.then(async () => {
       opt.textContent = `${r.round}. ${r.name}${r.over ? " ✓" : ""}`;
       pick.appendChild(opt);
     });
-    const start = cal.currentRound || cal.rounds[cal.rounds.length - 1]?.round;
-    if (start) { pick.value = String(start); await loadRound(start); }
-    pick.addEventListener("change", (e) => loadRound(e.target.value));
+    // ?round=N opens that round (the home card links here); otherwise the current one. Only a
+    // round that is in this season's calendar is honoured, so the parameter cannot ask the API
+    // for anything the selector could not.
+    const asked = new URLSearchParams(location.search).get("round");
+    const known = cal.rounds.some((r) => String(r.round) === asked);
+    const start = known ? asked : (cal.currentRound || cal.rounds[cal.rounds.length - 1]?.round);
+    if (start) {
+      pick.value = String(start);
+      await loadRound(start);
+      // The tables are built now, so a #race or #qualifying in the address has something to find.
+      const target = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
+      if (target) target.scrollIntoView();
+    }
+    pick.addEventListener("change", (e) => {
+      // Keep the address on the round being read, so it can be shared or reloaded.
+      history.replaceState(null, "", "?round=" + encodeURIComponent(e.target.value));
+      loadRound(e.target.value);
+    });
 
     // Deliberately not awaited: the standings below are a fetch this page was going to make
     // anyway, and they have no business queueing behind a map library.

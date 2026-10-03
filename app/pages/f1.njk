@@ -31,12 +31,24 @@ bodyScripts:
     </div>
   </div>
 
+  {# Jump links. The round's own tables (qualifying, sprint, race) are added by f1-page.js as they
+     exist, so the bar never offers a table this round does not have. Plain anchors: the targets
+     carry scroll-mt so the sticky header does not cover the heading you jumped to. #}
+  <nav aria-label="On this page" class="mb-4">
+    <ul id="f1Toc" class="flex flex-wrap gap-2 text-sm">
+      <li><a href="#results" class="toc-link">This round</a></li>
+      <li id="f1TocTables" class="contents"></li>
+      <li><a href="#map" class="toc-link">Map</a></li>
+      <li><a href="#standings" class="toc-link">Championships</a></li>
+    </ul>
+  </nav>
+
   <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
 
   {# --- the chosen round ---------------------------------------------------
      Sessions when it has not run, results when it has, and both mid-weekend - which is the
      state the round selector exists to make reachable. #}
-  <section aria-labelledby="round-heading" class="mb-10">
+  <section id="results" aria-labelledby="round-heading" class="mb-10 scroll-mt-24">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-1">
       <h2 id="round-heading" class="min-h-7 text-xl font-bold text-brand-text"></h2>
       <p id="roundWhere" class="min-h-5 text-sm text-brand-muted"></p>
@@ -76,7 +88,7 @@ bodyScripts:
      canvas zero pixels tall, which looks like a map that failed rather than a map with no room.
      It is also generous, and that is the point of a globe: a sphere loses its edges to a short
      box, and a circuit you have zoomed into needs room to be a circuit rather than a squiggle. #}
-  <section aria-labelledby="map-heading" class="mb-10">
+  <section id="map" aria-labelledby="map-heading" class="mb-10 scroll-mt-24">
     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-3">
       <h2 id="map-heading" class="text-xl font-bold text-brand-text">Where the season goes</h2>
       <p id="circuitName" class="text-sm text-brand-muted"></p>
@@ -124,7 +136,7 @@ bodyScripts:
   </section>
 
   {# --- championships ------------------------------------------------------ #}
-  <section aria-labelledby="standings-heading">
+  <section id="standings" aria-labelledby="standings-heading" class="scroll-mt-24">
     <h2 id="standings-heading" class="text-xl font-bold text-brand-text mb-1">Championships</h2>
     <p id="standingsAfter" class="text-sm text-brand-muted mb-4"></p>
     <div class="grid gap-6 lg:grid-cols-2">

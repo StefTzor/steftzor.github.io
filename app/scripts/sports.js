@@ -21,6 +21,10 @@ const STATUS = { FT: "Full time", AOT: "After overtime", AP: "After penalties", 
 const NOT_LIVE = new Set(["NS", "TBD", "PST", "CANC", "FT", "AOT", "AP", "AET", "ABD", "AWD", "WO"]);
 
 let data = null;
+// Teams found by search this visit, so a ticked one keeps its name when the lists redraw. Not
+// stored: the profile holds ids only, and a saved favourite that is in no league list and has no
+// game this week is shown as "Saved team" until it plays.
+const found = new Map();
 let favourites = new Set();
 let sport = "all";
 let favOnly = false;
@@ -114,7 +118,11 @@ function notes() {
   el("spLeagues").textContent = data.leagues.map((l) => l.name).join(", ") + ". Today to a week ahead.";
 }
 
-function pickerTeams(teamsData) {
+function pickerTeams(teamsData, add) {
+  // Redrawing keeps what is ticked now (saved or not), plus `add`; the first draw uses the profile.
+  const boxes = [...el("spTeams").querySelectorAll("input[type=checkbox]")];
+  const ticked = new Set(boxes.length ? boxes.filter((b) => b.checked).map((b) => b.value) : favourites);
+  if (add) ticked.add(add);
   // The league lists, plus every team seen in the fixtures: on the free key a list stops at ten,
   // and a team that plays this week should never be impossible to pick.
   const byId = new Map();
@@ -122,10 +130,20 @@ function pickerTeams(teamsData) {
   data.matches.forEach((m) => [m.home, m.away].forEach((t) => {
     if (!byId.has(t.id)) byId.set(t.id, { id: t.id, name: t.name, league: m.league });
   }));
+  // Favourites found by search earlier: shown under their league if it is one of ours, else under
+  // "Other teams", so every saved favourite has a box to untick.
+  ticked.forEach((fid) => {
+    if (!byId.has(fid)) byId.set(fid, found.get(fid) || { id: fid, name: "Saved team", league: "other" });
+  });
+  pickerState.byId = byId;
   const host = el("spTeams");
   host.textContent = "";
-  data.leagues.forEach((l) => {
-    const teams = [...byId.values()].filter((t) => t.league === l.id).sort((a, b) => a.name.localeCompare(b.name));
+  const groups = data.leagues.map((l) => ({ id: l.id, name: l.name }));
+  if ([...byId.values()].some((t) => !data.leagues.some((l) => l.id === t.league))) groups.push({ id: null, name: "Other teams" });
+  groups.forEach((l) => {
+    const teams = [...byId.values()]
+      .filter((t) => (l.id ? t.league === l.id : !data.leagues.some((x) => x.id === t.league)))
+      .sort((a, b) => a.name.localeCompare(b.name));
     if (!teams.length) return;
     const fs = node("fieldset");
     fs.appendChild(node("legend", "mb-2 text-xs font-semibold uppercase tracking-wide text-brand-muted", l.name));
@@ -134,14 +152,55 @@ function pickerTeams(teamsData) {
       const box = node("input", "h-4 w-4");
       box.type = "checkbox";
       box.value = t.id;
-      box.checked = favourites.has(t.id);
+      box.checked = ticked.has(t.id);
       label.appendChild(box);
       label.appendChild(document.createTextNode(t.name));
       fs.appendChild(label);
     });
     host.appendChild(fs);
   });
-  el("spFavCount").textContent = favourites.size ? "(" + favourites.size + ")" : "";
+  if (!add) el("spFavCount").textContent = favourites.size ? "(" + favourites.size + ")" : "";
+}
+
+const pickerState = { byId: new Map(), teamsData: null };
+
+async function find(e) {
+  e.preventDefault();
+  const q = el("spQuery").value.trim();
+  const out = el("spFound");
+  out.textContent = "";
+  if (q.length < 2) return;
+  out.appendChild(node("li", "text-sm text-brand-muted", "Searching…"));
+  try {
+    const res = await api("/sports/teams/search?q=" + encodeURIComponent(q));
+    out.textContent = "";
+    if (!res.teams.length) { out.appendChild(node("li", "text-sm text-brand-muted", "No football or hockey team by that name.")); return; }
+    res.teams.forEach((t) => {
+      const li = node("li");
+      const label = node("label", "flex items-center gap-2 text-sm text-brand-text");
+      const box = node("input", "h-4 w-4");
+      box.type = "checkbox";
+      box.checked = favourites.has(t.id) || [...el("spTeams").querySelectorAll("input:checked")].some((b) => b.value === t.id);
+      box.addEventListener("change", () => {
+        // Ticking a found team adds it to the lists below, ticked, so Save picks it up like any other.
+        found.set(t.id, { id: t.id, name: t.name, league: t.league || "other" });
+        const existing = [...el("spTeams").querySelectorAll("input")].find((b) => b.value === t.id);
+        if (existing) { existing.checked = box.checked; return; }
+        if (!box.checked) return;
+        pickerTeams(pickerState.teamsData, t.id);
+        el("spFavCount").textContent = "(unsaved)";
+      });
+      label.appendChild(box);
+      label.appendChild(document.createTextNode(t.name));
+      label.appendChild(node("span", "text-xs text-brand-muted", [t.leagueName, t.country].filter(Boolean).join(", ")));
+      li.appendChild(label);
+      out.appendChild(li);
+    });
+  } catch (err) {
+    console.error("sports: search", err.status, err.code);
+    out.textContent = "";
+    out.appendChild(node("li", "text-sm text-brand-muted", err.code === "bad_query" ? "Type at least two letters of a team name." : "Search is unavailable right now."));
+  }
 }
 
 async function save() {
@@ -184,6 +243,7 @@ function tabs() {
     if (data) draw();
   });
   el("spSave").addEventListener("click", save);
+  el("spSearch").addEventListener("submit", find);
 }
 
 tabs();
@@ -202,5 +262,6 @@ profile.then(async (me) => {
   draw();
   let teamsData = null;
   try { teamsData = await api("/sports/teams"); } catch (err) { console.error("sports: teams", err.status, err.code); }
+  pickerState.teamsData = teamsData;
   pickerTeams(teamsData);
 });

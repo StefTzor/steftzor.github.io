@@ -46,6 +46,13 @@ bodyScripts:
       Favourite teams <span id="spFavCount" class="text-sm font-normal text-brand-muted"></span>
     </summary>
     <p class="mt-2 text-sm text-brand-muted">Their matches are highlighted, and "Favourites only" shows nothing else. Saved to your account.</p>
+    <form id="spSearch" class="mt-4 flex flex-wrap items-center gap-2" role="search">
+      <label for="spQuery" class="sr-only">Find a team by name</label>
+      <input id="spQuery" type="search" class="field w-64 max-w-full py-1.5 text-sm" minlength="2" maxlength="40"
+        placeholder="Find a team, e.g. Sirius" autocomplete="off">
+      <button type="submit" class="btn-secondary px-3 py-1.5 text-sm">Find</button>
+    </form>
+    <ul id="spFound" class="mt-2 space-y-1" aria-live="polite"></ul>
     <div id="spTeams" class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
     <div class="mt-4 flex items-center gap-3">
       <button type="button" id="spSave" class="btn-primary px-4 py-2 text-sm">Save favourites</button>

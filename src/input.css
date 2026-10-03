@@ -249,6 +249,12 @@
            hover:bg-brand-accent hover:text-brand-onaccent transition-colors duration-200;
   }
 
+  /* /f1/'s "On this page" bar: small pills that read as links, not as the round selector. */
+  .toc-link {
+    @apply inline-flex items-center rounded-full border border-brand-border bg-brand-surface px-3 py-1
+           text-brand-muted transition-colors hover:text-brand-text focus-visible:outline-none
+           focus-visible:ring-2 focus-visible:ring-brand-accent;
+  }
   /* The app's sidebar. One definition for the links and one for the preference rows, because
      the difference between them should be what they do, not how many utility classes each
      happened to be given. */

@@ -14,6 +14,9 @@ import { remember } from "./rows.js";
 
 const el = (id) => document.getElementById(id);
 
+/** Which table on /f1/ shows a session's result. Sessions without one link to the round. */
+const ANCHOR = { Qualifying: "qualifying", Sprint: "sprint", Race: "race" };
+
 /** "Sat 14:00" for this week, "26 Sep, 13:00" beyond it - the reader's locale decides the words. */
 function when(iso, raceWeek) {
   const d = new Date(iso);
@@ -58,12 +61,19 @@ function render(data) {
     const li = document.createElement("li");
     li.className = "flex items-baseline justify-between gap-4 py-2 first:pt-0 last:pb-0";
 
-    const label = document.createElement("span");
+    // A session that has started links to its round on /f1/: to its own table where it has one
+    // (qualifying, sprint, race), and to the round otherwise, since practice has no result.
+    const started = Date.parse(s.at) < Date.now();
+    const label = document.createElement(started ? "a" : "span");
+    if (started) {
+      label.href = `/f1/?round=${encodeURIComponent(race.round)}#${ANCHOR[s.key] || "results"}`;
+    }
     const isNext = soon && s.at === soon.at;
     // The next session is the one the card exists to answer, so it is the one that stands out.
     label.className = isNext
       ? "text-sm font-semibold text-brand-accent"
-      : "text-sm text-brand-text";
+      : started ? "text-sm text-brand-text underline decoration-brand-border underline-offset-2 hover:decoration-brand-accent"
+        : "text-sm text-brand-text";
     label.textContent = s.label;
 
     const time = document.createElement("time");
