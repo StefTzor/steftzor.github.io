@@ -21,7 +21,7 @@ bodyScripts:
     <span>How this is built</span>
   </h1>
   <p class="mt-2 max-w-prose text-brand-muted">
-    Three deployables, four data stores and five upstreams. This page is the map of what runs
+    Three deployables, four data stores and nine upstream services. This page is the map of what runs
     where, what holds which data, and what every endpoint is for.
   </p>
 
@@ -115,7 +115,8 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">Firestore</h3>
         <p class="hint mt-1">
-          One document per account: name, role, approval state, home location, home stop. The role
+          One document per account: name, role, approval state, home location, home stop, favourite
+          teams. The role
           is read from here on <em>every single request</em>. It is a separate store from the one
           above, which is why an account can exist with no document and why erasure removes both.
         </p>
@@ -123,8 +124,12 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">Postgres</h3>
         <p class="hint mt-1">
-          Five tables: contact submissions, a row per process start, which migrations have run,
-          the one-row table holding the secret behind the visitor number below, and
+          Ten tables. Contact submissions, a row per process start, which migrations have run, and
+          the one-row table holding the secret behind the visitor number below. Five the system
+          writes for itself: the status page's health checks (seven days), the shape of each
+          upstream's answers and what changed in it (field names and types, never a value), GitHub
+          webhook deliveries that passed their signature check (30 days), and the sports data, saved
+          so a restart does not fetch three leagues again. And
           one row per page view: path, which of the two properties, the referring host, the time,
           a coarse browser, OS, device class and width bracket, the country as two letters (looked up
           on the server from the address; IP geolocation by
@@ -146,8 +151,8 @@ bodyScripts:
         <h3 class="font-semibold text-brand-text">Memory</h3>
         <p class="hint mt-1">
           Every upstream answer is cached in the API process for between 45 seconds and six hours,
-          and lost on restart. A bus or a race lives in memory and nowhere else, so there is no
-          history of either to browse.
+          and lost on restart, except the sports data, which is also saved to Postgres. A bus or a
+          race lives in memory and nowhere else, so there is no history of either to browse.
         </p>
       </li>
     </ul>
@@ -238,12 +243,14 @@ bodyScripts:
      anything interesting in. "We call an API" describes nothing; which endpoint, how often it
      may be called, and whose field became which of ours is where the work actually is. #}
   <section aria-labelledby="up-heading" class="mt-10">
-    <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-1">The five upstreams, in detail</h2>
+    <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-1">The upstreams, in detail</h2>
     <p class="text-sm text-brand-muted mb-6 max-w-prose">
-      Four of them are proxied. Two of those need a credential, which has to stay on the server;
-      the other two so that one call serves every reader. The fifth is the basemap, and it is not
-      proxied at all: your browser fetches its tiles itself, which makes it the only one of
-      the five your browser has ever heard of. Each one below lists what is called, how long an answer
+      Eight of the nine are called by the server. Two of those need a credential, which has to
+      stay on the server; the rest so that one call serves every reader, and for the three sports
+      sources, so a page reads a saved copy rather than three unofficial sites. The ninth is the
+      basemap, and it is not proxied at all: your browser fetches its tiles itself, which makes it
+      the only one your browser has ever heard of. ESPN, shl.se and hockeyallsvenskan.se share one
+      entry below, because they do one job. Each one below lists what is called, how long an answer
       is held, and how their field names become ours.
     </p>
     <p class="text-sm text-brand-muted mb-6 max-w-prose">
