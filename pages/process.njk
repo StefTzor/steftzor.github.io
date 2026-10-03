@@ -23,6 +23,7 @@ sitemapPriority: "0.8"
     own: "The technical meetings with each provider, the integration method, and the data schema.",
     with: "Ticketing, e-commerce and CRM providers, the customer's IT, and our developers when something new has to be built.",
     out: "A specification per source: endpoints, fields, schema, the logic that derives anything the source does not send, and calls I have already tested.",
+    try: "/data-mapping/",
     risk: "Documentation is missing or wrong, or an endpoint does not return what the commercial goal needs. I test the endpoints myself before a developer touches them, and when data is missing I add logic to the schema to derive it rather than wait for the provider."
   },
   {
@@ -91,6 +92,9 @@ sitemapPriority: "0.8"
                     <dd class="text-brand-muted">{{ p.risk }}</dd>
                 </div>
             </dl>
+            {% if p.try %}
+            <p class="mt-5 text-sm"><a href="{{ p.try }}" class="text-brand-accent underline hover:no-underline">See this step worked through on three invented records</a></p>
+            {% endif %}
         </li>
         {% endfor %}
     </ol>
