@@ -94,6 +94,29 @@ module.exports = [
     ],
   },
   {
+    name: "TheSportsDB",
+    what: "Football and hockey fixtures for the Matches page: Allsvenskan, SHL and HockeyAllsvenskan, today to a week ahead.",
+    key: false,
+    cache: "5 minutes for today, 1 hour for later days, 1 day for team lists",
+    why: "Today's games change score; next week's do not. The free key allows 30 requests a minute and a cold week is 27, so a timer refreshes one item every 2.5 seconds and pages only ever read the cache.",
+    calls: [
+      { path: "/eventsday.php?d={date}&l={league}", note: "one league, one day" },
+      { path: "/search_all_teams.php?l={league name}", note: "for choosing favourites" },
+    ],
+    mapping: [
+      ["strTimestamp (UTC, no zone)", "start, with the Z added", true],
+      ["idHomeTeam, strHomeTeam", "home.id, home.name"],
+      ["intHomeScore, intAwayScore", "homeScore, awayScore (null before kickoff)"],
+      ["strStatus", "status, passed through"],
+      ["exactly three events on the free key", "partial", true],
+    ],
+    notes: [
+      "The free key returns at most three games per league per day and ten teams per league. A day that comes back with exactly three is marked partial and the page says so, rather than presenting a cut list as the whole week.",
+      "Favourites are stored as team ids, not names: the same club is spelled differently across leagues and sources, and the id is what every fixture carries.",
+      "Crests are not shown. They are images on TheSportsDB's own host, and the browser fetching them would be a new third party for the privacy page to declare.",
+    ],
+  },
+  {
     name: "GitHub Actions",
     what: "Recent workflow runs, for the deploy history on the Health page.",
     key: true,
