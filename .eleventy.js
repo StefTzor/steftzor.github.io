@@ -10,7 +10,8 @@ module.exports = function(eleventyConfig) {
     "scripts/hero.js": "scripts/hero.js",
     "scripts/consent.js": "scripts/consent.js",
     "scripts/contact.js": "scripts/contact.js",
-    "scripts/status.js": "scripts/status.js"
+    "scripts/status.js": "scripts/status.js",
+    "scripts/mapping.js": "scripts/mapping.js"
   });
   eleventyConfig.addPassthroughCopy({ "CNAME": "CNAME" });
   eleventyConfig.addPassthroughCopy("robots.txt");

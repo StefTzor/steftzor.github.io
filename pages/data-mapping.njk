@@ -1,0 +1,73 @@
+---
+layout: base.njk
+permalink: /data-mapping/
+title: "Data Mapping, Traced | Stefanos Tzortzoglou"
+description: "Three source records, the mapping rules, and the one customer profile they merge into. Click any field to trace where it came from, how it was normalised, and which source won."
+personSchema: true
+bodyScripts:
+  - src: "/scripts/mapping.js"
+sitemapOrder: 27
+sitemapChangefreq: monthly
+sitemapPriority: "0.7"
+---
+{# C15 showcase: phase 2 and 3 of /process/, made clickable. The data is invented and the
+   profile is computed in the browser by scripts/mapping.js from the raw values and its rules,
+   so nothing here is a typed-in result. Design language: references/design-language.md. #}
+<div class="an-wrap px-4 py-10 sm:px-6">
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold text-brand-text">From three systems to one customer</h1>
+    <p class="mt-1 max-w-prose text-sm text-brand-muted">
+      A ticketing order, a web-shop order and a CRM contact describe the same person, and no two
+      of them write her down the same way. Pick a field on the profile to see where it came from,
+      what was done to it, and which source won when they disagreed.
+    </p>
+  </header>
+
+  {# On a phone the profile comes first and the trace sits under it, so a tap shows its
+     answer without scrolling; from lg the columns read left to right: sources, rules, result. #}
+  {# The script draws every row after first paint, so the grid reserves the row's measured
+     height at lg (55rem) and the match list its three rows; scripts/smoke.mjs checks it. #}
+  <div class="grid gap-4 lg:min-h-[55rem] lg:grid-cols-3">
+    <div id="dmSources" class="order-3 space-y-4 lg:order-1" aria-label="Source records"></div>
+
+    <section class="card order-2 lg:order-2" aria-labelledby="dmTraceTitle">
+      <div class="an-panel-head">
+        <h2 id="dmTraceTitle" class="an-panel-title">Lineage</h2>
+        <p class="text-xs text-brand-muted">raw → each rule → result</p>
+      </div>
+      <div id="dmTrace" class="mt-3" aria-live="polite"></div>
+    </section>
+
+    <section class="card order-1 lg:order-3" aria-labelledby="dmProfileTitle">
+      <div class="an-panel-head">
+        <h2 id="dmProfileTitle" class="an-panel-title">The merged profile</h2>
+        <p class="text-xs text-brand-muted">⚑ resolved a conflict</p>
+      </div>
+      <ul id="dmProfile" class="mt-2 min-h-[18rem] space-y-1"></ul>
+    </section>
+  </div>
+
+  <section class="card mt-4" aria-labelledby="dmMatchTitle">
+    <div class="an-panel-head">
+      <h2 id="dmMatchTitle" class="an-panel-title">Identity resolution</h2>
+      <p class="text-xs text-brand-muted">Which keys link each pair of records</p>
+    </div>
+    <ul id="dmMatches" class="mt-2 min-h-[16rem] divide-y divide-brand-border sm:min-h-[7.75rem]"></ul>
+    <p class="an-panel-hint">
+      Compared raw, no two records share an email or a phone number. A stray space, a capital
+      letter and three ways of writing one mobile number are enough to make one customer look
+      like three.
+    </p>
+  </section>
+
+  <details class="card mt-4 text-sm text-brand-muted">
+    <summary class="cursor-pointer font-semibold text-brand-text">About this page</summary>
+    <p class="mt-2 max-w-prose">
+      The records are invented and name no client or vendor. The rules are the kind I write in
+      phase 2 of <a class="text-brand-accent underline" href="/process/">an onboarding</a>: a
+      transform per field, one key per match, and a written rule for every conflict, so the
+      customer can see why their data says what it says. The profile is computed in your browser
+      from the raw values each time the page loads.
+    </p>
+  </details>
+</div>

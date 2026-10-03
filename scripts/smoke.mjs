@@ -26,7 +26,7 @@ import { join } from 'node:path';
 
 const SITE = process.env.SMOKE_SITE || 'https://tzortzoglou.eu'; // a local preview, for trying a fix
 const APP = 'https://app.tzortzoglou.eu';
-const PUBLIC = ['/', '/about/', '/portfolio/', '/process/', '/code/', '/contact/', '/status/', '/privacy/'];
+const PUBLIC = ['/', '/about/', '/portfolio/', '/process/', '/data-mapping/', '/code/', '/contact/', '/status/', '/privacy/'];
 const APP_OUT = ['/login/'];
 const APP_IN = ['/', '/transit/', '/f1/', '/profile/'];
 const VIEWPORTS = {
