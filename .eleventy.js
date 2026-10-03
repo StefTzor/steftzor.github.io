@@ -11,7 +11,8 @@ module.exports = function(eleventyConfig) {
     "scripts/consent.js": "scripts/consent.js",
     "scripts/contact.js": "scripts/contact.js",
     "scripts/status.js": "scripts/status.js",
-    "scripts/arch-live.js": "scripts/arch-live.js"
+    "scripts/arch-live.js": "scripts/arch-live.js",
+    "scripts/mapping.js": "scripts/mapping.js"
   });
   eleventyConfig.addPassthroughCopy({ "CNAME": "CNAME" });
   eleventyConfig.addPassthroughCopy("robots.txt");

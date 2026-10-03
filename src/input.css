@@ -1098,6 +1098,29 @@
   }
   @media (prefers-reduced-motion: reduce) { .an-live-dot { animation: none; } }
 
+  /* ---- /data-mapping/ ------------------------------------------------------------------
+     A field is a row: name left, value right, monospace so a stray space is visible. A source
+     field that feeds the selected profile field is lit in chart ink, the way a selected KPI is. */
+  .dm-field {
+    @apply flex w-full items-baseline justify-between gap-3 rounded-md px-2 py-1 text-left text-sm;
+  }
+  button.dm-field { @apply transition-colors hover:bg-brand-bg/60; }
+  button.dm-field:focus-visible { @apply outline-none ring-2 ring-inset ring-brand-accent; }
+  .dm-field[data-lit="true"], .dm-field[aria-pressed="true"] {
+    background: rgb(var(--chart) / 10%);
+    box-shadow: inset 3px 0 rgb(var(--chart));
+  }
+  .dm-field[data-unused="true"] { @apply opacity-60; }
+  .dm-name { @apply shrink-0 font-mono text-xs text-brand-muted; }
+  .dm-val { @apply break-all font-mono text-xs text-brand-text; }
+  .dm-op { @apply font-sans text-brand-muted; }
+  .dm-step { @apply space-y-0.5 rounded-md border border-brand-border p-2; }
+  .dm-step[data-won="true"] { border-color: rgb(var(--chart)); }
+  .dm-step[data-lost="true"] .dm-final .dm-v { @apply line-through; }
+  .dm-tag { @apply text-xs font-semibold text-brand-muted; }
+  .dm-step[data-won="true"] .dm-tag { color: rgb(var(--chart)); }
+  .dm-result { @apply rounded-md bg-brand-bg p-3; }
+
   /* ---- /status/ ------------------------------------------------------------------------
      Status colours are reserved for state and always sit beside a word ("Up", "Down"). Green is
      the validated chart ink; amber and rose are the Tailwind 500/600 steps. */
