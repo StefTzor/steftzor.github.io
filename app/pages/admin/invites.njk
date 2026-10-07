@@ -74,6 +74,17 @@ bodyScripts:
     <a href="/admin/" class="text-brand-accent underline hover:no-underline">Accounts</a>.
   </p>
 
+  {# Every invitation sent, pending first (api GET /admin/invites). Pending means the invitee has
+     never signed in; the link in the mail expires, so a pending one can be sent again. #}
+  <section aria-labelledby="sentTitle" class="mt-10">
+    <h2 id="sentTitle" class="text-xl font-bold text-brand-text mb-1">Sent invitations</h2>
+    <p class="hint mb-4">Pending until they sign in for the first time. The link in the email
+      expires, so if they missed it, send it again.</p>
+    <ul id="invList" class="card divide-y divide-brand-border min-h-[5rem]">
+      <li class="py-2 text-sm text-brand-muted">Loading…</li>
+    </ul>
+  </section>
+
 </div>
 
 </section>

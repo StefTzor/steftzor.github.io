@@ -9,7 +9,71 @@ import { el, say } from "./admin-status.js";
  * the silent refresh was doing.
  */
 
+function node(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+}
+
+const day = (iso) => (iso ? new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "");
+
+/** The invitations sent, pending first, each pending one with a Resend button. Text only. */
+async function loadSent() {
+  const list = el("invList");
+  try {
+    const { invites } = await api("/admin/invites");
+    list.textContent = "";
+    if (!invites.length) {
+      list.appendChild(node("li", "py-2 text-sm text-brand-muted", "No invitations sent yet."));
+      return;
+    }
+    invites.forEach((i) => {
+      const li = node("li", "flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-3");
+      const who = node("div", "min-w-0");
+      const name = [i.firstName, i.lastName].filter(Boolean).join(" ");
+      who.appendChild(node("p", "truncate font-medium text-brand-text", name || i.email));
+      who.appendChild(node("p", "truncate text-xs text-brand-muted",
+        [name ? i.email : "", i.role, "sent " + day(i.invitedAt), i.resentAt ? "resent " + day(i.resentAt) : ""].filter(Boolean).join(" · ")));
+      li.appendChild(who);
+      const right = node("div", "flex shrink-0 items-center gap-3");
+      right.appendChild(node("span", "status-pill status-pill--" + (i.state === "accepted" ? "up" : "unknown"),
+        i.state === "accepted" ? "Accepted " + day(i.acceptedAt) : "Pending"));
+      if (i.state === "pending") {
+        const b = node("button", "btn-secondary px-3 py-1 text-xs", "Resend");
+        b.type = "button";
+        b.setAttribute("aria-label", "Resend the invitation to " + i.email);
+        b.addEventListener("click", () => resend(i, b));
+        right.appendChild(b);
+      }
+      li.appendChild(right);
+      list.appendChild(li);
+    });
+  } catch (err) {
+    console.error("admin: invites list", err.status, err.code);
+    list.textContent = "";
+    list.appendChild(node("li", "py-2 text-sm text-brand-muted", "The sent invitations could not be loaded."));
+  }
+}
+
+async function resend(i, btn) {
+  btn.disabled = true;
+  btn.textContent = "Sending…";
+  try {
+    await api("/admin/invites/" + encodeURIComponent(i.uid) + "/resend", { method: "POST" });
+    say(`Sent the invitation to ${i.email} again, with a fresh link.`, "ok");
+    await loadSent();
+  } catch (err) {
+    console.error("admin: resend", err.status, err.code);
+    say(err.code === "already_accepted" ? `${i.email} has already accepted. Refresh to see it.`
+      : "The invitation could not be sent again.", "error");
+    btn.disabled = false;
+    btn.textContent = "Resend";
+  }
+}
+
 profile.then(() => {
+  loadSent();
   const form = el("inviteForm");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -49,6 +113,7 @@ profile.then(() => {
         : `Account created for ${who} as ${res.role}, but the email could not be sent. Use Reset password to try again.`,
         res.sent ? "ok" : "error");
       form.reset();
+      loadSent();
     } catch (err) {
       console.error("admin: invite failed", err.status, err.code);
       field.setAttribute("aria-invalid", "true");
