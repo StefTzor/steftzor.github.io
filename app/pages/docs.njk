@@ -21,7 +21,7 @@ bodyScripts:
     <span>How this is built</span>
   </h1>
   <p class="mt-2 max-w-prose text-brand-muted">
-    Three deployables, four data stores and nine upstream services. This page is the map of what runs
+    Three deployables, four data stores and ten upstream services. This page is the map of what runs
     where, what holds which data, and what every endpoint is for.
   </p>
 
@@ -245,12 +245,12 @@ bodyScripts:
   <section aria-labelledby="up-heading" class="mt-10">
     <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-1">The upstreams, in detail</h2>
     <p class="text-sm text-brand-muted mb-6 max-w-prose">
-      Eight of the nine are called by the server. Two of those need a credential, which has to
+      Nine of the ten are called by the server. Two of those need a credential, which has to
       stay on the server; the rest so that one call serves every reader, and for the three sports
-      sources, so a page reads a saved copy rather than three unofficial sites. The ninth is the
+      sources, so a page reads a saved copy rather than three unofficial sites. The tenth is the
       basemap, and it is not proxied at all: your browser fetches its tiles itself, which makes it
       the only one your browser has ever heard of. ESPN, shl.se and hockeyallsvenskan.se share one
-      entry below, because they do one job. Each one below lists what is called, how long an answer
+      entry below, because they do one job, and so do the two papers. Each one below lists what is called, how long an answer
       is held, and how their field names become ours.
     </p>
     <p class="text-sm text-brand-muted mb-6 max-w-prose">

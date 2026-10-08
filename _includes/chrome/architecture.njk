@@ -8,7 +8,7 @@
     The lanes group by what a thing is FOR rather than by which file it lives in, which is the
     question somebody looking at an architecture picture is actually asking. -#}
       <svg viewBox="0 0 700 472" class="w-full min-w-[560px]" role="img"
-        aria-label="Four layers. You, in a browser. Two static sites that hold no secrets. One API that verifies the token, re-reads the role and holds every key. Below it Firebase for identity, Postgres for messages, checks and saved answers, and eight upstream services, two of which need a credential. The app’s map tiles are the one thing the browser fetches itself.">
+        aria-label="Four layers. You, in a browser. Two static sites that hold no secrets. One API that verifies the token, re-reads the role and holds every key. Below it Firebase for identity, Postgres for messages, checks and saved answers, and nine upstream services, two of which need a credential. The app’s map tiles are the one thing the browser fetches itself.">
         <defs>
           <marker id="flow-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
             <path d="M0,0 L8,4 L0,8 z" class="dg-arrow"/>
@@ -65,7 +65,7 @@
           <text x="350" y="360" text-anchor="middle" class="dg-sub">messages · caches</text>
 
           <rect x="450" y="326" width="140" height="46" rx="8" class="dg-box-key"/>
-          <text x="520" y="345" text-anchor="middle" class="dg-label">Eight upstreams</text>
+          <text x="520" y="345" text-anchor="middle" class="dg-label">Nine upstreams</text>
           <text x="520" y="360" text-anchor="middle" class="dg-sub">two need a key</text>
 
           {#- Live state, drawn only where a page loads scripts/arch-live.js (/code/). Hidden until
@@ -78,8 +78,8 @@
           <circle cx="578" cy="338" r="4.5" class="dg-live" data-live="upstreams"/>
 
           <text x="350" y="396" text-anchor="middle" class="dg-sub">Open-Meteo · Trafiklab ResRobot · Jolpica · GitHub Actions</text>
-          <text x="350" y="411" text-anchor="middle" class="dg-sub">ESPN · shl.se · hockeyallsvenskan.se · Expressen</text>
-          <text x="350" y="426" text-anchor="middle" class="dg-sub">none of these eight is ever called from your browser</text>
+          <text x="350" y="411" text-anchor="middle" class="dg-sub">ESPN · shl.se · hockeyallsvenskan.se · Expressen · Aftonbladet</text>
+          <text x="350" y="426" text-anchor="middle" class="dg-sub">none of these nine is ever called from your browser</text>
           {#- The exception, named rather than left off. The app's map tiles are fetched by the
               browser itself, because a tile is asked for one square at a time as you pan and
               standing in front of a few hundred of those would mean running a tile server. It is

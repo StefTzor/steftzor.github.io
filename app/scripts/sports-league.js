@@ -89,5 +89,5 @@ profile.then(async (me) => {
   d.news.slice(0, 6).forEach((n) => news.appendChild(newsRow(n, { mentionsFav: favTeams.length > 0 && mentions(n.title, favTeams) })));
   if (!d.news.length) news.appendChild(node("li", "text-sm text-brand-muted", "No headlines right now."));
   el("lgSource").textContent = "Data from " + d.league.source + ", updated " +
-    new Date(d.updatedAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }) + ". Headlines from Expressen.";
+    new Date(d.updatedAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }) + ". Headlines from Expressen and Aftonbladet.";
 });

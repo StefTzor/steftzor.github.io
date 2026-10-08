@@ -1,7 +1,7 @@
 /**
  * What the sports pages and the home card draw the same way: a game row, a story, a headline.
  * Text only, never innerHTML: every name and title here came from a third party. A headline link
- * is only made for an https address on Expressen, the one feed the API reads.
+ * is only made for an https address on Expressen or Aftonbladet, the two papers the API reads.
  */
 
 export function node(tag, cls, text) {
@@ -51,10 +51,11 @@ export function storyRow(s, favourites, leagueName) {
   return li;
 }
 
-/** A headline: its title as a link to Expressen, its age, and the league. */
+/** A headline: its title as a link to the paper, then the paper, the league and the date. */
+const PAPERS = ["https://www.expressen.se/", "https://www.aftonbladet.se/"];
 export function newsRow(n, { leagueName, mentionsFav = false }) {
   const li = node("li", "text-sm");
-  if (typeof n.link === "string" && n.link.startsWith("https://www.expressen.se/")) {
+  if (typeof n.link === "string" && PAPERS.some((p) => n.link.startsWith(p))) {
     const a = node("a", (mentionsFav ? "font-semibold " : "") + "text-brand-text underline decoration-brand-border underline-offset-2 hover:decoration-brand-accent", n.title);
     a.href = n.link;
     a.rel = "noopener";
@@ -63,7 +64,7 @@ export function newsRow(n, { leagueName, mentionsFav = false }) {
   } else {
     li.appendChild(node("span", "text-brand-text", n.title));
   }
-  const meta = [leagueName, n.at ? new Date(n.at).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : ""].filter(Boolean).join(" · ");
+  const meta = [typeof n.source === "string" ? n.source : "", leagueName, n.at ? new Date(n.at).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : ""].filter(Boolean).join(" · ");
   if (meta) li.appendChild(node("span", "block text-xs text-brand-muted", meta));
   return li;
 }

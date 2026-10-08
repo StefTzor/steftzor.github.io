@@ -119,21 +119,24 @@ module.exports = [
     ],
   },
   {
-    name: "Expressen",
-    what: "Football and hockey headlines for the Sports pages, filtered to the three leagues by the league in each link's path.",
+    name: "Expressen and Aftonbladet",
+    what: "Football and hockey headlines for the Sports pages, filtered to Allsvenskan, SHL and HockeyAllsvenskan.",
     key: false,
     cache: "30 minutes",
     why: "Headlines are the slowest-moving thing on the page that is still news.",
     calls: [
-      { path: "feeds.expressen.se/fotboll/", note: "RSS" },
-      { path: "feeds.expressen.se/hockey/", note: "RSS" },
+      { path: "feeds.expressen.se/fotboll/ and /hockey/", note: "RSS; the league is in each link's path" },
+      { path: "rss.aftonbladet.se/…/sportbladet/fotboll/ and /hockey/", note: "RSS; only the sport is in the link" },
     ],
     mapping: [
       ["item title, link, pubDate", "title, link, at"],
-      ["/allsvenskan/, /shl/, /hockeyallsvenskan/ in the link", "league", true],
+      ["which feed it came from", "source, sport"],
+      ["/allsvenskan/, /shl/, /hockeyallsvenskan/ in an Expressen link", "league", true],
+      ["the league or one of its teams named in an Aftonbladet title", "league", true],
     ],
     notes: [
-      "Title, link and date only: no description is copied, and a link that is not https is dropped. Reading one opens Expressen's own page.",
+      "Title, link, date and paper only: no description is copied, and a link that is not https is dropped. Reading one opens the paper's own page.",
+      "Aftonbladet's hockey feed is mostly NHL and national-team news, so an item is kept only when its title names the league or a team in its table, as a whole word and in the same sport. Damallsvenskan is not Allsvenskan, and AIK in a football story is never filed under hockey.",
     ],
   },
   {
