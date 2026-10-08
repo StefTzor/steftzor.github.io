@@ -36,11 +36,13 @@ const VIEWPORTS = {
 // Google's "good" is 0.1. Tighter, because the shifts worth catching here are small ones.
 const CLS_MAX = 0.05;
 // Known debts, capped at what was measured so they cannot get worse. Lower each one as it is fixed.
-// /transit/ reserves twelve board rows and at night there are fewer departures, so the board
-// shrinks. /f1/ was capped at 0.6 until 2026-10-03, when the round started reserving enough to
-// push everything below it past the first screen: 0 in three runs against 0.326 and 0.542 before.
-// Its cap is now Google's "good", a margin rather than a debt.
-const CLS_KNOWN = { 'app-in-transit-': 0.3, 'app-in-f1-': 0.1 }; // transit measured 2026-09-26
+// Both were debts and both are paid. /f1/ (2026-10-03) and /transit/ (2026-10-08) now reserve
+// their data-drawn block deep enough to push everything below past the first screen, and
+// /transit/ stacks its stop heading on a phone so the stop's name arriving cannot rewrap it.
+// Measured with the delayed-data harness: /f1/ 0 in three runs against 0.326 and 0.542 before;
+// /transit/ 0 in six runs (night and day boards) against 0.141-0.248 before. The caps are
+// Google's "good", a margin rather than a debt.
+const CLS_KNOWN = { 'app-in-transit-': 0.1, 'app-in-f1-': 0.1 };
 const OURS = /^https:\/\/(app\.|api\.)?tzortzoglou\.eu\//;
 const OUT = process.argv[2] || 'smoke-out';
 const ONLY = process.env.SMOKE_ONLY ? new RegExp(process.env.SMOKE_ONLY) : null;
