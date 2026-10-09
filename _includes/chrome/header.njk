@@ -23,7 +23,7 @@
    to sit on --color-bg, the same colour as the page beneath it, so the navigation read as part of
    the page rather than as its own surface - and the accent fell back to #065f46, which is dark
    enough to read as black. In dark mode the class is a no-op. #}
-<header class="chrome-dark bg-brand-bg shadow-md sticky top-0 z-50 border-b border-brand-border transition-colors duration-300">
+<header class="chrome-dark material shadow-md sticky top-0 z-50 border-b border-brand-border transition-colors duration-300">
   <div class="container mx-auto flex justify-between items-center p-4">
 
     {#- The app's pages come from app/pages/_data/appNav.js and the public site's from its own
@@ -36,7 +36,7 @@
         blue-700 on #0f172a is 2.7:1, blue-400 is 7.0:1. -#}
     <div class="logo">
       <a href="{{ brandHref | default('/') }}"
-        class="bg-gradient-to-r from-brand-accent to-blue-400 bg-clip-text text-transparent font-bold text-xl tracking-tight inline-block transition-transform duration-200 hover:-translate-y-1">
+        class="bg-gradient-to-r from-brand-accent to-blue-400 bg-clip-text text-transparent font-bold text-xl tracking-tight inline-block">
         Stefanos Tzortzoglou
       </a>
     </div>
@@ -101,13 +101,16 @@
    scrim, it is `inert` while closed so nothing off-screen is tabbable, it restores focus on
    close, and Escape shuts it. Two different mobile behaviours in one product is the
    inconsistency this whole change exists to remove. #}
-<div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden transition-opacity duration-300" id="overlay" aria-hidden="true"></div>
+{# Faded rather than toggled with `hidden`: display cannot transition, so the scrim used to snap
+   on at full strength while the drawer was still sliding in. opacity-0 plus pointer-events-none
+   is the closed state; the drag in scripts/chrome.js fades it with the drawer's position. #}
+<div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity duration-300" id="overlay" aria-hidden="true"></div>
 
 {# The drawer is a sibling of <header>, not a child of it, so it needs `chrome-dark` of its own.
    Without it the mobile navigation would be light while the bar that opens it is dark, which is
    the drift this shared file exists to prevent. #}
 <nav id="mobile-nav" aria-label="Mobile" inert
-  class="chrome-dark fixed top-0 right-0 w-[80%] max-w-sm h-full bg-brand-bg z-50 overscroll-contain transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto border-l border-brand-border">
+  class="chrome-dark fixed top-0 right-0 w-[80%] max-w-sm h-full bg-brand-bg z-50 overscroll-contain touch-pan-y transform translate-x-full transition-transform duration-300 ease-in-out shadow-2xl overflow-y-auto border-l border-brand-border">
   <div class="flex justify-between items-center p-5 border-b border-brand-border">
     <div class="text-xl font-bold text-brand-accent">Menu</div>
     <button id="close-menu" type="button" class="icon-btn text-2xl">

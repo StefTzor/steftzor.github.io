@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!mobileNav) return;
     mobileNav.removeAttribute('inert');
     mobileNav.classList.replace('translate-x-full', 'translate-x-0');
-    if (overlay) overlay.classList.remove('hidden');
+    if (overlay) overlay.classList.remove('opacity-0', 'pointer-events-none');
     document.body.style.overflow = 'hidden';
     if (menuToggle) menuToggle.setAttribute('aria-expanded', 'true');
     if (closeMenu) closeMenu.focus();
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     mobileNav.setAttribute('inert', '');
     mobileNav.classList.replace('translate-x-0', 'translate-x-full');
-    if (overlay) overlay.classList.add('hidden');
+    if (overlay) overlay.classList.add('opacity-0', 'pointer-events-none');
     document.body.style.overflow = '';
     if (menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
   }
@@ -101,6 +101,58 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key !== 'Escape') return;
     if (mobileNav && !mobileNav.hasAttribute('inert')) closeMenuFunc(true);
   });
+
+  // Swipe it shut. The drawer follows the finger 1:1 from where it was grabbed, and on release
+  // the flick is projected forward (Apple's decay projection, rate 0.998) so a short fast flick
+  // closes it and a slow drag that stops short springs back. Clearing the inline transform hands
+  // over to the CSS transition, which starts from the on-screen position rather than jumping.
+  // Touch and pen only: a mouse has the close button, Escape and the scrim.
+  if (mobileNav && overlay) {
+    const rubberband = (o, d) => (o * d * 0.55) / (d + 0.55 * Math.abs(o));
+    let startX = null, startY = 0, dx = 0, lastX = 0, lastT = 0, v = 0, dragging = false;
+
+    mobileNav.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' || mobileNav.hasAttribute('inert')) return;
+      startX = lastX = e.clientX; startY = e.clientY; lastT = e.timeStamp;
+      dx = v = 0; dragging = false;
+    });
+
+    mobileNav.addEventListener('pointermove', (e) => {
+      if (startX === null) return;
+      const mx = e.clientX - startX, my = e.clientY - startY;
+      if (!dragging) {
+        // 10px before committing, and only to a mostly sideways move: vertical is the list scrolling.
+        if (Math.abs(mx) < 10 && Math.abs(my) < 10) return;
+        if (Math.abs(mx) <= Math.abs(my)) { startX = null; return; }
+        dragging = true;
+        mobileNav.setPointerCapture(e.pointerId);
+        mobileNav.style.transition = overlay.style.transition = 'none';
+      }
+      const dt = e.timeStamp - lastT;
+      if (dt > 0) v = 0.8 * ((e.clientX - lastX) / dt) * 1000 + 0.2 * v;
+      lastX = e.clientX; lastT = e.timeStamp;
+      const w = mobileNav.offsetWidth;
+      // Dragging further open than open resists instead of stopping dead.
+      dx = mx > 0 ? mx : rubberband(mx, w);
+      mobileNav.style.transform = `translateX(${dx}px)`;
+      overlay.style.opacity = String(1 - Math.max(0, dx) / w);
+    });
+
+    const release = (e) => {
+      if (startX === null) return;
+      startX = null;
+      if (!dragging) return;
+      dragging = false;
+      // A finger that stopped before lifting has no velocity left to project.
+      if (e.timeStamp - lastT > 80) v = 0;
+      const projected = dx + (v / 1000) * 0.998 / (1 - 0.998);
+      mobileNav.style.transition = overlay.style.transition = '';
+      mobileNav.style.transform = overlay.style.opacity = '';
+      if (projected > mobileNav.offsetWidth / 2) closeMenuFunc(false);
+    };
+    mobileNav.addEventListener('pointerup', release);
+    mobileNav.addEventListener('pointercancel', release);
+  }
 
   // --- where you are -------------------------------------------------------
   // Keyed on data-nav rather than href, so the app's absolute links back to tzortzoglou.eu do
