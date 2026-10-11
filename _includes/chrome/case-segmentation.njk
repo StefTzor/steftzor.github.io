@@ -1,0 +1,55 @@
+{#- The Segmentation Engine Migration case study on /portfolio/, as a picture.
+
+    Drawn narrow on purpose: it sits in a half-width card, so a wide left-to-right flow would be
+    scaled until the type was unreadable. Every box says only what the card's text says. Theme
+    classes from input.css (.dg-*), so it reads in both modes; no hex in here. -#}
+      <svg viewBox="0 0 360 284" class="w-full" role="img"
+        aria-label="The old engine's segments, as SQL, go to an AI toolkit that also reads a knowledge library of how the platform is set up. It triages them into a migration plan, a single planning phase, then rebuilds the rules and segments in the new engine. Later the same toolkit builds dashboards and tables. Before, every segment was rebuilt by hand, rule by rule.">
+        <defs>
+          <marker id="seg-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" class="dg-arrow"/>
+          </marker>
+          <marker id="seg-arrow-accent" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" class="dg-arrow-accent"/>
+          </marker>
+        </defs>
+
+        {# Lines first, so every box sits on top of them. #}
+        <g class="dg-line" marker-end="url(#seg-arrow)">
+          <path d="M140,99 L192,99"/>
+          <path d="M276,128 L276,156"/>
+          <path d="M276,48 L276,80" stroke-dasharray="4 3"/>
+          <path d="M196,118 H176 Q168,118 168,126 V174 Q168,182 160,182 H144" stroke-dasharray="4 3"/>
+        </g>
+        <path d="M276,204 L276,232" class="dg-line-accent" marker-end="url(#seg-arrow-accent)"/>
+        <text x="166" y="92" text-anchor="middle" class="dg-sub">SQL</text>
+
+        <g>
+          <rect x="196" y="4" width="160" height="44" rx="8" class="dg-box"/>
+          <text x="276" y="23" text-anchor="middle" class="dg-label">Knowledge library</text>
+          <text x="276" y="38" text-anchor="middle" class="dg-sub">how the platform is set up</text>
+
+          <rect x="4" y="84" width="136" height="44" rx="8" class="dg-box"/>
+          <text x="72" y="103" text-anchor="middle" class="dg-label">Old engine</text>
+          <text x="72" y="118" text-anchor="middle" class="dg-sub">segments as SQL</text>
+
+          <rect x="196" y="84" width="160" height="44" rx="8" class="dg-box-accent"/>
+          <text x="276" y="103" text-anchor="middle" class="dg-label">AI toolkit</text>
+          <text x="276" y="118" text-anchor="middle" class="dg-sub">reads, triages, rebuilds</text>
+
+          <rect x="4" y="160" width="136" height="44" rx="8" class="dg-box" stroke-dasharray="4 3"/>
+          <text x="72" y="179" text-anchor="middle" class="dg-label">Dashboards, tables</text>
+          <text x="72" y="194" text-anchor="middle" class="dg-sub">later, same toolkit</text>
+
+          <rect x="196" y="160" width="160" height="44" rx="8" class="dg-box"/>
+          <text x="276" y="179" text-anchor="middle" class="dg-label">Migration plan</text>
+          <text x="276" y="194" text-anchor="middle" class="dg-sub">a single planning phase</text>
+
+          <rect x="196" y="236" width="160" height="44" rx="8" class="dg-box"/>
+          <text x="276" y="255" text-anchor="middle" class="dg-label">New engine</text>
+          <text x="276" y="270" text-anchor="middle" class="dg-sub">rules and segments rebuilt</text>
+
+          <text x="4" y="254" class="dg-sub italic">Before: every segment</text>
+          <text x="4" y="269" class="dg-sub italic">rebuilt by hand, rule by rule.</text>
+        </g>
+      </svg>

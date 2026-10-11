@@ -766,6 +766,15 @@
   .dg-arrow {
     @apply fill-brand-muted/60;
   }
+  /* The one path a diagram is about, in the accent; at most one per drawing. */
+  .dg-line-accent {
+    @apply stroke-brand-accent;
+    stroke-width: 1.5;
+    fill: none;
+  }
+  .dg-arrow-accent {
+    @apply fill-brand-accent;
+  }
 
   /* Lanes on the architecture diagram: a soft panel per layer, so the drawing reads as four
      bands rather than fifteen boxes. gitdiagram groups by file; this groups by what a thing is

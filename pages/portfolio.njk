@@ -183,6 +183,12 @@ sitemapPriority: "0.8"
                     builds dashboards and analytics tables from a customer's raw data sources.
                 </p>
 
+                {# On a phone the drawing borrows most of the card's side padding: scaled to fit, it
+                   would otherwise draw its labels near 8px. #}
+                <div class="mb-6 -mx-6 sm:mx-0">
+                    {% include "chrome/case-segmentation.njk" %}
+                </div>
+
                 <div class="border-t border-brand-border pt-4 mt-auto">
                     <div class="flex flex-wrap gap-2">
                         <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Generative
