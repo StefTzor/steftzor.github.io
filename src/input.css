@@ -1547,3 +1547,12 @@
 .bus-popup .maplibregl-popup-tip {
   @apply hidden;
 }
+
+/* With no map (a stop without a coordinate) the bus switch and the "Live · updated" line would
+   sit there frozen, so they go with it. The note stays in the layout so nothing below moves. */
+#trBusMode:has(~ #trMap.hidden) {
+  display: none;
+}
+#trMap.hidden + #trBusNote {
+  visibility: hidden;
+}

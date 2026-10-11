@@ -246,6 +246,8 @@ function clock() {
     }
     assert.ok(/const SATELLITE = \{[\s\S]*?glyphs: "https:\/\/tiles\.openfreemap\.org\/fonts\/\{fontstack\}\/\{range\}\.pbf"[\s\S]*?\n\};/.test(read('app/scripts/map.js')),
       'the satellite style has glyphs, or the bus text throws there and the layer is dropped');
+    assert.ok(/#trBusMode:has\(~ #trMap\.hidden\)\s*\{\s*display:\s*none/.test(read('src/input.css')),
+      'the bus switch is hidden when the map is');
     ok('wired: re-added on style.load, gated on visibility and view, announced only on a mode change, shipped');
   }
 

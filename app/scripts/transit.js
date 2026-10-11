@@ -13,9 +13,11 @@ import { startLiveBuses } from "./live-buses.js";
  * why it shows clock times as well as countdowns - a countdown is the right answer at the door
  * and the wrong one when you are planning the afternoon.
  *
- * Like that card, it does NOT poll. The deployment shares 100 requests per 15 minutes and the
- * API caches each board for 45 seconds; a timer here would spend that allowance on a tab nobody
- * is looking at. It loads once, refreshes on return to a stale tab, and refreshes when asked.
+ * Like that card, the departure board does NOT poll. The deployment shares 100 requests per 15
+ * minutes and the API caches each board for 45 seconds; a timer here would spend that allowance
+ * on a tab nobody is looking at. It loads once, refreshes on return to a stale tab, and refreshes
+ * when asked. The live bus map is the exception: it polls /buses every 15 s while visible, on its
+ * own rate limit.
  *
  * The stop is the profile's stop, the same one the home card reads. Changing it here changes it
  * there, and the copy on the page says so rather than leaving it to be discovered.
