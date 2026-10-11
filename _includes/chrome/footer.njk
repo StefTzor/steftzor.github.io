@@ -30,19 +30,20 @@
     <p class="mt-2 text-brand-muted max-w-md mx-auto">Technical Customer Success Manager</p>
     <p class="mt-1 text-brand-muted max-w-md mx-auto">Enterprise SaaS onboarding & implementation | Stockholm</p>
 
-    <div class="mt-6 flex justify-center space-x-6">
+    {# Tight spacing because each 44px box already carries the gap the 24px icons used to need. #}
+    <div class="mt-6 flex justify-center space-x-1">
       <a href="https://github.com/steftzor" target="_blank" rel="noopener noreferrer"
-        class="text-brand-text hover:text-brand-accent transition-colors">
+        class="inline-flex size-11 items-center justify-center text-brand-text hover:text-brand-accent transition-colors">
         {% icon "fa-brands-github", "text-2xl" %}
         <span class="sr-only">GitHub profile (opens in a new tab)</span>
       </a>
       <a href="https://www.linkedin.com/in/stzortzoglou/" target="_blank" rel="noopener noreferrer"
-        class="text-brand-text hover:text-brand-accent transition-colors">
+        class="inline-flex size-11 items-center justify-center text-brand-text hover:text-brand-accent transition-colors">
         {% icon "fa-brands-linkedin", "text-2xl" %}
         <span class="sr-only">LinkedIn profile (opens in a new tab)</span>
       </a>
       <a href="mailto:stefanos@tzortzoglou.eu"
-        class="text-brand-text hover:text-brand-accent transition-colors">
+        class="inline-flex size-11 items-center justify-center text-brand-text hover:text-brand-accent transition-colors">
         {% icon "fa-solid-envelope", "text-2xl" %}
         <span class="sr-only">Email Stefanos Tzortzoglou</span>
       </a>

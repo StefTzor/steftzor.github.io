@@ -93,8 +93,11 @@ bodyScripts:
     </div>
   </div>
 
+  {# Skeletons, not a one-line "Loading…": each holds roughly the height of what replaces it, so
+     the panels below do not jump down when the chart lands. The render clears the host, so the
+     placeholder goes with it; the sr-only line keeps the state for a screen reader. #}
   <div id="chart" class="card mb-4">
-    <p class="text-sm text-brand-muted">Loading…</p>
+    <p class="sr-only">Loading…</p><div aria-hidden="true"><span class="skel h-5 w-40"></span><span class="skel mt-4 h-64"></span></div>
   </div>
 
   <div class="grid gap-4 lg:grid-cols-2 mb-4">
@@ -107,7 +110,7 @@ bodyScripts:
         </p>
       </div>
       <p class="an-panel-hint">The host only; the rest of a referring URL is dropped before anything is written.</p>
-      <div id="referrers"><p class="text-sm text-brand-muted">Loading…</p></div>
+      <div id="referrers"><p class="sr-only">Loading…</p><div class="space-y-3 mt-3" aria-hidden="true"><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span></div></div>
     </section>
 
     <section class="card an-panel">
@@ -118,7 +121,7 @@ bodyScripts:
           <button type="button" role="tab" class="an-tab" aria-selected="false" aria-controls="journeys" id="tab-journeys" tabindex="-1">Entry &amp; exit</button>
         </div>
       </div>
-      <div id="paths" role="tabpanel" aria-labelledby="tab-paths"><p class="text-sm text-brand-muted">Loading…</p></div>
+      <div id="paths" role="tabpanel" aria-labelledby="tab-paths"><p class="sr-only">Loading…</p><div class="space-y-3 mt-3" aria-hidden="true"><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span></div></div>
       <div id="journeys" role="tabpanel" aria-labelledby="tab-journeys" hidden><p class="text-sm text-brand-muted">Loading…</p></div>
     </section>
 
@@ -127,14 +130,14 @@ bodyScripts:
         <h2 class="an-panel-title">Countries</h2>
       </div>
       <p class="an-panel-hint">Two letters looked up from the address, which is then discarded. Since 26 September 2026.</p>
-      <div id="countries"><p class="text-sm text-brand-muted">Loading…</p></div>
+      <div id="countries"><p class="sr-only">Loading…</p><div class="space-y-3 mt-3" aria-hidden="true"><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span></div></div>
     </section>
 
     <section class="card an-panel">
       <div class="an-panel-head">
         <h2 class="an-panel-title">Devices</h2>
       </div>
-      <div id="agents"><p class="text-sm text-brand-muted">Loading…</p></div>
+      <div id="agents"><p class="sr-only">Loading…</p><div class="space-y-3 mt-3" aria-hidden="true"><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span></div></div>
     </section>
   </div>
 
@@ -143,7 +146,7 @@ bodyScripts:
       <h2 class="an-panel-title">When it is read</h2>
       <p class="text-xs text-brand-muted">Day against hour, in UTC</p>
     </div>
-    <div id="heatmap" class="an-heat mt-3"><p class="text-sm text-brand-muted">Loading…</p></div>
+    <div id="heatmap" class="an-heat mt-3"><p class="sr-only">Loading…</p><span class="skel h-48" aria-hidden="true"></span></div>
   </section>
 
   <section class="card">
@@ -151,7 +154,7 @@ bodyScripts:
       <h2 class="an-panel-title">The last twenty visits</h2>
       <p class="text-xs text-brand-muted">No visitor number: what a visit read, not who</p>
     </div>
-    <div id="recent" class="mt-3"><p class="text-sm text-brand-muted">Loading…</p></div>
+    <div id="recent" class="mt-3"><p class="sr-only">Loading…</p><div class="space-y-3" aria-hidden="true"><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span></div></div>
   </section>
 
   {# The five things about these numbers that are artefacts of how they are made rather than

@@ -625,7 +625,9 @@ function recentVisits(list) {
   });
   head.appendChild(hr);
 
-  const body = node("tbody", "divide-y divide-brand-border");
+  // Tabular on the body, not per cell: times, page counts and lengths line up down their
+  // columns, and the text columns have too few digits for it to show.
+  const body = node("tbody", "divide-y divide-brand-border tabular-nums");
   list.forEach((v) => {
     const tr = node("tr");
     [
