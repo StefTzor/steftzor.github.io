@@ -23,7 +23,21 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # The same checks the public site's deploy runs, so a failing test stops the app too.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build:app
+
   deploy:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Join the tailnet

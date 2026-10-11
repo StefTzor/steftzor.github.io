@@ -1,0 +1,23 @@
+# Runs on every pull request what the deploys run on main: the tests and both builds with their
+# checks. Nothing here deploys or needs a secret, so it is safe on PRs from branches.
+name: Checks
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npm run build:app
