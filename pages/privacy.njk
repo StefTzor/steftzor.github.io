@@ -5,8 +5,8 @@ title: "Privacy Policy | Stefanos Tzortzoglou"
 heading: "Privacy Policy"
 description: "How tzortzoglou.eu handles personal data: what is collected, why, the legal basis under GDPR, who processes it, and how to exercise your rights."
 summary: "This site is a personal portfolio. It sets no cookies and runs no advertising. Since 18 September 2026 a counted page view carries a visitor number that is the same for your browser all day, different tomorrow, and erased from the row after 30 days; section 2.2 sets out exactly what it is. Everything else stored here is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form."
-updated: "2026-09-26"
-updatedLabel: "26 September 2026"
+updated: "2026-10-11"
+updatedLabel: "11 October 2026"
 sitemapOrder: 60
 sitemapChangefreq: yearly
 sitemapPriority: "0.3"
@@ -492,6 +492,10 @@ sitemapPriority: "0.3"
   them.
 </p>
 <p>
+  Deleted records also stay in the nightly backups described in <a href="#backups">section 7</a> until those
+  backups expire, seven days at most. They are not restored from there unless the whole database has to be rebuilt, and if it is, I delete them again.
+</p>
+<p>
   If you think your data has been handled improperly, you can complain to the Swedish supervisory authority,
   <strong>Integritetsskyddsmyndigheten (IMY)</strong> — <a href="https://www.imy.se" target="_blank"
     rel="noopener noreferrer">imy.se</a> — or to the authority in your own EU/EEA country.
@@ -503,6 +507,14 @@ sitemapPriority: "0.3"
   each account to reading only its own record; account approval can only be performed by me. Passwords are hashed by
   Firebase and are never visible to me. No system is perfectly secure, but the amount of personal data held here is
   deliberately kept to the minimum needed to run the approval gate.
+</p>
+<p id="backups">
+  <strong>Backups.</strong> Every night the database on my server is copied in full: the counted page views
+  and contact form messages, plus the server's own operational records. Accounts are held by Firebase, not in this
+  database, so they are not in the copy. The copy goes to a second server I rent
+  in Oracle's Stockholm data centre, reachable only over my private network, and nowhere else. Each copy is deleted
+  automatically after seven days. It exists so the site can be restored if the main server fails, and is opened
+  only to test that restoring works or to actually restore.
 </p>
 
 <h2 id="children">8. Children</h2>
