@@ -417,6 +417,17 @@ function block(selector, contains) {
     { name: 'narrow', at: 0.68, gradient: block('.hero-scrim', 'background: linear-gradient(180deg') },
   ];
 
+  // **How much of the fall reaches the text.** It is painted over the scrim now, so its mask is
+  // what keeps it off the words: solid in the sky, this fraction where the text is. Read from the
+  // rule, and the markup has to agree that the fall really is the later layer.
+  const fallMask = block('.hero-fall', 'mask-image');
+  const under = fallMask.match(/rgb\(0 0 0 \/ (\d+)%\)/);
+  assert.ok(under, 'the fall layer needs a mask with a faint floor where the text is');
+  const fallUnder = +under[1] / 100;
+  assert.ok(fallUnder <= 0.35, `the fall reaches the text at ${under[1]}%; it is meant to be a trace there`);
+  assert.ok(PAGE.indexOf('class="hero-scrim"') < PAGE.indexOf('class="hero-fall"'),
+    'the fall must come after the scrim in the markup, or the scrim hides the rain again');
+
   let worst = { ratio: Infinity };
   LAYOUTS.forEach((layout) => {
     const stops = [...layout.gradient.matchAll(/rgb\(var\(--color-surface\)(?:\s*\/\s*(\d+)%)?\)\s+(\d+)%/g)]
@@ -462,11 +473,16 @@ function block(selector, contains) {
           }
           return over(token(ink, name), bg);
         };
-        // The card's own paint order where the TEXT is: sky, then whatever falls past it, then
-        // the scrim. The city is not in it - it is in the band, below every word on this card.
+        // The card's own paint order where the TEXT is: the sky, then the scrim, then whatever
+        // falls, faded to its mask's floor. The fall used to sit under the scrim, which hid the
+        // rain everywhere except the skyline band and a corner: on a wet day the card looked as
+        // if it only rained on the buildings. The city is not in it - it is in the band.
         let bg = tokens.filter((t) => t.layer === 'sky').reduce((acc, t) => paint(acc, t.token), surface);
-        bg = tokens.filter((t) => t.layer === 'fall').reduce((acc, t) => paint(acc, t.token), bg);
         bg = over({ ...surface, a: scrimAlpha }, bg);
+        bg = tokens.filter((t) => t.layer === 'fall').reduce((acc, t) => {
+          const c = paint({ r: 0, g: 0, b: 0, a: 0 }, t.token);
+          return over({ ...c, a: c.a * fallUnder }, acc);
+        }, bg);
 
         const onHeading = ratio({ ...text, a: 1 }, bg);
         const onDigest = ratio({ ...muted, a: 1 }, bg);
