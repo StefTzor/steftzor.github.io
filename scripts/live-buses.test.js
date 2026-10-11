@@ -217,6 +217,39 @@ function clock() {
     ok('a layer that fails to add leaves nothing half-built behind');
   }
 
+  // --- the wiring, read from source --------------------------------------------
+  // live-buses.js imports the shell and touches the page, so it is not run here; what can go
+  // wrong in it without an error is the wiring, and that is asserted from the text, as
+  // basemap.test.js does for the satellite toggle.
+  {
+    const read = (p) => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
+    const LIVE = read('app/scripts/live-buses.js');
+    const TRANSIT = read('app/scripts/transit.js');
+    const PAGE = read('app/pages/transit.njk');
+    assert.ok(LIVE.includes('map.on("style.load", () => ensureBusLayers(map, ink, latest))'),
+      'the bus layers are re-added on every style.load, with the buses that were showing');
+    assert.ok(LIVE.includes('visibilitychange') && LIVE.includes('IntersectionObserver'),
+      'the poll gate is fed by tab visibility and by the map being on screen');
+    assert.ok(LIVE.includes('stillness()') && /^export const stillness/m.test(read('app/scripts/map.js')),
+      'motion asks map.js about reduced motion, like every camera move');
+    const route = TRANSIT.indexOf('map.on("style.load", drawRoute);');
+    assert.ok(route > 0 && route < TRANSIT.indexOf('startLiveBuses({'),
+      'buses start after the route, so their layers are re-added above it');
+    for (const id of ['trBusMode', 'trBusMine', 'trBusAll', 'trBusNote', 'trBusSay']) {
+      assert.ok(PAGE.includes(`id="${id}"`), `#${id} is on the page`);
+    }
+    assert.ok(/id="trBusSay"[^>]*aria-live="polite"/.test(PAGE), 'a mode change is announced');
+    assert.ok(!/id="trBusNote"[^>]*aria-live/.test(PAGE), 'the line rewritten every 15 s is not a live region');
+    const ELEVENTY = read('eleventy.app.js');
+    for (const f of ['live-buses.js', 'live-buses-core.js']) {
+      assert.ok(ELEVENTY.includes(`"app/scripts/${f}": "scripts/${f}"`), `${f} is copied into the build`);
+    }
+    assert.ok(/const SATELLITE = \{[\s\S]*?glyphs: "https:\/\/tiles\.openfreemap\.org\/fonts\/\{fontstack\}\/\{range\}\.pbf"[\s\S]*?\n\};/.test(read('app/scripts/map.js')),
+      'the satellite style has glyphs, or the bus text throws there and the layer is dropped');
+    ok('wired: re-added on style.load, gated on visibility and view, announced only on a mode change, shipped');
+  }
+
+
   console.log(`\n${passed} passed`);
 })().catch((err) => {
   console.error(err);

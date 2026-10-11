@@ -3,6 +3,7 @@ import { liveSearch } from "./stop-search.js";
 import { inWords, shortStop, towardsOf } from "./stop-format.js";
 import { remember } from "./rows.js";
 import { createMap, goTo, homeTo } from "./map.js";
+import { startLiveBuses } from "./live-buses.js";
 
 /**
  * The full board for one stop: departures, arrivals, what lines turn up, and what else is
@@ -25,6 +26,8 @@ const STALE_AFTER_MS = 2 * 60 * 1000;
 
 let arrivals = false;
 let fetchedAt = 0;
+// The line names on the board now: what "Your lines" on the map asks /buses about.
+let boardLines = [];
 
 function say(text, tone) {
   const box = el("status");
@@ -240,6 +243,7 @@ let want = null;     // the newest board, which gets the last word if the stop c
 let blocked = false; // the library refused once, so it is missing or blocked rather than slow
 let picked = null;   // the chosen departure itself, so a rebuilt board cannot match it by index
 let route = [];      // its stops as [lon, lat] in call order, already down to the placeable ones
+let live = null;     // the live-bus layer (live-buses.js), once the map exists
 
 // The board is what this page is for and it is already on screen, so a map that will not load is
 // a sentence rather than a hole where a map was going to be.
@@ -664,6 +668,18 @@ async function showMap(data) {
     // Anyone who chose a departure while the library was still arriving is drawn by this too.
     map.on("style.load", drawRoute);
     drawRoute();
+    // Live buses, registered after the route so their layers are re-added above it on every
+    // style.load. In a try of its own: the buses failing must not take the map down with them,
+    // any more than the map failing takes down the board.
+    try {
+      live = startLiveBuses({
+        map, box, ink,
+        stop: () => (want && Number.isFinite(want.lon) && Number.isFinite(want.lat) ? [want.lon, want.lat] : null),
+        lines: () => boardLines,
+      });
+    } catch (err) {
+      console.error("transit: live buses could not start", err);
+    }
     // Anyone who asked for nearby stops before the board came back has them waiting here; with
     // nothing waiting this is just the caption.
     await drawNearby(nearby);
@@ -719,11 +735,14 @@ async function load(button) {
   try {
     const data = await api("/departures" + (arrivals ? "?arrivals=1" : ""));
     fetchedAt = Date.now();
+    boardLines = (data.departures || []).map((d) => d.line);
     say("");
     renderBoard(data);
     // Not awaited. The map is an addition to this page, and Refresh must come back the moment
     // the board does rather than when a 300 KB library has finished arriving.
     showMap(data);
+    // A new board can mean new lines, so "Your lines" asks again rather than waiting 15 s.
+    if (live) live.refresh();
   } catch (err) {
     console.error("transit:", err.status, err.code);
     // Both lists are filled by renderBoard() and by nothing else, so a first load that never

@@ -1537,3 +1537,13 @@
       box-shadow: 0 20px 25px -5px rgb(var(--color-accent) / 0.4);
   }
 }
+
+/* The live-bus popup on /transit/. MapLibre's own box is white in both themes; this puts it on
+   the card surface with the page's text colour, and drops the tip, which would need re-inking
+   for each of its four anchors. */
+.bus-popup .maplibregl-popup-content {
+  @apply rounded-lg bg-brand-surface px-3 py-2 text-sm text-brand-text shadow-lg;
+}
+.bus-popup .maplibregl-popup-tip {
+  @apply hidden;
+}

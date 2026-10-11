@@ -168,7 +168,8 @@ bodyScripts:
        in full once a row has been pressed. #}
     <p class="text-sm text-brand-muted mb-4">
       Press any row on the board above and its route appears here. The dots are the stops, and
-      the dashes are the order they are called at, not the roads the bus drives.
+      the dashes are the order they are called at, not the roads the bus drives. Numbered dots are
+      buses, where they are now; tap one to see where it is going.
     </p>
 
     {# Hidden until there is a coordinate to centre it on and a library to draw it with; the note
@@ -179,7 +180,20 @@ bodyScripts:
        Taller than it was, because it now has a route across it rather than one dot in the middle:
        at the old height a sequence of six stops fitted into a band a couple of centimetres deep
        and the basemap under it was too cramped to say which part of town any of them was in. #}
+    {# Live buses: which ones. Hidden until there is a map for it to act on (live-buses.js shows it
+       when the map is built, the same moment the map itself appears), and hidden again for good if
+       the API answers 503 not_configured. aria-pressed for the same reason as the board switch at
+       the top: buttons that change what is below them. #}
+    <div id="trBusMode" class="hidden mb-3 inline-flex rounded-lg bg-brand-bg p-1" role="group" aria-label="Which buses">
+      <button type="button" id="trBusMine" class="seg" aria-pressed="true">Your lines</button>
+      <button type="button" id="trBusAll" class="seg" aria-pressed="false">All of Uppsala</button>
+    </div>
     <div id="trMap" class="card hidden h-80 overflow-hidden p-0 sm:h-[28rem]"></div>
+    {# Two lines for the buses, for the same reason as the two notes below. The first is rewritten
+       every 15 s and is deliberately NOT a live region; min-h-5 keeps its height when it is empty,
+       so nothing under it moves. The second is announced, and is written only on a mode change. #}
+    <p id="trBusNote" class="hint min-h-5 tabular-nums"></p>
+    <p id="trBusSay" class="sr-only" role="status" aria-live="polite"></p>
     {# Two notes, because they are announced differently and that is the only reason.
 
        The first is not a live region, unlike the notes above it: it is rewritten on every board

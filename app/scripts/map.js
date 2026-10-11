@@ -103,11 +103,15 @@ const SATELLITE = {
         + `by EOX IT Services GmbH (Contains modified Copernicus Sentinel data ${SATELLITE_YEAR})`,
     },
   },
+  // The bus layers on /transit/ draw text; without glyphs they throw here and the layer is dropped.
+  // Same host the light style loads its glyphs from, so connect-src needs nothing new.
+  glyphs: "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
   layers: [{ id: "s2cloudless", type: "raster", source: "s2cloudless" }],
 };
 
 const isDark = () => document.documentElement.classList.contains("dark");
-const stillness = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Exported for live-buses.js, so the buses on /transit/ ask the same question the camera does.
+export const stillness = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // The stylesheet is injected once per document rather than declared in each page's front matter,
 // so a page pays for it only if it draws a map. Local, so style-src-elem 'self' covers it; a
