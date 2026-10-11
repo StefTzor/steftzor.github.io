@@ -112,6 +112,8 @@ module.exports = function (eleventyConfig) {
     "app/scripts/admin-data.js": "scripts/admin-data.js",
     "app/scripts/admin-erasure.js": "scripts/admin-erasure.js",
     "app/scripts/map.js": "scripts/map.js",
+    "app/scripts/live-buses.js": "scripts/live-buses.js",
+    "app/scripts/live-buses-core.js": "scripts/live-buses-core.js",
     "app/scripts/docs.js": "scripts/docs.js",
     "app/scripts/admin-messages.js": "scripts/admin-messages.js",
     "app/scripts/admin-invites.js": "scripts/admin-invites.js",
