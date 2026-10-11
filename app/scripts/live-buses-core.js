@@ -175,3 +175,64 @@ export function createPoller({ run, every = POLL_MS, timers }) {
     get open() { return open(); },
   };
 }
+
+export const SOURCE = "buses";
+export const LAYERS = ["bus-clusters", "bus-cluster-count", "bus-dots", "bus-lines"];
+
+/**
+ * The bus source and its four layers, added to the map's current style or refreshed in it.
+ *
+ * Called on every `style.load`, because map.js re-inks the basemap with setStyle and a style
+ * carries its own sources and layers: a theme change throws the buses away with everything else.
+ * Clusters below zoom 14; a bus is an accent dot with its line number on it.
+ *
+ * @param {object} map - a MapLibre map
+ * @param {(token: string) => string} ink - a brand token as a colour MapLibre parses
+ * @param {object} data - the FeatureCollection to show
+ */
+export function ensureBusLayers(map, ink, data) {
+  const source = map.getSource(SOURCE);
+  if (source) { source.setData(data); return; }
+  try {
+    map.addSource(SOURCE, { type: "geojson", data, cluster: true, clusterMaxZoom: 13, clusterRadius: 40 });
+    map.addLayer({
+      id: LAYERS[0], type: "circle", source: SOURCE, filter: ["has", "point_count"],
+      paint: {
+        "circle-color": ink("accent"),
+        "circle-radius": ["step", ["get", "point_count"], 14, 10, 18, 50, 22],
+        "circle-stroke-width": 2,
+        "circle-stroke-color": ink("bg"),
+      },
+    });
+    map.addLayer({
+      id: LAYERS[1], type: "symbol", source: SOURCE, filter: ["has", "point_count"],
+      layout: { "text-field": ["get", "point_count_abbreviated"], "text-font": ["Noto Sans Bold"], "text-size": 12 },
+      paint: { "text-color": ink("bg") },
+    });
+    map.addLayer({
+      id: LAYERS[2], type: "circle", source: SOURCE, filter: ["!", ["has", "point_count"]],
+      paint: {
+        "circle-color": ink("accent"),
+        "circle-radius": 10,
+        "circle-opacity": ["get", "opacity"],
+        "circle-stroke-width": 2,
+        "circle-stroke-color": ink("bg"),
+        "circle-stroke-opacity": ["get", "opacity"],
+      },
+    });
+    map.addLayer({
+      id: LAYERS[3], type: "symbol", source: SOURCE, filter: ["!", ["has", "point_count"]],
+      layout: {
+        "text-field": ["get", "line"], "text-font": ["Noto Sans Bold"], "text-size": 11,
+        "text-allow-overlap": true, "text-ignore-placement": true,
+      },
+      paint: { "text-color": ink("bg"), "text-opacity": ["get", "opacity"] },
+    });
+  } catch (err) {
+    // Layers before the source: MapLibre will not remove a source a layer still uses. Half-built
+    // would otherwise stay half-built, because the getSource check above keeps finding it.
+    console.error("transit: the buses could not be drawn", err);
+    for (const id of [...LAYERS].reverse()) if (map.getLayer(id)) map.removeLayer(id);
+    if (map.getSource(SOURCE)) map.removeSource(SOURCE);
+  }
+}

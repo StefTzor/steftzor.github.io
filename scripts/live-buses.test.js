@@ -18,7 +18,7 @@ const vm = require('vm');
 const SRC = fs.readFileSync(path.join(__dirname, '..', 'app/scripts/live-buses-core.js'), 'utf8')
   .replace(/^export /gm, '');
 const NAMES = ['clampBox', 'busesQuery', 'frameAt', 'onScreen', 'ago', 'describe', 'statusLine',
-  'debounce', 'createPoller', 'MAX_SPAN', 'NEAR', 'POLL_MS'];
+  'debounce', 'createPoller', 'ensureBusLayers', 'MAX_SPAN', 'NEAR', 'POLL_MS', 'SOURCE', 'LAYERS'];
 const ctx = { console };
 vm.runInNewContext(`${SRC}\n${NAMES.map((n) => `this.${n} = ${n};`).join('\n')}`, ctx);
 const core = ctx;
@@ -171,6 +171,50 @@ function clock() {
     await c.advance(0);
     assert.strictEqual(runs, 2, 'requests asked for during a fetch collapse into one more');
     ok('rapid moveends are debounced and never stack requests');
+  }
+
+  // --- the layer survives a style switch ------------------------------------------
+  {
+    function fakeMap() {
+      const sources = new Map();
+      const layers = [];
+      return {
+        sources, layers,
+        getSource: (id) => sources.get(id),
+        addSource: (id, spec) => sources.set(id, { spec, data: spec.data, setData(d) { this.data = d; } }),
+        addLayer: (l) => { layers.push(l.id); },
+        getLayer: (id) => layers.includes(id),
+        removeLayer: (id) => layers.splice(layers.indexOf(id), 1),
+        removeSource: (id) => sources.delete(id),
+        setStyle() { sources.clear(); layers.length = 0; },
+      };
+    }
+    const ink = (t) => `rgb(${t})`;
+    const map = fakeMap();
+    const one = { type: 'FeatureCollection', features: [] };
+    core.ensureBusLayers(map, ink, one);
+    assert.deepStrictEqual([...map.layers], [...core.LAYERS]);
+    assert.strictEqual(map.sources.get(core.SOURCE).spec.cluster, true);
+    assert.strictEqual(map.sources.get(core.SOURCE).spec.clusterMaxZoom, 13);
+    const two = { type: 'FeatureCollection', features: [{}] };
+    core.ensureBusLayers(map, ink, two);
+    assert.strictEqual(map.layers.length, 4, 'a second call updates the data and adds nothing');
+    assert.strictEqual(map.sources.get(core.SOURCE).data, two);
+    map.setStyle();
+    core.ensureBusLayers(map, ink, two);
+    assert.deepStrictEqual([...map.layers], [...core.LAYERS], 'after a style switch the layers are back');
+    assert.strictEqual(map.sources.get(core.SOURCE).data, two, 'with the buses that were showing');
+    ok('the clustered bus source and its layers are rebuilt after a style switch');
+
+    const broken = fakeMap();
+    let n = 0;
+    broken.addLayer = (l) => { n += 1; if (n === 3) throw new Error('bad paint'); broken.layers.push(l.id); };
+    ctx.console = { ...console, error() {} };   // the failure is logged; this run expects it
+    core.ensureBusLayers(broken, ink, one);
+    ctx.console = console;
+    assert.strictEqual(broken.layers.length, 0, 'half-built layers are removed');
+    assert.strictEqual(broken.sources.size, 0, 'and the source, so the next style.load can try again');
+    ok('a layer that fails to add leaves nothing half-built behind');
   }
 
   console.log(`\n${passed} passed`);
