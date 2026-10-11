@@ -511,8 +511,9 @@ sitemapPriority: "0.3"
 <p id="backups">
   <strong>Backups.</strong> Every night the database on my server is copied in full: the counted page views
   and contact form messages, plus the server's own operational records. Accounts are held by Firebase, not in this
-  database, so they are not in the copy. The copy goes to a second server I rent
-  in Oracle's Stockholm data centre, reachable only over my private network, and nowhere else. Each copy is deleted
+  database, so they are not in the copy. The copy goes to a private storage
+  bucket in my own Oracle account, in Oracle's Stockholm data centre, and nowhere else; the only key that can
+  write to it is limited to that one bucket. Each copy is deleted
   automatically after seven days. It exists so the site can be restored if the main server fails, and is opened
   only to test that restoring works or to actually restore.
 </p>
