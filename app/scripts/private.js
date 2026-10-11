@@ -94,7 +94,7 @@ async function render(user) {
       const b = document.createElement('button');
       b.type = 'button';
       b.dataset.accept = '';
-      b.className = 'w-full py-3 rounded-lg text-white font-bold transition-colors text-lg shadow-md transform hover:scale-105 ' +
+      b.className = 'w-full py-3 rounded-lg text-white font-bold transition-colors text-lg shadow-md ' +
         (i === 0 ? 'bg-pink-600 hover:bg-pink-700' : 'bg-rose-500 hover:bg-rose-600');
       b.textContent = label;
       answers.appendChild(b);

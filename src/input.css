@@ -121,6 +121,11 @@
   h1 { letter-spacing: -0.02em; }
   h2 { letter-spacing: -0.01em; }
 
+  /* Headings balance their lines so a two-line title does not end on one orphaned word; body
+     text only avoids the orphan, since balancing a paragraph would narrow every line of it. */
+  h1, h2, h3, h4 { text-wrap: balance; }
+  p, li, dd, figcaption { text-wrap: pretty; }
+
   body {
     @apply bg-brand-bg text-brand-text;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -833,6 +838,11 @@
            focus-visible:ring-brand-accent;
   }
 
+  /* 32px still reads as a word, but a thumb wants 40. An invisible ::after grows the target 4px
+     above and below without moving the text; nothing is stacked tighter than that around them. */
+  .link-action, .seg { position: relative; }
+  .link-action::after, .seg::after { content: ''; position: absolute; inset: -4px 0; }
+
   /* A row of the full board on /transit/. Grid, so the clock times line up down the page and
      the destination is the only column that flexes. */
   .board-row {
@@ -1114,6 +1124,10 @@
            focus-visible:ring-brand-accent;
   }
   .an-tab[aria-selected="true"] { @apply bg-brand-surface text-brand-text shadow-sm; }
+  /* The tab is 24px to sit inside its 28px track; the hit area is 40, spilling past the track
+     above and below, which is empty space on every page the tabs appear. */
+  .an-tab { position: relative; }
+  .an-tab::after { content: ''; position: absolute; inset: -8px 0; }
 
   /* The chart: an SVG stretched to the plot, with HTML for everything that has text in it. */
   .an-plot { @apply relative mt-4 h-64 select-none; margin-left: 2.5rem; }

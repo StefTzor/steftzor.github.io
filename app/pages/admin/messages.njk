@@ -55,7 +55,8 @@ bodyScripts:
   {# One row per message, each a native disclosure. The list holds one page and is replaced
      rather than appended to, so the page does not grow as the inbox does. #}
   <div id="messages">
-    <p class="text-sm text-brand-muted">Loading messages…</p>
+    <p class="sr-only">Loading messages…</p>
+    <div class="space-y-3" aria-hidden="true"><span class="skel h-10"></span><span class="skel h-10"></span><span class="skel h-10"></span><span class="skel h-10"></span><span class="skel h-10"></span></div>
   </div>
 
   <nav aria-label="Pages" class="mt-6 flex items-center justify-between gap-4">
