@@ -638,6 +638,28 @@
     animation: hero-clouds 26s linear infinite;
   }
 
+  /* **The fall is the top layer, over the scrim, and its mask keeps it off the words.** It used
+     to sit under the scrim, which hid it everywhere except the skyline band and the far corner: on
+     a wet day it only rained on the buildings, with a hard diagonal where the wide scrim let go.
+     Now it falls across the whole card and fades to a trace where the text is, using the same
+     geometry as the scrim - the band from the bottom, and on wide cards the text measure from the
+     left. Two mask layers add, so the band shows the fall in full under either. */
+  .hero-fall {
+    --wx-fall-mask: linear-gradient(180deg,
+      rgb(0 0 0 / 10%) calc(100% - var(--wx-band) - 0.5rem),
+      #000 calc(100% - var(--wx-band) + 0.5rem));
+    -webkit-mask-image: var(--wx-fall-mask);
+    mask-image: var(--wx-fall-mask);
+  }
+  @media (min-width: 1280px) {
+    .hero-fall {
+      --wx-fall-mask:
+        linear-gradient(100deg, rgb(0 0 0 / 10%) calc(2rem + 65ch), #000 calc(2rem + 65ch + 12rem)),
+        linear-gradient(180deg, transparent calc(100% - var(--wx-band) - 0.5rem),
+          #000 calc(100% - var(--wx-band) + 0.5rem));
+    }
+  }
+
   /* Rain and snow fall in FRONT of the buildings, which is the whole reason they are their own
      layer. repeating-linear-gradient rather than elements, so this is one painted layer however
      hard it is raining.
@@ -647,35 +669,41 @@
      separate drops and starts reading a screen printed over the card. Every fourteen pixels
      reads as rain. */
   .hero[data-wx="rain"] .hero-fall {
-    background:
-      repeating-linear-gradient(74deg, var(--wx-rain-streak) 0 1.5px, transparent 1.5px 14px),
-      linear-gradient(180deg, var(--wx-rain-wash), transparent 70%);
-    background-size: 100% 64px, 100% 100%;
+    background: repeating-linear-gradient(74deg, var(--wx-rain-streak) 0 1.5px, transparent 1.5px 14px);
+    background-size: 100% 64px;
     animation: hero-rain 0.8s linear infinite;
   }
 
   /* Drizzle is not weak rain, it is finer and slower, and sharing a rule with rain said the
      opposite. Thinner lines, twice the gap, half the speed. */
   .hero[data-wx="drizzle"] .hero-fall {
-    background:
-      repeating-linear-gradient(74deg, var(--wx-rain-streak) 0 1px, transparent 1px 22px),
-      linear-gradient(180deg, var(--wx-rain-wash), transparent 78%);
-    background-size: 100% 64px, 100% 100%;
+    background: repeating-linear-gradient(74deg, var(--wx-rain-streak) 0 1px, transparent 1px 22px);
+    background-size: 100% 64px;
     animation: hero-rain 1.5s linear infinite;
   }
 
   .hero[data-wx="thunder"] .hero-fall {
-    background:
-      repeating-linear-gradient(74deg, var(--wx-storm-streak) 0 2px, transparent 2px 12px),
-      linear-gradient(180deg, var(--wx-storm-wash), transparent 70%);
-    background-size: 100% 64px, 100% 100%;
+    background: repeating-linear-gradient(74deg, var(--wx-storm-streak) 0 2px, transparent 2px 12px);
+    background-size: 100% 64px;
     animation: hero-rain 0.55s linear infinite;
+  }
+
+  /* The washes are weather in the SKY, so they sit under the scrim with the rest of it; only the
+     streaks fall in front. Same shapes as when they shared the fall layer. */
+  .hero[data-wx="rain"] .hero-sky {
+    background: linear-gradient(180deg, var(--wx-rain-wash), transparent 70%);
+  }
+  .hero[data-wx="drizzle"] .hero-sky {
+    background: linear-gradient(180deg, var(--wx-rain-wash), transparent 78%);
+  }
+  .hero[data-wx="thunder"] .hero-sky {
+    background: linear-gradient(180deg, var(--wx-storm-wash), transparent 70%);
   }
 
   /* The flash sits on a pseudo-element so it can pulse opacity while the rain underneath it goes
      on falling. Two blips in seven seconds: WCAG 2.3.1 draws its line at three per SECOND, and
      this is an order of magnitude under it, deliberately. */
-  .hero[data-wx="thunder"] .hero-fall::after {
+  .hero[data-wx="thunder"] .hero-sky::after {
     content: "";
     @apply absolute inset-0;
     background: linear-gradient(180deg, var(--wx-flash), transparent 55%);
@@ -730,8 +758,8 @@
      is nothing here to silence for it. */
   @media (prefers-reduced-motion: reduce) {
     .hero-sky,
-    .hero-fall,
-    .hero-fall::after {
+    .hero-sky::after,
+    .hero-fall {
       animation: none !important;
     }
   }
@@ -1006,6 +1034,20 @@
 
   .tile-label {
     @apply text-sm text-brand-muted;
+  }
+
+  /* **A tile alone is a row, not a box.** A User sees only "Your profile" - the two admin tiles
+     stay hidden - and as a lone grid cell it kept the empty count line meant to even out a row,
+     so the card was mostly a hole. With fewer than two visible tiles it becomes one line, icon and
+     label side by side, and the placeholder goes. */
+  .tiles:not(:has(> li:not(.hidden) ~ li:not(.hidden))) .tile {
+    @apply flex-row items-center gap-3 py-3;
+  }
+  .tiles:not(:has(> li:not(.hidden) ~ li:not(.hidden))) .tile-count--none {
+    display: none;
+  }
+  .tiles:not(:has(> li:not(.hidden) ~ li:not(.hidden))) .tile-label {
+    @apply text-base text-brand-text;
   }
 
   /* Twelve weeks of days. The full year, with its month and weekday axes, lives on the public

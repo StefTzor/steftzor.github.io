@@ -46,8 +46,8 @@ signOut: true
       {% include "chrome/city-skylines.njk" %}
     </div>
 
-    <div class="hero-fall" aria-hidden="true"></div>
     <div class="hero-scrim" aria-hidden="true"></div>
+    <div class="hero-fall" aria-hidden="true"></div>
 
     <div class="hero-body">
       <div class="min-w-0 flex-1">
@@ -106,7 +106,7 @@ signOut: true
      The two admin tiles carry data-min-role and are hidden until shell.js confirms the role,
      exactly like the rail - so the grid never offers a tile that answers 403. #}
   <h2 class="sr-only">Shortcuts</h2>
-  <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <ul class="tiles mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
     <li class="hidden" data-min-role="Admin">
       <a href="/admin/accounts/" class="tile">
         {% icon "fa-solid-users", "tile-icon" %}
