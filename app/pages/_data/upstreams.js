@@ -1,18 +1,19 @@
 /**
- * The five services this system reads from, and how each one's answer becomes ours.
+ * The services this system reads from, and how each one's answer becomes ours.
  *
  * Written out because "we call an API" is not a description of anything. What is worth knowing
  * is which endpoint, how often it is allowed to be called, and which of their field names became
  * which of ours - the mapping is where the work is, and it is the part that breaks when an
  * upstream changes shape.
  *
- * Four of them are proxied by the API, which is what keeps them off the browser's network tab
- * entirely. The fifth, the basemap, is not, and that difference is the most interesting fact in
- * this file - so it is stated in the entry rather than left for a reader to notice.
+ * Most are proxied by the API, which is what keeps them off the browser's network tab entirely.
+ * The basemap is the exception: the browser fetches it directly, and that difference is the most
+ * interesting fact in this file - so it is stated in the entry rather than left for a reader to
+ * notice.
  *
  * `derived` marks a field nobody sent us. Those are the interesting ones: they are decisions,
  * not transport. An entry with no mapping at all carries `mappingNote` instead, because an empty
- * table dressed up to look like the other four would be padding.
+ * table dressed up to look like the rest would be padding.
  */
 module.exports = [
   {
@@ -66,6 +67,30 @@ module.exports = [
       "This one needs a credential, which is what keeps it on the server. That the key travels as a query parameter rather than a header makes it worse than usual: it would sit in the URL of every request a tab made, and a URL is the part everything keeps: the vendor\u2019s own access logs, the browser\u2019s history, any screenshot of a network tab. A header is not logged by default; a query string is.",
       "Times arrive as Swedish wall-clock with no offset. The container runs in UTC, so parsing them directly put every departure two hours out. They are resolved against Europe/Stockholm instead, which is tested across both daylight-saving changeovers.",
       "The board's `direction` is documented as the last stop of the trip, so it is a stop name rather than the headsign on the front of the bus. UL's own app shows something different because that is UL's headsign, which this feed does not carry.",
+    ],
+  },
+  {
+    name: "Trafiklab GTFS Regional (UL)",
+    what: "Where UL's buses are right now, and which line each one is running.",
+    key: true,
+    cache: "15 seconds for positions, a week for the timetable",
+    why: "A position is only worth having fresh, and the realtime key allows about 30,000 calls a month, so the server asks at most every 15 seconds, only while somebody has the map open, and stops at 950 a day. The timetable changes with the season and its key allows 50 downloads a month, so it is fetched weekly and kept in the database.",
+    calls: [
+      { path: "/gtfs-rt/ul/VehiclePositions.pb", note: "every UL vehicle's position, as protobuf" },
+      { path: "/gtfs/ul/ul.zip", note: "the timetable; only routes.txt and trips.txt are read" },
+    ],
+    mapping: [
+      ["vehicle.vehicle.id", "id"],
+      ["vehicle.position.latitude, longitude", "lat, lon"],
+      ["vehicle.position.bearing", "bearing"],
+      ["vehicle.timestamp (seconds)", "at"],
+      ["trip.tripId, through trips.txt to routes.txt route_short_name", "line", true],
+      ["trips.txt trip_headsign", "headsign"],
+    ],
+    notes: [
+      "Two keys, both kept on the server. Like ResRobot's they travel as a query parameter, so no URL that carries one is ever logged.",
+      "A vehicle with no position, at 0,0, or not heard from for five minutes is left out: a parked bus is not a live one.",
+      "The box and the lines your map asks about answer that one request and are not logged or stored.",
     ],
   },
   {
