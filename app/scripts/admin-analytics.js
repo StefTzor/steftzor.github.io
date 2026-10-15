@@ -48,15 +48,31 @@ const DOW = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "
 const DOW_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const DIMENSIONS = [
-  ["byBrowser", "Browser"],
-  ["byOs", "Operating system"],
-  ["byDevice", "Device"],
-  ["byScreen", "Window width"],
+  ["byBrowser", "Browser", "browser"],
+  ["byOs", "Operating system", "os"],
+  ["byDevice", "Device", "device"],
+  ["byScreen", "Window width", "screen"],
 ];
 
 /** What the chart draws, chosen by the Visitors and Views figures in the headline strip. */
 let metric = "visitors";
 let lastData = null;
+
+/**
+ * The drill-down: values clicked in the lists, sent to the API so every panel is counted over the
+ * same narrowed set. Filtered there and not here, for the reason the property is - a rate
+ * recomputed in the browser from filtered lists would be wrong.
+ */
+const filters = {};
+const FILTER_NAME = new Map([["browser", "Browser"], ["os", "OS"], ["device", "Device"],
+  ["screen", "Width"], ["country", "Country"], ["path", "Page"], ["referrer", "Source"]]);
+
+function narrow({ property, ...picked }) {
+  Object.assign(filters, picked);
+  // "/" on the site and "/" in the app are different pages, so a page carries its property.
+  if (property) el("property").value = property;
+  load();
+}
 
 /** A flag from two letters: each letter's regional-indicator symbol. Nothing for "unknown". */
 const flag = (code) => (/^[A-Z]{2}$/.test(code)
@@ -168,12 +184,20 @@ function srTable(caption, rows, headers) {
 function barList(rows, unit) {
   const ul = node("ul", "mt-3 space-y-1");
   const max = Math.max(...rows.map((r) => r[1]), 1);
-  rows.forEach(([name, value, tag]) => {
+  rows.forEach(([name, value, tag, filter]) => {
     const li = node("li", "relative overflow-hidden rounded");
     const fill = node("div", "absolute inset-y-0 left-0 bg-brand-accent/15");
     fill.style.width = `${Math.max(2, (value / max) * 100)}%`;
     fill.setAttribute("aria-hidden", "true");
-    const line = node("div", "relative flex items-baseline justify-between gap-4 px-2 py-1.5");
+    // A row with a filter is a button that narrows the whole page to it.
+    const line = node(filter ? "button" : "div",
+      "relative flex w-full items-baseline justify-between gap-4 px-2 py-1.5 text-left"
+      + (filter ? " rounded hover:bg-brand-accent/10 focus-visible:bg-brand-accent/10" : ""));
+    if (filter) {
+      line.setAttribute("type", "button");
+      line.title = `Show only ${name}`;
+      line.addEventListener("click", () => narrow(filter));
+    }
     const left = node("span", "min-w-0 flex-1 truncate text-sm text-brand-text", name);
     if (tag) left.appendChild(node("span", "ml-2 text-[11px] text-brand-muted", tag));
     line.append(left,
@@ -489,7 +513,7 @@ function heatmap(hours) {
  * the comparison. One colour for every bar, because these categories have no order and nothing
  * about Firefox is a darker green than Safari.
  */
-function dimension(list, title) {
+function dimension(list, title, key) {
   const card = node("div", "");
   card.appendChild(node("h3", "sr-only", title));
 
@@ -503,7 +527,7 @@ function dimension(list, title) {
   const top1 = list[0];
   card.append(
     node("p", "hint mt-1", `${named(top1)} leads, ${pct(top1.views / total)} of ${count(total)} views.`),
-    barList(list.map((r) => [named(r), r.views])),
+    barList(list.map((r) => [named(r), r.views, "", { [key]: r.value }])),
     srTable(title, list.map((r) => [named(r), `${count(r.views)} views`,
       pct(r.views / total)]), [title, "Views", "Share"]),
   );
@@ -556,9 +580,9 @@ function tabs(label, items) {
 
 /** The four device dimensions, one tab each. */
 function agents(data) {
-  const { bar, panels } = tabs("Devices", DIMENSIONS.map(([key, title]) =>
+  const { bar, panels } = tabs("Devices", DIMENSIONS.map(([key, title, filter]) =>
     [title === "Operating system" ? "OS" : title === "Window width" ? "Width" : title,
-      dimension(data[key] || [], title)]));
+      dimension(data[key] || [], title, filter)]));
   const wrap = node("div", "");
   const head = node("div", "mt-2");
   head.appendChild(bar);
@@ -575,7 +599,8 @@ function countries(list) {
     return;
   }
   const rows = list.map((r) => [
-    r.value === "unknown" ? "Unknown" : `${flag(r.value)} ${countryName(r.value)}`, r.views]);
+    r.value === "unknown" ? "Unknown" : `${flag(r.value)} ${countryName(r.value)}`, r.views, "",
+    { country: r.value }]);
   only(host, barList(rows), srTable("Countries", list.map((r) => [countryName(r.value),
     `${count(r.views)} views`, pct(r.views / total)]), ["Country", "Views", "Share"]));
 }
@@ -590,7 +615,8 @@ function journeys(entryPages, exitPages) {
       col.appendChild(node("p", "mt-2 text-sm text-brand-muted", "Nothing counted in this window yet."));
     } else {
       col.append(
-        capped(list.map((r) => [r.path, r.visits]), "visits"),
+        capped(list.map((r) => [r.path, r.visits, "", { path: r.path, property: r.property }]),
+          "visits"),
         srTable(title, list.map((r) => [r.path, `${count(r.visits)} visits`,
           label(PROPERTY, r.property)]), ["Page", "Visits", "Site"]),
       );
@@ -661,7 +687,8 @@ function paths(topPaths, byProperty) {
   }
   const both = new Set(topPaths.map((p) => p.property)).size > 1;
   const rows = [...topPaths].sort((a, b) => b.views - a.views)
-    .map((r) => [r.path, r.views, both ? label(PROPERTY_HOST, r.property) : ""]);
+    .map((r) => [r.path, r.views, both ? label(PROPERTY_HOST, r.property) : "",
+      { path: r.path, property: r.property }]);
   const split = byProperty.map((p) => `${label(PROPERTY, p.property)} ${count(p.views)}`).join(" · ");
   only(host,
     node("p", "an-panel-hint", split ? `Views by site: ${split}.` : ""),
@@ -680,7 +707,8 @@ function referrers(list) {
   // A null host is a real and common answer - somebody typed the address, or the browser was
   // told not to send a referrer. Calling it "direct" and leaving it at that would claim more
   // than is known, so the row says both.
-  const rows = list.map((r) => [r.host || "Direct, or no referrer sent", r.views]);
+  const rows = list.map((r) => [r.host || "Direct, or no referrer sent", r.views, "",
+    r.host ? { referrer: r.host } : undefined]);
   card.append(barList(rows), srTable("Where readers came from",
     rows.map(([name, views]) => [name, `${count(views)} views`]), ["Referrer", "Views"]));
   only(host, card);
@@ -814,6 +842,34 @@ function unavailable(message) {
   PANELS.forEach((id) => nothing(el(id), message));
 }
 
+/** The active filters, each with a button that drops it. Hidden when there are none. */
+function chips() {
+  const host = el("filters");
+  const keys = Object.keys(filters);
+  host.hidden = !keys.length;
+  if (!keys.length) return;
+  const shown = (k, v) => (k === "country" ? countryName(v) : k === "screen" ? label(SCREEN, v) : v);
+  const drop = (keep) => () => {
+    keys.forEach((k) => { if (!keep.includes(k)) delete filters[k]; });
+    load();
+  };
+  host.replaceChildren(node("span", "text-xs text-brand-muted", "Showing only"),
+    ...keys.map((k) => {
+      const b = node("button", "an-chip", `${label(FILTER_NAME, k)}: ${shown(k, filters[k])}`);
+      b.setAttribute("type", "button");
+      b.setAttribute("aria-label", `Remove filter ${label(FILTER_NAME, k)} ${shown(k, filters[k])}`);
+      b.appendChild(node("span", "an-chip-x", "×")).setAttribute("aria-hidden", "true");
+      b.addEventListener("click", drop(keys.filter((x) => x !== k)));
+      return b;
+    }));
+  if (keys.length > 1) {
+    const all = node("button", "text-xs font-semibold text-brand-accent hover:underline", "Clear all");
+    all.setAttribute("type", "button");
+    all.addEventListener("click", drop([]));
+    host.appendChild(all);
+  }
+}
+
 // A slow answer for 365 days must not land after a fast answer for 7 and overwrite it. The same
 // guard profile.js uses: only the most recent request is allowed to draw.
 let sequence = 0;
@@ -825,7 +881,9 @@ async function load() {
     const query = new URLSearchParams({
       days: el("range").value,
       property: el("property").value,
+      ...filters,
     });
+    chips();
     const data = await api("/admin/analytics?" + query);
     if (mine !== sequence) return;
     render(data);

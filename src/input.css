@@ -1159,6 +1159,14 @@
   .an-panel-title { @apply text-base font-semibold text-brand-text; }
   .an-panel-hint { @apply mt-1 text-xs text-brand-muted; }
 
+  /* The drill-down's active filters: a click on the chip drops it. */
+  .an-chip {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-brand-accent/15 px-3 py-1 text-xs
+           font-medium text-brand-text transition-colors hover:bg-brand-accent/25
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent;
+  }
+  .an-chip-x { @apply text-brand-muted; }
+
   .an-tabs { @apply flex gap-1 rounded-lg bg-brand-bg p-0.5; }
   .an-tab {
     @apply rounded-md px-2.5 py-1 text-xs font-medium text-brand-muted transition-colors
