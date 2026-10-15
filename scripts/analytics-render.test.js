@@ -226,7 +226,7 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
   // same colour rather than one shade per row.
   const agents = byId.get('agents');
   assert.strictEqual(tags(agents, 'svg').length, 0, 'the dimensions draw no ring');
-  const fills = find(agents, (n) => n.className && n.className.includes('bg-brand-accent'));
+  const fills = find(agents, (n) => n.className && n.className.includes('bg-brand-accent/15'));
   // **Derived from the fixture, not a lower bound.** The first version of this asserted
   // `fills.length >= 6` against an actual 12, which `FULL.byBrowser` supplies on its own - so
   // three of the four dimension cards could stop being drawn and every check here would still
