@@ -67,7 +67,17 @@ const filters = {};
 const FILTER_NAME = new Map([["browser", "Browser"], ["os", "OS"], ["device", "Device"],
   ["screen", "Width"], ["country", "Country"], ["path", "Page"], ["referrer", "Source"]]);
 
-function narrow({ property, ...picked }) {
+/** The filter already applied, so clicking its row again takes it off. */
+const active = ({ property, ...picked }) =>
+  Object.entries(picked).every(([k, v]) => filters[k] === v);
+
+function narrow(filter) {
+  const { property, ...picked } = filter;
+  if (active(filter)) {
+    Object.keys(picked).forEach((k) => delete filters[k]);
+    load();
+    return;
+  }
   Object.assign(filters, picked);
   // "/" on the site and "/" in the app are different pages, so a page carries its property.
   if (property) el("property").value = property;
@@ -192,10 +202,12 @@ function barList(rows, unit) {
     // A row with a filter is a button that narrows the whole page to it.
     const line = node(filter ? "button" : "div",
       "relative flex w-full items-baseline justify-between gap-4 px-2 py-1.5 text-left"
-      + (filter ? " rounded hover:bg-brand-accent/10 focus-visible:bg-brand-accent/10" : ""));
+      + (filter ? " an-pick" : ""));
     if (filter) {
       line.setAttribute("type", "button");
-      line.title = `Show only ${name}`;
+      const on = active(filter);
+      line.setAttribute("aria-pressed", String(on));
+      line.title = on ? `Remove the ${name} filter` : `Show only ${name}`;
       line.addEventListener("click", () => narrow(filter));
     }
     const left = node("span", "min-w-0 flex-1 truncate text-sm text-brand-text", name);

@@ -1162,10 +1162,31 @@
   /* The drill-down's active filters: a click on the chip drops it. */
   .an-chip {
     @apply inline-flex items-center gap-1.5 rounded-full bg-brand-accent/15 px-3 py-1 text-xs
-           font-medium text-brand-text transition-colors hover:bg-brand-accent/25
+           font-medium text-brand-text transition-[background-color,transform] duration-100
+           ease-out hover:bg-brand-accent/25
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent;
   }
   .an-chip-x { @apply text-brand-muted; }
+  .an-chip:active, .an-pick:active { transform: scale(0.97); }
+  /* Its own rule rather than a `flex` utility: a display utility outranks the hidden attribute,
+     so the bar stayed on screen, chips and all, after the last filter was cleared. */
+  .an-filters { @apply mb-4 flex flex-wrap items-center gap-2; }
+  .an-filters[hidden] { display: none; }
+
+  /* A list row that filters the page. Pressed when it is the filter in force; a second press
+     takes the filter off again. */
+  .an-pick {
+    @apply rounded transition-[background-color,transform] duration-100 ease-out
+           hover:bg-brand-accent/10 focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-brand-accent;
+  }
+  .an-pick[aria-pressed="true"] {
+    @apply bg-brand-accent/10 font-semibold;
+    box-shadow: inset 2px 0 0 rgb(var(--chart));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .an-chip:active, .an-pick:active { transform: none; }
+  }
 
   .an-tabs { @apply flex gap-1 rounded-lg bg-brand-bg p-0.5; }
   .an-tab {
