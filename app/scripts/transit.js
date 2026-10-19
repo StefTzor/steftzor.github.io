@@ -2,7 +2,7 @@ import { api, profile } from "./shell.js";
 import { liveSearch } from "./stop-search.js";
 import { inWords, shortStop, towardsOf } from "./stop-format.js";
 import { remember } from "./rows.js";
-import { createMap, goTo, homeTo } from "./map.js";
+import { createMap, goTo, homeTo, stillness } from "./map.js";
 import { startLiveBuses } from "./live-buses.js";
 
 /**
@@ -586,6 +586,14 @@ function pick(row, departure) {
   else if (home) goTo(map, home, ZOOM);
 
   caption();
+
+  // On a phone the map is a screen or more below the board, so the route just drawn would be out
+  // of sight. Choosing a row brings the map into view; releasing one, or a map already wholly on
+  // screen (most desktops), leaves the page where it is.
+  const box = el("trMap").getBoundingClientRect();
+  if (picked && (box.top < 0 || box.bottom > window.innerHeight)) {
+    el("trMap").scrollIntoView({ block: "center", behavior: stillness() ? "auto" : "smooth" });
+  }
 }
 
 /**
