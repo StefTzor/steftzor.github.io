@@ -12,7 +12,7 @@ import { remember } from "./rows.js";
  * screen has gone stale, and refreshes when asked.
  *
  * The card holds its own space from the first paint - placeholder rows the height of the real
- * ones - and goes away entirely if there turns out to be nothing to show. A card that announces
+ * ones - and goes away entirely if this deployment has no board to show. A card that announces
  * itself and then says it knows nothing is worse than no card at all; a card that appears out of
  * nowhere and shoves the page down is worse than both, which is what this used to do.
  */
@@ -25,21 +25,24 @@ let fetchedAt = 0;
 
 function render(data) {
   const list = el("depList");
-  list.textContent = "";
+  const next = data.departures.slice(0, SHOW);
 
+  // An empty board is an answer - the last bus of the evening has gone - so the card stays and
+  // says so. It used to remove itself when the first board was empty, which pulled everything
+  // below it up after the first paint (0.18-0.23 on phones, every night smoke run). The list
+  // keeps the height it was holding, so the line replaces the placeholder rows in place;
+  // remember() below makes the next night visit reserve nothing instead.
+  list.style.minHeight = next.length ? "" : `${list.offsetHeight}px`;
+  list.textContent = "";
   list.removeAttribute("aria-busy");
 
-  const next = data.departures.slice(0, SHOW);
-  if (!next.length) {
-    el("depNote").textContent = "Nothing leaving in the next hour.";
-    // Empty before the card has ever shown a board is the "nothing to say" case it removes itself
-    // for, exactly as the hidden version did. Empty AFTER one is an answer about a board the
-    // reader is already reading - the last bus of the evening having gone - so it is said in the
-    // note rather than by deleting what they are looking at. Same rule as the catch below.
-    if (el("departures").dataset.card !== "ready") el("departures").dataset.card = "absent";
-    return;
-  }
   el("depNote").textContent = "";
+  if (!next.length) {
+    const li = document.createElement("li");
+    li.className = "py-2 first:pt-0 text-sm text-brand-muted";
+    li.textContent = "Nothing leaving in the next hour.";
+    list.appendChild(li);
+  }
 
   next.forEach((d) => {
     const li = document.createElement("li");
