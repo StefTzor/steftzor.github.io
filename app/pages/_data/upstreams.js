@@ -77,7 +77,7 @@ module.exports = [
     why: "A position is only worth having fresh, and the realtime key allows about 30,000 calls a month, so the server asks at most every 15 seconds, only while somebody has the map open, and stops at 950 a day. The timetable changes with the season and its key allows 50 downloads a month, so it is fetched weekly and kept in the database.",
     calls: [
       { path: "/gtfs-rt/ul/VehiclePositions.pb", note: "every UL vehicle's position, as protobuf" },
-      { path: "/gtfs/ul/ul.zip", note: "the timetable; only routes.txt and trips.txt are read" },
+      { path: "/gtfs/ul/ul.zip", note: "the timetable; routes.txt, trips.txt, stop_times.txt and stops.txt are read" },
     ],
     mapping: [
       ["vehicle.vehicle.id", "id"],
@@ -85,10 +85,11 @@ module.exports = [
       ["vehicle.position.bearing", "bearing"],
       ["vehicle.timestamp (seconds)", "at"],
       ["trip.tripId, through trips.txt to routes.txt route_short_name", "line", true],
-      ["trips.txt trip_headsign", "headsign"],
+      ["trips.txt trip_headsign, else the name of the trip's last stop (stop_times.txt to stops.txt)", "headsign", true],
     ],
     notes: [
       "Two keys, both kept on the server. Like ResRobot's they travel as a query parameter, so no URL that carries one is ever logged.",
+      "UL leaves trip_headsign empty, so a bus's destination is the name of the last stop on its trip, by stop_sequence.",
       "A vehicle with no position, at 0,0, or not heard from for five minutes is left out: a parked bus is not a live one.",
       "The box and the lines your map asks about answer that one request and are not logged or stored.",
     ],
