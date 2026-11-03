@@ -40,16 +40,24 @@
        entire job of separating a card from the page it sits on. Everything read as one wash of
        slate. A white surface against a tinted page is the direction people already expect, and
        it leaves the accent sitting on white where it is at its most legible. */
-    --color-bg: 238 242 247;      /* #eef2f7 */
-    --color-surface: 255 255 255; /* #ffffff */
-    --color-text: 2 6 23;         /* #020617 (Slate 950)  — 17.9:1 on bg, 20.2:1 on surface */
-    --color-muted: 71 85 105;     /* #475569 (Slate 600)  —  6.7:1 on bg,  7.6:1 on surface */
-    --color-accent: 6 95 70;      /* #065f46 (Emerald 800) —  6.8:1 on bg,  7.7:1 on surface */
-    --color-hover: 4 61 44;       /* #043d2c — darker accent for button hover, 10.9:1 on bg */
-    --color-onaccent: 255 255 255;/* text that sits ON the accent — 7.7:1 */
-    /* A boundary, not text, so the 4.5:1 rule does not apply and 1.8:1 against a white card is
-       deliberate: enough to read as an edge, not so much that every card looks boxed in. */
-    --color-border: 182 194 210;  /* #b6c2d2 — 1.6:1 on bg, 1.8:1 on surface */
+    --color-bg: 230 231 220;      /* #e6e7dc (sage) */
+    --color-surface: 250 250 245; /* #fafaf5 */
+    --color-text: 24 36 30;       /* #18241e — 12.9:1 on bg, 15.3:1 on surface */
+    --color-muted: 72 84 76;      /* #48544c —  6.4:1 on bg,  7.6:1 on surface */
+    --color-accent: 31 92 70;     /* #1f5c46 (pine) — 6.3:1 on bg, 7.5:1 on surface */
+    --color-hover: 20 66 50;      /* #144232 — darker accent for button hover */
+    --color-onaccent: 255 255 255;/* text that sits ON the accent — 7.8:1 */
+    /* The second colour of the identity: small labels and the hero's second route. Darker here
+       than in dark mode because it carries text at label size. */
+    --color-brass: 125 92 18;     /* #7d5c12 — 4.9:1 on bg, 5.9:1 on surface */
+    /* A boundary, not text, so the 4.5:1 rule does not apply: enough to read as an edge, not so
+       much that every card looks boxed in. */
+    --color-border: 194 196 180;  /* #c2c4b4 — 1.4:1 on bg, 1.7:1 on surface */
+    /* Hero route map, as ink rather than colour tokens: strokes at these alphas sit behind text. */
+    --route-1: rgb(31 92 70 / 50%);
+    --route-2: rgb(150 110 30 / 55%);
+    --route-3: rgb(72 84 76 / 34%);
+    --route-faint: rgb(72 84 76 / 13%);
 
     /* The three states of a round on the /f1/ globe, and the only tokens here tuned against a
        BASEMAP rather than against the page. Measured on positron's land (#f2efe9), the CLOSEST
@@ -89,14 +97,19 @@
   .dark,
   .chrome-dark {
     /* Dark Mode */
-    --color-bg: 15 23 42;         /* Deep Navy */
-    --color-surface: 30 41 59;    /* Lighter Navy */
-    --color-text: 241 245 249;    /* Cool White        — 16.3:1 on bg */
-    --color-muted: 148 163 184;   /* Slate Gray        — 6.96:1 on bg */
-    --color-accent: 16 185 129;   /* Emerald 500       — 7.04:1 on bg, 5.77:1 on surface */
-    --color-hover: 52 211 153;    /* Emerald 400 — lighter accent for button hover */
-    --color-onaccent: 15 23 42;   /* Deep Navy on accent — 7.04:1 */
-    --color-border: 51 65 85;     /* #334155 — 1.7:1 on bg, 1.4:1 on surface */
+    --color-bg: 19 35 29;         /* #13231d (pine) */
+    --color-surface: 28 48 40;    /* #1c3028 */
+    --color-text: 236 236 226;    /* #ececE2 — 13.7:1 on bg */
+    --color-muted: 162 174 160;   /* #a2aea0 —  7.1:1 on bg */
+    --color-accent: 110 196 150;  /* #6ec496 —  7.8:1 on bg, 6.7:1 on surface */
+    --color-hover: 145 214 176;   /* #91d6b0 — lighter accent for button hover */
+    --color-onaccent: 19 35 29;   /* pine on accent — 7.8:1 */
+    --color-brass: 217 180 95;    /* #d9b45f — 8.3:1 on bg, 7.1:1 on surface */
+    --color-border: 44 66 56;     /* #2c4238 — 1.5:1 on bg, 1.3:1 on surface */
+    --route-1: rgb(110 196 150 / 46%);
+    --route-2: rgb(217 180 95 / 50%);
+    --route-3: rgb(162 174 160 / 30%);
+    --route-faint: rgb(162 174 160 / 10%);
 
     /* Dark's own three, measured on the re-inked basemap's land (#334155): closest pair 15.6,
        same metric and same floor as the light block above. `past` keeps muted's value here
@@ -111,7 +124,7 @@
   }
 
   html {
-    font-family: 'Poppins', 'Inter', sans-serif;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
     @apply antialiased;
   }
 
@@ -234,9 +247,70 @@
      page. Navy at 85% keeps the bar's text at 12:1 or better over a white card scrolling under
      it, and the blur stops that card's text from reading through as noise. Solid again under
      reduced transparency and more contrast, above. */
+  /* The home hero's route map. See _includes/hero-routes.njk. */
+  .hero-routes { position: absolute; top: 0; height: 100%; width: 50%; pointer-events: none; }
+  .hero-routes-l { left: 0; mask-image: linear-gradient(90deg, #000 45%, transparent 72%); }
+  .hero-routes-r { right: 0; mask-image: linear-gradient(270deg, #000 45%, transparent 72%); }
+  .hero-routes-strip { display: none; position: absolute; left: 0; width: 100%; height: 84px; pointer-events: none; }
+  .hero-routes-strip-t { top: 0; mask-image: linear-gradient(180deg, #000 60%, transparent); }
+  .hero-routes-strip-b { bottom: 0; mask-image: linear-gradient(0deg, #000 60%, transparent); }
+  @media (max-width: 767px) {
+    .hero-routes { display: none; }
+    .hero-routes-strip { display: block; }
+  }
+  .route, .route-faint { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+  .route { stroke-width: 3; }
+  .route-faint { stroke: var(--route-faint); stroke-width: 1; }
+  .route-1 { --route: var(--route-1); }
+  .route-2 { --route: var(--route-2); }
+  .route-3 { --route: var(--route-3); }
+  path.route { stroke: var(--route); }
+  .stop { fill: rgb(var(--color-bg)); stroke: var(--route); stroke-width: 2.4; }
+  .hub { fill: var(--route); }
+
+  /* /portfolio/: a route line with each case as a stop. */
+  .cases { position: relative; max-width: 72rem; margin-inline: auto; }
+  .cases::before {
+    content: ""; position: absolute; left: 11px; top: 14px; bottom: 0; width: 3px;
+    border-radius: 2px; background: var(--route-1);
+  }
+  .case {
+    position: relative; display: grid; grid-template-columns: 18rem 1fr; gap: 0 3.5rem;
+    padding: 0 0 4.5rem 3.25rem;
+  }
+  .case:last-child { padding-bottom: 0; }
+  .case::before {
+    content: ""; position: absolute; left: 0; top: 4px; width: 25px; height: 25px; border-radius: 50%;
+    border: 3px solid rgb(var(--color-accent));
+    background: radial-gradient(rgb(var(--color-accent)) 0 5px, rgb(var(--color-bg)) 6px);
+    box-shadow: 0 0 0 4px rgb(var(--color-bg));
+  }
+  .case-number { @apply font-mono text-xs text-brand-muted; }
+  .case-kind { @apply mb-3 mt-0.5 text-xs font-semibold uppercase tracking-wider text-brand-brass; }
+  .case h2 { @apply mb-4 text-2xl font-bold leading-tight text-brand-text; text-wrap: balance; }
+  .case-tags { @apply font-mono text-xs leading-relaxed text-brand-muted; }
+  .case-body { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem 2.5rem; }
+  .case-label { @apply mb-2 font-mono text-xs font-medium uppercase tracking-wide text-brand-muted; }
+  .case-body p { @apply leading-relaxed text-brand-muted; }
+  .case-outcome {
+    grid-column: 1 / -1; padding: 1.1rem 1.4rem; border-radius: 0.625rem;
+    @apply border border-brand-border bg-brand-surface;
+  }
+  .case-outcome .case-label { @apply text-brand-accent; }
+  .case-outcome p { @apply font-medium text-brand-text; }
+  @media (max-width: 767px) {
+    .case { grid-template-columns: 1fr; padding: 0 0 3rem 2.4rem; }
+    .case-meta { margin-bottom: 1.25rem; }
+    .case-body { grid-template-columns: 1fr; }
+    .case-tags li { display: inline; }
+    .case-tags li:not(:last-child)::after { content: " · "; }
+  }
+
   .material {
     @apply bg-brand-bg/85 backdrop-blur-md backdrop-saturate-150;
   }
+  /* Dark chrome over a light page: at 85% the sage shows through and the bar turns grey. */
+  .chrome-dark.material { background-color: rgb(var(--color-bg) / 97%); }
 
   /* Navigation links. These were an inline utility string repeated per link across two files,
      which is how the two properties ended up with different hover and active treatments. */

@@ -34,7 +34,7 @@ const STYLESHEET = "/vendor/maplibre-gl.css";
 //
 // **The two styles are one cartography, because we built the second one.** OpenFreeMap serves
 // five styles and none of them is a dark positron: `dark` paints a background of rgb(12,12,12),
-// darker than this app's own page at #0f172a, so it reads as a hole punched through the layout,
+// darker than this app's own page at #13231d, so it reads as a hole punched through the layout,
 // and `fiord` - which this shipped before - draws 48 layers to positron's 55 and 14 layers of
 // labels to its 16, which is why the light map looked like the better-made one rather than merely
 // the brighter one. So the dark style here is positron itself, re-inked to this app's palette and

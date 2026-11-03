@@ -20,10 +20,10 @@
  * Source:  https://tiles.openfreemap.org/styles/positron   (fetched 2026-09-18)
  *
  * **The palette is the app's own.** Every ink below comes from the `.dark` block of src/input.css
- * or from a step on the same slate ramp. The one rule the basemap has to obey is the one
+ * or from the same lightness steps as the first (slate) palette, turned to pine on 2026-11-04. The one rule the basemap has to obey is the one
  * OpenFreeMap's own `dark` style breaks: its background is rgb(12,12,12), darker than this app's
- * page at #0f172a, so a map drawn in it reads as a hole punched through the layout instead of a
- * card sitting on it. Land here is #334155 - lighter than the #1e293b card it sits on, which is the
+ * page at #13231d, so a map drawn in it reads as a hole punched through the layout instead of a
+ * card sitting on it. Land here is lighter than the #1c3028 card it sits on, which is the
  * direction every other raised thing in this app goes.
  *
  * Positron's own ordering is kept wherever it survives inversion: water darker than land, road
@@ -54,36 +54,36 @@ const OUT = fileURLToPath(new URL("./positron-dark.json", import.meta.url));
 // Tokens first, then the steps derived from them - named for what they draw, not for their hue,
 // because the next person to touch this wants to find "the colour of a road", not "slate 500".
 const ink = {
-  land: "#334155", //  --color-border: the app's own lightest structural slate
-  landAlt: "#2f3c4e", //  residential, a shade below land the way positron has it
-  park: "#35483f",
-  wood: "#2e4239",
-  ice: "#53637d", //  the lightest land in the style, as in positron
-  water: "#1e293b", //  --color-surface: the water is the same navy as the card
-  waterway: "#2c3d57", //  a hair above water so a river inside a lake still reads
+  land: "#394f45", //  --color-border: the app's own lightest structural slate
+  landAlt: "#35483f", //  residential, a shade below land the way positron has it
+  park: "#40624d",
+  wood: "#3b5a47",
+  ice: "#5b7569", //  the lightest land in the style, as in positron
+  water: "#243532", //  --color-surface: the water is the same navy as the card
+  waterway: "#344f4a", //  a hair above water so a river inside a lake still reads
 
-  building: "#40526c",
-  buildingEdge: "#536a8c",
+  building: "#486457",
+  buildingEdge: "#5e8171",
 
-  roadCasing: "#212b3d", //  below land, so the casing reads as an outline and not as a road
-  roadInner: "#5c6b85",
-  roadMinor: "#4a5871",
-  roadPath: "#43516b",
+  roadCasing: "#263830", //  below land, so the casing reads as an outline and not as a road
+  roadInner: "#55695f",
+  roadMinor: "#516a5e",
+  roadPath: "#4b6358",
   roadFaint53: "hsla(215,18%,58%,0.53)", //  alpha kept exactly as positron had it
   roadFaint69: "hsla(215,18%,58%,0.69)",
-  rail: "#55637d",
-  railDash: "#7f8ea8",
+  rail: "#5d756a",
+  railDash: "#87a094",
   boundary: "hsl(215,16%,55%)",
 
-  labelPlace: "#f1f5f9", //  --color-text
-  labelPlaceMinor: "#cbd5e1",
-  labelRoad: "#e2e8f0", //  bright because these two layers carry no halo - see above
-  labelPath: "#a5b0c2",
-  labelWaterway: "#a9b7cc",
-  labelWaterBody: "#8fb0e8", //  positron's #495e91 lifted, so water names stay blue
-  halo: "#0f172a", //  --color-bg: dark halo under light text, the inverse of positron's white
+  labelPlace: "#f3f7f5", //  --color-text
+  labelPlaceMinor: "#cfddd6",
+  labelRoad: "#eef3ef", //  bright because these two layers carry no halo - see above
+  labelPath: "#abbcb4",
+  labelWaterway: "#b0c5c2",
+  labelWaterBody: "#a0d7ce", //  positron's #495e91 lifted, so water names stay blue
+  halo: "#14251d", //  --color-bg: dark halo under light text, the inverse of positron's white
   haloSoft: "rgba(15,23,42,0.7)", //  same alpha positron used for its white one
-  haloPath: "#101a2e",
+  haloPath: "#162820",
 };
 
 // Every colour-bearing paint property in positron, by layer id. A literal in the upstream style
@@ -230,8 +230,8 @@ function check(style, upstream) {
 
   // The page must not have a hole punched in it, and everything drawn on the land must be
   // distinguishable from the land.
-  must(lum(ink.land) > lum("#0f172a"), "land is darker than the page");
-  must(lum(ink.land) > lum("#1e293b"), "land is darker than the card it sits on");
+  must(lum(ink.land) > lum("#13231d"), "land is darker than the page");
+  must(lum(ink.land) > lum("#1c3028"), "land is darker than the card it sits on");
   for (const [name, c] of [["water", ink.water], ["building", ink.building],
                            ["road", ink.roadInner], ["casing", ink.roadCasing]]) {
     must(contrast(c, ink.land) >= 1.25, `${name} is indistinguishable from land`);

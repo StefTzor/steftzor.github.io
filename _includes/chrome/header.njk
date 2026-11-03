@@ -31,12 +31,9 @@
         drawing. -#}
     {%- set navList = appNav if shell else navItems -%}
 
-    {#- One blue, not two. The wordmark sits on the dark bar in both themes now, so the
-        light-mode end of this gradient no longer has a pale background to be read against:
-        blue-700 on #0f172a is 2.7:1, blue-400 is 7.0:1. -#}
     <div class="logo">
       <a href="{{ brandHref | default('/') }}"
-        class="bg-gradient-to-r from-brand-accent to-blue-400 bg-clip-text text-transparent font-bold text-xl tracking-tight inline-block">
+        class="text-brand-text font-bold text-xl tracking-tight inline-block">
         Stefanos Tzortzoglou
       </a>
     </div>
