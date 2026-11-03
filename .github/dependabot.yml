@@ -1,0 +1,9 @@
+# npm CVE fixes come from Dependabot security updates (repo setting), not from here.
+# This file adds monthly updates for the GitHub Actions the workflows use.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }
+    groups:
+      actions: { patterns: ["*"] }
