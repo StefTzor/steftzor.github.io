@@ -51,7 +51,7 @@ Most of my work is enterprise onboarding onto a **Customer Data Platform**, for 
 ### 📊 GitHub Stats
 
 <div align="center">
-  <img src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=0F172A&title_color=10B981&icon_color=3B82F6&text_color=94A3B8" height="180" alt="stats graph" />
+  <img src="https://steftzor-github-readme-stats.vercel.app/api?username=steftzor&show_icons=true&hide_border=true&bg_color=13231D&title_color=6EC496&icon_color=D9B45F&text_color=A2AEA0&hide_rank=true" height="180" alt="stats graph" />
   
-  <img src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=0F172A&title_color=10B981&text_color=94A3B8&icon_color=3B82F6" height="180" alt="languages graph" />
+  <img src="https://steftzor-github-readme-stats.vercel.app/api/top-langs/?username=steftzor&layout=compact&hide_border=true&bg_color=13231D&title_color=6EC496&text_color=A2AEA0&icon_color=D9B45F" height="180" alt="languages graph" />
 </div>

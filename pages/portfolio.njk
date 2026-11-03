@@ -8,9 +8,9 @@ sitemapOrder: 30
 sitemapChangefreq: monthly
 sitemapPriority: "0.8"
 ---
-    <div class="text-center max-w-3xl mx-auto mb-16">
-        <h1 class="text-4xl md:text-5xl font-bold mb-6">Technical <span class="text-brand-accent">Case
-                Studies</span></h1>
+    <div class="max-w-6xl mx-auto mb-14">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6">Technical Case
+                Studies</h1>
         <p class="text-lg text-brand-muted leading-relaxed">
             A selection of the implementations and technical problems I have resolved, and how. Most of them are
             enterprise onboardings onto a <strong class="text-brand-text">Customer Data Platform (CDP)</strong>,
@@ -21,7 +21,7 @@ sitemapPriority: "0.8"
             <a href="/data-mapping/" class="text-brand-accent underline hover:no-underline">trace one customer through
             the data mapping</a> yourself.
         </p>
-        <p class="mt-6 text-sm text-brand-muted border-l-4 border-brand-accent pl-4 py-1 text-left">
+        <p class="mt-6 text-sm text-brand-muted max-w-3xl">
             <strong class="text-brand-text">A note on these case studies.</strong> I describe clients in
             general terms and do not name them. No confidential information, client data, credentials or proprietary
             implementation detail appears here. Each outcome describes what the project set out to achieve and what
@@ -30,175 +30,111 @@ sitemapPriority: "0.8"
         </p>
     </div>
 
-    {# items-start: without it the grid stretches every card to the tallest in its row, and
-   the card's own flex-grow description then opens a void above the footer - 370px of empty
-   surface under the shortest case study. #}
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto items-start">
-
-        <div
-            class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-border hover:shadow-glow hover:border-brand-accent/30 transition duration-300">
-            <div class="p-8 h-full flex flex-col">
-                <div class="flex justify-between items-start mb-4">
-                    <div
-                        class="bg-blue-500/20 text-blue-700 dark:text-blue-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-blue-500/40">
-                        API Architecture
-                    </div>
-                    {% icon "fa-solid-code-branch", "text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" %}
-                </div>
-
-                <h2 class="text-2xl font-bold text-brand-text mb-3">Reverse-Engineering Global Ticketing APIs</h2>
-
-                <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                    <strong>The Challenge:</strong> A global ticketing platform needed its legacy, multi-layered event data
-                    integrated into our CDP. Documentation was fragmented, and venues and events were related in ways the structure did not make obvious.
-                    <br><br>
-                    <strong>My Solution:</strong> I manually mapped the API logic, reverse-engineering the data
-                    relationships. I designed the JSON transformation schema and guided Engineering on the exact
-                    implementation path, so their whole event catalogue could be standardised at once.
-                    <br><br>
-                    <strong>The Outcome:</strong> Real-time segmentation across their full event history, with the
-                    legacy dependency still intact.
-                </p>
-
-                <div class="border-t border-brand-border pt-4 mt-auto">
-                    <div class="flex flex-wrap gap-2">
-                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Legacy
-                            APIs</span>
-                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Data
-                            Mapping</span>
-                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Technical
-                            Specs</span>
-                    </div>
-                </div>
+    {# One route line down the page, each case a stop on it: the same drawing as the home hero. #}
+    <ol class="cases">
+        <li class="case">
+            <div class="case-meta">
+                <p class="case-number">01</p>
+                <p class="case-kind">API Architecture</p>
+                <h2>Reverse-Engineering Global Ticketing APIs</h2>
+                <ul class="case-tags">
+                    <li>Legacy APIs</li>
+                    <li>Data Mapping</li>
+                    <li>Technical Specs</li>
+                </ul>
             </div>
-        </div>
-
-        <div
-            class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-border hover:shadow-glow hover:border-brand-accent/30 transition duration-300">
-            <div class="p-8 h-full flex flex-col">
-                <div class="flex justify-between items-start mb-4">
-                    <div
-                        class="bg-purple-500/20 text-purple-700 dark:text-purple-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-purple-500/40">
-                        Complex Integration
+            <div class="case-body">
+                    <div>
+                        <h3 class="case-label">The Challenge</h3>
+                        <p>A global ticketing platform needed its legacy, multi-layered event data integrated into our CDP. Documentation was fragmented, and venues and events were related in ways the structure did not make obvious.</p>
                     </div>
-                    {% icon "fa-solid-sync-alt", "text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" %}
-                </div>
-
-                <h2 class="text-2xl font-bold text-brand-text mb-3">Sports League Bi-Directional Sync</h2>
-
-                <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                    <strong>The Challenge:</strong> Onboarding a multi-tenant sports league of 10+ clubs, each running
-                    its own tools and changing them without notice. They required a bi-directional sync between B2B CRMs, mobile apps, and
-                    gamification platforms. We had to handle conflicting data edits and push segmented audiences
-                    back to their CRM.
-                    <br><br>
-                    <strong>My Solution:</strong> Designed which system wins each field when two sources disagree, and the two-way sync that
-                    applies it. I coordinated the integration across Ticketing, E-commerce,
-                    and Membership systems.
-                    <br><br>
-                    <strong>The Outcome:</strong> Clubs could push targeted segments from the CDP back into their own
-                    CRM and sell against them.
-                </p>
-
-                <div class="border-t border-brand-border pt-4 mt-auto">
-                    <div class="flex flex-wrap gap-2">
-                        <span
-                            class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Bi-Directional
-                            Sync</span>
-                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">CRM
-                            Architecture</span>
-                        <span
-                            class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Multi-Tenant</span>
+                    <div>
+                        <h3 class="case-label">My Solution</h3>
+                        <p>I manually mapped the API logic, reverse-engineering the data relationships. I designed the JSON transformation schema and guided Engineering on the exact implementation path, so their whole event catalogue could be standardised at once.</p>
                     </div>
-                </div>
+                    <div class="case-outcome">
+                        <h3 class="case-label">The Outcome</h3>
+                        <p>Real-time segmentation across their full event history, with the legacy dependency still intact.</p>
+                    </div>
             </div>
-        </div>
-
-        <div
-            class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-border hover:shadow-glow hover:border-brand-accent/30 transition duration-300">
-            <div class="p-8 h-full flex flex-col">
-                <div class="flex justify-between items-start mb-4">
-                    <div
-                        class="bg-emerald-500/20 text-emerald-800 dark:text-emerald-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-emerald-500/40">
-                        Data Privacy
-                    </div>
-                    {% icon "fa-solid-shield-alt", "text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" %}
-                </div>
-
-                <h2 class="text-2xl font-bold text-brand-text mb-3">US Sports League: Protecting Minors' Data</h2>
-
-                <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                    <strong>The Challenge:</strong> A US professional sports league with a nationwide youth club
-                    network, and rigid data lake pipelines, needed to onboard its entire under-18 membership base.
-                    Under strict legal constraints, marketing had to reach parents and guardians without exposing any
-                    minor's personal data.
-                    <br><br>
-                    <strong>My Solution:</strong> Led the technical discovery with their data engineers and
-                    structured their data sources with them. I designed the account's identity resolution and a
-                    "Parent/Guardian" entity model in the CDP that routed all communications to authorised adults while
-                    keeping the non-adult profile data siloed for analysis only.
-                    <br><br>
-                    <strong>The Outcome:</strong> The model was signed off by the client's own data-protection and
-                    engineering teams and shipped, letting them reach the guardian audience without minors' personal
-                    data leaving the analytics silo.
-                </p>
-
-                <div class="border-t border-brand-border pt-4 mt-auto">
-                    <div class="flex flex-wrap gap-2">
-                        <span
-                            class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Minors' Privacy</span>
-                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Data
-                            Modeling</span>
-                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Identity
-                            Resolution</span>
-                    </div>
-                </div>
+        </li>
+        <li class="case">
+            <div class="case-meta">
+                <p class="case-number">02</p>
+                <p class="case-kind">Complex Integration</p>
+                <h2>Sports League Bi-Directional Sync</h2>
+                <ul class="case-tags">
+                    <li>Bi-Directional Sync</li>
+                    <li>CRM Architecture</li>
+                    <li>Multi-Tenant</li>
+                </ul>
             </div>
-        </div>
-
-        <div
-            class="group bg-brand-surface rounded-xl overflow-hidden border border-brand-border hover:shadow-glow hover:border-brand-accent/30 transition duration-300">
-            <div class="p-8 h-full flex flex-col">
-                <div class="flex justify-between items-start mb-4">
-                    <div
-                        class="bg-slate-500/20 text-slate-600 dark:text-slate-400 px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border border-slate-500/40">
-                        AI Automation
+            <div class="case-body">
+                    <div>
+                        <h3 class="case-label">The Challenge</h3>
+                        <p>Onboarding a multi-tenant sports league of 10+ clubs, each running its own tools and changing them without notice. They required a bi-directional sync between B2B CRMs, mobile apps, and gamification platforms. We had to handle conflicting data edits and push segmented audiences back to their CRM.</p>
                     </div>
-                    {% icon "fa-solid-cogs", "text-brand-muted text-2xl group-hover:text-brand-accent transition-colors" %}
-                </div>
-
-                <h2 class="text-2xl font-bold text-brand-text mb-3">Segmentation Engine Migration</h2>
-
-                <p class="text-brand-muted mb-6 leading-relaxed flex-grow">
-                    <strong>The Challenge:</strong> Every customer account had to move from an old segmentation
-                    engine to a new one, with every segment rebuilt rule by rule. Done by hand it was slow, repetitive
-                    work, and the larger the account the worse it got.
-                    <br><br>
-                    <strong>My Solution:</strong> I built an AI toolkit backed by a knowledge library of how the
-                    platform is configured. It reads the SQL behind the existing segments, triages what needs
-                    recreating, bootstraps the new engine and rebuilds the rules and segments through the portal's
-                    API.
-                    <br><br>
-                    <strong>The Outcome:</strong> A migration now needs only a planning phase; the toolkit does the rebuild. The same toolkit now
-                    builds dashboards and analytics tables from a customer's raw data sources.
-                </p>
-
-                {# On a phone the drawing borrows most of the card's side padding: scaled to fit, it
-                   would otherwise draw its labels near 8px. #}
-                <div class="mb-6 -mx-6 sm:mx-0">
-                    {% include "chrome/case-segmentation.njk" %}
-                </div>
-
-                <div class="border-t border-brand-border pt-4 mt-auto">
-                    <div class="flex flex-wrap gap-2">
-                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">Generative
-                            AI</span>
-                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">REST
-                            APIs</span>
-                        <span class="text-xs font-mono text-brand-muted bg-brand-bg px-2 py-1 rounded">SQL</span>
+                    <div>
+                        <h3 class="case-label">My Solution</h3>
+                        <p>Designed which system wins each field when two sources disagree, and the two-way sync that applies it. I coordinated the integration across Ticketing, E-commerce, and Membership systems.</p>
                     </div>
-                </div>
+                    <div class="case-outcome">
+                        <h3 class="case-label">The Outcome</h3>
+                        <p>Clubs could push targeted segments from the CDP back into their own CRM and sell against them.</p>
+                    </div>
             </div>
-        </div>
+        </li>
+        <li class="case">
+            <div class="case-meta">
+                <p class="case-number">03</p>
+                <p class="case-kind">Data Privacy</p>
+                <h2>US Sports League: Protecting Minors' Data</h2>
+                <ul class="case-tags">
+                    <li>Minors' Privacy</li>
+                    <li>Data Modeling</li>
+                    <li>Identity Resolution</li>
+                </ul>
+            </div>
+            <div class="case-body">
+                    <div>
+                        <h3 class="case-label">The Challenge</h3>
+                        <p>A US professional sports league with a nationwide youth club network, and rigid data lake pipelines, needed to onboard its entire under-18 membership base. Under strict legal constraints, marketing had to reach parents and guardians without exposing any minor's personal data.</p>
+                    </div>
+                    <div>
+                        <h3 class="case-label">My Solution</h3>
+                        <p>Led the technical discovery with their data engineers and structured their data sources with them. I designed the account's identity resolution and a "Parent/Guardian" entity model in the CDP that routed all communications to authorised adults while keeping the non-adult profile data siloed for analysis only.</p>
+                    </div>
+                    <div class="case-outcome">
+                        <h3 class="case-label">The Outcome</h3>
+                        <p>The model was signed off by the client's own data-protection and engineering teams and shipped, letting them reach the guardian audience without minors' personal data leaving the analytics silo.</p>
+                    </div>
+            </div>
+        </li>
+        <li class="case">
+            <div class="case-meta">
+                <p class="case-number">04</p>
+                <p class="case-kind">AI Automation</p>
+                <h2>Segmentation Engine Migration</h2>
+                <ul class="case-tags">
+                    <li>Generative AI</li>
+                    <li>REST APIs</li>
+                    <li>SQL</li>
+                </ul>
+            </div>
+            <div class="case-body">
+                    <div>
+                        <h3 class="case-label">The Challenge</h3>
+                        <p>Every customer account had to move from an old segmentation engine to a new one, with every segment rebuilt rule by rule. Done by hand it was slow, repetitive work, and the larger the account the worse it got.</p>
+                    </div>
+                    <div>
+                        <h3 class="case-label">My Solution</h3>
+                        <p>I built an AI toolkit backed by a knowledge library of how the platform is configured. It reads the SQL behind the existing segments, triages what needs recreating, bootstraps the new engine and rebuilds the rules and segments through the portal's API.</p>
+                    </div>
+                    <div class="case-outcome">
+                        <h3 class="case-label">The Outcome</h3>
+                        <p>A migration now needs only a planning phase; the toolkit does the rebuild. The same toolkit now builds dashboards and analytics tables from a customer's raw data sources.</p>
+                    </div>
+            </div>
+        </li>
+    </ol>
 
-    </div>

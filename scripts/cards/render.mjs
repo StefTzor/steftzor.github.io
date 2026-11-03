@@ -65,8 +65,8 @@ const CARDS = {
 };
 
 const chromeDir = join(process.env.HOME, '.cache', 'puppeteer', 'chrome');
-if (!existsSync(chromeDir)) throw new Error(`no Chrome in ${chromeDir} — see verification.md`);
-const CHROME = join(chromeDir, readdirSync(chromeDir).sort().pop(), 'chrome-linux64', 'chrome');
+if (!process.env.CHROME && !existsSync(chromeDir)) throw new Error(`no Chrome in ${chromeDir} — see verification.md`);
+const CHROME = process.env.CHROME || join(chromeDir, readdirSync(chromeDir).sort().pop(), 'chrome-linux64', 'chrome');
 
 const template = readFileSync(join(HERE, 'card.html'), 'utf8');
 const wanted = process.argv.slice(2).filter((a) => !a.startsWith('-'));

@@ -8,40 +8,41 @@
   like the page it opens.
 -->
 <style>
-  @font-face { font-family: Poppins; font-weight: 400; src: url(../../fonts/poppins-400-latin.woff2) format('woff2'); }
-  @font-face { font-family: Poppins; font-weight: 500; src: url(../../fonts/poppins-500-latin.woff2) format('woff2'); }
-  @font-face { font-family: Poppins; font-weight: 600; src: url(../../fonts/poppins-600-latin.woff2) format('woff2'); }
-  @font-face { font-family: Poppins; font-weight: 700; src: url(../../fonts/poppins-700-latin.woff2) format('woff2'); }
+  @font-face { font-family: Plex; font-weight: 400; src: url(../../fonts/ibm-plex-sans-400-latin.woff2) format('woff2'); }
+  @font-face { font-family: Plex; font-weight: 400; src: url(../../fonts/ibm-plex-sans-400-greek.woff2) format('woff2'); }
+  @font-face { font-family: Plex; font-weight: 500; src: url(../../fonts/ibm-plex-sans-500-latin.woff2) format('woff2'); }
+  @font-face { font-family: Plex; font-weight: 500; src: url(../../fonts/ibm-plex-sans-500-greek.woff2) format('woff2'); }
+  @font-face { font-family: Plex; font-weight: 600; src: url(../../fonts/ibm-plex-sans-600-latin.woff2) format('woff2'); }
+  @font-face { font-family: Plex; font-weight: 600; src: url(../../fonts/ibm-plex-sans-600-greek.woff2) format('woff2'); }
 
   :root {
-    --bg: #0f172a;        /* brand-bg, dark */
-    --text: #f1f5f9;      /* brand-text, 16.3:1 on bg */
-    --muted: #94a3b8;     /* brand-muted, 6.96:1 on bg */
-    --accent: #10b981;    /* brand-accent, 7.04:1 on bg */
-    --blue: #3b82f6;
+    --bg: #13231d;        /* brand-bg, dark */
+    --text: #ececE2;      /* brand-text, 13.7:1 on bg */
+    --muted: #a2aea0;     /* brand-muted, 7.1:1 on bg */
+    --accent: #6ec496;    /* brand-accent, 7.8:1 on bg */
+    --brass: #d9b45f;     /* brand-brass, 8.3:1 on bg */
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: Poppins, system-ui, sans-serif; background: var(--bg); color: var(--text); }
+  body { font-family: Plex, system-ui, sans-serif; background: var(--bg); color: var(--text); }
 
   .card { position: relative; overflow: hidden; background: var(--bg); display: flex; align-items: center; }
   /* The faint lattice from the existing og-cover, rebuilt as CSS so it scales with the shape. */
+  /* The site's route map, right half: see _includes/hero-routes.njk. */
   .card::before {
-    content: ''; position: absolute; inset: 0; opacity: .5;
-    background-image:
-      linear-gradient(115deg, rgba(148,163,184,.055) 1px, transparent 1px),
-      linear-gradient(65deg,  rgba(148,163,184,.055) 1px, transparent 1px);
-    background-size: 52px 52px;
+    content: ''; position: absolute; inset: 0 0 0 auto; width: 62%; opacity: .7;
+    background: url(routes.svg) right center / cover no-repeat;
+    -webkit-mask-image: linear-gradient(270deg, #000 35%, transparent 90%);
   }
-  /* The accent edge, top-left to bottom-left, emerald into blue. */
+  /* The accent edge. */
   .card::after {
     content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 10px;
-    background: linear-gradient(180deg, var(--accent), var(--blue));
+    background: var(--brass);
   }
   .inner { position: relative; z-index: 1; display: flex; align-items: center; width: 100%; }
 
   .photo { border-radius: 50%; object-fit: cover; border: 6px solid var(--accent); flex-shrink: 0; }
-  .name { font-weight: 700; letter-spacing: -.02em; line-height: 1.05; }
-  .name-el { font-weight: 300; color: var(--muted); }
+  .name { font-weight: 600; letter-spacing: -.02em; line-height: 1.05; }
+  .name-el { font-weight: 400; color: var(--muted); }
   .rule { height: 4px; width: 88px; background: var(--accent); border-radius: 2px; }
   .role { font-weight: 600; color: var(--accent); line-height: 1.25; }
   .claim { font-weight: 500; color: var(--text); line-height: 1.3; }

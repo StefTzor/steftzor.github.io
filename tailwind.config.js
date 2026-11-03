@@ -11,6 +11,8 @@ module.exports = {
   ],
   theme: {
     extend: {
+      // Plex reads heavier than Poppins at the same number, and 600 is the top weight self-hosted.
+      fontWeight: { bold: '600' },
       colors: {
         brand: {
           bg: 'rgb(var(--color-bg) / <alpha-value>)',
@@ -18,6 +20,7 @@ module.exports = {
           text: 'rgb(var(--color-text) / <alpha-value>)',
           muted: 'rgb(var(--color-muted) / <alpha-value>)',
           accent: 'rgb(var(--color-accent) / <alpha-value>)',
+          brass: 'rgb(var(--color-brass) / <alpha-value>)',
           hover: 'rgb(var(--color-hover) / <alpha-value>)',
           onaccent: 'rgb(var(--color-onaccent) / <alpha-value>)',
           // The one border colour. It replaced ~80 hand-picked `border-brand-muted/10|15|20`
