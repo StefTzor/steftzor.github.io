@@ -122,13 +122,15 @@
     el.setAttribute('role', 'dialog');
     el.setAttribute('aria-modal', 'false');
     el.setAttribute('aria-labelledby', 'consent-title');
-    el.className = 'fixed bottom-0 inset-x-0 z-[150] p-4 bg-brand-surface ' +
-                   'border-t-2 border-brand-accent shadow-2xl';
+    // A corner card, not a full-width bar: the bar sat over the hero on the first screen of every
+    // first visit.
+    el.className = 'fixed bottom-4 inset-x-4 sm:right-auto sm:w-[23rem] z-[150] p-4 bg-brand-surface ' +
+                   'rounded-xl border border-brand-border shadow-2xl';
     el.innerHTML =
-      '<div class="container mx-auto max-w-4xl flex flex-col sm:flex-row sm:items-center gap-4">' +
+      '<div class="flex flex-col gap-3">' +
         '<div class="flex-grow">' +
-          '<h2 id="consent-title" class="font-bold text-brand-text mb-1">May I count this page view?</h2>' +
-          '<p class="text-sm text-brand-muted leading-relaxed">' +
+          '<h2 id="consent-title" class="text-sm font-bold text-brand-text mb-1">May I count this page view?</h2>' +
+          '<p class="text-xs text-brand-muted leading-relaxed">' +
             'This site sets <strong class="text-brand-text">no cookies</strong> and runs no advertising. ' +
             'The count goes to <strong class="text-brand-text">my own server</strong>: ' +
             'no third party, no cookie, and one visitor number that stays the same for this browser all day. ' +
@@ -136,7 +138,7 @@
             '<a href="/cookies/" class="text-brand-accent underline hover:no-underline">Details</a>.' +
           '</p>' +
         '</div>' +
-        '<div class="flex gap-3 shrink-0">' +
+        '<div class="flex gap-3">' +
           '<button type="button" id="consent-reject" class="btn-secondary px-5 py-2 text-sm">Decline</button>' +
           '<button type="button" id="consent-accept" class="btn-primary px-5 py-2 text-sm">Accept</button>' +
         '</div>' +
