@@ -23,7 +23,9 @@ bodyScripts:
       <span id="f1Season" class="text-brand-muted font-normal"></span>
     </h1>
 
-    <div class="flex items-center gap-2">
+    {# Its own line on a phone from the start: the title and "Loading…" fit side by side, then the
+       year and the round's name arrive and wrap this down, moving the page 50px. #}
+    <div class="flex items-center gap-2 max-sm:w-full">
       <label for="roundPick" class="text-sm text-brand-muted">Round</label>
       <select id="roundPick" class="field w-auto py-1.5 text-sm">
         <option>Loading…</option>
