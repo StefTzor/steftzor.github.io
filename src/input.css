@@ -317,6 +317,7 @@
     grid-column: 1 / -1; padding: 1.1rem 1.4rem; border-radius: 0.625rem;
     @apply border border-brand-border bg-brand-surface;
   }
+  .case-figure { grid-column: 1 / -1; max-width: 28rem; }
   .case-outcome .case-label { @apply text-brand-accent; }
   .case-outcome p { @apply font-medium text-brand-text; }
   @media (max-width: 767px) {
