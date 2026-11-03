@@ -111,7 +111,7 @@
     --route-3: rgb(162 174 160 / 30%);
     --route-faint: rgb(162 174 160 / 10%);
 
-    /* Dark's own three, measured on the re-inked basemap's land (#334155): closest pair 15.6,
+    /* Dark's own three, on the basemap's land (#394f45) with the lifted accent: closest pair 18.0,
        same metric and same floor as the light block above. `past` keeps muted's value here
        because on a dark map a light grey already recedes, helped by the 0.7 opacity the layer
        carries.
@@ -119,8 +119,29 @@
        ONLY with a second encoding. There are three - the chosen dot is nearly twice the radius,
        the past ones are drawn at 0.7, and the key below the map names all three in words. Colour
        is never the only thing saying which is which. */
-    --color-map-past: 148 163 184; /* #94a3b8 - 4.0:1 before the layer's 0.7 */
+    --color-map-past: 148 163 184; /* #94a3b8 - 3.4:1 before the layer's 0.7 */
     --color-map-now:  251 191 36;  /* #fbbf24 - amber-400 */
+  }
+
+  /* Dark mode proper, lifted from the pine above, which stays as the dark chrome in light mode.
+     Pine at #13231d read as one green: card on page was 1.17:1, and green text matched the
+     green-grey muted at 1.1:1. So: cards lighter, borders stronger, and muted is a neutral grey,
+     which leaves green meaning links and actions only. */
+  .dark,
+  .dark .chrome-dark {
+    --color-bg: 24 41 31;         /* #18291f */
+    --color-surface: 40 64 52;    /* #284034 — 1.36:1 on bg */
+    --color-text: 243 243 238;    /* #f3f3ee — 10.1:1 on surface */
+    --color-muted: 195 198 193;   /* #c3c6c1 —  8.8:1 on bg, 6.5:1 on surface */
+    --color-accent: 95 224 173;   /* #5fe0ad —  9.3:1 on bg, 6.8:1 on surface */
+    --color-hover: 137 235 196;   /* #89ebc4 */
+    --color-onaccent: 24 41 31;   /* #18291f on accent — 9.3:1 */
+    --color-brass: 232 195 110;   /* #e8c36e — 6.7:1 on surface */
+    --color-border: 79 111 94;    /* #4f6f5e — 2.7:1 on bg */
+    --route-1: rgb(95 224 173 / 50%);
+    --route-2: rgb(232 195 110 / 55%);
+    --route-3: rgb(195 198 193 / 30%);
+    --route-faint: rgb(195 198 193 / 11%);
   }
 
   html {
@@ -1616,7 +1637,7 @@
     #overlay, .palette::backdrop { background: rgb(0 0 0 / 70%); backdrop-filter: none; }
   }
   @media (prefers-contrast: more) {
-    :root, .dark, .chrome-dark { --color-border: var(--color-muted); }
+    :root, .dark, .chrome-dark, .dark .chrome-dark { --color-border: var(--color-muted); }
     .material { @apply bg-brand-bg; backdrop-filter: none; }
   }
 }
