@@ -323,6 +323,12 @@ export async function createMap(container, {
     dragRotate: false,
   });
 
+  // The compact attribution opens expanded and only folds on a drag, so on a phone it covered a
+  // sixth of the map. The OSMF attribution guidelines allow folding it after five seconds; the
+  // (i) button still opens it. Same class MapLibre removes on drag.
+  map.once("load", () => setTimeout(() => container.querySelector(".maplibregl-compact-show")
+    ?.classList.remove("maplibregl-compact-show"), 5000));
+
   // Buttons as well as gestures, because a gesture nobody discovers is not a control. Compass off
   // for the same reason rotation is: there is no bearing here worth resetting.
   map.addControl(new maplibregl.NavigationControl({ showCompass: false, visualizePitch: false }),
