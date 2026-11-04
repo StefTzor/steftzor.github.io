@@ -17,7 +17,7 @@ const vm = require('vm');
 const SRC = fs.readFileSync(path.join(__dirname, '..', 'app/scripts/world-core.js'), 'utf8')
   .replace(/^export /gm, '');
 const NAMES = ['distanceKm', 'advance', 'planeFeatures', 'nearest', 'sky', 'groundTrack',
-  'buildingFacts', 'compass', 'planeLine', 'liveLine', 'fuzzyScore', 'localMatches', 'placeName', 'alertFeatures', 'ago', 'REGIONS', 'placeCard', 'airportCard', 'emptyCard', 'PLACES', 'tiltFor', 'photoCredit', 'nearbyAlerts', 'routeLine', 'routeFacts'];
+  'buildingFacts', 'compass', 'planeLine', 'liveLine', 'fuzzyScore', 'localMatches', 'placeName', 'alertFeatures', 'ago', 'REGIONS', 'placeCard', 'airportCard', 'emptyCard', 'PLACES', 'tiltFor', 'photoCredit', 'nearbyAlerts', 'routeLine', 'routeFacts', 'alertHref'];
 const core = {};
 vm.runInNewContext(`${SRC}\n${NAMES.map((n) => `this.${n} = ${n};`).join('\n')}`, core);
 
@@ -241,6 +241,10 @@ const ISS = {
     assert.deepStrictEqual(Array.from(core.routeFacts({ airline: 'SAS', from, to })), ['SAS', 'From Copenhagen (CPH)', 'To Stockholm (ARN)', 'Scheduled route for this callsign']);
     ok('a route says where from and to, and that it is the schedule rather than a live fact');
   }
+
+  assert.strictEqual(core.alertHref('usgs-us1'), '/world/?alert=usgs-us1');
+  assert.strictEqual(core.alertHref('a b&c'), '/world/?alert=a%20b%26c');
+  ok('an alert on the home card links to that alert');
 
   assert.strictEqual(core.photoCredit({ author: 'serenedeluge', license: 'CC-BY-SA-4.0', takenAt: '2026-08-09T14:16:23+00:00' }),
     'serenedeluge, CC BY-SA 4.0, via Panoramax, August 2026');

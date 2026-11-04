@@ -1,5 +1,5 @@
 import { api, profile } from "./shell.js";
-import { nearbyAlerts, ago } from "./world-core.js";
+import { nearbyAlerts, ago, alertHref } from "./world-core.js";
 
 /**
  * The home card for /world/: alerts near the saved home place, or a line saying there are none.
@@ -13,7 +13,7 @@ const DEFAULT_HOME = { name: "Uppsala", lat: 59.8586, lon: 17.6389, countryCode:
 function row(alert, now) {
   const li = document.createElement("li");
   const link = document.createElement("a");
-  link.href = "/world/";
+  link.href = alertHref(alert.id);
   link.className = "world-row";
   const left = document.createElement("span");
   left.className = "flex min-w-0 items-baseline text-brand-text";

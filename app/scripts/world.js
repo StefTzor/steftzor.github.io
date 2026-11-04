@@ -559,6 +559,18 @@ async function pollBuses() {
   } catch (err) { /* the bus layer simply stays where it was */ }
 }
 
+/** Arriving from the home card: open the alert named in the address, once. */
+function openLinkedAlert() {
+  const address = new URL(location.href);
+  const id = address.searchParams.get("alert");
+  if (!id) return;
+  address.searchParams.delete("alert");
+  history.replaceState(null, "", address.pathname);
+  const alert = state.alerts.find((a) => a.id === id);
+  if (alert) pickAlert(alert);
+  else el("wdNote").textContent = "That alert has ended.";
+}
+
 async function pollAlerts() {
   try {
     const { alerts, sources } = await api("/world/alerts");
@@ -572,6 +584,7 @@ async function pollAlerts() {
     el("wdFeeds").textContent = "Alerts are unavailable right now.";
   }
   drawAlerts();
+  openLinkedAlert();
 }
 
 async function pollCameras() {

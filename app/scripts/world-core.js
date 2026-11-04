@@ -325,3 +325,5 @@ export function routeFacts({ airline, from, to }) {
   const place = (a) => `${a.city || a.name} (${a.code})`;
   return [airline, `From ${place(from)}`, `To ${place(to)}`, "Scheduled route for this callsign"].filter(Boolean);
 }
+
+export const alertHref = (id) => `/world/?alert=${encodeURIComponent(id)}`;
