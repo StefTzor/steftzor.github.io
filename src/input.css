@@ -80,6 +80,7 @@
        The 3:1 below is the TOKEN against the land. The layer draws `past` at 0.7 opacity, which
        composites to 2.1:1 - what actually finds the dot is the full-strength ring of surface
        colour around it, the same trick the circuit outline's casing uses. */
+    --color-map-future: 31 92 70;  /* the light accent */
     --color-map-past: 124 135 152; /* #7c8798 - recedes on a pale map; 3.2:1 before the 0.7 */
     --color-map-now:  161 98 7;    /* #a16207 - amber; nothing else on this map is warm */
   }
@@ -101,17 +102,17 @@
     --color-surface: 28 48 40;    /* #1c3028 */
     --color-text: 236 236 226;    /* #ececE2 — 13.7:1 on bg */
     --color-muted: 162 174 160;   /* #a2aea0 —  7.1:1 on bg */
-    --color-accent: 110 196 150;  /* #6ec496 —  7.8:1 on bg, 6.7:1 on surface */
-    --color-hover: 145 214 176;   /* #91d6b0 — lighter accent for button hover */
-    --color-onaccent: 19 35 29;   /* pine on accent — 7.8:1 */
+    --color-accent: 217 180 95;   /* #d9b45f (brass) — 8.3:1 on bg, 7.1:1 on surface */
+    --color-hover: 236 205 134;   /* #eccd86 — lighter accent for button hover */
+    --color-onaccent: 19 35 29;   /* pine on accent — 8.3:1 */
     --color-brass: 217 180 95;    /* #d9b45f — 8.3:1 on bg, 7.1:1 on surface */
     --color-border: 44 66 56;     /* #2c4238 — 1.5:1 on bg, 1.3:1 on surface */
-    --route-1: rgb(110 196 150 / 46%);
+    --route-1: rgb(127 181 150 / 46%);
     --route-2: rgb(217 180 95 / 50%);
     --route-3: rgb(162 174 160 / 30%);
     --route-faint: rgb(162 174 160 / 10%);
 
-    /* Dark's own three, on the basemap's land (#394f45) with the lifted accent: closest pair 18.0,
+    /* Dark's own three, on the basemap's land (#394f45): closest pair 15.1,
        same metric and same floor as the light block above. `past` keeps muted's value here
        because on a dark map a light grey already recedes, helped by the 0.7 opacity the layer
        carries.
@@ -119,26 +120,28 @@
        ONLY with a second encoding. There are three - the chosen dot is nearly twice the radius,
        the past ones are drawn at 0.7, and the key below the map names all three in words. Colour
        is never the only thing saying which is which. */
+    --color-map-future: 99 192 122; /* #63c07a - 3.9:1 on land. Not the accent: brass is 5.2 from `now` */
     --color-map-past: 148 163 184; /* #94a3b8 - 3.4:1 before the layer's 0.7 */
     --color-map-now:  251 191 36;  /* #fbbf24 - amber-400 */
   }
 
   /* Dark mode proper, lifted from the pine above, which stays as the dark chrome in light mode.
      Pine at #13231d read as one green: card on page was 1.17:1, and green text matched the
-     green-grey muted at 1.1:1. So: cards lighter, borders stronger, and muted is a neutral grey,
-     which leaves green meaning links and actions only. */
+     green-grey muted at 1.1:1. So: cards lighter, borders stronger, and muted is a neutral grey.
+     The accent is brass here, not green: a bright mint read as generated, and on a pine page
+     brass is the one colour that separates by hue. Sage is left for the route lines. */
   .dark,
   .dark .chrome-dark {
     --color-bg: 24 41 31;         /* #18291f */
     --color-surface: 40 64 52;    /* #284034 — 1.36:1 on bg */
     --color-text: 243 243 238;    /* #f3f3ee — 10.1:1 on surface */
     --color-muted: 195 198 193;   /* #c3c6c1 —  8.8:1 on bg, 6.5:1 on surface */
-    --color-accent: 95 224 173;   /* #5fe0ad —  9.3:1 on bg, 6.8:1 on surface */
-    --color-hover: 137 235 196;   /* #89ebc4 */
-    --color-onaccent: 24 41 31;   /* #18291f on accent — 9.3:1 */
+    --color-accent: 232 195 110;  /* #e8c36e (brass) — 9.1:1 on bg, 6.7:1 on surface */
+    --color-hover: 241 214 148;   /* #f1d694 */
+    --color-onaccent: 24 41 31;   /* #18291f on accent — 9.1:1 */
     --color-brass: 232 195 110;   /* #e8c36e — 6.7:1 on surface */
     --color-border: 79 111 94;    /* #4f6f5e — 2.7:1 on bg */
-    --route-1: rgb(95 224 173 / 50%);
+    --route-1: rgb(127 181 150 / 55%); /* sage */
     --route-2: rgb(232 195 110 / 55%);
     --route-3: rgb(195 198 193 / 30%);
     --route-faint: rgb(195 198 193 / 11%);
@@ -1197,10 +1200,10 @@
   .contrib-day[data-level="3"] { background: #047857; }
   .contrib-day[data-level="4"] { background: #064e3b; }
   .dark .contrib-day { background: #334155; }
-  .dark .contrib-day[data-level="1"] { background: #047857; }
-  .dark .contrib-day[data-level="2"] { background: #059669; }
-  .dark .contrib-day[data-level="3"] { background: #34d399; }
-  .dark .contrib-day[data-level="4"] { background: #a7f3d0; }
+  .dark .contrib-day[data-level="1"] { background: #4a5a3c; }
+  .dark .contrib-day[data-level="2"] { background: #7a7a45; }
+  .dark .contrib-day[data-level="3"] { background: #b49a55; }
+  .dark .contrib-day[data-level="4"] { background: #e8c36e; }
 
   /* A number worth acting on, wrapped in the link that acts on it. Grid rather than flex so
      the number sits in a row of its own fixed height: the figure arrives a second after the
@@ -1213,7 +1216,7 @@
      lightness band in dark). Emerald 600/500-ish passes both; text keeps the accent. */
   .an-wrap { @apply mx-auto w-full max-w-6xl; }
   .an-wrap { --chart: 5 150 105; }                 /* #059669 Emerald 600 */
-  .dark .an-wrap, .chrome-dark .an-wrap { --chart: 13 159 110; }  /* #0d9f6e */
+  .dark .an-wrap, .chrome-dark .an-wrap { --chart: 214 178 96; }  /* #d6b260 */
 
   .an-live {
     @apply inline-flex items-center gap-1.5 rounded-full border border-brand-border

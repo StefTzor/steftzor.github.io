@@ -446,7 +446,7 @@ function addRounds() {
     source: SOURCE,
     paint: {
       "circle-radius": 4.5,
-      "circle-color": ["case", ["get", "over"], ink("map-past"), ink("accent")],
+      "circle-color": ["case", ["get", "over"], ink("map-past"), ink("map-future")],
       "circle-opacity": ["case", ["get", "over"], 0.7, 1],
       "circle-stroke-width": 1.5,
       "circle-stroke-color": ink("surface"),
@@ -532,7 +532,7 @@ function addRounds() {
         // outline describes a shape rather than a fourth state. When the dots moved to
         // `map-past` and this did not, a raced round drew a #7c8798 dot on a #475569 outline -
         // the exact pair the retokenising set out to kill, still live one layer down.
-        "line-color": ["case", ["get", "over"], ink("map-past"), ink("accent")],
+        "line-color": ["case", ["get", "over"], ink("map-past"), ink("map-future")],
         "line-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0, 11, 1],
         "line-width": ["interpolate", ["linear"], ["zoom"], 8, 1, 14, 3],
       },
