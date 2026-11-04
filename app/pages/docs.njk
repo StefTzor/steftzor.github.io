@@ -132,12 +132,13 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">Postgres</h3>
         <p class="hint mt-1">
-          Eleven tables. Contact submissions, a row per process start, which migrations have run, and
+          Twelve tables. Contact submissions, a row per process start, which migrations have run, and
           the one-row table holding the secret behind the visitor number below. Five the system
           writes for itself: the status page's health checks (seven days), the shape of each
           upstream's answers and what changed in it (field names and types, never a value), GitHub
-          webhook deliveries that passed their signature check (30 days), the bus timetable, and the
-          sports data, saved so a restart does not fetch them again. And
+          webhook deliveries that passed their signature check (30 days), the bus timetable, the
+          sports data, saved so a restart does not fetch them again, and a nightly copy of the accounts,
+          so that the backup covers them. And
           one row per page view: path, which of the two properties, the referring host, the time,
           a coarse browser, OS, device class and width bracket, the country as two letters (looked up
           on the server from the address; IP geolocation by
