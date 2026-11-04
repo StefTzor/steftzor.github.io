@@ -114,6 +114,7 @@ const ISS = {
 
   assert.strictEqual(core.planeLine(PLANE), '3,048 m · 720 km/h · E');
   assert.strictEqual(core.planeLine({ ...PLANE, ground: true }), 'On the ground');
+  assert.strictEqual(core.planeLine({ ...PLANE, altitude: -61, speed: null, track: null }), '0 m');
   assert.strictEqual(core.planeLine({ ...PLANE, speed: null, track: null }), '3,048 m');
   ok('a plane reads as altitude, speed and heading, leaving out what is unknown');
 

@@ -120,7 +120,8 @@ export function compass(degrees) {
 
 export function planeLine(plane) {
   if (plane.ground) return "On the ground";
-  const parts = [`${plane.altitude.toLocaleString("en-GB")} m`];
+  // Barometric height reads below zero on a low-lying approach.
+  const parts = [`${Math.max(0, plane.altitude).toLocaleString("en-GB")} m`];
   if (plane.speed !== null) parts.push(`${plane.speed} km/h`);
   if (plane.track !== null) parts.push(compass(plane.track));
   return parts.join(" · ");
