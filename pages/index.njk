@@ -173,95 +173,46 @@ class="relative border-b-2 border-brand-border pt-20 pb-24 md:pt-32 md:pb-40 ove
   <div class="container mx-auto py-16 px-4">
 
 <section class="featured-projects">
-  <div class="text-center mb-12">
-    <h2 class="text-3xl font-bold text-brand-text">Selected Case Studies</h2>
-    <div class="h-1 w-20 bg-brand-accent mx-auto mt-4 rounded-full"></div>
-  </div>
+  <h2 class="mb-12 text-3xl font-bold text-brand-text">Selected Case Studies</h2>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  {# The same route line as /portfolio/, laid across the page. #}
+  <ol class="stops">
+    <li class="stops-item">
+      <p class="case-number">01</p>
+      <p class="case-kind">API Architecture</p>
+      <h3>Global Ticketing API Mapping</h3>
+      <p class="stops-text">Reverse-engineered undocumented API logic for a global ticketing platform, so its event data could be standardised without breaking the systems already reading it.</p>
+      <ul class="case-tags">
+        <li>JSON</li>
+        <li>Data Mapping</li>
+      </ul>
+      <a href="/portfolio/" class="stops-link">Read the case study {% icon "fa-solid-arrow-right", "text-sm" %}</a>
+    </li>
+    <li class="stops-item">
+      <p class="case-number">02</p>
+      <p class="case-kind">Data Privacy</p>
+      <h3>US Sports League: Protecting Minors' Data</h3>
+      <p class="stops-text">Designed the identity resolution and a "Parent/Guardian" entity model for a US league's youth network, so marketing reached authorised adults while minors' data stayed siloed.</p>
+      <ul class="case-tags">
+        <li>Privacy</li>
+        <li>Identity Resolution</li>
+      </ul>
+      <a href="/portfolio/" class="stops-link">Read the case study {% icon "fa-solid-arrow-right", "text-sm" %}</a>
+    </li>
+    <li class="stops-item">
+      <p class="case-number">03</p>
+      <p class="case-kind">AI Automation</p>
+      <h3>Segmentation Engine Migration</h3>
+      <p class="stops-text">Built an AI toolkit that rebuilds each customer's segments on a new engine through the platform's API, so a migration now needs only a planning phase.</p>
+      <ul class="case-tags">
+        <li>Generative AI</li>
+        <li>REST APIs</li>
+      </ul>
+      <a href="/portfolio/" class="stops-link">Read the case study {% icon "fa-solid-arrow-right", "text-sm" %}</a>
+    </li>
+  </ol>
 
-    <div
-      class="group bg-brand-surface border border-brand-border rounded-xl overflow-hidden hover:shadow-glow transition duration-300">
-      <div class="p-8 h-full flex flex-col">
-        <div class="flex justify-between items-start mb-4">
-          <span
-            class="bg-brand-accent/10 text-brand-accent text-xs font-bold px-3 py-1 rounded-full border border-brand-accent/30">API
-            Architecture</span>
-          {% icon "fa-solid-network-wired", "text-brand-muted text-xl" %}
-        </div>
-        <h3 class="text-xl font-bold text-brand-text group-hover:text-brand-accent transition-colors">Global
-          Ticketing API Mapping</h3>
-        <p class="mt-3 text-sm text-brand-muted leading-relaxed flex-grow">
-          Reverse-engineered undocumented API logic for a global ticketing platform, so its event data could
-          be standardised without breaking the systems already reading it.
-        </p>
-        <div class="mt-5 flex flex-wrap gap-2">
-          <span class="inline-block bg-brand-bg text-brand-muted text-xs font-mono px-2 py-1 rounded">JSON</span>
-          <span class="inline-block bg-brand-bg text-brand-muted text-xs font-mono px-2 py-1 rounded">Data
-            Mapping</span>
-        </div>
-        <a href="/portfolio/"
-          class="block mt-6 text-center w-full py-2 rounded border border-brand-border text-brand-muted hover:border-brand-accent hover:text-brand-accent transition-colors text-sm font-medium">
-          Read the case study
-        </a>
-      </div>
-    </div>
-
-    <div
-      class="group bg-brand-surface border border-brand-border rounded-xl overflow-hidden hover:shadow-glow transition duration-300">
-      <div class="p-8 h-full flex flex-col">
-        <div class="flex justify-between items-start mb-4">
-          <span
-            class="bg-brand-accent/10 text-brand-accent text-xs font-bold px-3 py-1 rounded-full border border-brand-accent/30">Data
-            Privacy</span>
-          {% icon "fa-solid-shield-alt", "text-brand-muted text-xl" %}
-        </div>
-        <h3 class="text-xl font-bold text-brand-text group-hover:text-brand-accent transition-colors">US Sports
-          League: Protecting Minors' Data</h3>
-        <p class="mt-3 text-sm text-brand-muted leading-relaxed flex-grow">
-          Designed the identity resolution and a "Parent/Guardian" entity model for a US league's youth
-          network, so marketing reached authorised adults while minors' data stayed siloed.
-        </p>
-        <div class="mt-5 flex flex-wrap gap-2">
-          <span class="inline-block bg-brand-bg text-brand-muted text-xs font-mono px-2 py-1 rounded">Privacy</span>
-          <span class="inline-block bg-brand-bg text-brand-muted text-xs font-mono px-2 py-1 rounded">Identity Resolution</span>
-        </div>
-        <a href="/portfolio/"
-          class="block mt-6 text-center w-full py-2 rounded border border-brand-border text-brand-muted hover:border-brand-accent hover:text-brand-accent transition-colors text-sm font-medium">
-          Read the case study
-        </a>
-      </div>
-    </div>
-
-    <div
-      class="group bg-brand-surface border border-brand-border rounded-xl overflow-hidden hover:shadow-glow transition duration-300">
-      <div class="p-8 h-full flex flex-col">
-        <div class="flex justify-between items-start mb-4">
-          <span
-            class="bg-brand-accent/10 text-brand-accent text-xs font-bold px-3 py-1 rounded-full border border-brand-accent/30">AI
-            Automation</span>
-          {% icon "fa-solid-cogs", "text-brand-muted text-xl" %}
-        </div>
-        <h3 class="text-xl font-bold text-brand-text group-hover:text-brand-accent transition-colors">Segmentation
-          Engine Migration</h3>
-        <p class="mt-3 text-sm text-brand-muted leading-relaxed flex-grow">
-          Built an AI toolkit that rebuilds each customer's segments on a new engine through the platform's API,
-          so a migration now needs only a planning phase.
-        </p>
-        <div class="mt-5 flex flex-wrap gap-2">
-          <span class="inline-block bg-brand-bg text-brand-muted text-xs font-mono px-2 py-1 rounded">Generative AI</span>
-          <span class="inline-block bg-brand-bg text-brand-muted text-xs font-mono px-2 py-1 rounded">REST APIs</span>
-        </div>
-        <a href="/portfolio/"
-          class="block mt-6 text-center w-full py-2 rounded border border-brand-border text-brand-muted hover:border-brand-accent hover:text-brand-accent transition-colors text-sm font-medium">
-          Read the case study
-        </a>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="text-center mt-12">
+  <div class="mt-12">
     <a href="/portfolio/" class="btn-secondary inline-flex items-center gap-2">
       View all case studies {% icon "fa-solid-arrow-right", "text-sm" %}
     </a>
