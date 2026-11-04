@@ -31,6 +31,7 @@ module.exports = {
           // The /f1/ map key's swatches, so the legend and the dots it describes cannot drift:
           // both sides read the same two custom properties. See src/input.css for the measured
           // separations and why `past` is not simply `muted`.
+          'map-future': 'rgb(var(--color-map-future) / <alpha-value>)',
           'map-past': 'rgb(var(--color-map-past) / <alpha-value>)',
           'map-now': 'rgb(var(--color-map-now) / <alpha-value>)',
         },
