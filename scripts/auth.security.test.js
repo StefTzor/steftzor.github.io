@@ -100,5 +100,11 @@ for (const dir of [path.join(__dirname, '..', 'pages'), path.join(__dirname, '..
   }
 }
 
+// The dates a client writes at registration are copied into the nightly account backup. Their
+// type has to be fixed here, or a client can write a value the copy has to defend against.
+const rules = fs.readFileSync(path.join(__dirname, '..', 'firestore.rules'), 'utf8');
+assert.ok(/request\.resource\.data\.createdAt is string/.test(rules) && /request\.resource\.data\.consentAt is string/.test(rules),
+  'firestore.rules must fix the type of createdAt and consentAt on create');
+
 console.log(`auth.js: all security invariants hold in ${COPIES.length} file(s) — ` +
   COPIES.map((f) => path.relative(path.join(__dirname, '..'), f)).join(', '));
