@@ -56,6 +56,8 @@ const MARKERS = {
 const HIT_PX = 7;
 const STREET_DIVE_ZOOM = 18.5;
 const SETTLE_MS = 150;
+// Esri has no imagery past this over much of Sweden: asking for more gives 404s and blank tiles.
+const IMAGERY_MAX_ZOOM = 18;
 const ZOOM_MOVED = 0.01;
 const CLICKABLE = ["world-alerts", "world-planes", "world-cameras", "world-airports", "world-sats", "world-places", "world-buildings"];
 const AIRPORT_MIN_ZOOM = 6;
@@ -878,7 +880,7 @@ async function start(me) {
     return { data: await apiBytes(`/world/tile/${path}`) };
   });
   const imagery = state.config.imagery
-    ? { tiles: ["wd://imagery/{z}/{x}/{y}"], tileSize: 256, maxzoom: 19, attribution: ESRI_CREDIT }
+    ? { tiles: ["wd://imagery/{z}/{x}/{y}"], tileSize: 256, maxzoom: IMAGERY_MAX_ZOOM, attribution: ESRI_CREDIT }
     : null;
   try {
     state.map = await createMap(el("wdMap"), { ...view, globe: true, satellite: true, explore: true, imagery });
