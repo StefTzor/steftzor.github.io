@@ -418,6 +418,49 @@
     @apply px-4 py-10 sm:px-6 lg:px-8 mx-auto w-full max-w-[96rem];
   }
 
+  /* /world/: the map is the page and everything else floats on it. dvh, so a phone's collapsing
+     address bar does not push the panel under the fold. */
+  .world {
+    @apply relative w-full overflow-hidden;
+    height: calc(100dvh - 4.875rem);
+    min-height: 26rem;
+  }
+  /* Sized rather than positioned: MapLibre's stylesheet arrives later and sets position: relative. */
+  .world-map { height: 100%; width: 100%; }
+  .world-float { @apply absolute z-10 rounded-xl border border-brand-border shadow-lg; }
+  .world-search { @apply left-3 top-3 w-[min(19rem,calc(100%-4.5rem))] p-2; }
+  .world-nav { @apply absolute z-10 flex gap-1.5 overflow-x-auto; left: .75rem; right: 4.5rem; top: 4.75rem; scrollbar-width: none; }
+  .world-nav .world-chip { @apply shrink-0; }
+  .world-results { @apply mt-1 max-h-72 overflow-y-auto text-sm; }
+  .world-group { @apply px-1 pt-2 text-[0.6875rem] uppercase tracking-wide text-brand-muted; }
+  .world-dot { @apply mr-2 inline-block h-2 w-2 shrink-0 rounded-full; }
+  .world-dot[data-severity="high"] { background: #d9534f; }
+  .world-dot[data-severity="warn"] { background: rgb(var(--color-brass)); }
+  .world-dot[data-severity="info"] { background: rgb(var(--color-muted)); }
+  .world-layers { @apply absolute z-10 flex flex-wrap gap-1.5; left: .75rem; bottom: 2.25rem; right: 4.5rem; }
+  .world-chip {
+    @apply material rounded-full border border-brand-border px-3 py-1.5 text-xs font-semibold text-brand-muted tabular-nums
+      transition-colors duration-200 active:scale-[0.97] active:duration-100;
+  }
+  .world-chip[aria-pressed="true"] { @apply border-brand-accent text-brand-accent; }
+  .world-panel {
+    @apply inset-x-3 bottom-3 max-h-[34%] overflow-y-auto p-3 pb-12 text-sm;
+  }
+  .world:has(.world-panel) .world-layers { bottom: calc(34% + 1.25rem); }
+  /* The credits are a licence condition, so they sit clear of the panel. */
+  .world-map .maplibregl-ctrl-bottom-right { bottom: calc(34% + 1rem); }
+  .world-row {
+    @apply flex w-full items-baseline justify-between gap-3 rounded-md px-1 py-1.5 text-left
+      transition-colors duration-200 hover:bg-brand-text/5 active:scale-[0.99] active:duration-100;
+  }
+  @media (min-width: 1024px) {
+    .world-panel { @apply inset-x-auto bottom-3 right-3 top-3 max-h-none w-80; }
+    .world:has(.world-panel) .world-layers { bottom: 2.25rem; right: 22rem; }
+    .world-nav { right: 22rem; }
+    .world-map .maplibregl-ctrl-top-right, .world-map .maplibregl-ctrl-bottom-right { right: 21rem; }
+    .world-map .maplibregl-ctrl-bottom-right { bottom: 0; }
+  }
+
   /* The reading measure, left-aligned inside .app-page. Messages, Invites, Analytics and
      Profile are text; the width that makes them readable is not the width of the page. */
   .app-prose {
@@ -1637,11 +1680,13 @@
      .palette above it. var() resolves on each element, so the dark chrome takes
      its own muted value, not the page's. */
   @media (prefers-reduced-transparency: reduce) {
+    .world-chip { @apply bg-brand-bg; }
     .material { @apply bg-brand-bg; backdrop-filter: none; }
     #overlay, .palette::backdrop { background: rgb(0 0 0 / 70%); backdrop-filter: none; }
   }
   @media (prefers-contrast: more) {
     :root, .dark, .chrome-dark, .dark .chrome-dark { --color-border: var(--color-muted); }
+    .world-chip { @apply bg-brand-bg; }
     .material { @apply bg-brand-bg; backdrop-filter: none; }
   }
 }

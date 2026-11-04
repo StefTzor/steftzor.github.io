@@ -27,6 +27,7 @@
 module.exports = [
   { label: "Home", href: "/", navKey: "home", icon: "fa-solid-house" },
   { label: "Transit", href: "/transit/", navKey: "transit", icon: "fa-solid-bus" },
+  { label: "Live world", href: "/world/", navKey: "world", icon: "fa-solid-earth-europe" },
   { label: "Formula 1", href: "/f1/", navKey: "f1", icon: "fa-solid-flag-checkered" },
   { label: "Sports", href: "/sports/", navKey: "sports", icon: "fa-solid-futbol" },
   { label: "How this is built", href: "/docs/", navKey: "docs", icon: "fa-solid-network-wired", foot: true },

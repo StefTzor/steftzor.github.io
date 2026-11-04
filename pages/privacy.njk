@@ -5,8 +5,8 @@ title: "Privacy Policy | Stefanos Tzortzoglou"
 heading: "Privacy Policy"
 description: "How tzortzoglou.eu handles personal data: what is collected, why, the legal basis under GDPR, who processes it, and how to exercise your rights."
 summary: "This site is a personal portfolio. It sets no cookies and runs no advertising. Since 18 September 2026 a counted page view carries a visitor number that is the same for your browser all day, different tomorrow, and erased from the row after 30 days; section 2.2 sets out exactly what it is. Everything else stored here is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form."
-updated: "2026-10-11"
-updatedLabel: "11 October 2026"
+updated: "2026-11-04"
+updatedLabel: "4 November 2026"
 sitemapOrder: 60
 sitemapChangefreq: yearly
 sitemapPriority: "0.3"
@@ -279,8 +279,8 @@ sitemapPriority: "0.3"
 
 <h3 id="map-tiles">3.3 Map tiles inside the application</h3>
 <p>
-  Two pages in the application draw a map: the race location on <strong>/f1/</strong> and the stops on
-  <strong>/transit/</strong>. The map software is served from my own domain, but the map picture is not. Your browser
+  Three pages in the application draw a map: the race location on <strong>/f1/</strong>, the stops on
+  <strong>/transit/</strong> and the live world map on <strong>/world/</strong>. The map software is served from my own domain, but the map picture is not. Your browser
   fetches it a square at a time, as you pan and zoom, straight from <strong>tiles.openfreemap.org</strong>:
   <strong>OpenFreeMap</strong>, a free map-tile service built on OpenStreetMap data. It asks for no account, no key
   and no payment, which is the only reason your browser can be the one asking, not my server.
@@ -290,14 +290,31 @@ sitemapPriority: "0.3"
   which tiles you ask for depends on what you are looking at, and you ask for more of them the longer you look.
 </p>
 <p>
-  <strong>Since 18 September 2026 there is a second tile host, on one page and behind a button.</strong> The Formula 1
-  page has a <strong>Satellite</strong> control that swaps the drawn map for photography, and that imagery comes from
+  <strong>Since 18 September 2026 there is a second tile host, behind a button.</strong> The Formula 1 and live world
+  pages have a <strong>Satellite</strong> control that swaps the drawn map for photography, and that imagery comes from
   <strong>tiles.maps.eox.at</strong> &mdash; EOX IT Services GmbH, who publish a cloud-free composite of the European
   Space Agency's Sentinel-2 data. It arrives the same way, a square at a time, fetched by your browser. Everything
   below about what a tile request reveals applies to it exactly as it does to the first host.
   <strong>Nothing is fetched from them unless you press the button.</strong> Leave it alone and your browser never
   contacts them; the departures page has no such button, because photography hides the street names and stop labels
   that map exists to show.
+</p>
+<p>
+  <strong>The live world map, /world/, also reads other services through my server.</strong> Your browser never
+  contacts them. To show aircraft, my server asks <strong>adsb.lol</strong> about a square roughly 55 km across around
+  the map's centre, never the exact point. Place search goes to <strong>Photon</strong>, a public OpenStreetMap search
+  service run by Komoot in Germany, so the letters you type and a rounded version of the map's position reach them,
+  without your IP address or your account. Orbits (<strong>CelesTrak</strong>) and the alert board
+  (<strong>USGS, GDACS, NASA EONET, Krisinformation, SMHI, CISA</strong>) carry nothing about you. If they are switched
+  on, road cameras come from <strong>Trafikverket</strong>, traffic from <strong>TomTom</strong> and sharper imagery from
+  <strong>Esri</strong>, again through my server: those requests name a camera or a map square, not you. Your position
+  and your searches answer that one request and my server neither logs nor stores them; repeated answers are held in
+  memory for a short time, with nothing linking them to anyone, and vanish when the server restarts.
+</p>
+<p>
+  <strong>The Near me button</strong> asks your browser for your location, only when you press it. The answer moves the
+  map on your device. From then on the map's centre is treated like any other position above, so it is used for that
+  one request and not stored.
 </p>
 <ul>
   <li><strong>What they receive:</strong> your <strong>IP address</strong>, your user-agent, which tiles you asked

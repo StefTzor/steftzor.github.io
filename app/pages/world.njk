@@ -1,0 +1,82 @@
+---
+layout: app-shell.njk
+permalink: /world/
+title: "Live world | Stefanos Tzortzoglou"
+shell: true
+bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
+navDrawerOnly: true
+signOut: true
+bodyScripts:
+  - src: "/scripts/world.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+  - src: "/scripts/palette.js"
+    type: "module"
+---
+<section class="world" aria-labelledby="wdTitle">
+  <div id="wdMap" class="world-map" role="application" aria-label="Map of aircraft, satellites, alerts and buildings"></div>
+
+  <form id="wdSearch" class="world-float world-search material" role="search" autocomplete="off">
+    <label for="wdQuery" class="sr-only">Search a place, plane, satellite or alert</label>
+    <input id="wdQuery" name="wdQuery" type="search" class="field w-full" maxlength="120"
+           autocomplete="off" placeholder="Search anything  ( / )">
+    <div id="wdResults" class="world-results empty:hidden"></div>
+    <p id="wdSearchNote" role="status" aria-live="polite" class="hint mt-1 empty:hidden"></p>
+  </form>
+
+  <nav id="wdNav" class="world-nav" aria-label="Go to">
+    <button type="button" id="wdBack" class="world-chip" disabled>Back</button>
+    <button type="button" id="wdNear" class="world-chip">Near me</button>
+  </nav>
+
+  <div class="world-layers" role="group" aria-label="Layers">
+    <button type="button" class="world-chip" data-layer="alerts" aria-pressed="true">Alerts <span id="wdAlertCount"></span></button>
+    <button type="button" class="world-chip" data-layer="planes" aria-pressed="true">Planes <span id="wdPlaneCount"></span></button>
+    <button type="button" class="world-chip" data-layer="satellites" aria-pressed="true">Satellites <span id="wdSatCount"></span></button>
+    <button type="button" class="world-chip" data-layer="buildings" aria-pressed="true">Buildings</button>
+    <button type="button" class="world-chip" data-layer="services" aria-pressed="true">Emergency services</button>
+    <button type="button" class="world-chip" data-layer="buses" aria-pressed="false">Buses</button>
+    <button type="button" class="world-chip" data-layer="cameras" aria-pressed="false" hidden>Cameras</button>
+    <button type="button" class="world-chip" data-layer="traffic" aria-pressed="false" hidden>Traffic</button>
+  </div>
+
+  <aside class="world-float world-panel material" aria-labelledby="wdTitle">
+    <p class="text-xs uppercase tracking-wide text-brand-muted">Live world</p>
+    <h1 id="wdTitle" class="truncate text-lg font-bold text-brand-text">World</h1>
+
+    <div class="an-tabs mt-2" role="tablist" aria-label="Panel">
+      <button type="button" class="an-tab" role="tab" id="wdTabHere" aria-selected="true" aria-controls="wdHere">Here</button>
+      <button type="button" class="an-tab" role="tab" id="wdTabAlerts" aria-selected="false" aria-controls="wdAlerts" tabindex="-1">Alerts <span id="wdAlertTab"></span></button>
+    </div>
+
+    <div id="wdHere" role="tabpanel" aria-labelledby="wdTabHere">
+      <div id="wdPicked" class="mt-3 border-t border-brand-border pt-2" hidden>
+        <p id="wdPickedKind" class="text-xs uppercase tracking-wide text-brand-muted"></p>
+        <p id="wdPickedName" class="font-semibold text-brand-text"></p>
+        <img id="wdPhoto" class="mt-1 w-full rounded-md" alt="" hidden>
+        <ul id="wdPickedFacts" class="text-xs text-brand-muted tabular-nums"></ul>
+        <a id="wdPickedLink" class="link-action hidden text-xs" target="_blank" rel="noopener noreferrer">Read the source</a>
+      </div>
+
+      <h2 class="mt-3 border-t border-brand-border pt-2 text-xs uppercase tracking-wide text-brand-muted">Nearest planes</h2>
+      <ul id="wdPlanes"></ul>
+      <p id="wdLive" role="status" aria-live="off" class="hint mt-1 tabular-nums"></p>
+
+      <h2 class="mt-3 border-t border-brand-border pt-2 text-xs uppercase tracking-wide text-brand-muted">Satellites overhead</h2>
+      <ul id="wdSats"></ul>
+
+      <div id="wdCamBlock" hidden>
+        <h2 class="mt-3 border-t border-brand-border pt-2 text-xs uppercase tracking-wide text-brand-muted">Nearest cameras</h2>
+        <ul id="wdCams"></ul>
+      </div>
+      <p id="wdNote" role="status" class="hint mt-1"></p>
+    </div>
+
+    <div id="wdAlerts" role="tabpanel" aria-labelledby="wdTabAlerts" hidden>
+      <div id="wdFilters" class="mt-3 flex flex-wrap gap-1.5" role="group" aria-label="Filter alerts"></div>
+      <ul id="wdAlertList" class="mt-2"></ul>
+      <p id="wdFeeds" role="status" class="hint mt-1"></p>
+    </div>
+  </aside>
+</section>

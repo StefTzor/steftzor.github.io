@@ -59,6 +59,15 @@ export async function api(path, options = {}) {
   return res.status === 204 ? null : res.json();
 }
 
+/** The same call for bytes: map tiles and camera photos, which are not JSON. */
+export async function apiBytes(path) {
+  const user = auth.currentUser;
+  if (!user) throw Object.assign(new Error("not signed in"), { status: 401 });
+  const res = await fetch(API_BASE + path, { headers: { Authorization: "Bearer " + (await user.getIdToken()) } });
+  if (!res.ok) throw Object.assign(new Error("api " + res.status), { status: res.status });
+  return res.arrayBuffer();
+}
+
 /** Resolves with the signed-in profile, or never resolves because the page is leaving. */
 export const profile = new Promise((resolve) => {
   onAuthStateChanged(auth, async (user) => {

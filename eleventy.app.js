@@ -30,7 +30,7 @@ module.exports = function (eleventyConfig) {
       // through the API - because tiles are requested one per tile as you pan, and proxying them
       // would mean serving them.
       //
-      // tiles.maps.eox.at is the satellite basemap, offered behind a toggle on /f1/ only. It is
+      // tiles.maps.eox.at is the satellite basemap, offered behind a toggle on /f1/ and /world/. It is
       // listed in BOTH connect-src and img-src for the same reason the other one is: MapLibre
       // decides for itself whether a raster tile arrives through fetch or as an image element,
       // and which it picks is a function of the browser rather than of this code. Allowing one
@@ -114,6 +114,8 @@ module.exports = function (eleventyConfig) {
     "app/scripts/map.js": "scripts/map.js",
     "app/scripts/live-buses.js": "scripts/live-buses.js",
     "app/scripts/live-buses-core.js": "scripts/live-buses-core.js",
+    "app/scripts/world.js": "scripts/world.js",
+    "app/scripts/world-core.js": "scripts/world-core.js",
     "app/scripts/docs.js": "scripts/docs.js",
     "app/scripts/admin-messages.js": "scripts/admin-messages.js",
     "app/scripts/admin-invites.js": "scripts/admin-invites.js",

@@ -290,6 +290,9 @@ function resetControl(map) {
  * @param {object} [opts]
  * @param {boolean} [opts.globe]      globe projection instead of flat
  * @param {boolean} [opts.satellite]  offer a map/satellite toggle
+ * @param {object} [opts.imagery]     source fields to use instead of the default satellite imagery
+ * @param {boolean} [opts.explore]    the map is the page: the wheel zooms, and tilt and rotation
+ *                                    work, because /world/'s buildings are only seen tilted
  * @param {[number, number]} [opts.center]  [lon, lat] - MapLibre's order, which is not the order
  *                                          anybody says a coordinate out loud in
  * @param {number} [opts.zoom]
@@ -299,7 +302,7 @@ function resetControl(map) {
  * a map is an addition to every page that has one, never the thing the page is for.
  */
 export async function createMap(container, {
-  globe = false, center = [0, 0], zoom = 1, satellite = false,
+  globe = false, center = [0, 0], zoom = 1, satellite = false, explore = false, imagery = null,
 } = {}) {
   stylesheet();
   const maplibregl = await maplibre();
@@ -316,11 +319,11 @@ export async function createMap(container, {
     // document past the map, ctrl/cmd + wheel zooms it, and MapLibre shows that instruction over
     // the map the first time somebody tries. On touch, one finger pans the page and two zoom the
     // map.
-    cooperativeGestures: true,
+    cooperativeGestures: !explore,
     // Tilting and spinning are not useful for either of these and a stray two-finger twist is an
     // easy way to end up looking at a horizon nobody asked for. Zoom survives; rotation does not.
-    pitchWithRotate: false,
-    dragRotate: false,
+    pitchWithRotate: explore,
+    dragRotate: explore,
   });
 
   // The compact attribution opens expanded and only folds on a drag, so on a phone it covered a
@@ -331,7 +334,7 @@ export async function createMap(container, {
 
   // Buttons as well as gestures, because a gesture nobody discovers is not a control. Compass off
   // for the same reason rotation is: there is no bearing here worth resetting.
-  map.addControl(new maplibregl.NavigationControl({ showCompass: false, visualizePitch: false }),
+  map.addControl(new maplibregl.NavigationControl({ showCompass: explore, visualizePitch: explore }),
     "top-right");
   // Fullscreen, because both of these maps are a card in a column on a phone and the thing anybody
   // wants next is more of it. MapLibre's control handles the resize itself, so there is nothing to
@@ -360,18 +363,21 @@ export async function createMap(container, {
   // Declared before the control that closes over it. The assignment only happens on a click, so
   // the later `let` would have been safe - but a reader should not have to work that out.
   let showing = "map";
+  const photo = imagery
+    ? { ...SATELLITE, sources: { s2cloudless: { ...SATELLITE.sources.s2cloudless, ...imagery } } }
+    : SATELLITE;
   if (satellite) {
     map.addControl(basemapToggle((on) => {
       showing = on ? "satellite" : "map";
       // setStyle throws away every source and layer the caller added, which is exactly what a
       // theme change already does - so the caller's style.load handler puts them back over the
       // new basemap and there is nothing to coordinate here.
-      map.setStyle(on ? SATELLITE : STYLE[theme]);
+      map.setStyle(on ? photo : STYLE[theme]);
     }), "top-right");
   }
 
   // Pinch to zoom, but never to rotate.
-  map.touchZoomRotate.disableRotation();
+  if (!explore) map.touchZoomRotate.disableRotation();
 
   // The projection is set after the style rather than in it: neither style declares one - the dark
   // one is positron copied layer for layer, so it says no more about projection than positron does
