@@ -135,10 +135,9 @@ function showPending() {
  */
 function showUnreachable(status) {
   const main = el("main-content");
-  if (main) main.setAttribute("aria-busy", "false");
   document.documentElement.classList.remove("app-unknown");
-  document.body.textContent = "";
-  const wrap = document.createElement("main");
+  if (main) main.setAttribute("aria-busy", "false");
+  const wrap = document.createElement("div");
   wrap.className = "container mx-auto px-4 py-16 max-w-md text-center";
   const h = document.createElement("h1");
   h.className = "text-2xl font-bold mb-3 text-brand-text";
@@ -154,7 +153,9 @@ function showUnreachable(status) {
   again.textContent = "Try again";
   again.addEventListener("click", () => location.reload());
   wrap.append(h, p, again);
-  document.body.appendChild(wrap);
+  // Only the page's own content goes: the rail and the header are static, and they are the way
+  // out of a page that cannot load.
+  (main || document.body).replaceChildren(wrap);
 }
 
 /**

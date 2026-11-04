@@ -215,3 +215,42 @@ export function ago(iso, now) {
   if (minutes < 1440) return `${Math.floor(minutes / 60)} h ago`;
   return `${Math.floor(minutes / 1440)} d ago`;
 }
+
+export const PLACES = {
+  hospital: { label: "Hospital", glyph: "hospital", color: "#d9534f" },
+  fire_station: { label: "Fire station", glyph: "fire", color: "#e8833a" },
+  police: { label: "Police", glyph: "police", color: "#3f7fd1" },
+  town_hall: { label: "Town hall", glyph: "hall", color: "#8a78c9" },
+  railway: { label: "Station", glyph: "train", color: "#4f8a8b" },
+  ferry_terminal: { label: "Ferry terminal", glyph: "port", color: "#4f8a8b" },
+  harbor: { label: "Harbour", glyph: "port", color: "#4f8a8b" },
+};
+
+/** The card for a place from the map's own data, which knows a class and usually a name. */
+export function placeCard({ class: kind, subclass, name }) {
+  const label = subclass === "clinic" ? "Clinic" : (PLACES[kind] || { label: "Place" }).label;
+  return { kind: label, name: name || label, facts: [] };
+}
+
+const AIRPORT_KINDS = { international: "International airport", public: "Public airport", regional: "Regional airport" };
+
+export function airportCard({ name, iata, icao, ele, class: kind }) {
+  const codes = [iata, icao].filter(Boolean).join(" · ");
+  return {
+    kind: AIRPORT_KINDS[kind] || "Airfield",
+    name: name || "Airfield",
+    facts: [codes, Number.isFinite(ele) ? `Elevation ${Math.round(ele)} m` : ""].filter(Boolean),
+  };
+}
+
+/** Clicking nothing still says something: where this is, and the nearest camera. */
+export function emptyCard({ lat, lon }, where, camera) {
+  return {
+    kind: "Here",
+    name: where.country ? placeName(where, Infinity) : "Open water",
+    facts: [
+      `${lat.toFixed(4)}, ${lon.toFixed(4)}`,
+      camera ? `Nearest camera: ${camera.name}, ${camera.km} km` : "",
+    ].filter(Boolean),
+  };
+}

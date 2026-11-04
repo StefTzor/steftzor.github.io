@@ -451,6 +451,7 @@
   }
   /* Sized rather than positioned: MapLibre's stylesheet arrives later and sets position: relative. */
   .world-map { height: 100%; width: 100%; }
+  .world-map .maplibregl-canvas.world-hot { cursor: pointer; }
   .world-float { @apply absolute z-10 rounded-xl border border-brand-border shadow-lg; }
   .world-search { @apply left-3 top-3 w-[min(19rem,calc(100%-4.5rem))] p-2; }
   .world-nav { @apply absolute z-10 flex gap-1.5 overflow-x-auto; left: .75rem; right: 4.5rem; top: 4.75rem; scrollbar-width: none; }

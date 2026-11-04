@@ -17,7 +17,7 @@ const vm = require('vm');
 const SRC = fs.readFileSync(path.join(__dirname, '..', 'app/scripts/world-core.js'), 'utf8')
   .replace(/^export /gm, '');
 const NAMES = ['distanceKm', 'advance', 'planeFeatures', 'nearest', 'sky', 'groundTrack',
-  'buildingFacts', 'compass', 'planeLine', 'liveLine', 'fuzzyScore', 'localMatches', 'placeName', 'alertFeatures', 'ago', 'REGIONS'];
+  'buildingFacts', 'compass', 'planeLine', 'liveLine', 'fuzzyScore', 'localMatches', 'placeName', 'alertFeatures', 'ago', 'REGIONS', 'placeCard', 'airportCard', 'emptyCard', 'PLACES'];
 const core = {};
 vm.runInNewContext(`${SRC}\n${NAMES.map((n) => `this.${n} = ${n};`).join('\n')}`, core);
 
@@ -174,6 +174,34 @@ const ISS = {
 
   for (const r of core.REGIONS) assert.ok(r.name && r.center.length === 2 && r.zoom > 0, r.name);
   ok('every region has somewhere to go');
+
+  {
+    const hospital = core.placeCard({ class: 'hospital', subclass: 'clinic', name: 'Centrumkliniken' });
+    assert.strictEqual(hospital.kind, 'Clinic');
+    assert.strictEqual(hospital.name, 'Centrumkliniken');
+    assert.strictEqual(core.placeCard({ class: 'hospital', subclass: 'hospital', name: 'Akademiska' }).kind, 'Hospital');
+    assert.strictEqual(core.placeCard({ class: 'fire_station' }).kind, 'Fire station');
+    assert.strictEqual(core.placeCard({ class: 'fire_station' }).name, 'Fire station');
+    assert.strictEqual(core.placeCard({ class: 'police', name: 'Polishuset' }).kind, 'Police');
+    ok('a place says what it is, and an unnamed one still has a title');
+  }
+  {
+    const card = core.airportCard({ name: 'Stockholm Arlanda', iata: 'ARN', icao: 'ESSA', ele: 42, class: 'international' });
+    assert.strictEqual(card.kind, 'International airport');
+    assert.deepStrictEqual(Array.from(card.facts), ['ARN · ESSA', 'Elevation 42 m']);
+    assert.deepStrictEqual(Array.from(core.airportCard({ name: 'Grass strip', class: 'private' }).facts), []);
+    ok('an airport gives its codes and elevation when known');
+  }
+  {
+    const near = { name: 'Sävjaån', km: 8 };
+    const card = core.emptyCard({ lat: 59.86123, lon: 17.64059 }, { city: 'Uppsala', country: 'Sweden' }, near);
+    assert.strictEqual(card.name, 'Uppsala, Sweden');
+    assert.deepStrictEqual(Array.from(card.facts), ['59.8612, 17.6406', 'Nearest camera: Sävjaån, 8 km']);
+    assert.strictEqual(core.emptyCard({ lat: 0, lon: -30 }, {}, null).name, 'Open water');
+    ok('clicking empty map says what is there');
+  }
+  assert.ok(!Object.keys(core.PLACES).some((k) => /military|barracks|base/.test(k)));
+  ok('no military class is on the map');
 
   {
     // Firebase restores a session after the module runs, and api() throws until it has. A local

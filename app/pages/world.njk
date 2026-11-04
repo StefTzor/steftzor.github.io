@@ -15,7 +15,7 @@ bodyScripts:
     type: "module"
 ---
 <section class="world" aria-labelledby="wdTitle">
-  <div id="wdMap" class="world-map" role="application" aria-label="Map of aircraft, satellites, alerts and buildings"></div>
+  <div id="wdMap" class="world-map" role="application" aria-label="Map of aircraft, satellites, alerts, cameras and places"></div>
 
   <form id="wdSearch" class="world-float world-search material" role="search" autocomplete="off">
     <label for="wdQuery" class="sr-only">Search a place, plane, satellite or alert</label>
@@ -35,7 +35,7 @@ bodyScripts:
     <button type="button" class="world-chip" data-layer="planes" aria-pressed="true">Planes <span id="wdPlaneCount"></span></button>
     <button type="button" class="world-chip" data-layer="satellites" aria-pressed="true">Satellites <span id="wdSatCount"></span></button>
     <button type="button" class="world-chip" data-layer="buildings" aria-pressed="true">Buildings</button>
-    <button type="button" class="world-chip" data-layer="services" aria-pressed="true">Emergency services</button>
+    <button type="button" class="world-chip" data-layer="places" aria-pressed="true">Places</button>
     <button type="button" class="world-chip" data-layer="buses" aria-pressed="false">Buses</button>
     <button type="button" class="world-chip" data-layer="cameras" aria-pressed="false" hidden>Cameras</button>
     <button type="button" class="world-chip" data-layer="traffic" aria-pressed="false" hidden>Traffic</button>
