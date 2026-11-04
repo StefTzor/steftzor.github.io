@@ -454,7 +454,8 @@
   .world-map .maplibregl-canvas.world-hot { cursor: pointer; }
   .world-street { @apply absolute inset-0 z-20 bg-brand-bg; }
   .world-pano { @apply block h-full w-full cursor-grab touch-none active:cursor-grabbing; }
-  .world-street-close { @apply absolute left-3 top-3; }
+  .world-street-bar { @apply absolute left-3 top-3 flex gap-1.5; }
+  .world-chip:disabled { @apply cursor-default opacity-50; }
   .world-street-credit { @apply absolute bottom-3 left-3 max-w-[calc(100%-1.5rem)] rounded-md px-2 py-1 text-xs text-brand-muted; }
   .world-float { @apply absolute z-10 rounded-xl border border-brand-border shadow-lg; }
   .world-search { @apply left-3 top-3 w-[min(19rem,calc(100%-4.5rem))] p-2; }

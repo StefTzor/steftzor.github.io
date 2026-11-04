@@ -13,7 +13,7 @@ const FOV_MAX = 100;
 const FOV_START = 80;
 const PITCH_LIMIT = 85;
 const KEY_STEP = 6;
-const FRICTION = 0.93;
+const FRICTION = 0.86;
 const REST_SPEED = 0.01;
 
 const VERTEX = `#version 300 es
@@ -31,7 +31,7 @@ const float PI = 3.14159265359;
 void main() {
   vec3 ray = normalize(vec3(screen.x * reach * aspect, screen.y * reach, -1.0));
   float cp = cos(pitch), sp = sin(pitch), cy = cos(yaw), sy = sin(yaw);
-  ray = vec3(ray.x, ray.y * cp + ray.z * sp, -ray.y * sp + ray.z * cp);
+  ray = vec3(ray.x, ray.y * cp - ray.z * sp, ray.y * sp + ray.z * cp);
   ray = vec3(ray.x * cy - ray.z * sy, ray.y, ray.x * sy + ray.z * cy);
   vec2 uv = vec2(atan(ray.x, -ray.z) / (2.0 * PI) + 0.5, 0.5 - asin(ray.y) / PI);
   colour = texture(photo, uv);
@@ -48,7 +48,8 @@ function shader(gl, type, source) {
 /**
  * @param {HTMLCanvasElement} canvas
  * @param {{ onExit: () => void, still: () => boolean }} o - onExit: zoomed out past the widest view
- * @returns {{ show: (bitmap: ImageBitmap) => void, resize: () => void, stop: () => void }}
+ * @returns {{ show: (bitmap: ImageBitmap, keepView?: boolean) => void, facingForward: () => boolean,
+ *   resize: () => void, stop: () => void }}
  */
 export function createPano(canvas, { onExit, still }) {
   const gl = canvas.getContext("webgl2");
@@ -150,15 +151,18 @@ export function createPano(canvas, { onExit, still }) {
   }
 
   return {
-    show(bitmap) {
+    show(bitmap, keepView = false) {
       gl.bindTexture(gl.TEXTURE_2D, texture);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmap);
-      view.yaw = 0;
-      view.pitch = 0;
-      view.fov = FOV_START;
+      if (!keepView) {
+        view.yaw = 0;
+        view.pitch = 0;
+        view.fov = FOV_START;
+      }
       ready = true;
       resize();
     },
+    facingForward: () => Math.cos((view.yaw * Math.PI) / 180) >= 0,
     resize,
     stop() {
       cancelAnimationFrame(raf);
