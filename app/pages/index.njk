@@ -15,6 +15,8 @@ bodyScripts:
     type: "module"
   - src: "/scripts/sports-today.js"
     type: "module"
+  - src: "/scripts/world-home.js"
+    type: "module"
 bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
 shell: true
 navDrawerOnly: true
@@ -259,6 +261,30 @@ signOut: true
         {%- endfor %}
       </ul>
       <p id="sportsMore" class="mt-2 min-h-5 text-xs text-brand-muted"></p>
+    </div>
+  </section>
+
+  {# --- live world ---------------------------------------------------------
+     A preview of /world/: alerts near the home place saved for the weather. Removed if the alerts
+     cannot be read, like the cards above. #}
+  <section id="worldToday" aria-labelledby="world-heading" class="mt-8" data-card="loading">
+    <div class="mb-1 flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
+      <h2 id="world-heading" class="flex items-center gap-2 text-xl font-bold text-brand-text">
+        {% icon "fa-solid-earth-europe", "h-5 w-5 shrink-0 text-brand-accent" %}
+        <span>Live world</span>
+      </h2>
+      <a href="/world/" class="link-action text-sm text-brand-accent">Open the map</a>
+    </div>
+    <div class="card">
+      <ul id="worldRows" aria-busy="true" class="space-y-1">
+        {%- for i in range(0, 3) %}
+        <li class="skel-row" aria-hidden="true">
+          <span class="skel h-5 w-5 shrink-0"></span>
+          <span class="skel h-5 flex-1"></span>
+        </li>
+        {%- endfor %}
+      </ul>
+      <p id="worldMore" class="mt-2 min-h-5 text-xs text-brand-muted"></p>
     </div>
   </section>
 

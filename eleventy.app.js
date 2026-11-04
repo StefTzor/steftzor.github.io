@@ -117,12 +117,14 @@ module.exports = function (eleventyConfig) {
     "app/scripts/world.js": "scripts/world.js",
     "app/scripts/world-core.js": "scripts/world-core.js",
     "app/scripts/world-icons.js": "scripts/world-icons.js",
+    "app/scripts/world-pano.js": "scripts/world-pano.js",
+    "app/scripts/world-home.js": "scripts/world-home.js",
     "app/scripts/docs.js": "scripts/docs.js",
     "app/scripts/admin-messages.js": "scripts/admin-messages.js",
     "app/scripts/admin-invites.js": "scripts/admin-invites.js",
   });
 
-  // Same reason as the public site: CI writes the real config after the build.
+  // Generated when the container starts, by docker/10-firebase-config.sh.
   eleventyConfig.ignores.add("app/scripts/firebase-config.js");
 
   return {

@@ -1,7 +1,7 @@
 # Deploys app.tzortzoglou.eu to Dokploy on the VPS.
 #
 # Separate from deploy.yml on purpose. That workflow builds the public site for GitHub Pages and
-# its step order is load-bearing - the Firebase config is injected after the build - so it is not
+# its step order is load-bearing - the Firebase config is written when the container starts - so it is not
 # touched. This one only tells Dokploy to rebuild the app container.
 #
 # It has to reach a panel that is not on the public internet: ops is VPN-only, which is why the

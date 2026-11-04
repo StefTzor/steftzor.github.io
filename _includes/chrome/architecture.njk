@@ -7,8 +7,8 @@
 
     The lanes group by what a thing is FOR rather than by which file it lives in, which is the
     question somebody looking at an architecture picture is actually asking. -#}
-      <svg viewBox="0 0 700 472" class="w-full min-w-[560px]" role="img"
-        aria-label="Four layers. You, in a browser. Two static sites that hold no secrets. One API that verifies the token, re-reads the role and holds every key. Below it Firebase for identity, Postgres for messages, checks and saved answers, and twenty-two upstream services, six of which need a credential. The app’s map tiles are the one thing the browser fetches itself.">
+      <svg viewBox="0 0 700 518" class="w-full min-w-[560px]" role="img"
+        aria-label="Four layers. You, in a browser. Two static sites that hold no secrets. One API that verifies the token, re-reads the role and holds every key. Below it Firebase for identity, Postgres for messages, checks and saved answers, and twenty-four upstream services, six of which need a credential. The app’s map tiles are the one thing the browser fetches itself.">
         <defs>
           <marker id="flow-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
             <path d="M0,0 L8,4 L0,8 z" class="dg-arrow"/>
@@ -17,74 +17,99 @@
 
         {# Lanes first, so every box sits on top of its band. #}
         <g>
-          <rect x="6" y="6" width="688" height="62" rx="10" class="dg-lane"/>
+          <rect x="6" y="6" width="688" height="70" rx="10" class="dg-lane"/>
           <text x="18" y="24" class="dg-lane-label">In your hands</text>
 
-          <rect x="6" y="84" width="688" height="86" rx="10" class="dg-lane"/>
-          <text x="18" y="102" class="dg-lane-label">Served as files · no secret is in them</text>
+          <rect x="6" y="92" width="688" height="92" rx="10" class="dg-lane"/>
+          <text x="18" y="110" class="dg-lane-label">Served as files · no secret is in them</text>
 
-          <rect x="6" y="186" width="688" height="96" rx="10" class="dg-lane"/>
-          <text x="18" y="204" class="dg-lane-label">The only thing that decides</text>
+          <rect x="6" y="200" width="688" height="100" rx="10" class="dg-lane"/>
+          <text x="18" y="218" class="dg-lane-label">The only thing that decides</text>
 
-          <rect x="6" y="298" width="688" height="152" rx="10" class="dg-lane"/>
-          <text x="18" y="316" class="dg-lane-label">What it asks, on your behalf</text>
+          <rect x="6" y="316" width="688" height="196" rx="10" class="dg-lane"/>
+          <text x="18" y="334" class="dg-lane-label">What it asks, on your behalf</text>
+
+          {# A band inside the band: everything in it is one of the twenty-four. #}
+          <rect x="22" y="342" width="436" height="158" rx="8" class="dg-lane"/>
         </g>
 
+        {# Box to box, so each arrow says which two things talk. Straight, and clear of the lane labels. #}
         <g class="dg-line" marker-end="url(#flow-arrow)">
-          <path d="M350,50 L350,80"/>
-          <path d="M470,166 L470,182"/>
-          <path d="M170,166 L170,182"/>
-          <path d="M350,278 L350,294"/>
-          <path d="M180,278 C180,286 180,286 180,294"/>
-          <path d="M540,278 C540,286 540,286 540,294"/>
+          <path d="M310,66 L310,120"/>
+          <path d="M390,66 L390,120"/>
+          <path d="M218,170 L218,226"/>
+          <path d="M482,170 L482,226"/>
+          <path d="M240,288 L240,352"/>
+          <path d="M520,288 L520,352"/>
+          <path d="M628,288 L628,352"/>
         </g>
 
         <g>
-          <rect x="290" y="28" width="120" height="36" rx="8" class="dg-box-accent"/>
-          <text x="350" y="51" text-anchor="middle" class="dg-label">Your browser</text>
+          <rect x="290" y="30" width="120" height="36" rx="8" class="dg-box"/>
+          <text x="350" y="53" text-anchor="middle" class="dg-label">Your browser</text>
 
-          <rect x="70" y="112" width="200" height="50" rx="8" class="dg-box"/>
-          <text x="170" y="133" text-anchor="middle" class="dg-label">tzortzoglou.eu</text>
-          <text x="170" y="149" text-anchor="middle" class="dg-sub">the portfolio · one call: the contact form</text>
+          <rect x="106" y="120" width="224" height="50" rx="8" class="dg-box"/>
+          <text x="218" y="141" text-anchor="middle" class="dg-label">tzortzoglou.eu</text>
+          <text x="218" y="157" text-anchor="middle" class="dg-sub">the portfolio · one call: the contact form</text>
 
-          <rect x="370" y="112" width="200" height="50" rx="8" class="dg-box"/>
-          <text x="470" y="133" text-anchor="middle" class="dg-label">app.tzortzoglou.eu</text>
-          <text x="470" y="149" text-anchor="middle" class="dg-sub">signed in · pages only</text>
+          <rect x="370" y="120" width="224" height="50" rx="8" class="dg-box"/>
+          <text x="482" y="141" text-anchor="middle" class="dg-label">app.tzortzoglou.eu</text>
+          <text x="482" y="157" text-anchor="middle" class="dg-sub">signed in · pages only</text>
 
-          <rect x="120" y="212" width="460" height="62" rx="8" class="dg-box-accent"/>
-          <text x="350" y="233" text-anchor="middle" class="dg-label">api.tzortzoglou.eu</text>
-          <text x="350" y="249" text-anchor="middle" class="dg-sub">checks the token · re-reads your role · holds every key</text>
-          <text x="350" y="264" text-anchor="middle" class="dg-sub">nothing below this line is reachable without it</text>
+          {#- The one accent in the drawing: this box is what the picture is about. -#}
+          <rect x="60" y="226" width="580" height="62" rx="8" class="dg-box-accent"/>
+          <text x="350" y="247" text-anchor="middle" class="dg-label">api.tzortzoglou.eu</text>
+          <text x="350" y="263" text-anchor="middle" class="dg-sub">checks the token · re-reads your role · holds every key</text>
+          <text x="350" y="278" text-anchor="middle" class="dg-sub">nothing below this line is reachable without it</text>
 
-          <rect x="110" y="326" width="140" height="46" rx="8" class="dg-box"/>
-          <text x="180" y="345" text-anchor="middle" class="dg-label">Firebase</text>
-          <text x="180" y="360" text-anchor="middle" class="dg-sub">who you are</text>
+          <rect x="32" y="352" width="416" height="42" rx="8" class="dg-box-key"/>
+          <text x="240" y="369" text-anchor="middle" class="dg-label">Twenty-four upstreams</text>
+          <text x="240" y="384" text-anchor="middle" class="dg-sub">six need a key</text>
 
-          <rect x="280" y="326" width="140" height="46" rx="8" class="dg-box"/>
-          <text x="350" y="345" text-anchor="middle" class="dg-label">Postgres</text>
-          <text x="350" y="360" text-anchor="middle" class="dg-sub">messages · caches</text>
+          {#- By what each is for. The four boxes add up to the twenty-four: the names printed are
+              the ones this drawing has always printed, and Live map is the remainder, so a new
+              source there changes the count above and nothing here. -#}
+          <rect x="32" y="402" width="416" height="40" rx="8" class="dg-box"/>
+          <text x="240" y="418" text-anchor="middle" class="dg-label">Sport and headlines</text>
+          <text x="240" y="433" text-anchor="middle" class="dg-sub">Jolpica · ESPN · shl.se · hockeyallsvenskan.se · Expressen · Aftonbladet</text>
 
-          <rect x="450" y="326" width="140" height="46" rx="8" class="dg-box-key"/>
-          <text x="520" y="345" text-anchor="middle" class="dg-label">Twenty-two upstreams</text>
-          <text x="520" y="360" text-anchor="middle" class="dg-sub">six need a key</text>
+          <rect x="32" y="450" width="172" height="40" rx="8" class="dg-box"/>
+          <text x="118" y="466" text-anchor="middle" class="dg-label">Weather and travel</text>
+          <text x="118" y="481" text-anchor="middle" class="dg-sub">Open-Meteo · Trafiklab ResRobot</text>
+
+          <rect x="212" y="450" width="92" height="40" rx="8" class="dg-box"/>
+          <text x="258" y="466" text-anchor="middle" class="dg-label">Deploys</text>
+          <text x="258" y="481" text-anchor="middle" class="dg-sub">GitHub Actions</text>
+
+          <rect x="312" y="450" width="136" height="40" rx="8" class="dg-box"/>
+          <text x="380" y="466" text-anchor="middle" class="dg-label">Live map</text>
+          <text x="380" y="481" text-anchor="middle" class="dg-sub">the rest of the twenty-four</text>
+
+          <rect x="470" y="352" width="100" height="46" rx="8" class="dg-box"/>
+          <text x="520" y="371" text-anchor="middle" class="dg-label">Firebase</text>
+          <text x="520" y="386" text-anchor="middle" class="dg-sub">who you are</text>
+
+          <rect x="578" y="352" width="100" height="46" rx="8" class="dg-box"/>
+          <text x="628" y="371" text-anchor="middle" class="dg-label">Postgres</text>
+          <text x="628" y="386" text-anchor="middle" class="dg-sub">messages · caches</text>
 
           {#- Live state, drawn only where a page loads scripts/arch-live.js (/code/). Hidden until
               a state arrives, so /docs/ in the app and a failed read both show the plain drawing.
               The words for each dot are in the line under the diagram, never colour alone. -#}
-          <circle cx="258" cy="124" r="4.5" class="dg-live" data-live="site"/>
-          <circle cx="558" cy="124" r="4.5" class="dg-live" data-live="app"/>
-          <circle cx="568" cy="224" r="4.5" class="dg-live" data-live="api"/>
-          <circle cx="408" cy="338" r="4.5" class="dg-live" data-live="database"/>
-          <circle cx="578" cy="338" r="4.5" class="dg-live" data-live="upstreams"/>
+          <circle cx="318" cy="132" r="4.5" class="dg-live" data-live="site"/>
+          <circle cx="582" cy="132" r="4.5" class="dg-live" data-live="app"/>
+          <circle cx="628" cy="238" r="4.5" class="dg-live" data-live="api"/>
+          <circle cx="666" cy="364" r="4.5" class="dg-live" data-live="database"/>
+          <circle cx="436" cy="364" r="4.5" class="dg-live" data-live="upstreams"/>
 
-          <text x="350" y="396" text-anchor="middle" class="dg-sub">Open-Meteo · Trafiklab ResRobot · Jolpica · GitHub Actions</text>
-          <text x="350" y="411" text-anchor="middle" class="dg-sub">ESPN · shl.se · hockeyallsvenskan.se · Expressen · Aftonbladet</text>
-          <text x="350" y="426" text-anchor="middle" class="dg-sub">none of these twenty-two is ever called from your browser</text>
+          <text x="472" y="424" class="dg-sub">none of these twenty-four is ever</text>
+          <text x="472" y="439" class="dg-sub">called from your browser</text>
           {#- The exception, named rather than left off. The app's map tiles are fetched by the
               browser itself, because a tile is asked for one square at a time as you pan and
               standing in front of a few hundred of those would mean running a tile server. It is
               not drawn as a box because it hangs off the browser at the top, not off the API at
               the bottom, and an arrow that long would cross every layer to say one thing. -#}
-          <text x="350" y="441" text-anchor="middle" class="dg-sub">the app’s map tiles are the one exception, fetched by your browser itself</text>
+          <text x="472" y="462" class="dg-sub">the app’s map tiles are the one exception,</text>
+          <text x="472" y="477" class="dg-sub">fetched by your browser itself</text>
         </g>
       </svg>

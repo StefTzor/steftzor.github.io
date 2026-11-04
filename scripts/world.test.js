@@ -17,7 +17,7 @@ const vm = require('vm');
 const SRC = fs.readFileSync(path.join(__dirname, '..', 'app/scripts/world-core.js'), 'utf8')
   .replace(/^export /gm, '');
 const NAMES = ['distanceKm', 'advance', 'planeFeatures', 'nearest', 'sky', 'groundTrack',
-  'buildingFacts', 'compass', 'planeLine', 'liveLine', 'fuzzyScore', 'localMatches', 'placeName', 'alertFeatures', 'ago', 'REGIONS', 'placeCard', 'airportCard', 'emptyCard', 'PLACES'];
+  'buildingFacts', 'compass', 'planeLine', 'liveLine', 'fuzzyScore', 'localMatches', 'placeName', 'alertFeatures', 'ago', 'REGIONS', 'placeCard', 'airportCard', 'emptyCard', 'PLACES', 'tiltFor', 'photoCredit', 'nearbyAlerts', 'routeLine', 'routeFacts'];
 const core = {};
 vm.runInNewContext(`${SRC}\n${NAMES.map((n) => `this.${n} = ${n};`).join('\n')}`, core);
 
@@ -202,6 +202,49 @@ const ISS = {
   }
   assert.ok(!Object.keys(core.PLACES).some((k) => /military|barracks|base/.test(k)));
   ok('no military class is on the map');
+
+  assert.strictEqual(core.tiltFor(10), 0);
+  assert.strictEqual(core.tiltFor(12), 0);
+  assert.strictEqual(core.tiltFor(14), 30);
+  assert.strictEqual(core.tiltFor(16), 60);
+  assert.strictEqual(core.tiltFor(20), 60);
+  ok('the view is top-down far out and an eagle-eye tilt close in');
+
+  {
+    const home = { lat: 59.86, lon: 17.64, countryCode: 'SE' };
+    const alerts = [
+      { id: 'far', kind: 'quake', lat: 38, lon: 142 },
+      { id: 'near', kind: 'quake', lat: 60, lon: 18 },
+      { id: 'se', kind: 'sweden', lat: null, lon: null },
+      { id: 'cve', kind: 'cyber', lat: null, lon: null },
+    ];
+    assert.deepStrictEqual(Array.from(core.nearbyAlerts(alerts, home), (a) => a.id), ['near', 'se']);
+    assert.deepStrictEqual(Array.from(core.nearbyAlerts(alerts, { lat: 48, lon: 2, countryCode: 'FR' }), (a) => a.id), []);
+    assert.deepStrictEqual(Array.from(core.nearbyAlerts(alerts, null), (a) => a.id), []);
+    assert.deepStrictEqual(Array.from(core.nearbyAlerts(alerts, { lat: 59.86, lon: 17.64, name: 'Uppsala, Uppsala County, SE' }), (a) => a.id), ['near', 'se']);
+    ok('the home card keeps alerts near the saved place, and Swedish alerts only for somebody in Sweden');
+  }
+
+  {
+    const from = { lat: 55.6, lon: 12.6, code: 'CPH', city: 'Copenhagen' };
+    const to = { lat: 59.65, lon: 17.9, code: 'ARN', city: 'Stockholm' };
+    const line = core.routeLine(from, { lat: 58, lon: 15 }, to);
+    assert.strictEqual(line.geometry.type, 'MultiLineString');
+    const flat = Array.from(line.geometry.coordinates).flatMap((l) => Array.from(l));
+    close(flat[0][0], 12.6, 0.01, 'starts at the origin');
+    close(flat[flat.length - 1][1], 59.65, 0.01, 'ends at the destination');
+    assert.ok(flat.some(([x, y]) => Math.abs(x - 15) < 0.01 && Math.abs(y - 58) < 0.01), 'passes through the plane');
+    const pacific = core.routeLine({ lat: 35, lon: 140 }, { lat: 40, lon: 179 }, { lat: 37, lon: -122 });
+    for (const l of pacific.geometry.coordinates) for (let i = 1; i < l.length; i++) assert.ok(Math.abs(l[i][0] - l[i - 1][0]) < 180, 'no line across the map');
+    ok('a route is drawn from the origin through the plane to the destination, breaking at the date line');
+    assert.deepStrictEqual(Array.from(core.routeFacts({ airline: 'SAS', from, to })), ['SAS', 'From Copenhagen (CPH)', 'To Stockholm (ARN)', 'Scheduled route for this callsign']);
+    ok('a route says where from and to, and that it is the schedule rather than a live fact');
+  }
+
+  assert.strictEqual(core.photoCredit({ author: 'serenedeluge', license: 'CC-BY-SA-4.0', takenAt: '2026-08-09T14:16:23+00:00' }),
+    'serenedeluge, CC BY-SA 4.0, via Panoramax, August 2026');
+  assert.strictEqual(core.photoCredit({ author: 'x', license: '', takenAt: null }), 'x, via Panoramax');
+  ok('a street photo carries its credit and its date');
 
   {
     // Firebase restores a session after the module runs, and api() throws until it has. A local
