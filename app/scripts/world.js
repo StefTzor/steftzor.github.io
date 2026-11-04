@@ -1,9 +1,10 @@
 import { api, apiBytes, profile } from "./shell.js";
 import { createMap, goTo, homeTo, stillness } from "./map.js";
 import {
-  POLL_MS, TICK_MS, REGIONS, planeFeatures, nearest, sky, groundTrack, buildingFacts, planeLine,
-  liveLine, localMatches, placeName, alertFeatures, ago,
+  POLL_MS, TICK_MS, REGIONS, distanceKm, planeFeatures, nearest, sky, groundTrack, buildingFacts, planeLine,
+  liveLine, localMatches, placeName, alertFeatures, ago, PLACES, placeCard, airportCard, emptyCard,
 } from "./world-core.js";
+import { GLYPHS } from "./world-icons.js";
 import {
   busesQuery, createPoller, ensureBusLayers, frameAt, LAYERS as BUS_LAYERS,
 } from "./live-buses-core.js";
@@ -39,7 +40,19 @@ const CREDIT = 'Aircraft <a href="https://adsb.lol" target="_blank" rel="noopene
 const ESRI_CREDIT = "Powered by Esri · Esri, Maxar, Earthstar Geographics";
 const SEVERITY_INK = { high: "#d9534f", warn: "#d9b45f", info: "#8fa097" };
 const FILTERS = [["all", "All"], ["quake", "Earthquakes"], ["disaster", "Disasters"], ["sweden", "Sweden"], ["cyber", "Cyber"]];
-const SERVICES = { hospital: "Hospital", fire_station: "Fire station", police: "Police" };
+const MARKERS = {
+  ...Object.fromEntries(Object.entries(PLACES).map(([name, p]) => [name, p])),
+  camera: { glyph: "video", color: "#eef0e6", ink: "#13231d" },
+  airport: { glyph: "plane", color: "#d9b45f", ink: "#13231d" },
+};
+const HIT_PX = 7;
+const CLICKABLE = ["world-alerts", "world-planes", "world-cameras", "world-airports", "world-sats", "world-places", "world-buildings"];
+const AIRPORT_MIN_ZOOM = 6;
+// Road and building inks for the map, one pair per theme. The base style is a quiet backdrop for a
+// page of text; here the map is the page, so streets have to read at a glance.
+const ROADS = { dark: "#7d9a8c", light: "#8d8f83" };
+const ROADS_MAJOR = { dark: "#a9c0b3", light: "#6d6f64" };
+const BLOCKS = { dark: "#3f5f51", light: "#d9dbcf" };
 const KINDS = { plane: "Planes", satellite: "Satellites", alert: "Alerts" };
 
 const el = (id) => document.getElementById(id);
@@ -49,6 +62,41 @@ const EMPTY = { type: "FeatureCollection", features: [] };
 function ink(token) {
   const channels = getComputedStyle(document.documentElement).getPropertyValue(`--color-${token}`).trim();
   return `rgb(${channels.split(/\s+/).join(",")})`;
+}
+
+/** A round marker with a glyph on it, drawn at twice its size so it stays sharp. */
+function markerImage({ glyph, color, ink: mark = "#ffffff" }) {
+  const size = 56;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const c = canvas.getContext("2d");
+  c.beginPath();
+  c.arc(size / 2, size / 2, size / 2 - 3, 0, Math.PI * 2);
+  c.fillStyle = color;
+  c.fill();
+  c.lineWidth = 3;
+  c.strokeStyle = "rgba(19,35,29,.85)";
+  c.stroke();
+  const [width, path] = GLYPHS[glyph];
+  const scale = 28 / Math.max(width, 512);
+  c.translate((size - width * scale) / 2, (size - 512 * scale) / 2);
+  c.scale(scale, scale);
+  c.fillStyle = mark;
+  c.fill(new Path2D(path));
+  return c.getImageData(0, 0, size, size);
+}
+
+const dark = () => document.documentElement.classList.contains("dark");
+
+/** Lift the roads off the background, on the drawn map only: a photograph has no such layers. */
+function brighten() {
+  const { map } = state;
+  const theme = dark() ? "dark" : "light";
+  for (const { id, type } of map.getStyle().layers) {
+    if (type !== "line" || !/^highway_/.test(id)) continue;
+    map.setPaintProperty(id, "line-color", /major|motorway/.test(id) ? ROADS_MAJOR[theme] : ROADS[theme]);
+  }
 }
 
 /** The silhouette as a signed-distance image, so a theme change only has to change a paint colour. */
@@ -75,7 +123,8 @@ const state = {
   alerts: [],
   filter: "all",
   cameras: [],
-  on: { alerts: true, planes: true, satellites: true, buildings: true, services: true, buses: false, cameras: false, traffic: false },
+  on: { alerts: true, planes: true, satellites: true, buildings: true, places: true, buses: false, cameras: false, traffic: false },
+  picked: EMPTY,
   track: EMPTY,
   buses: EMPTY,
   history: [],
@@ -87,6 +136,10 @@ function addLayers() {
   const { map } = state;
   const shown = (name) => (state.on[name] ? "visible" : "none");
   if (!map.hasImage("plane")) map.addImage("plane", planeImage(), { sdf: true });
+  for (const [name, spec] of Object.entries(MARKERS)) {
+    if (!map.hasImage(`wd-${name}`)) map.addImage(`wd-${name}`, markerImage(spec), { pixelRatio: 2 });
+  }
+  brighten();
   map.addSource("world-vector", { type: "vector", url: TILES });
   if (state.config.traffic) {
     map.addSource("world-traffic", { type: "raster", tiles: ["wd://traffic/{z}/{x}/{y}"], tileSize: 256, minzoom: 6, maxzoom: 20, attribution: "Traffic © TomTom" });
@@ -96,38 +149,52 @@ function addLayers() {
     id: "world-buildings", type: "fill-extrusion", source: "world-vector", "source-layer": "building", minzoom: 13,
     layout: { visibility: shown("buildings") },
     paint: {
-      "fill-extrusion-color": ink("surface"),
+      "fill-extrusion-color": BLOCKS[dark() ? "dark" : "light"],
       "fill-extrusion-height": ["coalesce", ["get", "render_height"], 6],
       "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
       // Over a photograph the blocks would hide the very roofs the photograph shows.
       "fill-extrusion-opacity": map.getSource("s2cloudless") ? 0.2 : 0.85,
     },
   });
+  const label = {
+    "text-field": ["get", "name"], "text-font": ["Noto Sans Bold"], "text-size": 11,
+    "text-offset": [0, 1.3], "text-anchor": "top", "text-optional": true,
+  };
+  const halo = { "text-color": ink("text"), "text-halo-color": ink("bg"), "text-halo-width": 1.5 };
   map.addLayer({
-    id: "world-services", type: "circle", source: "world-vector", "source-layer": "poi", minzoom: 12,
-    filter: ["match", ["get", "class"], Object.keys(SERVICES), true, false],
-    layout: { visibility: shown("services") },
-    paint: { "circle-radius": 5, "circle-color": ink("accent"), "circle-stroke-width": 2, "circle-stroke-color": ink("bg") },
-  });
-  map.addLayer({
-    id: "world-service-names", type: "symbol", source: "world-vector", "source-layer": "poi", minzoom: 14,
-    filter: ["match", ["get", "class"], Object.keys(SERVICES), true, false],
+    id: "world-places", type: "symbol", source: "world-vector", "source-layer": "poi", minzoom: 12,
+    filter: ["all",
+      ["match", ["get", "class"], Object.keys(PLACES), true, false],
+      ["any", ["!=", ["get", "class"], "railway"], ["match", ["get", "subclass"], ["station", "halt"], true, false]],
+      // The class also holds every community room and club hall, and those are not town halls.
+      ["any", ["!=", ["get", "class"], "town_hall"], ["==", ["get", "subclass"], "townhall"]]],
     layout: {
-      visibility: shown("services"), "text-field": ["get", "name"], "text-font": ["Noto Sans Bold"],
-      "text-size": 11, "text-offset": [0, 0.9], "text-anchor": "top",
+      visibility: shown("places"), "icon-image": ["concat", "wd-", ["get", "class"]], "icon-size": 1,
+      "icon-allow-overlap": true, ...label, "text-field": ["step", ["zoom"], "", 14, ["get", "name"]],
     },
-    paint: { "text-color": ink("text"), "text-halo-color": ink("bg"), "text-halo-width": 1.5 },
+    paint: halo,
+  });
+  // No "military" here on purpose: the layer carries it as a class, and it stays off this map.
+  map.addLayer({
+    id: "world-airports", type: "symbol", source: "world-vector", "source-layer": "aerodrome_label",
+    minzoom: AIRPORT_MIN_ZOOM, filter: ["!=", ["get", "class"], "military"],
+    layout: { visibility: shown("places"), "icon-image": "wd-airport", "icon-allow-overlap": true, ...label },
+    paint: halo,
   });
   map.addSource("world-track", { type: "geojson", data: state.track });
   map.addLayer({
     id: "world-track", type: "line", source: "world-track",
     paint: { "line-color": ink("muted"), "line-width": 1.5, "line-dasharray": [1, 3] },
   });
+  map.addSource("world-picked", { type: "geojson", data: state.picked });
+  map.addLayer({
+    id: "world-picked", type: "circle", source: "world-picked",
+    paint: { "circle-radius": 20, "circle-opacity": 0, "circle-stroke-width": 3, "circle-stroke-color": "#d9b45f" },
+  });
   map.addSource("world-cameras", { type: "geojson", data: EMPTY });
   map.addLayer({
-    id: "world-cameras", type: "circle", source: "world-cameras",
-    layout: { visibility: shown("cameras") },
-    paint: { "circle-radius": 6, "circle-color": ink("text"), "circle-stroke-width": 2, "circle-stroke-color": ink("bg") },
+    id: "world-cameras", type: "symbol", source: "world-cameras",
+    layout: { visibility: shown("cameras"), "icon-image": "wd-camera", "icon-allow-overlap": true },
   });
   map.addSource("world-alerts", { type: "geojson", data: alertFeatures(state.alerts) });
   map.addLayer({
@@ -303,9 +370,18 @@ function clearPhoto() {
   state.photoUrl = null;
 }
 
-function pick(kind, name, facts, { record = null, url = null } = {}) {
+function ringAround(at) {
+  state.picked = at
+    ? { type: "Feature", properties: {}, geometry: { type: "Point", coordinates: at } }
+    : EMPTY;
+  state.map.getSource("world-picked")?.setData(state.picked);
+}
+
+function pick(kind, name, facts, { record = null, url = null, at = null } = {}) {
   clearPhoto();
   showTab("here");
+  ringAround(at);
+  el("wdHere").closest(".world-panel").scrollTop = 0;
   el("wdPicked").hidden = false;
   el("wdPickedKind").textContent = kind;
   el("wdPickedName").textContent = name;
@@ -324,7 +400,7 @@ function pick(kind, name, facts, { record = null, url = null } = {}) {
 
 function pickPlane(plane) {
   pick("Plane", plane.callsign || plane.reg || plane.id,
-    [planeLine(plane), [plane.type, plane.reg].filter(Boolean).join(" · ")]);
+    [planeLine(plane), [plane.type, plane.reg].filter(Boolean).join(" · ")], { at: [plane.lon, plane.lat] });
 }
 
 function pickSatellite(id) {
@@ -340,12 +416,14 @@ function pickSatellite(id) {
 }
 
 function pickAlert(alert) {
-  pick("Alert", alert.title, [alert.detail, ago(alert.at, Date.now())], { url: alert.url });
+  pick("Alert", alert.title, [alert.detail, ago(alert.at, Date.now())], {
+    url: alert.url, at: alert.lat === null ? null : [alert.lon, alert.lat],
+  });
   if (alert.lat !== null) travel({ center: [alert.lon, alert.lat], zoom: ALERT_ZOOM });
 }
 
 async function pickCamera(camera) {
-  pick("Camera", camera.name, [`${camera.km} km away`, camera.at ? ago(camera.at, Date.now()) : ""]);
+  pick("Camera", camera.name, [`${camera.km} km away`, camera.at ? ago(camera.at, Date.now()) : ""], { at: [camera.lon, camera.lat] });
   try {
     const bytes = await apiBytes(`/world/camera/${encodeURIComponent(camera.id)}`);
     clearPhoto();
@@ -560,7 +638,7 @@ function searchKeys(event) {
 
 const LAYER_IDS = {
   alerts: ["world-alerts"], planes: ["world-planes"], satellites: ["world-sats"], buildings: ["world-buildings"],
-  services: ["world-services", "world-service-names"], cameras: ["world-cameras"], traffic: ["world-traffic"],
+  places: ["world-places", "world-airports"], cameras: ["world-cameras"], traffic: ["world-traffic"],
 };
 
 function setLayer(name, on) {
@@ -580,24 +658,45 @@ function setLayer(name, on) {
   paint();
 }
 
-function clickMap(e) {
+function hitAt({ x, y }) {
   const { map } = state;
-  const layers = ["world-alerts", "world-planes", "world-cameras", "world-sats", "world-services", "world-buildings"].filter((id) => map.getLayer(id));
-  const [hit] = map.queryRenderedFeatures(e.point, { layers });
-  if (!hit) return;
-  const { id, name } = hit.properties;
-  if (hit.layer.id === "world-planes") {
+  const layers = CLICKABLE.filter((id) => map.getLayer(id));
+  const box = [[x - HIT_PX, y - HIT_PX], [x + HIT_PX, y + HIT_PX]];
+  return map.queryRenderedFeatures(box, { layers })[0] || null;
+}
+
+/** Nothing was hit, so say where this is. The nearest camera comes from what is already loaded. */
+async function clickEmpty({ lat, lng }) {
+  const here = { lat, lon: lng };
+  const near = state.cameras.map((c) => ({ ...c, km: Math.round(distanceKm(here, c)) })).sort((a, b) => a.km - b.km)[0] || null;
+  let where = {};
+  try {
+    where = await api(`/world/where?lat=${lat.toFixed(2)}&lon=${lng.toFixed(2)}`);
+  } catch (err) { /* the card still has its coordinates */ }
+  const card = emptyCard(here, where, near);
+  pick(card.kind, card.name, card.facts, { at: [lng, lat] });
+}
+
+function clickMap(e) {
+  const hit = hitAt(e.point);
+  if (!hit) { clickEmpty(e.lngLat); return; }
+  const { id } = hit.properties;
+  const at = [e.lngLat.lng, e.lngLat.lat];
+  const layer = hit.layer.id;
+  if (layer === "world-planes") {
     const plane = state.planes.find((p) => p.id === id);
     if (plane) pickPlane(plane);
-  } else if (hit.layer.id === "world-sats") pickSatellite(id);
-  else if (hit.layer.id === "world-alerts") {
+  } else if (layer === "world-sats") pickSatellite(id);
+  else if (layer === "world-alerts") {
     const alert = state.alerts.find((a) => a.id === id);
     if (alert) pickAlert(alert);
-  } else if (hit.layer.id === "world-cameras") {
+  } else if (layer === "world-cameras") {
     const camera = state.cameras.find((c) => c.id === id);
     if (camera) pickCamera(camera);
-  } else if (hit.layer.id === "world-services") pick(SERVICES[hit.properties.class] || "Service", name || "Unnamed", []);
-  else pick("Building", "Building", buildingFacts(hit.properties));
+  } else if (layer === "world-places" || layer === "world-airports") {
+    const card = layer === "world-places" ? placeCard(hit.properties) : airportCard(hit.properties);
+    pick(card.kind, card.name, card.facts, { at: hit.geometry.coordinates });
+  } else pick("Building", "Building", buildingFacts(hit.properties), { at });
 }
 
 const planePoller = createPoller({ run: pollPlanes, every: POLL_MS, timers });
@@ -695,6 +794,9 @@ async function start() {
   addLayers();
   map.on("style.load", addLayers);
   map.on("click", clickMap);
+  map.on("mousemove", (e) => {
+    map.getCanvas().classList.toggle("world-hot", Boolean(hitAt(e.point)));
+  });
   map.on("movestart", (e) => { if (e.originalEvent) state.named = false; });
   map.on("moveend", () => {
     planePoller.now();

@@ -38,4 +38,10 @@ for (const s of sections) {
     `${s.href} does not carry data-nav="${s.navKey}"`);
 }
 
+// A failed /me used to wipe the whole body, which took the navigation with it, so somebody who hit
+// a rate limit had nowhere to go but reload.
+const shell = fs.readFileSync(path.join(__dirname, '..', 'app/scripts/shell.js'), 'utf8');
+const unreachable = shell.slice(shell.indexOf('function showUnreachable'), shell.indexOf('function remember'));
+assert.ok(!/document\.body\.textContent/.test(unreachable), 'showUnreachable must keep the navigation');
+
 console.log(`app nav: all checks passed — ${sections.length} admin sections resolve`);

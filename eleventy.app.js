@@ -116,6 +116,7 @@ module.exports = function (eleventyConfig) {
     "app/scripts/live-buses-core.js": "scripts/live-buses-core.js",
     "app/scripts/world.js": "scripts/world.js",
     "app/scripts/world-core.js": "scripts/world-core.js",
+    "app/scripts/world-icons.js": "scripts/world-icons.js",
     "app/scripts/docs.js": "scripts/docs.js",
     "app/scripts/admin-messages.js": "scripts/admin-messages.js",
     "app/scripts/admin-invites.js": "scripts/admin-invites.js",
