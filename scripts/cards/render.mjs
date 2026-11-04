@@ -33,7 +33,7 @@ const CARDS = {
     scale: 2,
     out: join(ROOT, 'images', 'og-cover.png'),
     html: `<div class="card og"><div class="inner">
-      <img class="photo" src="../../images/stefanos_profile.png" alt="">
+      <img class="photo" src="photo.png" alt="">
       <div>
         <div class="name">${esc(identity.name)}</div>
         <div class="name-el">${esc(identity.nameEl)}</div>

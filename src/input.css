@@ -1181,29 +1181,29 @@
      Both ramps are tuned against the card the grid sits on, not the page: #ffffff in light,
      #1e293b in dark. The empty day has to read as an absence, which is what broke when the page
      was retinted - it was #cbd5e1, the old light background, so on a white card every empty day
-     read as a filled one and the year looked busier than it was. #e2e8f0 is the faintest step
-     that still shows the grid's shape (1.23:1 on the card), and the lightest green is well clear
-     of it - 2.06:1 in light and 1.89:1 in dark - so "none" and "one" are never the same cell.
-     Those two figures moved when level 1 did; the paragraph below is why. */
-  .contrib-day { aspect-ratio: 1; border-radius: 2px; background: #e2e8f0; }
+     read as a filled one and the year looked busier than it was. #dcdecf is the faintest step
+     that still shows the grid's shape (1.3:1 on the card), and the lightest green is well clear
+     of it, so "none" and "one" are never the same cell. On the card, level 1 is 2.5:1 in light and
+     3.2:1 in dark, over the 2:1 floor below. */
+  .contrib-day { aspect-ratio: 1; border-radius: 2px; background: #dcdecf; }
   /* Level 1 was #34d399 and measured 1.92:1 against the card - under the 2:1 floor a sequential
      ramp's palest DATA step has to clear, so "one view" and "none" were nearly the same cell in
-     the one direction that matters. #10b981 measures 2.54:1 and keeps the gap to level 2 above
+     the one direction that matters. The pine ramp's #7fa892 measures 2.5:1 and keeps the gap to level 2 above
      the 0.06 lightness minimum; the dark ramp's own pale end moved for the same reason, 1.90:1
      to 2.67:1. Both checked with a validator rather than by eye - the whole ramp now passes
      monotone lightness, step gaps, single hue (6 degrees light, 2 dark) and the pale-end floor.
      The EMPTY cell is not a step and is deliberately left where it is - 1.23:1 against a white
      card, 1.41:1 against a dark one. It is the absence, and the paragraph above is why it has to
      read as one. Its separation FROM level 1 is what matters and that improved with the move. */
-  .contrib-day[data-level="1"] { background: #10b981; }
-  .contrib-day[data-level="2"] { background: #059669; }
-  .contrib-day[data-level="3"] { background: #047857; }
-  .contrib-day[data-level="4"] { background: #064e3b; }
-  .dark .contrib-day { background: #334155; }
-  .dark .contrib-day[data-level="1"] { background: #4a5a3c; }
-  .dark .contrib-day[data-level="2"] { background: #7a7a45; }
-  .dark .contrib-day[data-level="3"] { background: #b49a55; }
-  .dark .contrib-day[data-level="4"] { background: #e8c36e; }
+  .contrib-day[data-level="1"] { background: #7fa892; }
+  .contrib-day[data-level="2"] { background: #4f8a70; }
+  .contrib-day[data-level="3"] { background: #1f5c46; }
+  .contrib-day[data-level="4"] { background: #123f2f; }
+  .dark .contrib-day { background: #3a5145; }
+  .dark .contrib-day[data-level="1"] { background: #8f8a4c; }
+  .dark .contrib-day[data-level="2"] { background: #a99a55; }
+  .dark .contrib-day[data-level="3"] { background: #c8ae62; }
+  .dark .contrib-day[data-level="4"] { background: #f1d694; }
 
   /* A number worth acting on, wrapped in the link that acts on it. Grid rather than flex so
      the number sits in a row of its own fixed height: the figure arrives a second after the
@@ -1215,7 +1215,7 @@
      the dataviz validator fails it as a mark in both themes (too grey in light, outside the
      lightness band in dark). Emerald 600/500-ish passes both; text keeps the accent. */
   .an-wrap { @apply mx-auto w-full max-w-6xl; }
-  .an-wrap { --chart: 5 150 105; }                 /* #059669 Emerald 600 */
+  .an-wrap { --chart: 31 92 70; }                  /* #1f5c46 pine */
   .dark .an-wrap, .chrome-dark .an-wrap { --chart: 214 178 96; }  /* #d6b260 */
 
   .an-live {
