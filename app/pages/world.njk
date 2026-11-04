@@ -43,7 +43,11 @@ bodyScripts:
 
   <div id="wdStreet" class="world-street" role="dialog" aria-label="Street photo" hidden>
     <canvas id="wdPano" class="world-pano" tabindex="0" aria-label="360 degree street photo. Arrow keys look around, plus and minus zoom."></canvas>
-    <button type="button" id="wdStreetClose" class="world-chip world-street-close">Back to map</button>
+    <div class="world-street-bar">
+      <button type="button" id="wdStreetClose" class="world-chip">Back to map</button>
+      <button type="button" id="wdStreetBack" class="world-chip" aria-label="Step back along the street">Step back</button>
+      <button type="button" id="wdStreetForward" class="world-chip" aria-label="Step forward along the street">Step forward</button>
+    </div>
     <p id="wdStreetCredit" class="world-street-credit material"></p>
   </div>
 

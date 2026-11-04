@@ -55,6 +55,7 @@ const MARKERS = {
 };
 const HIT_PX = 7;
 const STREET_DIVE_ZOOM = 18.5;
+const STREET_RETURN_ZOOM = 17.5;
 const SETTLE_MS = 150;
 // Esri has no imagery past this over much of Sweden: asking for more gives 404s and blank tiles.
 const IMAGERY_MAX_ZOOM = 18;
@@ -598,11 +599,54 @@ async function loadSatellites() {
 
 // --- street view -----------------------------------------------------------------------------
 
+/** Leaving lifts the map clear of the dive level, so zooming back in opens the street again. */
 function closeStreet() {
   if (el("wdStreet").hidden) return;
   state.pano?.stop();
   el("wdStreet").hidden = true;
   el("wdMap").focus?.();
+  if (state.map.getZoom() >= STREET_DIVE_ZOOM) {
+    if (stillness()) state.map.jumpTo({ zoom: STREET_RETURN_ZOOM });
+    else state.map.easeTo({ zoom: STREET_RETURN_ZOOM, duration: 500 });
+  }
+}
+
+async function showPhoto(photo, keepView) {
+  const blob = new Blob([await apiBytes(`/world/photo/${photo.id}`)], { type: "image/jpeg" });
+  const bitmap = await createImageBitmap(blob);
+  el("wdStreet").hidden = false;
+  state.pano = state.pano || createPano(el("wdPano"), { onExit: closeStreet, still: stillness });
+  state.pano.show(bitmap, keepView);
+  bitmap.close();
+  state.photo = photo;
+  el("wdStreetCredit").textContent = photoCredit(photo);
+  drawSteps();
+  ringAround([photo.lon, photo.lat]);
+}
+
+/** Forward is the way you are facing, so turning round swaps which neighbour it means. */
+function neighbour(forward) {
+  const { photo, pano } = state;
+  if (!photo) return null;
+  return forward === pano.facingForward() ? photo.next : photo.prev;
+}
+
+function drawSteps() {
+  el("wdStreetForward").disabled = !neighbour(true);
+  el("wdStreetBack").disabled = !neighbour(false);
+}
+
+async function step(forward) {
+  const id = neighbour(forward);
+  if (!id || state.stepping) return;
+  state.stepping = true;
+  try {
+    const { photo } = await api(`/world/photo/${id}/details`);
+    if (photo) await showPhoto(photo, true);
+  } catch (err) {
+    el("wdStreetCredit").textContent = "That photo is unavailable right now.";
+  }
+  state.stepping = false;
 }
 
 /** The nearest 360 photo to a point. No photo is a note, and the map stays where it is. */
@@ -612,13 +656,7 @@ async function openStreet([lon, lat]) {
   try {
     const { photo } = await api(`/world/photo?lat=${lat.toFixed(5)}&lon=${lon.toFixed(5)}`);
     if (!photo) { note.textContent = "No street photo near here."; return; }
-    const blob = new Blob([await apiBytes(`/world/photo/${photo.id}`)], { type: "image/jpeg" });
-    const bitmap = await createImageBitmap(blob);
-    el("wdStreet").hidden = false;
-    state.pano = state.pano || createPano(el("wdPano"), { onExit: closeStreet, still: stillness });
-    state.pano.show(bitmap);
-    bitmap.close();
-    el("wdStreetCredit").textContent = photoCredit(photo);
+    await showPhoto(photo, false);
     el("wdPano").focus();
     note.textContent = "";
   } catch (err) {
@@ -809,6 +847,10 @@ function buildControls() {
   el("wdBack").addEventListener("click", goBack);
   el("wdStreetBtn").addEventListener("click", () => { if (state.pickedAt) openStreet(state.pickedAt); });
   el("wdStreetClose").addEventListener("click", closeStreet);
+  el("wdStreetForward").addEventListener("click", () => step(true));
+  el("wdStreetBack").addEventListener("click", () => step(false));
+  el("wdPano").addEventListener("pointerup", drawSteps);
+  el("wdPano").addEventListener("keyup", drawSteps);
   window.addEventListener("resize", () => { if (!el("wdStreet").hidden) state.pano?.resize(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeStreet(); });
   el("wdNear").addEventListener("click", nearMe);
