@@ -1,4 +1,4 @@
-import { api, profile } from "./shell.js";
+import { api, apiBytes, profile } from "./shell.js";
 
 /**
  * The endpoint list on /docs/.
@@ -118,7 +118,54 @@ function render(reference) {
     + `API's tests fail if the two ever disagree.`);
 }
 
-profile.then(async () => {
+async function drawing(file, label) {
+  const img = document.createElement("img");
+  img.className = "mt-3 w-full rounded-md bg-white";
+  img.alt = label;
+  const bytes = await apiBytes(`/admin/blueprint/${encodeURIComponent(file)}`);
+  img.src = URL.createObjectURL(new Blob([bytes], { type: "image/svg+xml" }));
+  return img;
+}
+
+/** One collapsed block per subject, so the page stays short until a subject is wanted. */
+function ownerSection({ title, summary, points, diagram }, open) {
+  const box = document.createElement("details");
+  box.className = "card";
+  box.open = open;
+  const head = document.createElement("summary");
+  head.className = "cursor-pointer font-semibold text-brand-text";
+  head.textContent = title;
+  const blurb = document.createElement("p");
+  blurb.className = "mt-2 text-sm text-brand-muted";
+  blurb.textContent = summary;
+  const list = document.createElement("ul");
+  list.className = "mt-2 list-disc space-y-1 pl-5 text-sm text-brand-text";
+  for (const point of points) {
+    const li = document.createElement("li");
+    li.textContent = point;
+    list.append(li);
+  }
+  box.append(head, blurb, list);
+  if (diagram) {
+    box.addEventListener("toggle", () => {
+      if (!box.open || box.dataset.drawn) return;
+      box.dataset.drawn = "1";
+      drawing(diagram, `Diagram: ${title}`).then((img) => box.append(img))
+        .catch((err) => console.error("docs: drawing", err.status));
+    });
+    if (open) box.dispatchEvent(new Event("toggle"));
+  }
+  return box;
+}
+
+async function ownerNotes() {
+  const { sections } = await api("/admin/blueprint");
+  el("ownerSections").replaceChildren(...sections.map((s, i) => ownerSection(s, i === 0)));
+  el("owner").hidden = false;
+}
+
+profile.then(async (me) => {
+  if (me && me.role === "Admin") ownerNotes().catch((err) => console.error("docs: notes", err.status));
   if (!el("endpoints")) return;
   try {
     render(await api("/docs/reference"));

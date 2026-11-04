@@ -3,8 +3,10 @@ import { createMap, goTo, homeTo, stillness } from "./map.js";
 import {
   POLL_MS, TICK_MS, REGIONS, distanceKm, planeFeatures, nearest, sky, groundTrack, buildingFacts, planeLine,
   liveLine, localMatches, placeName, alertFeatures, ago, PLACES, placeCard, airportCard, emptyCard,
+  tiltFor, photoCredit, routeLine, routeFacts,
 } from "./world-core.js";
 import { GLYPHS } from "./world-icons.js";
+import { createPano } from "./world-pano.js";
 import {
   busesQuery, createPoller, ensureBusLayers, frameAt, LAYERS as BUS_LAYERS,
 } from "./live-buses-core.js";
@@ -24,6 +26,7 @@ const STREET_PITCH = 55;
 const SATELLITE_ZOOM = 2.5;
 const ALERT_ZOOM = 5;
 const CAMERA_MIN_ZOOM = 7;
+const CAMERA_MARKER_ZOOM = 8.5;
 const PANEL_PLANES = 5;
 const PANEL_SATS = 5;
 const PANEL_CAMERAS = 4;
@@ -34,18 +37,26 @@ const MIN_REMOTE_QUERY = 3;
 const WORLD_ZOOM = 3;
 const TILES = "https://tiles.openfreemap.org/planet";
 const TILE_PATH = /^(traffic|imagery)\/\d+\/\d+\/\d+$/;
-const CREDIT = 'Aircraft <a href="https://adsb.lol" target="_blank" rel="noopener">adsb.lol</a>'
+const CREDIT = 'Aircraft <a href="https://adsb.lol" target="_blank" rel="noopener">adsb.lol</a> (ODbL)'
   + ' · Orbits <a href="https://celestrak.org" target="_blank" rel="noopener">CelesTrak</a>'
-  + ' · Search <a href="https://photon.komoot.io" target="_blank" rel="noopener">Photon</a>';
+  + ' · Search <a href="https://photon.komoot.io" target="_blank" rel="noopener">Photon</a>'
+  + ' · Cameras <a href="https://www.trafikverket.se" target="_blank" rel="noopener">Trafikverket</a>'
+  + ' · Routes <a href="https://www.adsbdb.com" target="_blank" rel="noopener">adsbdb</a>';
 const ESRI_CREDIT = "Powered by Esri · Esri, Maxar, Earthstar Geographics";
 const SEVERITY_INK = { high: "#d9534f", warn: "#d9b45f", info: "#8fa097" };
-const FILTERS = [["all", "All"], ["quake", "Earthquakes"], ["disaster", "Disasters"], ["sweden", "Sweden"], ["cyber", "Cyber"]];
+const FILTERS = [
+  ["all", "All"], ["quake", "Earthquakes"], ["tsunami", "Tsunami"], ["fire", "Fires"], ["flood", "Floods"],
+  ["storm", "Storms"], ["volcano", "Volcanoes"], ["sweden", "Sweden"], ["cyber", "Cyber"],
+];
 const MARKERS = {
   ...Object.fromEntries(Object.entries(PLACES).map(([name, p]) => [name, p])),
   camera: { glyph: "video", color: "#eef0e6", ink: "#13231d" },
   airport: { glyph: "plane", color: "#d9b45f", ink: "#13231d" },
 };
 const HIT_PX = 7;
+const STREET_DIVE_ZOOM = 18.5;
+const SETTLE_MS = 150;
+const ZOOM_MOVED = 0.01;
 const CLICKABLE = ["world-alerts", "world-planes", "world-cameras", "world-airports", "world-sats", "world-places", "world-buildings"];
 const AIRPORT_MIN_ZOOM = 6;
 // Road and building inks for the map, one pair per theme. The base style is a quiet backdrop for a
@@ -125,6 +136,13 @@ const state = {
   cameras: [],
   on: { alerts: true, planes: true, satellites: true, buildings: true, places: true, buses: false, cameras: false, traffic: false },
   picked: EMPTY,
+  pickedAt: null,
+  pickedPlane: null,
+  handZoom: false,
+  settled: null,
+  ownTilt: false,
+  pano: null,
+  diveArmed: true,
   track: EMPTY,
   buses: EMPTY,
   history: [],
@@ -184,7 +202,7 @@ function addLayers() {
   map.addSource("world-track", { type: "geojson", data: state.track });
   map.addLayer({
     id: "world-track", type: "line", source: "world-track",
-    paint: { "line-color": ink("muted"), "line-width": 1.5, "line-dasharray": [1, 3] },
+    paint: { "line-color": "#d9b45f", "line-width": 2, "line-dasharray": [1, 2] },
   });
   map.addSource("world-picked", { type: "geojson", data: state.picked });
   map.addLayer({
@@ -193,7 +211,7 @@ function addLayers() {
   });
   map.addSource("world-cameras", { type: "geojson", data: EMPTY });
   map.addLayer({
-    id: "world-cameras", type: "symbol", source: "world-cameras",
+    id: "world-cameras", type: "symbol", source: "world-cameras", minzoom: CAMERA_MARKER_ZOOM,
     layout: { visibility: shown("cameras"), "icon-image": "wd-camera", "icon-allow-overlap": true },
   });
   map.addSource("world-alerts", { type: "geojson", data: alertFeatures(state.alerts) });
@@ -306,6 +324,7 @@ function remember() {
 function travel({ center, zoom, pitch = 0 }, title) {
   const { map } = state;
   remember();
+  state.ownTilt = false;
   state.named = Boolean(title);
   if (title) setTitle(title);
   const to = { center, zoom, pitch };
@@ -378,9 +397,12 @@ function ringAround(at) {
 }
 
 function pick(kind, name, facts, { record = null, url = null, at = null } = {}) {
+  state.pickedPlane = null;
   clearPhoto();
   showTab("here");
   ringAround(at);
+  state.pickedAt = kind === "Satellite" ? null : at;
+  el("wdStreetBtn").hidden = !state.pickedAt;
   el("wdHere").closest(".world-panel").scrollTop = 0;
   el("wdPicked").hidden = false;
   el("wdPickedKind").textContent = kind;
@@ -398,9 +420,21 @@ function pick(kind, name, facts, { record = null, url = null, at = null } = {}) 
   state.map.getSource("world-track")?.setData(state.track);
 }
 
-function pickPlane(plane) {
-  pick("Plane", plane.callsign || plane.reg || plane.id,
-    [planeLine(plane), [plane.type, plane.reg].filter(Boolean).join(" · ")], { at: [plane.lon, plane.lat] });
+/** The card straight away, then the route when it arrives, if this plane is still the one picked. */
+async function pickPlane(plane) {
+  const facts = [planeLine(plane), [plane.type, plane.reg].filter(Boolean).join(" · ")];
+  const name = plane.callsign || plane.reg || plane.id;
+  pick("Plane", name, facts, { at: [plane.lon, plane.lat] });
+  state.pickedPlane = plane.id;
+  if (!plane.callsign) return;
+  try {
+    const { route } = await api(`/world/route?callsign=${encodeURIComponent(plane.callsign)}`);
+    if (!route || state.pickedPlane !== plane.id) return;
+    pick("Plane", name, [...facts, ...routeFacts(route)], { at: [plane.lon, plane.lat] });
+    state.pickedPlane = plane.id;
+    state.track = routeLine(route.from, plane, route.to);
+    state.map.getSource("world-track")?.setData(state.track);
+  } catch (err) { /* the card keeps what the plane itself reported */ }
 }
 
 function pickSatellite(id) {
@@ -437,7 +471,7 @@ async function pickCamera(camera) {
 }
 
 function drawAlerts() {
-  const shown = state.alerts.filter((a) => state.filter === "all" || a.kind === state.filter);
+  const shown = state.alerts.filter((a) => state.filter === "all" || a.kind === state.filter || a.hazard === state.filter);
   const now = Date.now();
   list(el("wdAlertList"), shown.map((a) => ({
     key: a.id, primary: a.title, secondary: ago(a.at, now), severity: a.severity, press: () => pickAlert(a),
@@ -557,6 +591,63 @@ async function loadSatellites() {
     paint();
   } catch (err) {
     el("wdNote").textContent = "Satellites are unavailable right now.";
+  }
+}
+
+// --- street view -----------------------------------------------------------------------------
+
+function closeStreet() {
+  if (el("wdStreet").hidden) return;
+  state.pano?.stop();
+  el("wdStreet").hidden = true;
+  el("wdMap").focus?.();
+}
+
+/** The nearest 360 photo to a point. No photo is a note, and the map stays where it is. */
+async function openStreet([lon, lat]) {
+  const note = el("wdNote");
+  note.textContent = "Looking for a street photo…";
+  try {
+    const { photo } = await api(`/world/photo?lat=${lat.toFixed(5)}&lon=${lon.toFixed(5)}`);
+    if (!photo) { note.textContent = "No street photo near here."; return; }
+    const blob = new Blob([await apiBytes(`/world/photo/${photo.id}`)], { type: "image/jpeg" });
+    const bitmap = await createImageBitmap(blob);
+    el("wdStreet").hidden = false;
+    state.pano = state.pano || createPano(el("wdPano"), { onExit: closeStreet, still: stillness });
+    state.pano.show(bitmap);
+    bitmap.close();
+    el("wdStreetCredit").textContent = photoCredit(photo);
+    el("wdPano").focus();
+    note.textContent = "";
+  } catch (err) {
+    closeStreet();
+    note.textContent = "Street photos are unavailable right now.";
+  }
+}
+
+/**
+ * Once the map settles after a zoom by hand: tilt with the zoom, and past the closest level drop
+ * into the street. Compared with the last settled view rather than watched from zoomstart, because
+ * the first wheel event of a gesture does not say it came from a wheel.
+ */
+function followZoom() {
+  const { map } = state;
+  const zoom = map.getZoom();
+  const from = state.settled;
+  state.settled = { zoom, pitch: map.getPitch() };
+  if (zoom < STREET_DIVE_ZOOM) state.diveArmed = true;
+  const byHand = state.handZoom && Math.abs(zoom - from.zoom) > ZOOM_MOVED;
+  state.handZoom = false;
+  if (!byHand) return;
+  if (!state.ownTilt) {
+    const pitch = tiltFor(zoom);
+    if (stillness()) map.jumpTo({ pitch });
+    else map.easeTo({ pitch, duration: 400 });
+  }
+  if (zoom >= STREET_DIVE_ZOOM && state.diveArmed) {
+    state.diveArmed = false;
+    const c = map.getCenter();
+    openStreet([c.lng, c.lat]);
   }
 }
 
@@ -714,6 +805,10 @@ function buildControls() {
     nav.append(chip);
   }
   el("wdBack").addEventListener("click", goBack);
+  el("wdStreetBtn").addEventListener("click", () => { if (state.pickedAt) openStreet(state.pickedAt); });
+  el("wdStreetClose").addEventListener("click", closeStreet);
+  window.addEventListener("resize", () => { if (!el("wdStreet").hidden) state.pano?.resize(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeStreet(); });
   el("wdNear").addEventListener("click", nearMe);
 
   const filters = el("wdFilters");
@@ -772,7 +867,9 @@ function buildControls() {
   });
 }
 
-async function start() {
+async function start(me) {
+  const home = me && me.homeLocation;
+  const view = home ? { ...START, center: [home.lon, home.lat], title: home.name || START.title } : START;
   try { state.config = await api("/world/config"); } catch (err) { /* keyed layers stay off */ }
   const lib = await import("/vendor/maplibre-gl.mjs").catch(() => null);
   lib?.addProtocol("wd", async (params) => {
@@ -784,13 +881,13 @@ async function start() {
     ? { tiles: ["wd://imagery/{z}/{x}/{y}"], tileSize: 256, maxzoom: 19, attribution: ESRI_CREDIT }
     : null;
   try {
-    state.map = await createMap(el("wdMap"), { ...START, globe: true, satellite: true, explore: true, imagery });
+    state.map = await createMap(el("wdMap"), { ...view, globe: true, satellite: true, explore: true, imagery });
   } catch (err) {
     el("wdNote").textContent = "The map could not be loaded.";
     return;
   }
   const { map } = state;
-  setTitle(START.title);
+  setTitle(view.title);
   addLayers();
   map.on("style.load", addLayers);
   map.on("click", clickMap);
@@ -798,7 +895,14 @@ async function start() {
     map.getCanvas().classList.toggle("world-hot", Boolean(hitAt(e.point)));
   });
   map.on("movestart", (e) => { if (e.originalEvent) state.named = false; });
-  map.on("moveend", () => {
+  state.settled = { zoom: map.getZoom(), pitch: map.getPitch() };
+  // A tilt by hand is a choice: the zoom leaves it alone until the map is flat again or travels.
+  map.on("pitch", (e) => { if (e.originalEvent) state.ownTilt = map.getPitch() > 1; });
+  map.on("moveend", (e) => {
+    if (e.originalEvent) state.handZoom = true;
+    // After the event, not in it: a wheel's own ending would otherwise cancel the tilt it started.
+    clearTimeout(state.settle);
+    state.settle = setTimeout(() => { if (!map.isMoving()) followZoom(); }, SETTLE_MS);
     planePoller.now();
     if (state.on.cameras) pollCameras();
     nameTheView();

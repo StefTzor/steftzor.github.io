@@ -254,3 +254,73 @@ export function emptyCard({ lat, lon }, where, camera) {
     ].filter(Boolean),
   };
 }
+
+const TILT_FROM_ZOOM = 12;
+const TILT_TO_ZOOM = 16;
+const TILT_MAX = 60;
+
+/** Top-down when far out, tilting to an eagle-eye view as you come in. */
+export function tiltFor(zoom) {
+  const t = Math.min(1, Math.max(0, (zoom - TILT_FROM_ZOOM) / (TILT_TO_ZOOM - TILT_FROM_ZOOM)));
+  return Math.round(t * TILT_MAX);
+}
+
+/** CC BY-SA asks for the author and the licence, so the viewer always shows both. */
+export function photoCredit({ author, license, takenAt }) {
+  const licence = license.replace(/^CC-BY-SA-/, "CC BY-SA ");
+  const taken = Number.isFinite(Date.parse(takenAt))
+    ? new Date(takenAt).toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" })
+    : "";
+  return [author, licence, "via Panoramax", taken].filter(Boolean).join(", ");
+}
+
+const NEAR_KM = 500;
+
+/** Alerts for the home card: within reach of the saved place, plus Swedish ones for Sweden. */
+export function nearbyAlerts(alerts, home) {
+  if (!home) return [];
+  // A saved place is "Uppsala, Uppsala County, SE": the country is only in its name.
+  const inSweden = home.countryCode === "SE" || /, SE$/.test(home.name || "");
+  return alerts.filter((a) => (a.lat === null
+    ? a.kind === "sweden" && inSweden
+    : distanceKm(home, a) <= NEAR_KM));
+}
+
+const ARC_STEPS = 48;
+
+/** Points along the great circle between two places. */
+function arc(a, b) {
+  const toVector = ({ lat, lon }) => [
+    Math.cos(rad(lat)) * Math.cos(rad(lon)), Math.cos(rad(lat)) * Math.sin(rad(lon)), Math.sin(rad(lat)),
+  ];
+  const [p, q] = [toVector(a), toVector(b)];
+  const angle = Math.acos(Math.min(1, p.reduce((sum, v, i) => sum + v * q[i], 0)));
+  if (angle < 1e-6) return [[a.lon, a.lat], [b.lon, b.lat]];
+  const out = [];
+  for (let i = 0; i <= ARC_STEPS; i += 1) {
+    const t = i / ARC_STEPS;
+    const f = Math.sin((1 - t) * angle) / Math.sin(angle);
+    const g = Math.sin(t * angle) / Math.sin(angle);
+    const [x, y, z] = p.map((v, k) => f * v + g * q[k]);
+    out.push([(Math.atan2(y, x) * 180) / Math.PI, (Math.atan2(z, Math.hypot(x, y)) * 180) / Math.PI]);
+  }
+  return out;
+}
+
+/** Origin to plane to destination, broken wherever the line would cross the date line. */
+export function routeLine(from, plane, to) {
+  const lines = [[]];
+  for (const point of [...arc(from, plane), ...arc(plane, to)]) {
+    const line = lines[lines.length - 1];
+    const previous = line[line.length - 1];
+    if (previous && Math.abs(point[0] - previous[0]) >= 180) lines.push([point]);
+    else line.push(point);
+  }
+  return { type: "Feature", properties: {}, geometry: { type: "MultiLineString", coordinates: lines } };
+}
+
+/** Flight numbers are reused, so this is what the schedule says, not what the plane reported. */
+export function routeFacts({ airline, from, to }) {
+  const place = (a) => `${a.city || a.name} (${a.code})`;
+  return [airline, `From ${place(from)}`, `To ${place(to)}`, "Scheduled route for this callsign"].filter(Boolean);
+}

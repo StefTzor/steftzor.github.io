@@ -41,6 +41,12 @@ bodyScripts:
     <button type="button" class="world-chip" data-layer="traffic" aria-pressed="false" hidden>Traffic</button>
   </div>
 
+  <div id="wdStreet" class="world-street" role="dialog" aria-label="Street photo" hidden>
+    <canvas id="wdPano" class="world-pano" tabindex="0" aria-label="360 degree street photo. Arrow keys look around, plus and minus zoom."></canvas>
+    <button type="button" id="wdStreetClose" class="world-chip world-street-close">Back to map</button>
+    <p id="wdStreetCredit" class="world-street-credit material"></p>
+  </div>
+
   <aside class="world-float world-panel material" aria-labelledby="wdTitle">
     <p class="text-xs uppercase tracking-wide text-brand-muted">Live world</p>
     <h1 id="wdTitle" class="truncate text-lg font-bold text-brand-text">World</h1>
@@ -56,6 +62,7 @@ bodyScripts:
         <p id="wdPickedName" class="font-semibold text-brand-text"></p>
         <img id="wdPhoto" class="mt-1 w-full rounded-md" alt="" hidden>
         <ul id="wdPickedFacts" class="text-xs text-brand-muted tabular-nums"></ul>
+        <button type="button" id="wdStreetBtn" class="link-action mr-3 text-xs" hidden>Street view</button>
         <a id="wdPickedLink" class="link-action hidden text-xs" target="_blank" rel="noopener noreferrer">Read the source</a>
       </div>
 

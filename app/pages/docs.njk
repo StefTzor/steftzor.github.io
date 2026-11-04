@@ -21,9 +21,17 @@ bodyScripts:
     <span>How this is built</span>
   </h1>
   <p class="mt-2 max-w-prose text-brand-muted">
-    Three deployables, four data stores and twenty-three upstream services. This page is the map of what runs
+    Three deployables, four data stores and twenty-five upstream services. This page is the map of what runs
     where, what holds which data, and what every endpoint is for.
   </p>
+
+  {# Only ever filled for an Admin, from the API: this page is public HTML, so nothing about how
+     the machine is arranged can be written into it. Empty and hidden for everybody else. #}
+  <section id="owner" aria-labelledby="owner-heading" class="mt-10" hidden>
+    <h2 id="owner-heading" class="text-xl font-bold text-brand-text mb-1">Owner's notes</h2>
+    <p class="hint">Only you see this part. It comes from the private API.</p>
+    <div id="ownerSections" class="mt-4 space-y-3"></div>
+  </section>
 
   {# --- the flow -----------------------------------------------------------
      Drawn rather than described because the one thing people get wrong about this setup is which
@@ -86,7 +94,7 @@ bodyScripts:
         <span class="doc-method">API</span>
         <span class="text-sm text-brand-text">
           <strong>api.tzortzoglou.eu</strong> — Express, in its own private repository. Holds every
-          key and is the only thing that talks to a database.
+          key and is the only thing that talks to Postgres.
         </span>
         <span class="doc-role">node</span>
       </div>
@@ -124,12 +132,12 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">Postgres</h3>
         <p class="hint mt-1">
-          Ten tables. Contact submissions, a row per process start, which migrations have run, and
+          Eleven tables. Contact submissions, a row per process start, which migrations have run, and
           the one-row table holding the secret behind the visitor number below. Five the system
           writes for itself: the status page's health checks (seven days), the shape of each
           upstream's answers and what changed in it (field names and types, never a value), GitHub
-          webhook deliveries that passed their signature check (30 days), and the sports data, saved
-          so a restart does not fetch three leagues again. And
+          webhook deliveries that passed their signature check (30 days), the bus timetable, and the
+          sports data, saved so a restart does not fetch them again. And
           one row per page view: path, which of the two properties, the referring host, the time,
           a coarse browser, OS, device class and width bracket, the country as two letters (looked up
           on the server from the address; IP geolocation by
@@ -150,8 +158,8 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">Memory</h3>
         <p class="hint mt-1">
-          Every upstream answer is cached in the API process for between 45 seconds and six hours,
-          and lost on restart, except the sports data, which is also saved to Postgres. A bus or a
+          Every upstream answer is cached in the API process for between 15 seconds and a day,
+          and lost on restart, except the sports data and the bus timetable, which are also saved to Postgres. A bus or a
           race lives in memory and nowhere else, so there is no history of either to browse.
         </p>
       </li>
@@ -245,11 +253,11 @@ bodyScripts:
   <section aria-labelledby="up-heading" class="mt-10">
     <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-1">The upstreams, in detail</h2>
     <p class="text-sm text-brand-muted mb-6 max-w-prose">
-      Twenty-two of the twenty-three are called by the server. Six of those need a credential, which has to
+      Twenty-four of the twenty-five are called by the server. Six of those need a credential, which has to
       stay on the server; the rest so that one call serves every reader, and for the three sports
-      sources, so a page reads a saved copy rather than three unofficial sites. The twenty-third is the
+      sources, so a page reads a saved copy rather than three unofficial sites. The twenty-fifth is the
       basemap, and it is not proxied at all: your browser fetches its tiles itself, which makes it
-      the only one your browser has ever heard of. ESPN, shl.se and hockeyallsvenskan.se share one
+      the only one your browser has ever heard of, along with the satellite imagery on the two maps that offer it. ESPN, shl.se and hockeyallsvenskan.se share one
       entry below, because they do one job, and so do the two papers. Each one below lists what is called, how long an answer
       is held, and how their field names become ours.
     </p>
