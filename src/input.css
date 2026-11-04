@@ -309,6 +309,30 @@
     background: radial-gradient(rgb(var(--color-accent)) 0 5px, rgb(var(--color-bg)) 6px);
     box-shadow: 0 0 0 4px rgb(var(--color-bg));
   }
+  /* Home page: the same line across the page, or down it on a phone. */
+  .stops { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; padding-top: 2.75rem; }
+  .stops::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 11px; height: 3px;
+    border-radius: 2px; background: var(--route-1);
+  }
+  .stops-item { position: relative; display: flex; flex-direction: column; }
+  .stops-item::before {
+    content: ""; position: absolute; left: 0; top: calc(-2.75rem); width: 25px; height: 25px; border-radius: 50%;
+    border: 3px solid rgb(var(--color-accent));
+    background: radial-gradient(rgb(var(--color-accent)) 0 5px, rgb(var(--color-bg)) 6px);
+    box-shadow: 0 0 0 4px rgb(var(--color-bg));
+  }
+  .stops-item h3 { @apply mb-3 text-xl font-bold leading-tight text-brand-text; text-wrap: balance; }
+  .stops-text { @apply mb-4 flex-grow text-sm leading-relaxed text-brand-muted; }
+  .stops-link { @apply mt-5 inline-flex items-center gap-2 self-start text-sm font-semibold text-brand-accent underline-offset-4 hover:underline; }
+  @media (max-width: 767px) {
+    .stops { grid-template-columns: 1fr; gap: 3rem; padding-top: 0; padding-left: 2.4rem; }
+    .stops::before { left: 11px; right: auto; top: 14px; bottom: 0; width: 3px; height: auto; }
+    .stops-item::before { left: -2.4rem; top: 4px; }
+    .stops .case-tags li { display: inline; }
+    .stops .case-tags li:not(:last-child)::after { content: " · "; }
+  }
+
   .case-number { @apply font-mono text-xs text-brand-muted; }
   .case-kind { @apply mb-3 mt-0.5 text-xs font-semibold uppercase tracking-wider text-brand-brass; }
   .case h2 { @apply mb-4 text-2xl font-bold leading-tight text-brand-text; text-wrap: balance; }
@@ -492,22 +516,22 @@
     /* The ink for every layer below, declared once here so the four siblings inherit it and the
        dark fork stays a single block. All of it is roughly double what it was: the effect was
        tuned to be invisible until noticed, and the ask was for weather you can see at a glance. */
-    --wx-sun: rgb(217 119 6 / 38%);          /* Amber 600 */
-    --wx-disc: rgb(245 158 11 / 50%);        /* the sun itself, not its glow */
-    --wx-night: rgb(71 85 105 / 30%);        /* Slate 600 */
-    --wx-moon: rgb(100 116 139 / 42%);
-    --wx-veil: rgb(100 116 139 / 26%);       /* Slate 500 */
-    --wx-veil2: rgb(100 116 139 / 17%);      /* the second bank, further away */
-    --wx-rain-wash: rgb(2 132 199 / 22%);    /* Sky 600 */
-    --wx-rain-streak: rgb(29 78 216 / 45%);  /* Blue 700 */
-    --wx-storm-wash: rgb(67 56 202 / 26%);   /* Indigo 700 */
-    --wx-storm-streak: rgb(55 48 163 / 48%); /* Indigo 800 */
+    --wx-sun: rgb(176 124 40 / 38%);          /* brass, deepened */
+    --wx-disc: rgb(214 164 66 / 55%);        /* the sun itself, not its glow */
+    --wx-night: rgb(72 84 76 / 30%);
+    --wx-moon: rgb(92 108 98 / 42%);
+    --wx-veil: rgb(96 110 100 / 26%);
+    --wx-veil2: rgb(96 110 100 / 17%);      /* the second bank, further away */
+    --wx-rain-wash: rgb(46 112 112 / 22%);
+    --wx-rain-streak: rgb(28 88 90 / 45%);
+    --wx-storm-wash: rgb(38 62 62 / 26%);
+    --wx-storm-streak: rgb(24 46 48 / 48%);
     /* Lightning cannot brighten a white card, so in light mode it darkens instead: the sky
        flickers deeper for an instant. Same keyframe, same geometry, opposite ink - which is the
        whole reason the fork is colour-only. */
-    --wx-flash: rgb(49 46 129 / 34%);        /* Indigo 900 */
-    --wx-snow: 100 116 139;                  /* Slate 500, as channels */
-    --wx-city: 71 85 105;                    /* Slate 600, as channels */
+    --wx-flash: rgb(20 38 38 / 34%);
+    --wx-snow: 92 108 98;
+    --wx-city: 52 72 62;                    /* pine, as channels */
     /* **Two alphas off one hue, and the ratio between them is the depth.** The far ridge at
        roughly a third of the near layer is what makes one read as behind the other; at one
        weight the whole thing is a bar, which is exactly what the computed version was. */
@@ -515,15 +539,15 @@
     --wx-city-near: 42%;
 
     /* The daylight phases. Light mode inks with the deep end of each hue, as the weather does. */
-    --ph-dawn-hi: rgb(236 72 153 / 10%);    /* Pink 500 */
-    --ph-dawn-lo: rgb(245 158 11 / 26%);    /* Amber 500 */
-    --ph-day: rgb(14 165 233 / 20%);        /* Sky 500 */
-    --ph-gold-hi: rgb(245 158 11 / 10%);
-    --ph-gold-lo: rgb(234 88 12 / 26%);     /* Orange 600 */
-    --ph-dusk-hi: rgb(124 58 237 / 14%);    /* Violet 600 */
-    --ph-dusk-lo: rgb(225 29 72 / 20%);     /* Rose 600 */
-    --ph-night-hi: rgb(30 27 75 / 16%);     /* Indigo 950 */
-    --ph-night-lo: rgb(49 46 129 / 6%);
+    --ph-dawn-hi: rgb(190 120 90 / 10%);   /* clay */
+    --ph-dawn-lo: rgb(205 155 70 / 26%);   /* brass */
+    --ph-day: rgb(95 150 130 / 20%);    /* sage */
+    --ph-gold-hi: rgb(205 155 70 / 10%);
+    --ph-gold-lo: rgb(190 125 50 / 26%);
+    --ph-dusk-hi: rgb(90 104 110 / 14%);
+    --ph-dusk-lo: rgb(170 95 70 / 20%);    /* clay */
+    --ph-night-hi: rgb(19 35 29 / 16%);    /* pine */
+    --ph-night-lo: rgb(19 35 29 / 6%);
 
     /* **The strip at the bottom of the card that belongs to the skyline, and to nothing else.**
        It is reserved by padding on .hero-body rather than carved out of whatever happens to be
@@ -548,30 +572,30 @@
 
   .dark .hero,
   .chrome-dark .hero {
-    --wx-sun: rgb(251 191 36 / 40%);
-    --wx-disc: rgb(253 224 71 / 62%);
-    --wx-night: rgb(148 163 184 / 34%);
-    --wx-moon: rgb(226 232 240 / 62%);
-    --wx-veil: rgb(148 163 184 / 28%);
-    --wx-veil2: rgb(148 163 184 / 18%);
-    --wx-rain-wash: rgb(56 189 248 / 20%);
-    --wx-rain-streak: rgb(148 197 255 / 38%);
-    --wx-storm-wash: rgb(129 140 248 / 28%);
-    --wx-storm-streak: rgb(191 210 255 / 42%);
-    --wx-flash: rgb(224 242 254 / 40%);      /* here it brightens, as lightning does */
-    --wx-snow: 226 232 240;
-    --wx-city: 148 163 184;
+    --wx-sun: rgb(238 178 96 / 32%);
+    --wx-disc: rgb(246 216 156 / 78%);
+    --wx-night: rgb(195 198 193 / 30%);
+    --wx-moon: rgb(236 236 226 / 62%);
+    --wx-veil: rgb(195 198 193 / 26%);
+    --wx-veil2: rgb(195 198 193 / 17%);
+    --wx-rain-wash: rgb(110 180 170 / 18%);
+    --wx-rain-streak: rgb(190 225 215 / 38%);
+    --wx-storm-wash: rgb(120 150 140 / 24%);
+    --wx-storm-streak: rgb(215 230 222 / 42%);
+    --wx-flash: rgb(240 240 230 / 40%);      /* here it brightens, as lightning does */
+    --wx-snow: 236 236 226;
+    --wx-city: 159 186 170;
     --wx-city-far: 18%;
     --wx-city-near: 48%;
-    --ph-dawn-hi: rgb(244 114 182 / 14%);
-    --ph-dawn-lo: rgb(252 211 77 / 22%);
-    --ph-day: rgb(56 189 248 / 16%);
-    --ph-gold-hi: rgb(251 191 36 / 10%);
-    --ph-gold-lo: rgb(251 146 60 / 24%);
-    --ph-dusk-hi: rgb(167 139 250 / 18%);
-    --ph-dusk-lo: rgb(251 113 133 / 18%);
-    --ph-night-hi: rgb(2 6 23 / 55%);       /* Slate 950: deeper than the navy card */
-    --ph-night-lo: rgb(30 27 75 / 30%);
+    --ph-dawn-hi: rgb(220 150 120 / 14%);
+    --ph-dawn-lo: rgb(240 200 120 / 20%);
+    --ph-day: rgb(127 181 150 / 14%);
+    --ph-gold-hi: rgb(232 195 110 / 10%);
+    --ph-gold-lo: rgb(235 165 90 / 22%);
+    --ph-dusk-hi: rgb(150 165 175 / 16%);
+    --ph-dusk-lo: rgb(215 130 100 / 18%);
+    --ph-night-hi: rgb(10 20 16 / 50%);       /* deeper than the page, so the sky darkens */
+    --ph-night-lo: rgb(15 30 24 / 30%);
   }
 
   .hero-body {
