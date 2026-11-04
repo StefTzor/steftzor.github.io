@@ -175,5 +175,14 @@ const ISS = {
   for (const r of core.REGIONS) assert.ok(r.name && r.center.length === 2 && r.zoom > 0, r.name);
   ok('every region has somewhere to go');
 
+  {
+    // Firebase restores a session after the module runs, and api() throws until it has. A local
+    // preview with a stubbed shell cannot see this, so the wiring is asserted from the source.
+    const page = fs.readFileSync(path.join(__dirname, '..', 'app/scripts/world.js'), 'utf8');
+    assert.match(page, /^profile\.then\(start\);$/m);
+    assert.doesNotMatch(page, /^start\(\);$/m);
+    ok('the page waits for sign-in before its first API call');
+  }
+
   console.log(`\nworld: all checks passed (${passed})`);
 })().catch((err) => { console.error(err); process.exit(1); });

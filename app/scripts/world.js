@@ -1,4 +1,4 @@
-import { api, apiBytes } from "./shell.js";
+import { api, apiBytes, profile } from "./shell.js";
 import { createMap, goTo, homeTo, stillness } from "./map.js";
 import {
   POLL_MS, TICK_MS, REGIONS, planeFeatures, nearest, sky, groundTrack, buildingFacts, planeLine,
@@ -712,4 +712,4 @@ async function start() {
   loadSatellites();
 }
 
-start();
+profile.then(start);
