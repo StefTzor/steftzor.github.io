@@ -57,6 +57,12 @@ module.exports = function (eleventyConfig, { cspOverrides = {} } = {}) {
   eleventyConfig.addGlobalData("buildDate", () => new Date().toISOString().split("T")[0]);
   // Full ISO 8601 datetime for JSON-LD dateModified (Google ProfilePage requires a datetime, not a date)
   eleventyConfig.addGlobalData("buildDateTime", () => new Date().toISOString());
+  // LinkedIn keeps its copy of a share image by URL, so a new card at the same address never shows
+  // up, even through Post Inspector. The fingerprint gives every new card a new address.
+  eleventyConfig.addGlobalData("ogImageUrl", () => {
+    const hash = crypto.createHash("sha256").update(fs.readFileSync("images/og-cover.png"));
+    return `/images/og-cover.png?v=${hash.digest("hex").slice(0, 8)}`;
+  });
 
 
   /**
