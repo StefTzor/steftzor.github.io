@@ -29,6 +29,8 @@ const dots = identity.stack.map(esc).join(' &nbsp;·&nbsp; ');
 const CARDS = {
   og: {
     size: [1200, 630],
+    // Twice the layout size: LinkedIn scales and recompresses this, and at 1x small text went soft.
+    scale: 2,
     out: join(ROOT, 'images', 'og-cover.png'),
     html: `<div class="card og"><div class="inner">
       <img class="photo" src="../../images/stefanos_profile.png" alt="">
@@ -78,6 +80,7 @@ for (const key of todo) {
   const card = CARDS[key];
   if (!card) throw new Error(`unknown card "${key}" — one of ${Object.keys(CARDS).join(', ')}`);
   const [w, h] = card.size;
+  const scale = card.scale || 1;
 
   // Written beside the template so the relative font and photo paths resolve.
   const page = join(HERE, `.render-${key}.html`);
@@ -88,7 +91,7 @@ for (const key of todo) {
   // below would still pass because the page size is fixed in CSS.
   writeFileSync(page, template.replace('<div id="card"></div>', () => card.html));
 
-  // --force-device-scale-factor=1 and an exact window: the screenshot must be the declared
+  // An explicit scale factor and an exact window: the screenshot must be the declared
   // pixel size, not whatever the display would have chosen.
   // finally, because a Chrome that exits non-zero would otherwise leave .render-*.html sitting
   // in a tracked source directory, where the house rule of staging by path would eventually
@@ -96,7 +99,7 @@ for (const key of todo) {
   try {
     execFileSync(CHROME, [
       '--headless', '--disable-gpu', '--no-sandbox', '--hide-scrollbars',
-      '--force-device-scale-factor=1', `--window-size=${w},${h}`,
+      `--force-device-scale-factor=${scale}`, `--window-size=${w},${h}`,
       '--virtual-time-budget=8000', `--screenshot=${card.out}`, `file://${page}`,
     ], { stdio: 'pipe' });
   } finally {
@@ -107,7 +110,7 @@ for (const key of todo) {
   const buf = readFileSync(card.out);
   const gotW = buf.readUInt32BE(16);
   const gotH = buf.readUInt32BE(20);
-  if (gotW !== w || gotH !== h) throw new Error(`${key}: expected ${w}x${h}, got ${gotW}x${gotH}`);
+  if (gotW !== w * scale || gotH !== h * scale) throw new Error(`${key}: expected ${w * scale}x${h * scale}, got ${gotW}x${gotH}`);
   console.log(`  ${key.padEnd(9)} ${gotW}x${gotH}  ${(buf.length / 1024).toFixed(0)} KB  ${card.out.replace(ROOT + '/', '')}`);
 }
 

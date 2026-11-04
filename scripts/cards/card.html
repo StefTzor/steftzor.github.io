@@ -33,6 +33,8 @@
     background: url(routes.svg) right center / cover no-repeat;
     -webkit-mask-image: linear-gradient(270deg, #000 35%, transparent 90%);
   }
+  /* The share card shrinks to a thumbnail, where a line behind the text muddies it. */
+  .card.og::before { opacity: .4; }
   /* The accent edge. */
   .card::after {
     content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 10px;
