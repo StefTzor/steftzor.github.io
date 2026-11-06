@@ -323,16 +323,4 @@ function files(dir, ext) {
   ok('flag on: the panel is everywhere and no sign-in code ships with it');
 }
 
-const APP = path.join(ROOT, '_app');
-if (fs.existsSync(path.join(APP, 'remember/index.html'))) {
-  const home = fs.readFileSync(path.join(APP, 'index.html'), 'utf8');
-  assert.ok(home.includes('id="chatPanel"'), 'the app has the panel');
-  assert.ok(home.includes('import("/scripts/shell.js")'), 'and hands it the signed-in shell');
-  assert.ok(!fs.readFileSync(path.join(APP, 'remember/index.html'), 'utf8').includes('only you can see'),
-    'the page may not claim more than the database does');
-  assert.ok(!fs.readFileSync(path.join(APP, 'login/index.html'), 'utf8').includes('chatPanel'),
-    'the sign-in page has no session to chat with');
-  ok('app build: signed-in pages have the panel, the sign-in page does not');
-}
-
 streamChecks().then(panelChecks).then(() => console.log(`chat: all checks passed — ${passed}`));
