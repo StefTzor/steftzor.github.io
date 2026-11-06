@@ -32,6 +32,13 @@ const SOURCES = new Map([
   ["/code/", { label: "Code" }],
   ["/docs/", { label: "How this is built", appOnly: true }],
   ["/remember/", { label: "What I remember", appOnly: true }],
+  ["/status/", { label: "Status" }],
+  ["/f1/", { label: "Formula 1", appOnly: true }],
+  ["/sports/", { label: "Sports", appOnly: true }],
+  ["/transit/", { label: "Transit", appOnly: true }],
+  ["/", { label: "Home page", appOnly: true }], // the app's, where the weather is, not the portfolio's
+  ["/profile/", { label: "Your profile", appOnly: true }],
+  ["/login/", { label: "Sign in", sameBoth: true }], // the public /login/ redirects to the app's
 ]);
 
 // --- the stream -----------------------------------------------------------------------------
@@ -97,6 +104,7 @@ export function stateLine(turn) {
 export function sourceView(source, app) {
   const known = SOURCES.get(source);
   if (!known) return null;
+  if (known.sameBoth) return { label: known.label, href: source };
   if (known.appOnly) return { label: known.label, href: app ? source : null };
   return { label: known.label, href: app ? SITE + source : source };
 }
@@ -189,7 +197,7 @@ export function mount({ panel, opener, app }) {
   const send = panel.querySelector("#chatSend");
   const count = panel.querySelector("#chatCount");
 
-  const earlier = []; // public site: the questions so far, because nothing is kept for a visitor
+  const earlier = []; // public site: the questions so far, because no conversation is kept for a visitor
   let conversationId = null; // app: the server holds the history, this names it
   let stopLive = null; // set while an answer is running
 

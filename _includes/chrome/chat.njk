@@ -48,6 +48,7 @@
       </form>
       <p id="chatCount" class="chat-count"></p>
       <p class="hint">Answers come from my own server.</p>
+      <p class="hint"><a href="{% if shell %}https://tzortzoglou.eu/privacy/#chat-memory{% else %}/privacy/#chat{% endif %}" class="chat-link">Questions are kept for 30 days to improve the chat.</a></p>
       {%- if not shell %}
       <p class="hint"><a href="https://app.tzortzoglou.eu/" class="chat-link">Sign in to the app</a> and it remembers you.</p>
       {%- endif %}

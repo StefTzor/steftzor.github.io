@@ -154,6 +154,16 @@ async function streamChecks() {
     assert.strictEqual(sourceView(bad, true), null, `${bad} is not a known source`);
   }
   ok('sources: only known pages become anything at all');
+  // The live tools' sources: app pages are links there and labels here; status is on the public site.
+  for (const [source, label] of [['/f1/', 'Formula 1'], ['/sports/', 'Sports'], ['/transit/', 'Transit'], ['/', 'Home page'], ['/profile/', 'Your profile']]) {
+    assert.deepStrictEqual(plain(sourceView(source, true)), { label, href: source });
+    assert.deepStrictEqual(plain(sourceView(source, false)), { label, href: null });
+  }
+  assert.strictEqual(sourceView('/status/', false).href, '/status/');
+  assert.strictEqual(sourceView('/status/', true).href, 'https://tzortzoglou.eu/status/');
+  assert.strictEqual(sourceView('/login/', false).href, '/login/');
+  assert.strictEqual(sourceView('/login/', true).href, '/login/');
+  ok('sources: every live tool source has a label, and a link wherever its page is');
 }
 
 // --- rendering ------------------------------------------------------------------------------
@@ -323,4 +333,19 @@ function files(dir, ext) {
   ok('flag on: the panel is everywhere and no sign-in code ships with it');
 }
 
-streamChecks().then(panelChecks).then(() => console.log(`chat: all checks passed — ${passed}`));
+// The privacy copy says what the 30-day record really is: unlinked, not unfindable.
+function copyChecks() {
+  const read = (f) => fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
+  const privacy = read('pages/privacy.njk').replace(/\s+/g, ' ');
+  const docs = read('app/pages/docs.njk').replace(/\s+/g, ' ');
+  for (const text of [privacy, docs]) {
+    assert.ok(!/can't find|cannot find|nothing can find|has nothing to find/i.test(text), 'no claim that a record cannot be found');
+    assert.ok(/isn't linked to an account, so erasure doesn't reach it/.test(text));
+  }
+  assert.ok(/exact text/.test(privacy), 'and no overclaim: the text itself can be searched');
+  assert.ok(/With Memory on, a tool answer is stored in the conversation/.test(privacy));
+  assert.ok(!/because nothing is kept for a visitor/.test(read('app/scripts/chat.js')));
+  ok('the privacy copy, the docs and the panel comment match what is kept');
+}
+
+streamChecks().then(panelChecks).then(copyChecks).then(() => console.log(`chat: all checks passed — ${passed}`));

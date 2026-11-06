@@ -4,7 +4,7 @@ permalink: /privacy/
 title: "Privacy Policy | Stefanos Tzortzoglou"
 heading: "Privacy Policy"
 description: "How tzortzoglou.eu handles personal data: what is collected, why, the legal basis under GDPR, who processes it, and how to exercise your rights."
-summary: "This site is a personal portfolio. It sets no cookies and runs no advertising. Since 18 September 2026 a counted page view carries a visitor number that is the same for your browser all day, different tomorrow, and erased from the row after 30 days; section 2.2 sets out exactly what it is. Everything else stored here is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form. The exception is the chat in the application. It keeps your conversations and writes short notes about you automatically, unless you switch that off; section 3.5 sets out what it holds. On the public pages it stores nothing."
+summary: "This site is a personal portfolio. It sets no cookies and runs no advertising. Since 18 September 2026 a counted page view carries a visitor number that is the same for your browser all day, different tomorrow, and erased from the row after 30 days; section 2.2 sets out exactly what it is. Everything else stored here is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form. The exception is the chat. Questions asked in it are kept for 30 days to improve it, with no IP address or account on the record, and I read them; section 2.5 sets out what is kept. In the application it also keeps your conversations and writes short notes about you automatically, unless you switch that off; section 3.5 sets out what it holds."
 updated: "2026-11-06"
 updatedLabel: "6 November 2026"
 sitemapOrder: 60
@@ -162,30 +162,49 @@ sitemapPriority: "0.3"
 <h3 id="chat">2.5 The chat on these public pages</h3>
 <p>
   <strong>Added 6 November 2026.</strong> A panel opened from the corner button answers questions about this site
-  and how it is built. It answers from the public pages, using an open model on a server I rent. Your question goes
+  and how it is built. It answers from the public pages, using an open model on a server I rent, and it can look up
+  live data for you: the weather, the next race, the Formula 1 standings, results and site status. Your question goes
   to no AI company. The only other party whose hardware it crosses is the hosting provider, described below. The
   panel starts in the application, where <a href="#chat-memory">section 3.5</a> applies, and is due on these public
   pages later. This section covers the public pages, and it applies even if you are signed in to the application in
   the same browser: the panel here does not know who you are.
 </p>
 <ul>
-  <li><strong>What is stored:</strong> nothing. Your question and the answer are held in memory while the answer is
-    written. They are not saved to a database and they are not logged. Earlier questions from the same open page
-    travel with a new one, so that a follow-up makes sense, and they get the same treatment.</li>
+  <li><strong>What is kept:</strong> your question, for 30 days, to improve the chat. Emails, phone numbers and long
+    numbers are masked before it is saved. That is a filter and it isn't perfect, so other details you type stay in
+    the text, and something it should have caught can get past it. Questions the chat refuses are kept the same way,
+    because they show me where it fails.</li>
+  <li><strong>What else is on that record:</strong> how the question was routed, which facts and live lookup it used,
+    how it ended and how long it took. There is no IP address and no account on it, and answers aren't kept in it.
+    <strong>I read these questions.</strong></li>
+  <li><strong>How long:</strong> a daily job deletes a record once it is 30 days old. It can then stay in the backups
+    in <a href="#backups">section 7</a> for up to seven more days. A record isn't linked to an account, so erasure doesn't reach it,
+    and it goes by the 30-day limit.</li>
+  <li><strong>What stays in memory:</strong> your question and the answer are held in memory while the answer is
+    written. A plain question the model answered can stay in my server's memory with its answer for up to an hour,
+    so the next person to ask the same thing gets the answer straight away, and a restart clears it. Anything that
+    used a live lookup, your notes or earlier questions is never held this way. Earlier questions from the same open
+    page travel with a new one, so that a follow-up makes sense. They are not saved a second time.</li>
   <li><strong>Where your text goes:</strong> from your browser to <strong>api.tzortzoglou.eu</strong>, then over a
     private connection to a second server of mine, where the model runs. It passes through that server to be
     answered. The model writes it to no disk or log there, though it can sit in that server's memory until the next
-    question replaces it. Both servers are rented in my own name, so a hosting provider's hardware
+    question replaces it. To find the facts that match, a second service on that server turns your question into
+    numbers, which are kept nowhere. Both servers are rented in my own name, so a hosting provider's hardware
     carries the text on its way through, as with the server in <a href="#contact-form">section 4.2</a>.</li>
+  <li><strong>Live lookups:</strong> my server asks the same services the rest of this site and the application use.
+    On these public pages a lookup uses Uppsala for the weather, and your question is not sent to those services.</li>
   <li><strong>Your IP address:</strong> it arrives with the request, as it does with every request, and it is used
     only in memory, as the key two rate limiters count against. One of them counts per day, so your address can stay
     in the server's memory for up to two days, longer than on other public routes, and a restart clears it sooner.</li>
   <li><strong>In your browser:</strong> the chat sets no cookie and stores nothing there. See the
     <a href="/cookies/#storage">Cookies &amp; Local Storage</a> page.</li>
-  <li><strong>Sensitive information:</strong> the question box is free text, so please do not type anything
-    confidential or sensitive into it.</li>
+  <li><strong>Sensitive information:</strong> the question box is free text, and what you type can stay in that record
+    for 30 days, so please do not type anything confidential or sensitive into it.</li>
   <li><strong>Legal basis:</strong> legitimate interests, Art. 6(1)(f) GDPR: answering a question you chose to ask,
-    and keeping the chat from being overwhelmed.</li>
+    keeping the chat from being overwhelmed, and reading past questions to see where it fails. A record has no account or
+    IP address on it. It isn't linked to an account, so erasure doesn't reach it, though anyone who has the exact text
+    of a question could search for it. The way to keep a question out of it is not to send it, or
+    to ask in the application with Memory off.</li>
 </ul>
 
 <h2 id="account">3. If you create an account</h2>
@@ -465,6 +484,15 @@ sitemapPriority: "0.3"
 </table>
 
 <ul>
+  <li><strong>The 30-day record:</strong> every question you ask here also goes into the record in
+    <a href="#chat">section 2.5</a>, on the same terms and with no account on it. With Memory off the question text
+    isn't kept, only timings and the route. Asking what the chat remembers about you keeps no text either. This record
+    isn't linked to an account, so erasure doesn't reach it, and it goes by the 30-day limit. A question you have deleted
+    from a conversation can stay in it for up to 30 days.</li>
+  <li><strong>Live lookups:</strong> the chat can also give you your next departures, and it uses your home stop, home
+    location and favourite teams only to answer you. They go to the same services as on the rest of the application,
+    and none of them goes into the 30-day record. With Memory on, a tool answer is stored in the conversation like any
+    other answer, stop name included.</li>
   <li><strong>How notes are written:</strong> once a conversation has gone quiet, a background job sends your questions
     from it back through the model on my second server, and the model writes the notes. That text is treated the
     same way on that server. Nobody reads or approves a note before it is saved, and a note can be wrong.</li>
@@ -483,13 +511,14 @@ sitemapPriority: "0.3"
     you delete it or it reaches the 12 months below.</li>
   <li><strong>The Memory switch:</strong> it is on the same page. Off, no new conversations or notes are stored and
     existing notes are not read. What is already there stays, and stays visible, until you delete it or it reaches
-    the 12 months below. Your questions still go through the two servers to be answered.</li>
+    the 12 months below. Your questions still go through the two servers to be answered, and each still leaves a
+    30-day record with no text.</li>
   <li><strong>Retention:</strong> a conversation is deleted 12 months after its last activity, and a note 12 months
     after it was written or last edited. Forgetting everything deletes every note and conversation held at that
-    moment and leaves only your Memory switch setting. An answer still being written can be saved just after, so let
+    moment and leaves only your Memory switch setting, apart from the 30-day record above. An answer still being written can be saved just after, so let
     it finish first.</li>
   <li><strong>Erasure:</strong> erasing your account (<a href="#rights">section 6</a>) removes all of this, the switch
-    setting included. Deleted rows also stay in the nightly backups described in
+    setting included, but not the 30-day record, which isn't linked to an account, so erasure doesn't reach it. Deleted rows also stay in the nightly backups described in
     <a href="#backups">section 7</a> until those backups expire, seven days at most.</li>
   <li><strong>Who can read it:</strong> you, and me. Another account cannot reach it, and these tables are left out of
     the table browser in the admin area, but I run the database and can read what is in it, as with any other data
@@ -616,6 +645,11 @@ sitemapPriority: "0.3"
   them.
 </p>
 <p>
+  The 30-day chat record in <a href="#chat">section 2.5</a> is out of reach too, for the opposite reason: it carries no
+  account and no IP address. It isn't linked to an account, so erasure doesn't reach it, though anyone who has the exact
+  text of a question could search for it. They go by the 30-day limit.
+</p>
+<p>
   Deleted records also stay in the nightly backups described in <a href="#backups">section 7</a> until those
   backups expire, seven days at most. They are not restored from there unless the whole database has to be rebuilt, and if it is, I delete them again.
 </p>
@@ -630,11 +664,11 @@ sitemapPriority: "0.3"
   The site is served over HTTPS. Authentication and account data are handled by Firebase, and database rules restrict
   each account to reading only its own record; account approval can only be performed by me. Passwords are hashed by
   Firebase and are never visible to me. No system is perfectly secure, but the amount of personal data held here is
-  deliberately kept to what the approval gate needs and, if you leave memory on, what the chat keeps.
+  deliberately kept to what the approval gate needs and what the chat keeps.
 </p>
 <p id="backups">
   <strong>Backups.</strong> Every night the database on my server is copied in full: the counted page views,
-  contact form messages and chat conversations and notes, the server's own operational records, and a nightly copy of the accounts held by
+  contact form messages, chat conversations and notes, the 30-day chat record, the server's own operational records, and a nightly copy of the accounts held by
   Firebase: address, name, role, approval and saved preferences, but no passwords or password hashes. The copy goes to a private storage
   bucket in my own Oracle account, in Oracle's Stockholm data centre, and nowhere else; the only key that can
   write to it is limited to that one bucket. Each copy is deleted

@@ -66,4 +66,10 @@ module.exports = [
     navKey: "admin-analytics",
     icon: "fa-solid-chart-line",
   },
+  {
+    label: "Chat",
+    href: "/admin/chat/",
+    navKey: "admin-chat",
+    icon: "fa-solid-comment",
+  },
 ];

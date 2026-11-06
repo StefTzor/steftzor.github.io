@@ -1,0 +1,62 @@
+---
+permalink: /admin/chat/
+title: "Chat | Admin"
+bodyScripts:
+  - src: "/scripts/admin-chat.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+  - src: "/scripts/palette.js"
+    type: "module"
+---
+{# What the chat did with each question. The question column is text typed by strangers, so
+   app/scripts/admin-chat.js only ever writes it through textContent. A trace carries no account
+   and no address, and a question asked with memory off is not kept at all. #}
+<section class="app-page an-wrap">
+
+  {% include "chrome/admin-sections.njk" %}
+
+  <h1 class="text-3xl font-bold text-brand-text mb-2">Chat</h1>
+  <p class="text-brand-muted mb-6 max-w-prose">
+    One trace for each question asked, kept for 30 days. Nothing here names who asked, and a
+    question asked with memory off keeps no text.
+  </p>
+
+  <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
+
+  <div class="card an-kpis mb-6">
+    <div class="an-kpi"><span class="an-kpi-label">Questions</span><span id="chatTotal" class="an-kpi-number" data-loading>—</span><span class="an-kpi-note">last 7 days</span></div>
+    <div class="an-kpi"><span class="an-kpi-label">Median</span><span id="chatMedian" class="an-kpi-number" data-loading>—</span><span class="an-kpi-note">answers from the model</span></div>
+    <div class="an-kpi"><span class="an-kpi-label">Worst</span><span id="chatWorst" class="an-kpi-number" data-loading>—</span><span class="an-kpi-note">answers from the model</span></div>
+    <div class="an-kpi"><span class="an-kpi-label">Cache hits</span><span id="chatCache" class="an-kpi-number" data-loading>—</span><span class="an-kpi-note">of all questions</span></div>
+    <div class="an-kpi"><span class="an-kpi-label">Fall-backs</span><span id="chatFallBack" class="an-kpi-number" data-loading>—</span><span class="an-kpi-note">keywords, not embeddings</span></div>
+    <div class="an-kpi"><span class="an-kpi-label">Refusals</span><span id="chatRefusal" class="an-kpi-number" data-loading>—</span><span class="an-kpi-note">got the fixed reply</span></div>
+  </div>
+
+  <section class="card an-panel mb-6" aria-labelledby="chatOutcomesTitle">
+    <h2 id="chatOutcomesTitle" class="an-panel-title">Outcomes, last 7 days</h2>
+    <dl id="chatOutcomes" class="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-3 lg:grid-cols-4"></dl>
+  </section>
+
+  <h2 class="an-panel-title mb-2">Recent questions</h2>
+  {# overflow-x-auto on the wrapper, not the page: a wide table scrolls inside its card. #}
+  <div class="card p-0 overflow-x-auto">
+    <table class="w-full text-sm">
+      <caption class="sr-only">The most recent chat questions, newest first</caption>
+      <thead>
+        <tr class="text-left text-xs text-brand-muted">
+          <th scope="col" class="px-3 py-2 font-semibold whitespace-nowrap">When</th>
+          <th scope="col" class="px-3 py-2 font-semibold">Question</th>
+          <th scope="col" class="px-3 py-2 font-semibold">Route</th>
+          <th scope="col" class="px-3 py-2 font-semibold">Outcome</th>
+          <th scope="col" class="px-3 py-2 font-semibold">Tool</th>
+          <th scope="col" class="px-3 py-2 font-semibold text-right">Total</th>
+          <th scope="col" class="px-3 py-2 font-semibold text-right">Embed</th>
+          <th scope="col" class="px-3 py-2 font-semibold text-right">Model</th>
+        </tr>
+      </thead>
+      <tbody id="chatTraces" class="divide-y divide-brand-border"></tbody>
+    </table>
+  </div>
+
+</section>
