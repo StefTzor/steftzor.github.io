@@ -122,6 +122,8 @@ module.exports = function (eleventyConfig) {
     "app/scripts/docs.js": "scripts/docs.js",
     "app/scripts/admin-messages.js": "scripts/admin-messages.js",
     "app/scripts/admin-invites.js": "scripts/admin-invites.js",
+    "app/scripts/chat.js": "scripts/chat.js",
+    "app/scripts/remember.js": "scripts/remember.js",
   });
 
   // Generated when the container starts, by docker/10-firebase-config.sh.

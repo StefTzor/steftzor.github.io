@@ -15,6 +15,7 @@ const fs = require('fs');
 const path = require('path');
 
 const sections = require('../app/pages/_data/adminSections.js');
+const appNav = require('../app/pages/_data/appNav.js');
 const APP = path.join(__dirname, '..', '_app');
 
 // The same rule as paint() in app/scripts/shell.js. Kept in step by the asserts below, which
@@ -36,6 +37,16 @@ for (const s of sections) {
   assert.ok(fs.existsSync(page), `section "${s.label}" points at ${s.href}, which is not built`);
   assert.ok(fs.readFileSync(page, 'utf8').includes(`data-nav="${s.navKey}"`),
     `${s.href} does not carry data-nav="${s.navKey}"`);
+}
+
+// The rail and the drawer, by the same two rules as the Admin sections above.
+for (const item of appNav) {
+  assert.strictEqual(item.navKey, keyFor(item.href), `nav item "${item.label}" has the wrong navKey`);
+  assert.ok(fs.existsSync(path.join(__dirname, '..', '_includes', 'icons', `${item.icon}.svg`)),
+    `nav item "${item.label}" names icon "${item.icon}", which does not exist`);
+  if (fs.existsSync(APP)) {
+    assert.ok(fs.existsSync(path.join(APP, item.href, 'index.html')), `nav item "${item.label}" points at ${item.href}, which is not built`);
+  }
 }
 
 // A failed /me used to wipe the whole body, which took the navigation with it, so somebody who hit

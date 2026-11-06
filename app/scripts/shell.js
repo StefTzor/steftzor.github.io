@@ -56,6 +56,8 @@ export async function api(path, options = {}) {
     } catch (e) { /* non-JSON error body */ }
     throw err;
   }
+  // `stream` hands back the Response for reading as it arrives: the chat's answers.
+  if (options.stream) return res;
   return res.status === 204 ? null : res.json();
 }
 

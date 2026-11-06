@@ -1,0 +1,67 @@
+{#
+  The chat panel, on both properties. `shell` is what tells them apart: only the app's signed-in
+  pages set it.
+
+  A native <dialog> opened with showModal(): the browser keeps focus inside, makes the page behind
+  it inert, closes it on Escape and puts it in the top layer, so no z-index on the page can sit
+  over it. The same choice as the command palette.
+
+  The markup is here and the script is not. app/scripts/chat.js loads on the first press, so a page
+  pays for one small inline script until someone wants the chat, and the panel is on screen before
+  the module has arrived. The inline script is hashed into the CSP by the build.
+
+  data-chat-src carries the cache-busted URL: the cachebust transform matches `src="..."`, which
+  this attribute ends in. shell.js is deliberately not versioned here. Pages reach it as
+  `./shell.js`, and a second URL would be a second copy of the module: a second /me, a second
+  page view.
+#}
+<button type="button" id="chatOpen" class="chat-opener print:hidden" aria-haspopup="dialog" aria-expanded="false"
+  aria-controls="chatPanel" aria-label="Ask about this site" title="Ask about this site"
+  data-chat-src="/scripts/chat.js">
+  {% icon "fa-solid-comment", "h-5 w-5" %}
+</button>
+
+<dialog id="chatPanel" class="chat-panel" aria-labelledby="chatTitle">
+  <div class="chat-card">
+    <header class="chat-head">
+      <h2 id="chatTitle" class="text-sm font-bold text-brand-text">Ask about this site</h2>
+      {# method="dialog" closes without any script, so Close works before chat.js has arrived. #}
+      <form method="dialog" id="chatCloseForm">
+        <button class="icon-btn -mr-2" aria-label="Close">{% icon "fa-solid-times", "" %}</button>
+      </form>
+    </header>
+
+    <div id="chatLog" class="chat-log" role="log" aria-live="polite" aria-label="Conversation" tabindex="0">
+      <p id="chatHint" class="chat-hint">Ask about my work, this site, or how it is built.</p>
+      <p id="chatDown" class="chat-hint" hidden>The chat is resting. The rest of the site works as normal.</p>
+    </div>
+
+    <div class="chat-foot">
+      <form id="chatForm" class="chat-form">
+        <label for="chatInput" class="sr-only">Ask a question</label>
+        {# No maxlength: it cuts a paste without saying so. chat.js counts and refuses instead. #}
+        <textarea id="chatInput" name="question" rows="1" autofocus placeholder="Ask a question…"
+          aria-describedby="chatCount" class="chat-input"></textarea>
+        <button type="submit" id="chatSend" class="chat-send" aria-label="Send" disabled>
+          {% icon "fa-solid-arrow-up", "chat-icon-send" %}{% icon "fa-solid-stop", "chat-icon-stop" %}
+        </button>
+      </form>
+      <p id="chatCount" class="chat-count"></p>
+      <p class="hint">Answers come from my own server.</p>
+      {%- if not shell %}
+      <p class="hint"><a href="https://app.tzortzoglou.eu/" class="chat-link">Sign in to the app</a> and it remembers you.</p>
+      {%- endif %}
+    </div>
+  </div>
+</dialog>
+
+{# Until the module takes over, these two listeners are the button. If it never arrives they stay,
+   so the button still opens the panel, with the resting line, and still reports its state. A press
+   tries the import again, but Chrome was seen to keep the failure until the page reloads. #}
+<script>(function(){var b=document.getElementById("chatOpen"),d=document.getElementById("chatPanel"),h=document.getElementById("chatHint"),n=document.getElementById("chatDown"),p;
+function open(){d.showModal();b.setAttribute("aria-expanded","true");
+p=p||Promise.all([import(b.dataset.chatSrc){% if shell %},import("/scripts/shell.js"){% endif %}]).then(function(m){
+b.removeEventListener("click",open);d.removeEventListener("close",shut);h.hidden=false;n.hidden=true;m[0].mount({panel:d,opener:b,app:m[1]});}).catch(function(){
+p=null;h.hidden=true;n.hidden=false;});}
+function shut(){b.setAttribute("aria-expanded","false");}
+b.addEventListener("click",open);d.addEventListener("close",shut);})();</script>

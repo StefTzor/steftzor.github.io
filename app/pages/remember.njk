@@ -1,0 +1,65 @@
+---
+layout: app-shell.njk
+permalink: /remember/
+title: "What I remember | Stefanos Tzortzoglou"
+bodyScripts:
+  - src: "/scripts/remember.js"
+    type: "module"
+  - src: "/scripts/contact-widget.js"
+    type: "module"
+  - src: "/scripts/palette.js"
+    type: "module"
+bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
+shell: true
+navDrawerOnly: true
+signOut: true
+---
+{# Every page here is public HTML, so this is only the frame. Everything personal is drawn by
+   app/scripts/remember.js from the API, after sign-in. #}
+<section class="app-page">
+  <div class="app-prose">
+
+  <h1 class="text-3xl font-bold mb-2 text-brand-text">What I remember</h1>
+  <p class="text-sm text-brand-muted mb-8">Notes are kept in this site's database, and other users can't see them.</p>
+
+  <p id="status" class="mb-6 text-sm" role="status" aria-live="polite"></p>
+
+  <section aria-labelledby="memory-heading" class="card">
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <h2 id="memory-heading" class="text-lg font-bold text-brand-text"><label for="memory">Memory</label></h2>
+        <p class="hint">On: the chat keeps conversations and writes short notes about you. Off: it reads and writes neither, and what is here stays until you delete it or it reaches 12 months.</p>
+      </div>
+      <input id="memory" type="checkbox" role="switch" class="switch" disabled>
+    </div>
+  </section>
+
+  <section aria-labelledby="notes-heading" class="card mt-6">
+    <h2 id="notes-heading" class="text-lg font-bold text-brand-text" tabindex="-1">Notes</h2>
+    <ul id="notes" class="mt-3 divide-y divide-brand-border">
+      <li class="py-3"><span class="skel h-4 w-2/3" aria-hidden="true"></span></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="conversations-heading" class="card mt-6">
+    <h2 id="conversations-heading" class="text-lg font-bold text-brand-text" tabindex="-1">Past conversations</h2>
+    <ul id="conversations" class="mt-3 divide-y divide-brand-border">
+      <li class="py-3"><span class="skel h-4 w-1/2" aria-hidden="true"></span></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="forget-heading" class="card mt-6">
+    <h2 id="forget-heading" class="text-lg font-bold text-brand-text">Forget everything</h2>
+    <p class="hint">Deletes every note and every conversation. This cannot be undone.</p>
+    <button type="button" id="forget" class="btn-secondary mt-4 text-sm">Forget everything</button>
+    <div id="forgetConfirm" class="mt-4 hidden">
+      <p class="text-sm text-brand-text">Delete all of it, for good?</p>
+      <div class="mt-3 flex gap-3">
+        <button type="button" id="forgetYes" class="btn-primary text-sm">Yes, forget everything</button>
+        <button type="button" id="forgetNo" class="btn-secondary text-sm">Keep it</button>
+      </div>
+    </div>
+  </section>
+
+  </div>
+</section>

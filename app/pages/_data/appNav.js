@@ -31,6 +31,7 @@ module.exports = [
   { label: "Formula 1", href: "/f1/", navKey: "f1", icon: "fa-solid-flag-checkered" },
   { label: "Sports", href: "/sports/", navKey: "sports", icon: "fa-solid-futbol" },
   { label: "How this is built", href: "/docs/", navKey: "docs", icon: "fa-solid-network-wired", foot: true },
+  { label: "What I remember", href: "/remember/", navKey: "remember", icon: "fa-solid-brain", foot: true },
   { label: "Private", href: "/private/", navKey: "private", icon: "fa-solid-heart-lock", minRole: "SuperUser" },
   { label: "Admin", href: "/admin/", navKey: "admin", icon: "fa-solid-layer-group", minRole: "Admin" },
 ];

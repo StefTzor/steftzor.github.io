@@ -300,10 +300,13 @@
     </div>
 
     <button type="button" id="cwOpen" aria-expanded="false" aria-controls="cwPanel"
-      class="nav-cta bg-brand-surface shadow-lg">
+      class="nav-cta bg-brand-surface shadow-lg mr-[3.25rem]">
       {% icon "fa-solid-envelope", "text-sm" %}<span>Message me</span>
     </button>
   </div>
+  {# The chat button takes the corner, so `mr-[3.25rem]` above moves Message me to its left. A margin
+     and not a move of the wrapper: the message panel must keep its full width on a phone. #}
+  {% include "chrome/chat.njk" %}
   {%- endif %}
 
   {# The command palette. A native <dialog>: the browser traps focus, makes the rest of the page
