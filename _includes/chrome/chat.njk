@@ -55,7 +55,13 @@
   </div>
 </dialog>
 
-<script>(function(){var b=document.getElementById("chatOpen"),d=document.getElementById("chatPanel");
-b.addEventListener("click",function(){d.showModal();b.setAttribute("aria-expanded","true");
-Promise.all([import(b.dataset.chatSrc){% if shell %},import("/scripts/shell.js"){% endif %}]).then(function(m){m[0].mount({panel:d,opener:b,app:m[1]});}).catch(function(){
-document.getElementById("chatHint").hidden=true;document.getElementById("chatDown").hidden=false;});},{once:true});})();</script>
+{# Until the module takes over, these two listeners are the button. If it never arrives they stay,
+   so the button still opens the panel, with the resting line, and still reports its state. A press
+   tries the import again, but Chrome was seen to keep the failure until the page reloads. #}
+<script>(function(){var b=document.getElementById("chatOpen"),d=document.getElementById("chatPanel"),h=document.getElementById("chatHint"),n=document.getElementById("chatDown"),p;
+function open(){d.showModal();b.setAttribute("aria-expanded","true");
+p=p||Promise.all([import(b.dataset.chatSrc){% if shell %},import("/scripts/shell.js"){% endif %}]).then(function(m){
+b.removeEventListener("click",open);d.removeEventListener("close",shut);h.hidden=false;n.hidden=true;m[0].mount({panel:d,opener:b,app:m[1]});}).catch(function(){
+p=null;h.hidden=true;n.hidden=false;});}
+function shut(){b.setAttribute("aria-expanded","false");}
+b.addEventListener("click",open);d.addEventListener("close",shut);})();</script>

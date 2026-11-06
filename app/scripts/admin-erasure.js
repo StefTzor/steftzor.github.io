@@ -403,11 +403,13 @@ function paintReceipt(res) {
   lines.append(line(erased.authAccount
     ? `The sign-in account was deleted${erased.uid ? ` (${erased.uid})` : ""}.`
     : "There was no sign-in account to delete."));
-  // Absent on a partial receipt, where the steps that set them never ran; nothing is claimed then.
-  // The API's own note is printed as it arrived, the same as the mailbox note above.
+  // chatNote comes only with no account, and is the API's own sentence, printed as it arrived like
+  // the mailbox note above. copyCleared is absent on a partial receipt, where that step never ran,
+  // so nothing is claimed then. chatCleared is false only once the account has gone: a rerun finds
+  // no uid and skips the chat tables, so unlike the copy below this one cannot be run again.
   if (res.chatNote) lines.append(line(res.chatNote));
   else if (res.chatCleared === true) lines.append(line("The chat conversations and notes were deleted."));
-  else if (res.chatCleared === false) lines.append(line("The chat rows could not be cleared. Run the erasure again: it is safe to repeat."));
+  else if (res.chatCleared === false) lines.append(line(`The chat rows for user id ${erased.uid} remain. Running the erasure again cannot reach them, because the account has gone: they must be removed by that user id.`));
   if (res.copyCleared === true) lines.append(line("This address was cleared from the nightly account copy."));
   else if (res.copyCleared === false) lines.append(line("The nightly account copy could not be cleared. Run the erasure again: it is safe to repeat."));
 

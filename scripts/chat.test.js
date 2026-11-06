@@ -28,7 +28,14 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
 // --- a DOM just big enough ------------------------------------------------------------------
 
 class FakeEl {
-  constructor(tag) { this.tag = tag; this.kids = []; this.className = ''; this.own = ''; }
+  constructor(tag) { this.tag = tag; this.kids = []; this.className = ''; this.own = ''; this.dataset = {}; this.on = {}; this.attrs = {}; }
+  addEventListener(type, fn) { (this.on[type] ||= []).push(fn); }
+  fire(type) { for (const fn of this.on[type] || []) fn({ type, target: this, preventDefault() {} }); }
+  setAttribute(k, v) { this.attrs[k] = v; }
+  toggleAttribute(k, on) { if (on) this.attrs[k] = ''; else delete this.attrs[k]; }
+  get classList() { return { toggle() {} }; }
+  remove() {}
+  focus() {}
   get textContent() { return this.own + this.kids.map((k) => (typeof k === 'string' ? k : k.textContent)).join(''); }
   set textContent(v) { this.own = String(v); this.kids = []; }
   set innerHTML(v) { throw new Error('innerHTML was written: ' + v); }
@@ -40,10 +47,10 @@ class FakeEl {
 }
 
 const SRC = read('app/scripts/chat.js').replace(/^import .*$/gm, '').replace(/^export /gm, '');
-const NAMES = ['createParser', 'readEvents', 'newTurn', 'reduce', 'stateLine', 'sourceView', 'turnView', 'turnsFrom', 'LINES'];
-const chat = { document: { createElement: (t) => new FakeEl(t) }, TextDecoder, API_BASE: 'https://api.test' };
+const NAMES = ['mount', 'createParser', 'readEvents', 'newTurn', 'reduce', 'stateLine', 'sourceView', 'turnView', 'turnsFrom', 'LINES'];
+const chat = { document: { createElement: (t) => new FakeEl(t) }, TextDecoder, AbortController, window: {}, API_BASE: 'https://api.test' };
 vm.runInNewContext(`${SRC}\n${NAMES.map((n) => `this.${n} = ${n};`).join('\n')}`, chat);
-const { createParser, readEvents, newTurn, reduce, stateLine, sourceView, turnView, turnsFrom, LINES } = chat;
+const { mount, createParser, readEvents, newTurn, reduce, stateLine, sourceView, turnView, turnsFrom, LINES } = chat;
 const plain = (v) => JSON.parse(JSON.stringify(v));
 const play = (turn, events) => events.reduce(reduce, turn);
 
@@ -196,6 +203,74 @@ async function streamChecks() {
   ok('source: no HTML from strings anywhere, and no browser storage');
 }
 
+// --- the panel itself -----------------------------------------------------------------------
+
+function panelParts() {
+  const parts = Object.fromEntries(['chatLog', 'chatForm', 'chatInput', 'chatSend', 'chatCount', 'chatCloseForm'].map((id) => [id, new FakeEl('div')]));
+  const panel = new FakeEl('dialog');
+  panel.open = true;
+  panel.querySelector = (sel) => parts[sel.slice(1)] || null;
+  panel.getAnimations = () => [];
+  panel.close = () => { panel.open = false; };
+  parts.chatInput.value = '';
+  return { panel, opener: new FakeEl('button'), ...parts };
+}
+const tick = () => new Promise((r) => setTimeout(r, 5));
+
+async function panelChecks() {
+  // The stream never ends by itself: it holds the model slot until the request is aborted.
+  let request = null;
+  chat.fetch = async (_url, init) => {
+    request = init;
+    const read = () => new Promise((_, no) => init.signal.addEventListener('abort', () => no(new Error('aborted'))));
+    return { ok: true, body: { getReader: () => ({ read }) } };
+  };
+  let p = panelParts();
+  mount({ panel: p.panel, opener: p.opener });
+  p.chatInput.value = 'Hello';
+  p.chatForm.fire('submit');
+  await tick();
+  assert.ok(request && !request.signal.aborted, 'the answer is running');
+  p.panel.fire('cancel'); // Escape
+  assert.ok(request.signal.aborted, 'closing the panel gives the model slot back');
+  assert.strictEqual(p.chatLog.textContent.includes('Stopped.'), true, 'and the turn says so');
+  assert.strictEqual(p.chatInput.readOnly, false, 'the field is usable again');
+  ok('panel: closing while answering aborts the request');
+
+  // The same again for the close that skips `cancel`: the browser's own, on a second Escape.
+  p = panelParts();
+  mount({ panel: p.panel, opener: p.opener });
+  p.chatInput.value = 'Hello';
+  p.chatForm.fire('submit');
+  await tick();
+  p.panel.fire('close');
+  assert.ok(request.signal.aborted, 'a forced close aborts too');
+  ok('panel: a forced close aborts as well');
+
+  p = panelParts();
+  let answer;
+  const asked = [];
+  const app = {
+    api: (path, init) => {
+      asked.push(path);
+      return init ? Promise.reject(new Error('no question may be sent')) : new Promise((r) => { answer = r; });
+    },
+  };
+  mount({ panel: p.panel, opener: p.opener, app });
+  p.opener.dataset.conversation = 'c1';
+  p.opener.fire('click');
+  assert.strictEqual(p.chatInput.readOnly, true, 'the field is read-only while the conversation loads');
+  p.chatInput.value = 'Too soon';
+  p.chatForm.fire('submit');
+  await tick();
+  assert.deepStrictEqual(asked, ['/me/chat/conversations/c1'], 'and nothing can be sent into it');
+  assert.strictEqual(p.chatInput.value, 'Too soon', 'what was typed is kept');
+  answer({ id: 'c1', messages: [{ role: 'user', text: 'Q' }, { role: 'assistant', text: 'A' }] });
+  await tick();
+  assert.strictEqual(p.chatInput.readOnly, false, 'and it comes back when the conversation is there');
+  ok('panel: read-only while a conversation reopens');
+}
+
 // --- what each build ships ------------------------------------------------------------------
 
 function build(flag) {
@@ -253,9 +328,11 @@ if (fs.existsSync(path.join(APP, 'remember/index.html'))) {
   const home = fs.readFileSync(path.join(APP, 'index.html'), 'utf8');
   assert.ok(home.includes('id="chatPanel"'), 'the app has the panel');
   assert.ok(home.includes('import("/scripts/shell.js")'), 'and hands it the signed-in shell');
+  assert.ok(!fs.readFileSync(path.join(APP, 'remember/index.html'), 'utf8').includes('only you can see'),
+    'the page may not claim more than the database does');
   assert.ok(!fs.readFileSync(path.join(APP, 'login/index.html'), 'utf8').includes('chatPanel'),
     'the sign-in page has no session to chat with');
   ok('app build: signed-in pages have the panel, the sign-in page does not');
 }
 
-streamChecks().then(() => console.log(`chat: all checks passed — ${passed}`));
+streamChecks().then(panelChecks).then(() => console.log(`chat: all checks passed — ${passed}`));

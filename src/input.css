@@ -1639,9 +1639,6 @@
     }
   }
 
-  /* Icon-only controls in the bar: the theme toggle and sign out. Same footprint, so the right
-     hand side of the header is a row of equals rather than a word next to two glyphs. Each one
-     carries an .sr-only label; an icon button without a name is unusable in a screen reader. */
   /* The chat panel. A dialog in the top layer, anchored to the corner button above it.
 
      Open and closed are one rule apart, and the panel moves between them with a transition, so a
@@ -1777,6 +1774,9 @@
   }
   .switch:checked::after { transform: translateX(1rem); }
 
+  /* Icon-only controls in the bar: the theme toggle and sign out. Same footprint, so the right
+     hand side of the header is a row of equals rather than a word next to two glyphs. Each one
+     carries an .sr-only label; an icon button without a name is unusable in a screen reader. */
   .icon-btn {
     @apply inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full
            text-brand-text hover:text-brand-accent hover:bg-brand-muted/10

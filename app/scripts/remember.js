@@ -51,12 +51,30 @@ async function removeRow(li, what, id, doneText) {
   if (!list.children.length) list.append(empty(list.id === "notes" ? NO_NOTES : NO_TALKS));
   try {
     await api("/me/chat/forget", { method: "POST", body: JSON.stringify({ what, id }) });
-    say(doneText, "ok");
   } catch (err) {
-    if (err.status === 404) { say(doneText, "ok"); return; } // gone already, which is what was asked for
-    if (!list.querySelector("button")) list.replaceChildren();
-    list.insertBefore(li, after && after.isConnected ? after : null);
-    say(FAILED, "error");
+    if (err.status !== 404) { // a 404 is gone already, which is what was asked for
+      if (!list.querySelector("button")) list.replaceChildren();
+      list.insertBefore(li, after && after.isConnected ? after : null);
+      say(FAILED, "error");
+      return;
+    }
+  }
+  say(doneText, "ok");
+  if (what === "conversation") refreshNotes();
+}
+
+/**
+ * A conversation takes its unedited notes with it on the server, so the list has to be asked again.
+ * Its own failure, because the delete has already happened and must not read as if it had not. An
+ * edit in progress is left alone: repainting would throw away what is being typed.
+ */
+async function refreshNotes() {
+  if (el("notes").querySelector("form")) return;
+  try {
+    paintNotes((await api("/me/chat/memory")).notes);
+  } catch (err) {
+    console.error("remember: notes not refreshed", err.status, err.code);
+    say("Conversation deleted. Reload to see which notes went with it.", "error");
   }
 }
 
@@ -132,10 +150,14 @@ function conversationRow(c) {
   return li;
 }
 
+function paintNotes(notes) {
+  el("notes").replaceChildren(...(notes.length ? notes.map(noteRow) : [empty(NO_NOTES)]));
+}
+
 function paint({ memory, notes, conversations }) {
   el("memory").checked = memory;
   el("memory").disabled = false;
-  el("notes").replaceChildren(...(notes.length ? notes.map(noteRow) : [empty(NO_NOTES)]));
+  paintNotes(notes);
   el("conversations").replaceChildren(...(conversations.length ? conversations.map(conversationRow) : [empty(NO_TALKS)]));
 }
 

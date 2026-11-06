@@ -266,6 +266,7 @@ export function mount({ panel, opener, app }) {
 
   async function reopen(id) {
     stopLive?.();
+    input.readOnly = true; // a question sent now would land in a log about to be replaced
     const wait = make("p", "chat-hint", "Opening the conversation...");
     log.replaceChildren(wait);
     conversationId = null;
@@ -281,6 +282,8 @@ export function mount({ panel, opener, app }) {
       toEnd();
     } catch (err) {
       wait.textContent = err.status === 404 ? "That conversation has gone." : LINES.resting;
+    } finally {
+      input.readOnly = false;
     }
   }
 
@@ -296,6 +299,7 @@ export function mount({ panel, opener, app }) {
   // The transition runs first, then the real close. Asking the element for its running animations
   // means the timing lives in one place, the stylesheet, and reduced motion needs no case here.
   function close() {
+    stopLive?.(); // the answer holds the server's one model slot, and nobody is reading it now
     if (!panel.open || "closing" in panel.dataset) return;
     panel.dataset.closing = "";
     Promise.allSettled(panel.getAnimations().map((a) => a.finished)).then(() => {
@@ -304,6 +308,7 @@ export function mount({ panel, opener, app }) {
   }
 
   panel.addEventListener("close", () => {
+    stopLive?.(); // the browser can force a close without a `cancel`
     delete panel.dataset.closing;
     opener.setAttribute("aria-expanded", "false");
     // The browser puts focus back where it was; Safari never focused a pressed button.
@@ -327,6 +332,7 @@ export function mount({ panel, opener, app }) {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     if (stopLive) { stopLive(); return; }
+    if (input.readOnly) return; // a conversation is opening
     const question = input.value.trim();
     if (!question || question.length > MAX) return;
     input.value = "";
