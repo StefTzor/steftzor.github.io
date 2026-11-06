@@ -178,7 +178,8 @@ sitemapPriority: "0.3"
     question replaces it. Both servers are rented in my own name, so a hosting provider's hardware
     carries the text on its way through, as with the server in <a href="#contact-form">section 4.2</a>.</li>
   <li><strong>Your IP address:</strong> it arrives with the request, as it does with every request, and it is used
-    only in memory, as the key a rate limiter counts against, the same as on other public routes.</li>
+    only in memory, as the key two rate limiters count against. One of them counts per day, so your address can stay
+    in the server's memory for up to two days, longer than on other public routes, and a restart clears it sooner.</li>
   <li><strong>In your browser:</strong> the chat sets no cookie and stores nothing there. See the
     <a href="/cookies/#storage">Cookies &amp; Local Storage</a> page.</li>
   <li><strong>Sensitive information:</strong> the question box is free text, so please do not type anything

@@ -259,7 +259,10 @@ bodyScripts:
         <p class="hint mt-1">
           The API holds each sentence until it ends, checks it, and only then sends it. A sentence
           fails if it has a technology, number, employer or qualification the check can tell is not
-          in the fact sheet, or a negative claim about me. It is a word check, so it can miss one. The check is code, not a second model. A failure stops
+          in the fact sheet, opens with yes or no, has no word from the fact sheet, or names me, because
+          the model only ever gets the technical sections. If the question is about me, every sentence
+          counts as a claim about me, so each word has to come from the fact sheet and a negative
+          fails. It is a word check, so it can miss one. The check is code, not a second model. A failure stops
           the answer with a fixed line saying it isn't stated on the site. Answers are shown as plain
           text, never as HTML.
         </p>
@@ -267,8 +270,10 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">Answers about me</h3>
         <p class="hint mt-1">
-          A question that lands only on a section about me never reaches the model. Code returns the
-          matching lines of the fact sheet word for word, so nothing can be invented.
+          Lines about me never reach the model. A question that lands only on a section about me
+          never does either: code returns the matching lines of the fact sheet word for word, so
+          nothing can be invented. A question that also touches the site gets the model's sentences
+          about the site, then those lines, added by code.
         </p>
       </li>
       <li class="card">
