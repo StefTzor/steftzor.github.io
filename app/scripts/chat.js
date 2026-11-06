@@ -197,7 +197,7 @@ export function mount({ panel, opener, app }) {
   const send = panel.querySelector("#chatSend");
   const count = panel.querySelector("#chatCount");
 
-  const earlier = []; // public site: the questions so far, because nothing is kept for a visitor
+  const earlier = []; // public site: the questions so far, because no conversation is kept for a visitor
   let conversationId = null; // app: the server holds the history, this names it
   let stopLive = null; // set while an answer is running
 

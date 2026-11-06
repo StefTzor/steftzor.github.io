@@ -333,4 +333,19 @@ function files(dir, ext) {
   ok('flag on: the panel is everywhere and no sign-in code ships with it');
 }
 
-streamChecks().then(panelChecks).then(() => console.log(`chat: all checks passed — ${passed}`));
+// The privacy copy says what the 30-day record really is: unlinked, not unfindable.
+function copyChecks() {
+  const read = (f) => fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
+  const privacy = read('pages/privacy.njk').replace(/\s+/g, ' ');
+  const docs = read('app/pages/docs.njk').replace(/\s+/g, ' ');
+  for (const text of [privacy, docs]) {
+    assert.ok(!/can't find|cannot find|nothing can find|has nothing to find/i.test(text), 'no claim that a record cannot be found');
+    assert.ok(/isn't linked to an account, so erasure doesn't reach it/.test(text));
+  }
+  assert.ok(/exact text/.test(privacy), 'and no overclaim: the text itself can be searched');
+  assert.ok(/With Memory on, a tool answer is stored in the conversation/.test(privacy));
+  assert.ok(!/because nothing is kept for a visitor/.test(read('app/scripts/chat.js')));
+  ok('the privacy copy, the docs and the panel comment match what is kept');
+}
+
+streamChecks().then(panelChecks).then(copyChecks).then(() => console.log(`chat: all checks passed — ${passed}`));

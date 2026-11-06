@@ -178,8 +178,8 @@ sitemapPriority: "0.3"
     how it ended and how long it took. There is no IP address and no account on it, and answers aren't kept in it.
     <strong>I read these questions.</strong></li>
   <li><strong>How long:</strong> a daily job deletes a record once it is 30 days old. It can then stay in the backups
-    in <a href="#backups">section 7</a> for up to seven more days. No account is attached, so erasure can't find these
-    records, and they go by the 30-day limit.</li>
+    in <a href="#backups">section 7</a> for up to seven more days. A record isn't linked to an account, so erasure doesn't reach it,
+    and it goes by the 30-day limit.</li>
   <li><strong>What stays in memory:</strong> your question and the answer are held in memory while the answer is
     written. A plain question the model answered can stay in my server's memory with its answer for up to an hour,
     so the next person to ask the same thing gets the answer straight away, and a restart clears it. Anything that
@@ -202,7 +202,8 @@ sitemapPriority: "0.3"
     for 30 days, so please do not type anything confidential or sensitive into it.</li>
   <li><strong>Legal basis:</strong> legitimate interests, Art. 6(1)(f) GDPR: answering a question you chose to ask,
     keeping the chat from being overwhelmed, and reading past questions to see where it fails. A record has no account or
-    IP address on it, so I can't find yours to remove it. The way to keep a question out of it is not to send it, or
+    IP address on it. It isn't linked to an account, so erasure doesn't reach it, though anyone who has the exact text
+    of a question could search for it. The way to keep a question out of it is not to send it, or
     to ask in the application with Memory off.</li>
 </ul>
 
@@ -486,11 +487,12 @@ sitemapPriority: "0.3"
   <li><strong>The 30-day record:</strong> every question you ask here also goes into the record in
     <a href="#chat">section 2.5</a>, on the same terms and with no account on it. With Memory off the question text
     isn't kept, only timings and the route. Asking what the chat remembers about you keeps no text either. This record
-    isn't linked to an account, so erasure can't find it and it goes by the 30-day limit. A question you have deleted
+    isn't linked to an account, so erasure doesn't reach it, and it goes by the 30-day limit. A question you have deleted
     from a conversation can stay in it for up to 30 days.</li>
   <li><strong>Live lookups:</strong> the chat can also give you your next departures, and it uses your home stop, home
     location and favourite teams only to answer you. They go to the same services as on the rest of the application,
-    and none of them goes into the 30-day record.</li>
+    and none of them goes into the 30-day record. With Memory on, a tool answer is stored in the conversation like any
+    other answer, stop name included.</li>
   <li><strong>How notes are written:</strong> once a conversation has gone quiet, a background job sends your questions
     from it back through the model on my second server, and the model writes the notes. That text is treated the
     same way on that server. Nobody reads or approves a note before it is saved, and a note can be wrong.</li>
@@ -516,7 +518,7 @@ sitemapPriority: "0.3"
     moment and leaves only your Memory switch setting, apart from the 30-day record above. An answer still being written can be saved just after, so let
     it finish first.</li>
   <li><strong>Erasure:</strong> erasing your account (<a href="#rights">section 6</a>) removes all of this, the switch
-    setting included, but not the 30-day record, which it can't find. Deleted rows also stay in the nightly backups described in
+    setting included, but not the 30-day record, which isn't linked to an account, so erasure doesn't reach it. Deleted rows also stay in the nightly backups described in
     <a href="#backups">section 7</a> until those backups expire, seven days at most.</li>
   <li><strong>Who can read it:</strong> you, and me. Another account cannot reach it, and these tables are left out of
     the table browser in the admin area, but I run the database and can read what is in it, as with any other data
@@ -644,8 +646,8 @@ sitemapPriority: "0.3"
 </p>
 <p>
   The 30-day chat record in <a href="#chat">section 2.5</a> is out of reach too, for the opposite reason: it carries no
-  account and no IP address, so nothing can find your questions in it to show or delete them. They go by the 30-day
-  limit.
+  account and no IP address. It isn't linked to an account, so erasure doesn't reach it, though anyone who has the exact
+  text of a question could search for it. They go by the 30-day limit.
 </p>
 <p>
   Deleted records also stay in the nightly backups described in <a href="#backups">section 7</a> until those
