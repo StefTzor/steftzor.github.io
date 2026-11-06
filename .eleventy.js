@@ -14,6 +14,16 @@ module.exports = function(eleventyConfig) {
     "scripts/arch-live.js": "scripts/arch-live.js",
     "scripts/mapping.js": "scripts/mapping.js"
   });
+  // Off until the chat has proved itself on the app. Set CHAT_PUBLIC=1 at build time to turn it on:
+  // the panel, and the two scripts it loads, then ship; without it none of them do.
+  const chatPublic = process.env.CHAT_PUBLIC === "1";
+  eleventyConfig.addGlobalData("chatPublic", chatPublic);
+  if (chatPublic) {
+    eleventyConfig.addPassthroughCopy({
+      "app/scripts/chat.js": "scripts/chat.js",
+      "app/scripts/api-base.js": "scripts/api-base.js",
+    });
+  }
   eleventyConfig.addPassthroughCopy({ "CNAME": "CNAME" });
   eleventyConfig.addPassthroughCopy("robots.txt");
   // IndexNow ownership key file (served at site root)

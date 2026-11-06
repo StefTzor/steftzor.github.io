@@ -1,0 +1,261 @@
+'use strict';
+
+/**
+ * The chat panel: what it does with a stream, what it shows, and what each build ships.
+ *   node scripts/chat.test.js
+ *
+ * chat.js runs in a vm as the browser runs it, with `export ` and its one import stripped (the
+ * technique live-buses.test.js uses). There is no DOM here, so a small fake one stands in, and its
+ * innerHTML throws: an answer reaching that setter is the failure this file exists to catch.
+ *
+ * The build checks run real Eleventy builds into a temporary folder, flag off and flag on, so the
+ * result does not depend on what _site last held.
+ */
+
+const assert = require('assert');
+const { spawnSync } = require('child_process');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const vm = require('vm');
+
+const ROOT = path.join(__dirname, '..');
+const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
+
+let passed = 0;
+const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
+
+// --- a DOM just big enough ------------------------------------------------------------------
+
+class FakeEl {
+  constructor(tag) { this.tag = tag; this.kids = []; this.className = ''; this.own = ''; }
+  get textContent() { return this.own + this.kids.map((k) => (typeof k === 'string' ? k : k.textContent)).join(''); }
+  set textContent(v) { this.own = String(v); this.kids = []; }
+  set innerHTML(v) { throw new Error('innerHTML was written: ' + v); }
+  set outerHTML(v) { throw new Error('outerHTML was written: ' + v); }
+  insertAdjacentHTML() { throw new Error('insertAdjacentHTML was called'); }
+  append(...k) { this.kids.push(...k); }
+  replaceChildren(...k) { this.own = ''; this.kids = k; }
+  all() { return this.kids.filter((k) => typeof k !== 'string').flatMap((k) => [k, ...k.all()]); }
+}
+
+const SRC = read('app/scripts/chat.js').replace(/^import .*$/gm, '').replace(/^export /gm, '');
+const NAMES = ['createParser', 'readEvents', 'newTurn', 'reduce', 'stateLine', 'sourceView', 'turnView', 'turnsFrom', 'LINES'];
+const chat = { document: { createElement: (t) => new FakeEl(t) }, TextDecoder, API_BASE: 'https://api.test' };
+vm.runInNewContext(`${SRC}\n${NAMES.map((n) => `this.${n} = ${n};`).join('\n')}`, chat);
+const { createParser, readEvents, newTurn, reduce, stateLine, sourceView, turnView, turnsFrom, LINES } = chat;
+const plain = (v) => JSON.parse(JSON.stringify(v));
+const play = (turn, events) => events.reduce(reduce, turn);
+
+// --- the stream -----------------------------------------------------------------------------
+
+{
+  const seen = [];
+  const p = createParser((e) => seen.push(e));
+  const wire = 'data: {"type":"sentence","text":"One."}\n\ndata: {"type":"done"}\n\n';
+  for (const ch of wire) p(ch);
+  assert.deepStrictEqual(plain(seen), [{ type: 'sentence', text: 'One.' }, { type: 'done' }]);
+  ok('parser: an event split at every byte arrives whole, once');
+}
+
+{
+  const seen = [];
+  const p = createParser((e) => seen.push(e));
+  p('data: {"type":"status"}\n\ndata: {"type":"sen');
+  assert.strictEqual(seen.length, 1, 'a half-sent event waits');
+  p('tence","text":"x"}\n\n');
+  assert.deepStrictEqual(plain(seen).map((e) => e.type), ['status', 'sentence']);
+  p(': keep-alive\n\nevent: nope\n\ndata: not json\n\ndata: {"type":"done"}\n\n');
+  assert.deepStrictEqual(plain(seen).map((e) => e.type), ['status', 'sentence', 'done']);
+  ok('parser: holds a partial event, skips comments, other fields and bad JSON');
+}
+
+const body = (chunks) => {
+  let i = 0;
+  return { body: { getReader: () => ({ read: async () => (i < chunks.length ? { value: chunks[i++], done: false } : { done: true }) }) } };
+};
+
+async function streamChecks() {
+  const bytes = Buffer.from('data: {"type":"sentence","text":"Στέφανος €"}\n\n');
+  const at = bytes.indexOf(Buffer.from('€')) + 1; // inside the three bytes of the euro sign
+  const seen = [];
+  await readEvents(body([bytes.subarray(0, at), bytes.subarray(at)]), (e) => seen.push(e));
+  assert.strictEqual(seen[0].text, 'Στέφανος €');
+  ok('readEvents: a character split across two chunks survives');
+}
+
+// --- the states -----------------------------------------------------------------------------
+
+{
+  const t = newTurn('Hi');
+  assert.strictEqual(stateLine(t), 'Reading the site...');
+  assert.strictEqual(stateLine(reduce(t, { type: 'status' })), 'Reading the site...');
+  assert.strictEqual(stateLine(reduce(t, { type: 'queued', position: 2 })), 'Number 2 in the queue.');
+  ok('states: reading at once, then the queue position');
+}
+
+{
+  const t = newTurn('Hi');
+  assert.strictEqual(LINES.busy, 'A few people are asking right now. Try again in a minute.');
+  assert.strictEqual(LINES.resting, 'The chat is resting. The rest of the site works as normal.');
+  assert.strictEqual(LINES.limited, "That's plenty of questions for now.");
+  assert.strictEqual(stateLine(reduce(t, { type: 'busy' })), LINES.busy);
+  assert.strictEqual(stateLine(reduce(t, { type: 'resting' })), LINES.resting);
+  assert.strictEqual(stateLine(reduce(t, { type: 'limited' })), LINES.limited);
+  ok('states: busy, resting and 429 read as the agreed plain sentences');
+}
+
+{
+  const t = play(newTurn('Hi'), [{ type: 'status' }, { type: 'notes', count: 2 }, { type: 'sentence', text: 'One.' },
+    { type: 'sentence', text: 'Two.' }, { type: 'sources', sources: ['/about/'] },
+    { type: 'conversation', id: 'c1' }, { type: 'done' }]);
+  assert.strictEqual(t.phase, 'done');
+  assert.deepStrictEqual(plain(t.sentences), ['One.', 'Two.']);
+  assert.strictEqual(t.notes, 2);
+  assert.strictEqual(t.conversation, 'c1');
+  assert.strictEqual(stateLine(t), '');
+  ok('states: a whole answer ends done, with no status line left behind');
+}
+
+{
+  const cut = reduce(reduce(newTurn('Hi'), { type: 'sentence', text: 'Half.' }), { type: 'end' });
+  assert.strictEqual(cut.phase, 'resting', 'a stream that ends without done did not finish');
+  assert.deepStrictEqual(plain(cut.sentences), ['Half.'], 'what arrived stays on screen');
+  const done = play(newTurn('Hi'), [{ type: 'done' }, { type: 'end' }]);
+  assert.strictEqual(done.phase, 'done');
+  const stopped = play(newTurn('Hi'), [{ type: 'stopped' }, { type: 'sentence', text: 'Late.' }, { type: 'end' }]);
+  assert.strictEqual(stopped.phase, 'stopped');
+  assert.strictEqual(stopped.sentences.length, 0, 'nothing lands after Stop');
+  assert.strictEqual(reduce(newTurn('Hi'), { type: 'whatever' }).phase, 'reading');
+  ok('states: a cut stream rests, Stop is final, and unknown events change nothing');
+}
+
+// --- sources --------------------------------------------------------------------------------
+
+{
+  assert.deepStrictEqual(plain(sourceView('/docs/', false)), { label: 'How this is built', href: null });
+  assert.deepStrictEqual(plain(sourceView('/docs/', true)), { label: 'How this is built', href: '/docs/' });
+  ok('sources: /docs/ is a label on the public site and a link in the app');
+}
+
+{
+  assert.strictEqual(sourceView('/about/', false).href, '/about/');
+  assert.strictEqual(sourceView('/about/', true).href, 'https://tzortzoglou.eu/about/');
+  assert.strictEqual(sourceView('/remember/', false).href, null);
+  assert.strictEqual(sourceView('/remember/', true).href, '/remember/');
+  for (const bad of ['javascript:alert(1)', 'https://evil.example/', '/admin/', '__proto__', 'constructor', '', null]) {
+    assert.strictEqual(sourceView(bad, true), null, `${bad} is not a known source`);
+  }
+  ok('sources: only known pages become anything at all');
+}
+
+// --- rendering ------------------------------------------------------------------------------
+
+{
+  const evil = '<img src=x onerror=alert(1)>';
+  const view = turnView(evil);
+  const turn = play(newTurn(evil), [{ type: 'sentence', text: evil }, { type: 'sentence', text: `<script>x()</script>` },
+    { type: 'sources', sources: ['/docs/', evil] }]);
+  view.paint(turn, false);
+  const text = view.root.textContent;
+  assert.ok(text.includes(evil), 'the markup shows as text');
+  assert.ok(!view.root.all().some((n) => ['img', 'script'].includes(n.tag)), 'and made no element');
+  assert.ok(!view.root.all().some((n) => n.tag === 'a'), 'the public site has no source link for /docs/');
+  ok('render: an answer that is markup stays text');
+}
+
+{
+  const view = turnView('Q');
+  let turn = reduce(newTurn('Q'), { type: 'sentence', text: 'One.' });
+  view.paint(turn, true);
+  const first = view.root.all().find((n) => n.textContent === 'One.');
+  turn = reduce(turn, { type: 'sentence', text: 'Two.' });
+  view.paint(turn, true);
+  assert.ok(view.root.all().includes(first), 'an earlier sentence is not redrawn, or a reader hears it twice');
+  turn = play(turn, [{ type: 'notes', count: 1 }, { type: 'sources', sources: ['/docs/'] }, { type: 'done' }]);
+  view.paint(turn, true);
+  const links = view.root.all().filter((n) => n.tag === 'a');
+  assert.deepStrictEqual(links.map((a) => [a.href, a.textContent]),
+    [['/remember/', 'Using 1 note'], ['/docs/', 'How this is built']]);
+  ok('render: sentences append one at a time; the app links notes and sources');
+}
+
+{
+  const turns = turnsFrom([{ role: 'user', text: 'Q1' }, { role: 'assistant', text: 'A1' }, { role: 'user', text: 'Q2' }]);
+  assert.deepStrictEqual(plain(turns.map((t) => [t.question, t.sentences, t.phase])),
+    [['Q1', ['A1'], 'done'], ['Q2', [], 'done']]);
+  ok('reopen: stored messages become finished turns');
+}
+
+{
+  for (const f of ['app/scripts/chat.js', 'app/scripts/remember.js']) {
+    const code = read(f).replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
+    assert.ok(!/innerHTML|outerHTML|insertAdjacentHTML|document\.write/.test(code), `${f} builds HTML from a string`);
+  }
+  assert.ok(!/localStorage|sessionStorage|document\.cookie/.test(read('app/scripts/chat.js')), 'the panel stores nothing in the browser');
+  ok('source: no HTML from strings anywhere, and no browser storage');
+}
+
+// --- what each build ships ------------------------------------------------------------------
+
+function build(flag) {
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), 'chat-test-'));
+  const env = { ...process.env };
+  delete env.CHAT_PUBLIC;
+  if (flag) env.CHAT_PUBLIC = flag;
+  const run = spawnSync(process.execPath, [path.join(ROOT, 'node_modules/.bin/eleventy'), `--output=${out}`, '--quiet'],
+    { cwd: ROOT, env, encoding: 'utf8' });
+  assert.strictEqual(run.status, 0, run.stderr);
+  return out;
+}
+
+function files(dir, ext) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+    const full = path.join(dir, e.name);
+    return e.isDirectory() ? files(full, ext) : e.name.endsWith(ext) ? [full] : [];
+  });
+}
+
+{
+  const off = build(null);
+  const pages = files(off, '.html');
+  assert.ok(pages.length > 5, 'the build wrote pages');
+  for (const p of pages) assert.ok(!fs.readFileSync(p, 'utf8').includes('chatPanel'), `${p} carries the panel with the flag off`);
+  assert.ok(!fs.existsSync(path.join(off, 'scripts/chat.js')), 'chat.js ships only when something can load it');
+  fs.rmSync(off, { recursive: true, force: true });
+  ok('flag off: no public page has a panel, and chat.js is not published');
+}
+
+{
+  const on = build('1');
+  const pages = files(on, '.html').map((p) => [p, fs.readFileSync(p, 'utf8')]);
+  const main = pages.find(([p]) => p === path.join(on, 'index.html'))[1];
+  assert.ok(main.includes('id="chatPanel"'), 'flag on: the homepage has the panel');
+  assert.ok(/data-chat-src="\/scripts\/chat\.js\?v=[a-f0-9]{8}"/.test(main), 'the lazy script is cache-busted');
+  assert.ok(pages.find(([p]) => p.endsWith('privacy/index.html'))[1].includes('id="chatPanel"'), 'legal pages have it too');
+  assert.ok(fs.existsSync(path.join(on, 'scripts/api-base.js')), 'chat.js imports this, so it must be published');
+  assert.ok(/connect-src[^;]*https:\/\/api\.tzortzoglou\.eu/.test(main), 'the policy allows the API');
+
+  for (const [p, html] of pages) {
+    assert.ok(!/gstatic|\/scripts\/shell\.js|\/scripts\/auth\.js|firebase-config/.test(html), `${p} loads sign-in code`);
+  }
+  for (const f of files(on, '.js')) {
+    // Comments may name them (api-base.js explains why it is not in shell.js); code may not.
+    const code = fs.readFileSync(f, 'utf8').replace(/\/\*[\s\S]*?\*\/|^\s*\/\/.*$/gm, '');
+    assert.ok(!/gstatic|firebase|shell\.js|getIdToken/i.test(code), `${f} carries sign-in code`);
+  }
+  fs.rmSync(on, { recursive: true, force: true });
+  ok('flag on: the panel is everywhere and no sign-in code ships with it');
+}
+
+const APP = path.join(ROOT, '_app');
+if (fs.existsSync(path.join(APP, 'remember/index.html'))) {
+  const home = fs.readFileSync(path.join(APP, 'index.html'), 'utf8');
+  assert.ok(home.includes('id="chatPanel"'), 'the app has the panel');
+  assert.ok(home.includes('import("/scripts/shell.js")'), 'and hands it the signed-in shell');
+  assert.ok(!fs.readFileSync(path.join(APP, 'login/index.html'), 'utf8').includes('chatPanel'),
+    'the sign-in page has no session to chat with');
+  ok('app build: signed-in pages have the panel, the sign-in page does not');
+}
+
+streamChecks().then(() => console.log(`chat: all checks passed — ${passed}`));

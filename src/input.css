@@ -1642,6 +1642,141 @@
   /* Icon-only controls in the bar: the theme toggle and sign out. Same footprint, so the right
      hand side of the header is a row of equals rather than a word next to two glyphs. Each one
      carries an .sr-only label; an icon button without a name is unusable in a screen reader. */
+  /* The chat panel. A dialog in the top layer, anchored to the corner button above it.
+
+     Open and closed are one rule apart, and the panel moves between them with a transition, so a
+     close that is interrupted reverses from wherever it has got to. @starting-style is the same
+     closed state again, for the first frame after showModal(). The curve is the critically damped
+     one iOS uses for sheets: no bounce, because nothing was thrown. */
+  .chat-opener {
+    @apply fixed bottom-4 right-4 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full
+           bg-brand-accent text-brand-onaccent shadow-lg transition duration-200
+           hover:bg-brand-hover active:scale-[0.96] active:duration-100;
+  }
+
+  .chat-panel {
+    --chat-closed: translateY(0.5rem) scale(0.94);
+    position: fixed;
+    inset: auto 1rem 4.5rem auto;
+    width: min(24rem, calc(100vw - 2rem));
+    height: min(36rem, calc(100dvh - 6rem));
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: visible;
+    transform-origin: bottom right;
+    transition: opacity 200ms ease-out, transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .chat-panel[data-closing] {
+    opacity: 0;
+    transform: var(--chat-closed);
+  }
+  @starting-style {
+    .chat-panel[open] {
+      opacity: 0;
+      transform: var(--chat-closed);
+    }
+    .chat-panel[open]::backdrop { opacity: 0; }
+  }
+  /* The page stays readable beside a desktop panel, so no dimming there; clicks on it still close
+     the panel, because the backdrop is what catches them. */
+  .chat-panel::backdrop {
+    background: transparent;
+    transition: opacity 200ms ease-out;
+  }
+  .chat-panel[data-closing]::backdrop { opacity: 0; }
+
+  .chat-card {
+    @apply flex h-full flex-col overflow-hidden rounded-2xl border border-brand-border bg-brand-bg
+           text-brand-text shadow-2xl;
+  }
+  .chat-head {
+    @apply flex shrink-0 items-center justify-between border-b border-brand-border bg-brand-surface px-4;
+  }
+  .chat-log {
+    @apply flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain p-4;
+  }
+  .chat-log:focus-visible { outline-offset: -2px; }
+  .chat-hint { @apply text-sm text-brand-muted; }
+
+  .chat-turn { @apply flex flex-col gap-1.5; }
+  .chat-ask {
+    @apply ml-auto max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-md
+           bg-brand-accent px-3 py-2 text-sm text-brand-onaccent;
+  }
+  .chat-reply {
+    @apply mr-auto max-w-[92%] break-words rounded-2xl rounded-bl-md border border-brand-border
+           bg-brand-surface px-3 py-2 text-sm leading-relaxed;
+  }
+  .chat-words:empty, .chat-state:empty, .chat-meta:empty, .chat-count:empty { display: none; }
+  .chat-words + .chat-state:not(:empty) { @apply mt-1; }
+  .chat-sentence { animation: chat-arrive 240ms ease-out; }
+  .chat-state { @apply tabular-nums text-brand-muted; }
+  .is-waiting .chat-state { animation: chat-breathe 1.6s ease-in-out infinite; }
+  .chat-meta { @apply mr-auto px-1 text-xs text-brand-muted; }
+  .chat-link { @apply text-brand-accent underline underline-offset-2 hover:no-underline; }
+
+  .chat-foot { @apply shrink-0 space-y-1.5 border-t border-brand-border bg-brand-surface p-3; }
+  .chat-form {
+    @apply flex items-end gap-2 rounded-2xl border border-brand-border bg-brand-bg p-1.5
+           transition-colors duration-200 focus-within:border-brand-accent focus-within:ring-1
+           focus-within:ring-brand-accent;
+  }
+  /* 1rem on a phone: iOS zooms the page into any field below that. The field grows with what is
+     typed where the browser can (field-sizing) and scrolls in a fixed row where it cannot. */
+  .chat-input {
+    @apply max-h-28 min-h-[2.25rem] w-full resize-none bg-transparent px-2 py-1.5 text-base
+           text-brand-text placeholder:text-brand-muted focus:outline-none read-only:opacity-60 sm:text-sm;
+    field-sizing: content;
+  }
+  .chat-input:focus-visible { box-shadow: none; } /* the box around it carries the focus */
+  .chat-send {
+    @apply inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-accent
+           text-brand-onaccent transition duration-200 hover:bg-brand-hover active:scale-[0.94]
+           active:duration-100 aria-disabled:cursor-default aria-disabled:opacity-40
+           aria-disabled:hover:bg-brand-accent;
+  }
+  /* !important against the inline display every icon carries; see the icon shortcode. */
+  .chat-send .chat-icon-stop, .chat-send[data-busy] .chat-icon-send { display: none !important; }
+  .chat-send[data-busy] .chat-icon-stop { display: inline-block !important; }
+  .chat-count { @apply text-xs tabular-nums text-brand-muted; }
+  .chat-count.is-over { @apply text-red-700 dark:text-red-400; }
+
+  /* A phone gets a sheet from the bottom edge, going back the same way. --chat-keyboard is set by
+     chat.js from the visual viewport: it lifts the sheet clear of the on-screen keyboard. */
+  @media (max-width: 639px) {
+    .chat-panel {
+      --chat-closed: translateY(100%);
+      inset: auto 0 var(--chat-keyboard, 0px) 0;
+      width: 100%;
+      height: min(85dvh, calc(100dvh - var(--chat-keyboard, 0px) - 1rem));
+    }
+    .chat-panel::backdrop { background: rgb(0 0 0 / 45%); }
+    .chat-card { @apply rounded-b-none border-x-0 border-b-0; }
+    /* The consent card fills this corner on a first visit. It is one tap away from gone, and the
+       button comes back when it does. */
+    body:has(#consent-banner) .chat-opener { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chat-panel { --chat-closed: none; transition: opacity 150ms ease-out; }
+    .chat-sentence, .is-waiting .chat-state { animation: none; }
+  }
+
+  /* On/off, on the native checkbox: label, keyboard and role="switch" all come free. */
+  .switch {
+    @apply relative h-6 w-10 shrink-0 cursor-pointer appearance-none rounded-full bg-brand-muted/40
+           transition-colors duration-200 checked:bg-brand-accent;
+  }
+  .switch::after {
+    content: '';
+    @apply absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200;
+  }
+  .switch:checked::after { transform: translateX(1rem); }
+
   .icon-btn {
     @apply inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-full
            text-brand-text hover:text-brand-accent hover:bg-brand-muted/10
@@ -1720,6 +1855,9 @@
     .material { @apply bg-brand-bg; backdrop-filter: none; }
   }
 }
+
+@keyframes chat-arrive { from { opacity: 0; } }
+@keyframes chat-breathe { 50% { opacity: 0.55; } }
 
 @layer utilities {
   /* Accent-tinted, not neutral, and that is the point in both themes. In dark mode the accent is

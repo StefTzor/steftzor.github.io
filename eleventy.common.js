@@ -17,13 +17,16 @@ const path = require("path");
  * either way.
  */
 const UNVERSIONED = new Set(["/scripts/firebase-config.js"]);
+// Served from /scripts/ but written under app/, so its version has to be read from there. The other
+// app scripts need no entry: the app serves them no-store. This one also ships on GitHub Pages.
+const SOURCE = new Map([["/scripts/chat.js", "app/scripts/chat.js"]]);
 const versionCache = new Map();
 function assetVersion(urlPath) {
   if (versionCache.has(urlPath)) return versionCache.get(urlPath);
   let v;
   try {
     v = crypto.createHash("sha1")
-      .update(fs.readFileSync(path.join(__dirname, urlPath)))
+      .update(fs.readFileSync(path.join(__dirname, SOURCE.get(urlPath) || urlPath)))
       .digest("hex")
       .slice(0, 8);
   } catch (err) {
