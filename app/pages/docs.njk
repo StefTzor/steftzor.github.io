@@ -261,9 +261,10 @@ bodyScripts:
           The API holds each sentence until it ends, checks it, and only then sends it. A sentence
           fails if it has a technology, number, employer or qualification the check can tell is not
           in the fact sheet, opens with yes or no, has no word from the fact sheet, or names me, because
-          the model only ever gets the technical sections. If the question is about me, every sentence
-          counts as a claim about me, so each word has to come from the fact sheet and a negative
-          fails. It is a word check, so it can miss one. The check is code, not a second model. A failure stops
+          the model only ever gets the technical sections. If the question may be about me, every
+          sentence counts as a claim about me: each word has to come from the fact sheet, and a
+          negative or a bare "it" fails unless the sentence is word for word in the fact sheet. It is
+          a word check, so it can miss one. The check is code, not a second model. A failure stops
           the answer with a fixed line saying it isn't stated on the site. Answers are shown as plain
           text, never as HTML.
         </p>
