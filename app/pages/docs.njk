@@ -149,7 +149,7 @@ bodyScripts:
           referring URL down to its host, sets no cookie, and erases the number from the row after
           30 days. The secret is replaced every 24 hours and the old one is destroyed rather than
           kept, which is what stops one day's numbers being matched to the next day's. The data view
-          will not show you that secret, or the chat tables.
+          reads an allowlist of tables. That secret and the chat tables are not on it.
           Browsable on
           <a href="/admin/data/" class="text-brand-accent underline hover:no-underline">the data view</a>
           if you are an admin. A contact submission can be deleted one row at a time from
@@ -258,8 +258,8 @@ bodyScripts:
         <h3 class="font-semibold text-brand-text">The sentence check</h3>
         <p class="hint mt-1">
           The API holds each sentence until it ends, checks it, and only then sends it. A sentence
-          fails if it has a technology, number, employer or qualification that is not in the fact
-          sheet, or a negative claim about me. The check is code, not a second model. A failure stops
+          fails if it has a technology, number, employer or qualification the check can tell is not
+          in the fact sheet, or a negative claim about me. It is a word check, so it can miss one. The check is code, not a second model. A failure stops
           the answer with a fixed line saying it isn't stated on the site. Answers are shown as plain
           text, never as HTML.
         </p>
@@ -274,7 +274,7 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">The queue</h3>
         <p class="hint mt-1">
-          The model answers one question at a time. Others wait in a short queue and the panel shows
+          Questions take turns on the model. Others wait in a short queue and the panel shows
           their place; past that comes a plain busy reply. Closing the panel cancels the answer and
           frees the model. If the model is down the panel says it is resting and the rest of the
           system carries on. The logs hold no question or answer text, for anyone.
@@ -283,7 +283,7 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">Memory</h3>
         <p class="hint mt-1">
-          For signed-in users only, and every query filters on the signed-in account. Conversations are
+          For signed-in users only, and every query a user can reach filters on the signed-in account. Conversations are
           stored as they happened. Once one goes quiet, a background job turns the user's questions into
           short notes, when nobody is waiting for the model, and code throws away any note that
           mentions me, reads like an instruction or touches a sensitive subject. A few relevant notes

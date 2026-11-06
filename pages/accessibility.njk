@@ -41,10 +41,10 @@ sitemapPriority: "0.3"
     button, a tap outside it, or <kbd>Escape</kbd>.</li>
   <li>Headings follow a single logical order per page, and page regions use landmarks.</li>
   <li>The chat panel is a native dialog. Focus stays inside it while it is open, <kbd>Escape</kbd> closes it and focus
-    goes back to where it was. Its controls have text labels, answers arrive in a live region one sentence at a time,
+    goes back to where it was. Its controls have accessible names, answers arrive in a live region one sentence at a time,
     and it stops moving when reduced motion is requested. On a phone it becomes a sheet along the bottom edge.</li>
   <li>The What I remember page uses labelled controls, its Memory switch is a native checkbox exposed as a switch, and
-    status messages are announced.</li>
+    status messages sit in a live region.</li>
 </ul>
 
 <h2 id="limits">3. Known limitations</h2>
@@ -67,8 +67,8 @@ sitemapPriority: "0.3"
     by tapping or clicking it, not from the keyboard; the departure board beside the map gives the same lines and times
     as text, and the line under the map says whether positions are live. Buses glide between updates, and jump instead
     when reduced motion is requested.</li>
-  <li><strong>The chat panel and the What I remember page</strong> have been tested in Chromium, with a keyboard and at
-    phone widths, and their roles, names and live regions were read from the page. They have not been tried with a
+  <li><strong>The chat panel and the What I remember page</strong> have been tested in Chromium against a local stand-in
+    for the server, with a keyboard and at phone widths, and their roles, names and live regions were read from the page. They have not been tried with a
     real screen reader, on a real phone, or in Firefox or Safari.</li>
   <li>Testing has been done manually and with automated tooling, not with a formal third-party audit or a full range of
     assistive technologies.</li>

@@ -4,7 +4,7 @@ permalink: /privacy/
 title: "Privacy Policy | Stefanos Tzortzoglou"
 heading: "Privacy Policy"
 description: "How tzortzoglou.eu handles personal data: what is collected, why, the legal basis under GDPR, who processes it, and how to exercise your rights."
-summary: "This site is a personal portfolio. It sets no cookies and runs no advertising. Since 18 September 2026 a counted page view carries a visitor number that is the same for your browser all day, different tomorrow, and erased from the row after 30 days; section 2.2 sets out exactly what it is. Everything else stored here is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form. The exception is the chat. If you are signed in it keeps your conversations and writes short notes about you automatically, unless you switch that off; section 3.5 sets out what it holds. If you are not signed in it stores nothing."
+summary: "This site is a personal portfolio. It sets no cookies and runs no advertising. Since 18 September 2026 a counted page view carries a visitor number that is the same for your browser all day, different tomorrow, and erased from the row after 30 days; section 2.2 sets out exactly what it is. Everything else stored here is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form. The exception is the chat in the application. It keeps your conversations and writes short notes about you automatically, unless you switch that off; section 3.5 sets out what it holds. On the public pages it stores nothing."
 updated: "2026-11-06"
 updatedLabel: "6 November 2026"
 sitemapOrder: 60
@@ -159,20 +159,23 @@ sitemapPriority: "0.3"
   server, not by you.
 </p>
 
-<h3 id="chat">2.5 The chat, if you are not signed in</h3>
+<h3 id="chat">2.5 The chat on these public pages</h3>
 <p>
   <strong>Added 6 November 2026.</strong> A panel opened from the corner button answers questions about this site
-  and how it is built. It answers from the public pages, using an open model that runs on my own servers. Your
-  question goes to no AI company and no other third party. The panel is starting in the application and is due on
-  these public pages later; this section holds in both places.
+  and how it is built. It answers from the public pages, using an open model on a server I rent. Your question goes
+  to no AI company. The only other party whose hardware it crosses is the hosting provider, described below. The
+  panel starts in the application, where <a href="#chat-memory">section 3.5</a> applies, and is due on these public
+  pages later. This section covers the public pages, and it applies even if you are signed in to the application in
+  the same browser: the panel here does not know who you are.
 </p>
 <ul>
   <li><strong>What is stored:</strong> nothing. Your question and the answer are held in memory while the answer is
     written. They are not saved to a database and they are not logged. Earlier questions from the same open page
     travel with a new one, so that a follow-up makes sense, and they get the same treatment.</li>
   <li><strong>Where your text goes:</strong> from your browser to <strong>api.tzortzoglou.eu</strong>, then over a
-    private connection to a second server of mine, where the model runs. It passes through that server during the
-    request and is not stored there. Both servers are rented in my own name, so a hosting provider's hardware
+    private connection to a second server of mine, where the model runs. It passes through that server to be
+    answered. The model writes it to no disk or log there, though it can sit in that server's memory until the next
+    question replaces it. Both servers are rented in my own name, so a hosting provider's hardware
     carries the text on its way through, as with the server in <a href="#contact-form">section 4.2</a>.</li>
   <li><strong>Your IP address:</strong> it arrives with the request, as it does with every request, and it is used
     only in memory, as the key a rate limiter counts against, the same as on other public routes.</li>
@@ -427,11 +430,11 @@ sitemapPriority: "0.3"
     and not used to send you anything other than the five messages above. There is no list to be on.</li>
 </ul>
 
-<h3 id="chat-memory">3.5 The chat, if you are signed in</h3>
+<h3 id="chat-memory">3.5 The chat in the application</h3>
 <p>
-  <strong>Added 6 November 2026.</strong> <a href="#chat">Section 2.5</a> applies here too: the same open model, on the
-  same two servers, and no AI company or other third party behind it. The difference is that the chat remembers you
-  when you are signed in. <strong>Memory is on by default</strong>, and you can switch it off.
+  <strong>Added 6 November 2026.</strong> <a href="#chat">Section 2.5</a> applies here too: the same open model on the
+  same rented server, and no AI company behind it. The difference is that the application's chat remembers you,
+  because you are signed in to use it. <strong>Memory is on by default</strong>, and you can switch it off.
 </p>
 
 <table>
@@ -462,26 +465,30 @@ sitemapPriority: "0.3"
 
 <ul>
   <li><strong>How notes are written:</strong> once a conversation has gone quiet, a background job sends your questions
-    from it back through the model on my second server, and the model writes the notes. That text is not stored on
-    that server either. Nobody reads or approves a note before it is saved, and a note can be wrong.</li>
+    from it back through the model on my second server, and the model writes the notes. That text is treated the
+    same way on that server. Nobody reads or approves a note before it is saved, and a note can be wrong.</li>
   <li><strong>What the notes refuse:</strong> a note is thrown away if it mentions me, reads like an instruction, or
     touches health, religion, politics, sexuality or a similar subject. That is a filter, and an imperfect one, so
     something sensitive can get past it. It covers notes only. Conversations are kept as you typed them, so anything
     sensitive you type is stored until you delete it. Please leave that sort of thing out of the chat.</li>
-  <li><strong>How notes are used:</strong> a few that match your question go to the model, marked as things you said.
-    They change the emphasis and length of an answer. They are not used for anything else.</li>
+  <li><strong>How notes are used:</strong> a few that match your question go to the model, marked as things you said
+    about yourself, with an instruction to use them only for the emphasis and length of an answer. The model can
+    ignore that instruction, so an answer may not follow it exactly. The chat also shows you your notes if you ask
+    what it remembers. They are not used for anything else.</li>
   <li><strong>Seeing and changing it:</strong> the
     <a href="https://app.tzortzoglou.eu/remember/">What I remember</a> page shows every note and conversation held
     against your account. You can edit a note, delete a note or a conversation, or forget everything at once.
     Deleting a conversation deletes the notes made from it too, unless you edited them; an edited note stays until
-    you delete it.</li>
+    you delete it or it reaches the 12 months below.</li>
   <li><strong>The Memory switch:</strong> it is on the same page. Off, no new conversations or notes are stored and
-    existing notes are not read. What is already there stays, and stays visible, until you delete it. Your questions
+    existing notes are not read. What is already there stays, and stays visible, until you delete it or it reaches the 12 months below. Your questions
     still go through the two servers to be answered.</li>
   <li><strong>Retention:</strong> a conversation is deleted 12 months after its last activity, and a note 12 months
-    after it was written or last edited. Forgetting everything leaves only your Memory switch setting.</li>
+    after it was written or last edited. Forgetting everything deletes every note and conversation held at that
+    moment and leaves only your Memory switch setting. An answer still being written can be saved just after, so let
+    it finish first.</li>
   <li><strong>Erasure:</strong> erasing your account (<a href="#rights">section 6</a>) removes all of this, the switch
-    setting included. Rows you or I delete also stay in the nightly backups described in
+    setting included. Deleted rows also stay in the nightly backups described in
     <a href="#backups">section 7</a> until those backups expire, seven days at most.</li>
   <li><strong>Who can read it:</strong> you, and me. Another account cannot reach it, and these tables are left out of
     the table browser in the admin area, but I run the database and can read what is in it, as with any other data
@@ -620,7 +627,7 @@ sitemapPriority: "0.3"
   The site is served over HTTPS. Authentication and account data are handled by Firebase, and database rules restrict
   each account to reading only its own record; account approval can only be performed by me. Passwords are hashed by
   Firebase and are never visible to me. No system is perfectly secure, but the amount of personal data held here is
-  deliberately kept to the minimum needed to run the approval gate and, if you leave its memory on, the chat.
+  deliberately kept to what the approval gate needs and, if you leave memory on, what the chat keeps.
 </p>
 <p id="backups">
   <strong>Backups.</strong> Every night the database on my server is copied in full: the counted page views,
@@ -630,6 +637,7 @@ sitemapPriority: "0.3"
   write to it is limited to that one bucket. Each copy is deleted
   automatically after seven days. It exists so the site can be restored if the main server fails, and is opened
   only to test that restoring works or to actually restore.
+  A restore test can put a copy on my second server for as long as the test takes, and it is deleted afterwards.
 </p>
 
 <h2 id="children">8. Children</h2>
