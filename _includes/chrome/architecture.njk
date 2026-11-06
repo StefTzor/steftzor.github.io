@@ -8,7 +8,7 @@
     The lanes group by what a thing is FOR rather than by which file it lives in, which is the
     question somebody looking at an architecture picture is actually asking. -#}
       <svg viewBox="0 0 700 518" class="w-full min-w-[560px]" role="img"
-        aria-label="Four layers. You, in a browser. Two static sites that hold no secrets. One API that verifies the token, re-reads the role and holds every key. Below it Firebase for identity, Postgres for messages, checks and saved answers, and twenty-four upstream services, six of which need a credential. The app’s map tiles are the one thing the browser fetches itself.">
+        aria-label="Four layers. You, in a browser. Two static sites that hold no secrets. One API that verifies the token, re-reads the role and holds every key. Below it Firebase for identity, Postgres for messages, checks and saved answers, the chat model on a second server of mine, and twenty-four upstream services, six of which need a credential. The app’s map tiles are the one thing the browser fetches itself.">
         <defs>
           <marker id="flow-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
             <path d="M0,0 L8,4 L0,8 z" class="dg-arrow"/>
@@ -42,6 +42,7 @@
           <path d="M240,288 L240,352"/>
           <path d="M520,288 L520,352"/>
           <path d="M628,288 L628,352"/>
+          <path d="M574,288 L574,404"/>
         </g>
 
         <g>
@@ -93,6 +94,11 @@
           <text x="628" y="371" text-anchor="middle" class="dg-label">Postgres</text>
           <text x="628" y="386" text-anchor="middle" class="dg-sub">messages · caches</text>
 
+          {#- Not an upstream, so outside the band: it is mine, and only the API reaches it. -#}
+          <rect x="470" y="404" width="208" height="42" rx="8" class="dg-box"/>
+          <text x="574" y="421" text-anchor="middle" class="dg-label">Chat model</text>
+          <text x="574" y="436" text-anchor="middle" class="dg-sub">open model · my second server</text>
+
           {#- Live state, drawn only where a page loads scripts/arch-live.js (/code/). Hidden until
               a state arrives, so /docs/ in the app and a failed read both show the plain drawing.
               The words for each dot are in the line under the diagram, never colour alone. -#}
@@ -102,14 +108,14 @@
           <circle cx="666" cy="364" r="4.5" class="dg-live" data-live="database"/>
           <circle cx="436" cy="364" r="4.5" class="dg-live" data-live="upstreams"/>
 
-          <text x="472" y="424" class="dg-sub">none of these twenty-four is ever</text>
-          <text x="472" y="439" class="dg-sub">called from your browser</text>
+          <text x="472" y="462" class="dg-sub">none of these twenty-four is ever</text>
+          <text x="472" y="475" class="dg-sub">called from your browser</text>
           {#- The exception, named rather than left off. The app's map tiles are fetched by the
               browser itself, because a tile is asked for one square at a time as you pan and
               standing in front of a few hundred of those would mean running a tile server. It is
               not drawn as a box because it hangs off the browser at the top, not off the API at
               the bottom, and an arrow that long would cross every layer to say one thing. -#}
-          <text x="472" y="462" class="dg-sub">the app’s map tiles are the one exception,</text>
-          <text x="472" y="477" class="dg-sub">fetched by your browser itself</text>
+          <text x="472" y="490" class="dg-sub">the app’s map tiles are the one exception,</text>
+          <text x="472" y="503" class="dg-sub">fetched by your browser itself</text>
         </g>
       </svg>

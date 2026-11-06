@@ -132,9 +132,10 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">Postgres</h3>
         <p class="hint mt-1">
-          Twelve tables. Contact submissions, a row per process start, which migrations have run, and
-          the one-row table holding the secret behind the visitor number below. Five the system
-          writes for itself: the status page's health checks (seven days), the shape of each
+          Sixteen tables. Contact submissions, a row per process start, which migrations have run, and
+          the one-row table holding the secret behind the visitor number below. Four hold the chat,
+          for signed-in users only: conversations, messages, notes and the Memory switch. Seven the
+          system writes for itself: the status page's health checks (seven days), the shape of each
           upstream's answers and what changed in it (field names and types, never a value), GitHub
           webhook deliveries that passed their signature check (30 days), the bus timetable, the
           sports data, saved so a restart does not fetch them again, and a nightly copy of the accounts,
@@ -147,8 +148,8 @@ bodyScripts:
           feeds the address and the User-Agent into that hash and stores neither. It cuts the
           referring URL down to its host, sets no cookie, and erases the number from the row after
           30 days. The secret is replaced every 24 hours and the old one is destroyed rather than
-          kept, which is what stops one day's numbers being matched to the next day's; it is the
-          one thing in this database the data view will not show you.
+          kept, which is what stops one day's numbers being matched to the next day's. The data view
+          will not show you that secret, or the chat tables.
           Browsable on
           <a href="/admin/data/" class="text-brand-accent underline hover:no-underline">the data view</a>
           if you are an admin. A contact submission can be deleted one row at a time from
@@ -172,8 +173,8 @@ bodyScripts:
        emailed copy is real, it is outside all four stores, and no endpoint here reaches it. #}
     <p class="text-sm text-brand-muted mt-4 max-w-prose">
       Until recently nothing in this system could take a person out of any of them. It can now:
-      erasure takes one email address and removes that address's contact messages from Postgres,
-      its account document from Firestore and its sign-in from Firebase Authentication, then
+      erasure takes one email address and removes that address's contact messages and its
+      account's chat rows from Postgres, its account document from Firestore and its sign-in from Firebase Authentication, then
       answers with a receipt of what it actually removed instead of a success message. One
       action across three stores, because that is how far a person is spread: deleting from one
       leaves the other two still holding them.
@@ -220,6 +221,82 @@ bodyScripts:
       new one and the old one is gone. After 30 days the server erases the number and leaves the
       row as a path, a time and four coarse browser facts.
     </p>
+  </section>
+
+  {# --- the chat -------------------------------------------------------------
+     Describes the design, and leaves out every number an abuser could plan around: the limits, the
+     queue length and the cap live in the Owner's notes. So does where the model runs. #}
+  <section aria-labelledby="chat-heading" class="mt-10">
+    <h2 id="chat-heading" class="text-xl font-bold text-brand-text mb-1">The chat</h2>
+    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+      The panel behind the corner button answers questions about this site, the app and how they are
+      built. It runs an open model, Gemma 4 through llama.cpp, on a second server of mine. Questions go
+      to no AI company. Only the API talks to the model, and the model has no tools and sees only what
+      the API hands it. It is not one of the twenty-five upstreams, because it is mine, or one of the
+      three deployables, because nothing here builds it: it is a pinned image, started by hand.
+    </p>
+
+    <ul class="grid gap-4 sm:grid-cols-2">
+      <li class="card">
+        <h3 class="font-semibold text-brand-text">Routing</h3>
+        <p class="hint mt-1">
+          Keywords in the question pick the matching sections of the fact sheet, and earlier questions
+          break ties, so a follow-up lands in the right place. If nothing matches, the chat says it
+          does not know and the model is never called.
+        </p>
+      </li>
+      <li class="card">
+        <h3 class="font-semibold text-brand-text">The fact sheet</h3>
+        <p class="hint mt-1">
+          The model reads short lines written by hand, not the whole site. Every line carries a quote
+          that must appear in the public page it cites, and a check over the built pages fails if a
+          quote has gone. The sources under an answer come from the routed sections, never from the
+          model's text.
+        </p>
+      </li>
+      <li class="card">
+        <h3 class="font-semibold text-brand-text">The sentence check</h3>
+        <p class="hint mt-1">
+          The API holds each sentence until it ends, checks it, and only then sends it. A sentence
+          fails if it has a technology, number, employer or qualification that is not in the fact
+          sheet, or a negative claim about me. The check is code, not a second model. A failure stops
+          the answer with a fixed line saying it isn't stated on the site. Answers are shown as plain
+          text, never as HTML.
+        </p>
+      </li>
+      <li class="card">
+        <h3 class="font-semibold text-brand-text">Answers about me</h3>
+        <p class="hint mt-1">
+          A question that lands only on a section about me never reaches the model. Code returns the
+          matching lines of the fact sheet word for word, so nothing can be invented.
+        </p>
+      </li>
+      <li class="card">
+        <h3 class="font-semibold text-brand-text">The queue</h3>
+        <p class="hint mt-1">
+          The model answers one question at a time. Others wait in a short queue and the panel shows
+          their place; past that comes a plain busy reply. Closing the panel cancels the answer and
+          frees the model. If the model is down the panel says it is resting and the rest of the
+          system carries on. The logs hold no question or answer text, for anyone.
+        </p>
+      </li>
+      <li class="card">
+        <h3 class="font-semibold text-brand-text">Memory</h3>
+        <p class="hint mt-1">
+          For signed-in users only, and every query filters on the signed-in account. Conversations are
+          stored as they happened. Once one goes quiet, a background job turns the user's questions into
+          short notes, when nobody is waiting for the model, and code throws away any note that
+          mentions me, reads like an instruction or touches a sensitive subject. A few relevant notes
+          go to the model in their own block, labelled as things the user said. They shape emphasis and
+          length, they never feed routing, and the sentence check ignores them, so a note cannot
+          support a claim. <a href="/remember/" class="text-brand-accent underline hover:no-underline">What I
+          remember</a> shows all of it, with edit, delete and a Memory switch. Rows go after 12 months
+          without activity, or sooner by erasure, and
+          <a href="https://tzortzoglou.eu/privacy/#chat-memory" rel="noopener"
+            class="text-brand-accent underline hover:no-underline">the privacy notice</a> has the rest.
+        </p>
+      </li>
+    </ul>
   </section>
 
   {# --- endpoints ----------------------------------------------------------- #}

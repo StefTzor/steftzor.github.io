@@ -5,8 +5,8 @@ title: "Accessibility Statement | Stefanos Tzortzoglou"
 heading: "Accessibility Statement"
 description: "The accessibility commitment for tzortzoglou.eu: the WCAG 2.1 AA target, what has been tested, the known limitations, and how to report a barrier."
 summary: "This site targets WCAG 2.1 Level AA. This page lists what has been checked, what still falls short, and how to tell me if something blocks you."
-updated: "2026-11-04"
-updatedLabel: "4 November 2026"
+updated: "2026-11-06"
+updatedLabel: "6 November 2026"
 sitemapOrder: 90
 sitemapChangefreq: yearly
 sitemapPriority: "0.3"
@@ -40,6 +40,11 @@ sitemapPriority: "0.3"
   <li>The mobile menu can be swiped shut, but nothing depends on the swipe: it also closes with its close
     button, a tap outside it, or <kbd>Escape</kbd>.</li>
   <li>Headings follow a single logical order per page, and page regions use landmarks.</li>
+  <li>The chat panel is a native dialog. Focus stays inside it while it is open, <kbd>Escape</kbd> closes it and focus
+    goes back to where it was. Its controls have text labels, answers arrive in a live region one sentence at a time,
+    and it stops moving when reduced motion is requested. On a phone it becomes a sheet along the bottom edge.</li>
+  <li>The What I remember page uses labelled controls, its Memory switch is a native checkbox exposed as a switch, and
+    status messages are announced.</li>
 </ul>
 
 <h2 id="limits">3. Known limitations</h2>
@@ -62,6 +67,9 @@ sitemapPriority: "0.3"
     by tapping or clicking it, not from the keyboard; the departure board beside the map gives the same lines and times
     as text, and the line under the map says whether positions are live. Buses glide between updates, and jump instead
     when reduced motion is requested.</li>
+  <li><strong>The chat panel and the What I remember page</strong> have been tested in Chromium, with a keyboard and at
+    phone widths, and their roles, names and live regions were read from the page. They have not been tried with a
+    real screen reader, on a real phone, or in Firefox or Safari.</li>
   <li>Testing has been done manually and with automated tooling, not with a formal third-party audit or a full range of
     assistive technologies.</li>
 </ul>

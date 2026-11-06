@@ -4,9 +4,9 @@ permalink: /privacy/
 title: "Privacy Policy | Stefanos Tzortzoglou"
 heading: "Privacy Policy"
 description: "How tzortzoglou.eu handles personal data: what is collected, why, the legal basis under GDPR, who processes it, and how to exercise your rights."
-summary: "This site is a personal portfolio. It sets no cookies and runs no advertising. Since 18 September 2026 a counted page view carries a visitor number that is the same for your browser all day, different tomorrow, and erased from the row after 30 days; section 2.2 sets out exactly what it is. Everything else stored here is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form."
-updated: "2026-11-04"
-updatedLabel: "4 November 2026"
+summary: "This site is a personal portfolio. It sets no cookies and runs no advertising. Since 18 September 2026 a counted page view carries a visitor number that is the same for your browser all day, different tomorrow, and erased from the row after 30 days; section 2.2 sets out exactly what it is. Everything else stored here is what you deliberately send: an email address if you create an account for the private area, or your name, email address and message if you use the contact form. The exception is the chat. If you are signed in it keeps your conversations and writes short notes about you automatically, unless you switch that off; section 3.5 sets out what it holds. If you are not signed in it stores nothing."
+updated: "2026-11-06"
+updatedLabel: "6 November 2026"
 sitemapOrder: 60
 sitemapChangefreq: yearly
 sitemapPriority: "0.3"
@@ -32,8 +32,8 @@ sitemapPriority: "0.3"
 <h2 id="browsing">2. If you only browse the site</h2>
 
 <p>You do not need an account to read anything on the public pages. You are asked for information only if you
-  choose to send it: by creating an account (<a href="#account">section 3</a>) or by using the contact form
-  (<a href="#contact">section 4</a>).
+  choose to send it: by creating an account (<a href="#account">section 3</a>), by using the contact form
+  (<a href="#contact">section 4</a>) or by asking the chat (<a href="#chat">section 2.5</a>).
   Three things still happen automatically, because that is how the web works:</p>
 
 <h3 id="hosting-logs">2.1 Hosting logs</h3>
@@ -158,6 +158,31 @@ sitemapPriority: "0.3"
   limiter counts against. The answer holds only the state of each service. The checks themselves are made by the
   server, not by you.
 </p>
+
+<h3 id="chat">2.5 The chat, if you are not signed in</h3>
+<p>
+  <strong>Added 6 November 2026.</strong> A panel opened from the corner button answers questions about this site
+  and how it is built. It answers from the public pages, using an open model that runs on my own servers. Your
+  question goes to no AI company and no other third party. The panel is starting in the application and is due on
+  these public pages later; this section holds in both places.
+</p>
+<ul>
+  <li><strong>What is stored:</strong> nothing. Your question and the answer are held in memory while the answer is
+    written. They are not saved to a database and they are not logged. Earlier questions from the same open page
+    travel with a new one, so that a follow-up makes sense, and they get the same treatment.</li>
+  <li><strong>Where your text goes:</strong> from your browser to <strong>api.tzortzoglou.eu</strong>, then over a
+    private connection to a second server of mine, where the model runs. It passes through that server during the
+    request and is not stored there. Both servers are rented in my own name, so a hosting provider's hardware
+    carries the text on its way through, as with the server in <a href="#contact-form">section 4.2</a>.</li>
+  <li><strong>Your IP address:</strong> it arrives with the request, as it does with every request, and it is used
+    only in memory, as the key a rate limiter counts against, the same as on other public routes.</li>
+  <li><strong>In your browser:</strong> the chat sets no cookie and stores nothing there. See the
+    <a href="/cookies/#storage">Cookies &amp; Local Storage</a> page.</li>
+  <li><strong>Sensitive information:</strong> the question box is free text, so please do not type anything
+    confidential or sensitive into it.</li>
+  <li><strong>Legal basis:</strong> legitimate interests, Art. 6(1)(f) GDPR: answering a question you chose to ask,
+    and keeping the chat from being overwhelmed.</li>
+</ul>
 
 <h2 id="account">3. If you create an account</h2>
 
@@ -402,6 +427,76 @@ sitemapPriority: "0.3"
     and not used to send you anything other than the five messages above. There is no list to be on.</li>
 </ul>
 
+<h3 id="chat-memory">3.5 The chat, if you are signed in</h3>
+<p>
+  <strong>Added 6 November 2026.</strong> <a href="#chat">Section 2.5</a> applies here too: the same open model, on the
+  same two servers, and no AI company or other third party behind it. The difference is that the chat remembers you
+  when you are signed in. <strong>Memory is on by default</strong>, and you can switch it off.
+</p>
+
+<table>
+  <caption class="sr-only">Data the chat stores for a signed-in account</caption>
+  <thead>
+    <tr><th scope="col">What</th><th scope="col">Where it is stored</th><th scope="col">Why</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Your questions and the chat's answers, word for word, with a title taken from your first question and the
+        times</td>
+      <td>PostgreSQL database on my server, against your account</td>
+      <td>So you can reopen a conversation, and so the chat can follow it.</td>
+    </tr>
+    <tr>
+      <td>Short notes about you, written automatically (for example, "Works in sports tech"), and whether you have
+        edited each one</td>
+      <td>Same database, against your account</td>
+      <td>So you do not have to repeat yourself.</td>
+    </tr>
+    <tr>
+      <td>Your Memory switch, if you have changed it</td>
+      <td>Same database, against your account</td>
+      <td>So the switch stays where you put it.</td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li><strong>How notes are written:</strong> once a conversation has gone quiet, a background job sends your questions
+    from it back through the model on my second server, and the model writes the notes. That text is not stored on
+    that server either. Nobody reads or approves a note before it is saved, and a note can be wrong.</li>
+  <li><strong>What the notes refuse:</strong> a note is thrown away if it mentions me, reads like an instruction, or
+    touches health, religion, politics, sexuality or a similar subject. That is a filter, and an imperfect one, so
+    something sensitive can get past it. It covers notes only. Conversations are kept as you typed them, so anything
+    sensitive you type is stored until you delete it. Please leave that sort of thing out of the chat.</li>
+  <li><strong>How notes are used:</strong> a few that match your question go to the model, marked as things you said.
+    They change the emphasis and length of an answer. They are not used for anything else.</li>
+  <li><strong>Seeing and changing it:</strong> the
+    <a href="https://app.tzortzoglou.eu/remember/">What I remember</a> page shows every note and conversation held
+    against your account. You can edit a note, delete a note or a conversation, or forget everything at once.
+    Deleting a conversation deletes the notes made from it too, unless you edited them; an edited note stays until
+    you delete it.</li>
+  <li><strong>The Memory switch:</strong> it is on the same page. Off, no new conversations or notes are stored and
+    existing notes are not read. What is already there stays, and stays visible, until you delete it. Your questions
+    still go through the two servers to be answered.</li>
+  <li><strong>Retention:</strong> a conversation is deleted 12 months after its last activity, and a note 12 months
+    after it was written or last edited. Forgetting everything leaves only your Memory switch setting.</li>
+  <li><strong>Erasure:</strong> erasing your account (<a href="#rights">section 6</a>) removes all of this, the switch
+    setting included. Rows you or I delete also stay in the nightly backups described in
+    <a href="#backups">section 7</a> until those backups expire, seven days at most.</li>
+  <li><strong>Who can read it:</strong> you, and me. Another account cannot reach it, and these tables are left out of
+    the table browser in the admin area, but I run the database and can read what is in it, as with any other data
+    held here. It is not end-to-end encrypted.</li>
+  <li><strong>Who else handles it:</strong> the hosting provider of the two servers, as in
+    <a href="#contact-form">section 4.2</a>, and the backup storage in <a href="#backups">section 7</a>. Nobody new.
+  </li>
+  <li><strong>Legal basis:</strong> legitimate interests, Art. 6(1)(f) GDPR, the same basis as the rest of the
+    application in <a href="#app-analytics">section 3.2</a>: remembering you between visits is part of the chat you are
+    signed in to use. Your right to object under Art. 21 applies (see <a href="#rights">section 6</a>), and the Memory
+    switch is the quickest way to use it.</li>
+  <li><strong>What it is never used for:</strong> your conversations and notes are not used for marketing, not sold,
+    not shared, and not used to train any model.</li>
+</ul>
+
 <h2 id="contact">4. If you contact me</h2>
 
 <h3 id="contact-email">4.1 If you email me directly</h3>
@@ -498,8 +593,8 @@ sitemapPriority: "0.3"
 <p>
   To exercise any of these, email <a href="mailto:stefanos@tzortzoglou.eu">stefanos@tzortzoglou.eu</a>. There is no
   charge, and I will respond within one month. Deleting an account is still something I do, not something a
-  form does. You ask, and I run it: it removes the sign-in, the record about you, and anything you sent through the
-  contact form, and reports back which of those it found. It takes only a short message, and you do not have to give
+  form does. You ask, and I run it: it removes the sign-in, the record about you, your chat conversations and notes, and
+  anything you sent through the contact form, and reports back which of those it found. It takes only a short message, and you do not have to give
   a reason.
 </p>
 <p>
@@ -525,11 +620,11 @@ sitemapPriority: "0.3"
   The site is served over HTTPS. Authentication and account data are handled by Firebase, and database rules restrict
   each account to reading only its own record; account approval can only be performed by me. Passwords are hashed by
   Firebase and are never visible to me. No system is perfectly secure, but the amount of personal data held here is
-  deliberately kept to the minimum needed to run the approval gate.
+  deliberately kept to the minimum needed to run the approval gate and, if you leave its memory on, the chat.
 </p>
 <p id="backups">
-  <strong>Backups.</strong> Every night the database on my server is copied in full: the counted page views
-  and contact form messages, the server's own operational records, and a nightly copy of the accounts held by
+  <strong>Backups.</strong> Every night the database on my server is copied in full: the counted page views,
+  contact form messages and chat conversations and notes, the server's own operational records, and a nightly copy of the accounts held by
   Firebase: address, name, role, approval and saved preferences, but no passwords or password hashes. The copy goes to a private storage
   bucket in my own Oracle account, in Oracle's Stockholm data centre, and nowhere else; the only key that can
   write to it is limited to that one bucket. Each copy is deleted
@@ -550,5 +645,6 @@ sitemapPriority: "0.3"
   The contact form in <a href="#contact-form">section 4.2</a> was added this way, and so were the move from
   GoatCounter to my own counter in <a href="#analytics">section 2.2</a>, the application's own counting in
   <a href="#app-analytics">section 3.2</a>, and the maps in <a href="#map-tiles">section 3.3</a>, which put a new
-  outside host in front of two pages, and so got a section of its own instead of a line in a table.
+  outside host in front of two pages, and so got a section of its own instead of a line in a table. The chat in
+  <a href="#chat">sections 2.5</a> and <a href="#chat-memory">3.5</a> was added the same way.
 </p>
