@@ -154,6 +154,16 @@ async function streamChecks() {
     assert.strictEqual(sourceView(bad, true), null, `${bad} is not a known source`);
   }
   ok('sources: only known pages become anything at all');
+  // The live tools' sources: app pages are links there and labels here; status is on the public site.
+  for (const [source, label] of [['/f1/', 'Formula 1'], ['/sports/', 'Sports'], ['/transit/', 'Transit'], ['/', 'Home page'], ['/profile/', 'Your profile']]) {
+    assert.deepStrictEqual(plain(sourceView(source, true)), { label, href: source });
+    assert.deepStrictEqual(plain(sourceView(source, false)), { label, href: null });
+  }
+  assert.strictEqual(sourceView('/status/', false).href, '/status/');
+  assert.strictEqual(sourceView('/status/', true).href, 'https://tzortzoglou.eu/status/');
+  assert.strictEqual(sourceView('/login/', false).href, '/login/');
+  assert.strictEqual(sourceView('/login/', true).href, '/login/');
+  ok('sources: every live tool source has a label, and a link wherever its page is');
 }
 
 // --- rendering ------------------------------------------------------------------------------

@@ -32,6 +32,13 @@ const SOURCES = new Map([
   ["/code/", { label: "Code" }],
   ["/docs/", { label: "How this is built", appOnly: true }],
   ["/remember/", { label: "What I remember", appOnly: true }],
+  ["/status/", { label: "Status" }],
+  ["/f1/", { label: "Formula 1", appOnly: true }],
+  ["/sports/", { label: "Sports", appOnly: true }],
+  ["/transit/", { label: "Transit", appOnly: true }],
+  ["/", { label: "Home page", appOnly: true }], // the app's, where the weather is, not the portfolio's
+  ["/profile/", { label: "Your profile", appOnly: true }],
+  ["/login/", { label: "Sign in", sameBoth: true }], // the public /login/ redirects to the app's
 ]);
 
 // --- the stream -----------------------------------------------------------------------------
@@ -97,6 +104,7 @@ export function stateLine(turn) {
 export function sourceView(source, app) {
   const known = SOURCES.get(source);
   if (!known) return null;
+  if (known.sameBoth) return { label: known.label, href: source };
   if (known.appOnly) return { label: known.label, href: app ? source : null };
   return { label: known.label, href: app ? SITE + source : source };
 }

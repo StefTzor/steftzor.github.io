@@ -105,6 +105,7 @@ module.exports = function (eleventyConfig) {
     "app/scripts/admin-analytics.js": "scripts/admin-analytics.js",
     "app/scripts/admin-health.js": "scripts/admin-health.js",
     "app/scripts/admin-webhooks.js": "scripts/admin-webhooks.js",
+    "app/scripts/admin-chat.js": "scripts/admin-chat.js",
     "app/scripts/sports.js": "scripts/sports.js",
     "app/scripts/sports-today.js": "scripts/sports-today.js",
     "app/scripts/sports-common.js": "scripts/sports-common.js",
