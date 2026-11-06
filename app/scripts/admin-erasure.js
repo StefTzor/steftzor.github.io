@@ -127,10 +127,27 @@ function paintUnreachable(notified, countEl, noteEl) {
        + "provider's delivery log. Nothing here reaches either one; they must be deleted by hand.";
 }
 
+/** The chat rows are keyed by account, so an address with no account has none to find. */
+function chatCounts(chat) {
+  const conversations = (chat && chat.conversations) || 0;
+  const notes = (chat && chat.notes) || 0;
+  return { conversations, notes, any: conversations + notes > 0 };
+}
+
+function paintChat(chat) {
+  const { conversations, notes, any } = chatCounts(chat);
+  el("heldChat").textContent = !chat ? "The API did not report on the chat tables."
+    : chat.note ? chat.note
+    : any ? `${plural(conversations, "conversation")} and ${plural(notes, "note")}.`
+    : "No chat conversations or notes.";
+}
+
 /** Whether there is anything at all to erase, and what the confirmation should name. */
 function willGo(p) {
   const parts = [];
   if (p.messages.count) parts.push(plural(p.messages.count, "message"));
+  const chat = chatCounts(p.chat);
+  if (chat.any) parts.push(`${plural(chat.conversations, "chat conversation")} and ${plural(chat.notes, "chat note")}`);
   if (p.account) {
     if (p.account.document) parts.push("the stored profile");
     parts.push("the sign-in account");
@@ -146,6 +163,7 @@ function paintPreview(p) {
     ? `${plural(p.messages.count, "message")} sent through the contact form.`
     : "No messages from this address.";
   paintDates(p.messages.dates || []);
+  paintChat(p.chat);
   paintAccount(p.account);
   paintUnreachable(p.notified, "reachCount", "reachNote");
 
@@ -385,6 +403,13 @@ function paintReceipt(res) {
   lines.append(line(erased.authAccount
     ? `The sign-in account was deleted${erased.uid ? ` (${erased.uid})` : ""}.`
     : "There was no sign-in account to delete."));
+  // Absent on a partial receipt, where the steps that set them never ran; nothing is claimed then.
+  // The API's own note is printed as it arrived, the same as the mailbox note above.
+  if (res.chatNote) lines.append(line(res.chatNote));
+  else if (res.chatCleared === true) lines.append(line("The chat conversations and notes were deleted."));
+  else if (res.chatCleared === false) lines.append(line("The chat rows could not be cleared. Run the erasure again: it is safe to repeat."));
+  if (res.copyCleared === true) lines.append(line("This address was cleared from the nightly account copy."));
+  else if (res.copyCleared === false) lines.append(line("The nightly account copy could not be cleared. Run the erasure again: it is safe to repeat."));
 
   paintUnreachable(notified || { count: 0 }, "leftCount", "leftNote");
 
