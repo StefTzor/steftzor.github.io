@@ -32,8 +32,10 @@ class FakeEl {
   addEventListener(type, fn) { (this.on[type] ||= []).push(fn); }
   fire(type) { for (const fn of this.on[type] || []) fn({ type, target: this, preventDefault() {} }); }
   setAttribute(k, v) { this.attrs[k] = v; }
+  removeAttribute(k) { delete this.attrs[k]; }
+  get children() { return this.kids.filter((k) => typeof k !== 'string'); }
   toggleAttribute(k, on) { if (on) this.attrs[k] = ''; else delete this.attrs[k]; }
-  get classList() { return { toggle() {} }; }
+  get classList() { return { toggle() {}, add: (c) => { this.className += ' ' + c; } }; }
   remove() {}
   focus() {}
   get textContent() { return this.own + this.kids.map((k) => (typeof k === 'string' ? k : k.textContent)).join(''); }
@@ -47,10 +49,10 @@ class FakeEl {
 }
 
 const SRC = read('app/scripts/chat.js').replace(/^import .*$/gm, '').replace(/^export /gm, '');
-const NAMES = ['mount', 'createParser', 'readEvents', 'newTurn', 'reduce', 'stateLine', 'sourceView', 'turnView', 'turnsFrom', 'LINES'];
+const NAMES = ['mount', 'createParser', 'readEvents', 'newTurn', 'reduce', 'stateLine', 'sourceView', 'pickSuggestions', 'turnView', 'turnsFrom', 'LINES'];
 const chat = { document: { createElement: (t) => new FakeEl(t) }, TextDecoder, AbortController, window: {}, API_BASE: 'https://api.test' };
 vm.runInNewContext(`${SRC}\n${NAMES.map((n) => `this.${n} = ${n};`).join('\n')}`, chat);
-const { mount, createParser, readEvents, newTurn, reduce, stateLine, sourceView, turnView, turnsFrom, LINES } = chat;
+const { mount, createParser, readEvents, newTurn, reduce, stateLine, sourceView, pickSuggestions, turnView, turnsFrom, LINES } = chat;
 const plain = (v) => JSON.parse(JSON.stringify(v));
 const play = (turn, events) => events.reduce(reduce, turn);
 
@@ -213,6 +215,51 @@ async function streamChecks() {
   ok('source: no HTML from strings anywhere, and no browser storage');
 }
 
+// --- suggestions ----------------------------------------------------------------------------
+
+{
+  const hostile = '<img src=x onerror=alert(1)> & "quotes"';
+  const t = play(newTurn('Hi'), [{ type: 'sentence', text: 'A glossary line.' }, { type: 'sources', sources: [] },
+    { type: 'suggestions', suggestions: ['One?', hostile, 'Three?', 'Four?'] }, { type: 'done' }]);
+  assert.deepStrictEqual(plain(t.suggestions), ['One?', hostile, 'Three?'], 'at most three, kept as sent');
+  assert.deepStrictEqual(plain(pickSuggestions(['ok', '', '  ', 5, null, 'x'.repeat(501), { a: 1 }])), ['ok']);
+  assert.deepStrictEqual(plain(pickSuggestions('nope')), []);
+  assert.deepStrictEqual(plain(reduce(newTurn('Hi'), { type: 'suggestions' }).suggestions), []);
+  assert.deepStrictEqual(plain(newTurn('Hi').suggestions), []);
+  ok('suggestions: the reducer keeps up to three clean strings and ignores the rest');
+
+  const picked = [];
+  const v = turnView('Hi', (q) => picked.push(q));
+  v.paint(play(newTurn('Hi'), [{ type: 'suggestions', suggestions: ['A?'] }]), false);
+  assert.strictEqual(v.root.all().filter((e) => e.tag === 'button').length, 0, 'none while the answer is still arriving');
+  v.paint(t, false);
+  const group = v.root.all().find((e) => e.attrs.role === 'group');
+  assert.strictEqual(group.attrs['aria-label'], 'Suggested questions');
+  const pills = group.all().filter((e) => e.tag === 'button');
+  assert.deepStrictEqual(pills.map((b) => b.textContent), ['One?', hostile, 'Three?']);
+  assert.ok(pills.every((b) => b.attrs.type === 'button' || b.type === 'button'), 'real buttons, so the keyboard reaches them');
+  pills[1].fire('click');
+  assert.deepStrictEqual(picked, [hostile], 'a tap sends that text as the question');
+  v.paint(t, false);
+  assert.strictEqual(group.all().length, 3, 'painting again does not add them twice');
+  ok('suggestions: pills appear when the answer is done, hostile text stays text, a tap picks it');
+
+  v.retire();
+  assert.ok(!group.attrs.role && !group.attrs['aria-label']);
+  assert.strictEqual(group.all().filter((e) => e.tag === 'button').length, 0, 'older answers keep no buttons');
+  assert.strictEqual(group.textContent, 'One?' + hostile + 'Three?', 'but the questions stay as text');
+  const none = turnView('Hi', () => {});
+  none.paint(play(newTurn('Hi'), [{ type: 'sentence', text: 'x' }, { type: 'done' }]), false);
+  none.retire();
+  assert.strictEqual(none.root.textContent.includes('Suggested'), false);
+  ok('suggestions: a newer question turns old pills into plain text');
+
+  const g = turnView('What is X?', () => {});
+  g.paint(play(newTurn('What is X?'), [{ type: 'sentence', text: 'X is a term.' }, { type: 'sources', sources: ['/about/'] }, { type: 'done' }]), false);
+  assert.ok(g.root.textContent.includes('X is a term.'), 'a glossary or kit answer is plain sentence events and renders as any sentence');
+  ok('glossary and kit answers render as ordinary sentences');
+}
+
 // --- the panel itself -----------------------------------------------------------------------
 
 function panelParts() {
@@ -279,6 +326,29 @@ async function panelChecks() {
   await tick();
   assert.strictEqual(p.chatInput.readOnly, false, 'and it comes back when the conversation is there');
   ok('panel: read-only while a conversation reopens');
+
+  // A tap on a suggestion asks it like typed text, and the next question retires the pills.
+  const bodies = [];
+  chat.fetch = async (_url, init) => {
+    bodies.push(JSON.parse(init.body).question);
+    const first = bodies.length === 1;
+    const wire = first
+      ? 'data: {"type":"sentence","text":"Hi."}\n\ndata: {"type":"suggestions","suggestions":["Next?"]}\n\ndata: {"type":"done"}\n\n'
+      : 'data: {"type":"sentence","text":"Ok."}\n\ndata: {"type":"done"}\n\n';
+    return { ok: true, ...body([Buffer.from(wire)]) };
+  };
+  p = panelParts();
+  mount({ panel: p.panel, opener: p.opener });
+  p.chatInput.value = 'Start';
+  p.chatForm.fire('submit');
+  await tick();
+  const pill = p.chatLog.all().find((e) => e.tag === 'button' && e.textContent === 'Next?');
+  assert.ok(pill, 'the pill is in the log');
+  pill.fire('click');
+  await tick();
+  assert.deepStrictEqual(bodies, ['Start', 'Next?'], 'the tap went the same way as typing');
+  assert.strictEqual(p.chatLog.all().filter((e) => e.tag === 'button').length, 0, 'and the old pill is no longer a button');
+  ok('panel: a suggestion sends as the next question and the old one goes inactive');
 }
 
 // --- what each build ships ------------------------------------------------------------------
