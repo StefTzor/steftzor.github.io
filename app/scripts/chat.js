@@ -74,10 +74,17 @@ export async function readEvents(response, onEvent) {
 // --- one question and its answer ------------------------------------------------------------
 
 export const newTurn = (question) => ({
-  question, phase: "reading", position: 0, sentences: [], sources: [], notes: 0, conversation: null,
+  question, phase: "reading", position: 0, sentences: [], sources: [], suggestions: [], notes: 0, conversation: null,
 });
 
 const OPEN = new Set(["reading", "queued", "answering"]);
+
+const MAX_SUGGESTIONS = 3;
+
+/** Up to three non-empty strings that fit the question limit; anything else the server sent is dropped. */
+export const pickSuggestions = (list) => (Array.isArray(list) ? list : [])
+  .filter((q) => typeof q === "string" && q.trim() && q.length <= MAX)
+  .map((q) => q.trim()).slice(0, MAX_SUGGESTIONS);
 
 /** Server events, plus three of ours: `limited` (a 429), `stopped` and `end` (the stream closed). */
 export function reduce(turn, event) {
@@ -87,6 +94,7 @@ export function reduce(turn, event) {
     case "notes": return { ...turn, notes: event.count };
     case "sentence": return { ...turn, phase: "answering", sentences: [...turn.sentences, event.text] };
     case "sources": return { ...turn, sources: event.sources };
+    case "suggestions": return { ...turn, suggestions: pickSuggestions(event.suggestions) };
     case "conversation": return { ...turn, conversation: event.id };
     case "done": case "busy": case "resting": case "limited": case "stopped":
       return { ...turn, phase: event.type === "done" ? "done" : event.type };
@@ -144,19 +152,29 @@ function metaParts(turn, app) {
  * The elements for one turn. paint() only adds what is new: this sits in a live region, so
  * redrawing an earlier sentence would read it out again.
  */
-export function turnView(question) {
+export function turnView(question, onPick) {
   const root = make("div", "chat-turn");
   const words = make("p", "chat-words");
   const state = make("p", "chat-state");
   const reply = make("div", "chat-reply");
   const meta = make("p", "chat-meta");
+  const next = make("div", "chat-suggest");
   reply.append(words, state);
-  root.append(make("p", "chat-ask", question), reply, meta);
+  root.append(make("p", "chat-ask", question), reply, meta, next);
 
   let shown = 0;
   let metaKey = "";
+  let offered = false;
   return {
     root,
+    /** Once a newer question is sent the pills stop being buttons and stay as plain text. */
+    retire() {
+      if (!offered) return;
+      next.removeAttribute("role");
+      next.removeAttribute("aria-label");
+      next.classList.add("is-old");
+      next.replaceChildren(...[...next.children].map((b) => make("span", "chat-suggest-old", b.textContent)));
+    },
     paint(turn, app) {
       for (; shown < turn.sentences.length; shown += 1) {
         words.append(make("span", "chat-sentence", turn.sentences[shown]), " ");
@@ -167,6 +185,18 @@ export function turnView(question) {
       if (key !== metaKey) {
         metaKey = key;
         meta.replaceChildren(...metaParts(turn, app));
+      }
+      // Only a finished answer offers them, so nothing can be tapped while it is still arriving.
+      if (!offered && turn.phase === "done" && turn.suggestions.length && onPick) {
+        offered = true;
+        next.setAttribute("role", "group");
+        next.setAttribute("aria-label", "Suggested questions");
+        for (const q of turn.suggestions) {
+          const b = make("button", "chat-pill", q);
+          b.type = "button";
+          b.addEventListener("click", () => onPick(q));
+          next.append(b);
+        }
       }
     },
   };
@@ -200,6 +230,7 @@ export function mount({ panel, opener, app }) {
   const earlier = []; // public site: the questions so far, because no conversation is kept for a visitor
   let conversationId = null; // app: the server holds the history, this names it
   let stopLive = null; // set while an answer is running
+  let lastView = null; // the newest answer, the only one whose suggestions are still buttons
 
   const post = app
     ? (path, init) => app.api(path, { ...init, stream: true })
@@ -233,7 +264,9 @@ export function mount({ panel, opener, app }) {
 
   async function ask(question) {
     panel.querySelector("#chatHint")?.remove();
-    const view = turnView(question);
+    lastView?.retire();
+    const view = turnView(question, (q) => { if (!stopLive && !input.readOnly) ask(q); });
+    lastView = view;
     const ctl = new AbortController();
     let turn = newTurn(question);
 
@@ -278,6 +311,7 @@ export function mount({ panel, opener, app }) {
     const wait = make("p", "chat-hint", "Opening the conversation...");
     log.replaceChildren(wait);
     conversationId = null;
+    lastView = null;
     try {
       const found = await app.api(`/me/chat/conversations/${encodeURIComponent(id)}`);
       const views = turnsFrom(found.messages).map((turn) => {

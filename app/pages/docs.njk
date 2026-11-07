@@ -239,12 +239,25 @@ bodyScripts:
 
     <ul class="grid gap-4 sm:grid-cols-2">
       <li class="card">
+        <h3 class="font-semibold text-brand-text">The library</h3>
+        <p class="hint mt-1">
+          Most questions are answered from a library of ready answers, written from this site's own
+          pages. Each sentence is checked against a quote from the page it came from. Answers about me
+          are given word for word by code. When the library has no ready answer, the model gets short
+          topic summaries in place of loose lines. A glossary explains the terms. Every library answer
+          ends with suggested follow-up questions, taken from the library and never from the model.
+          Library answers aren't cached.
+        </p>
+      </li>
+      <li class="card">
         <h3 class="font-semibold text-brand-text">Routing</h3>
         <p class="hint mt-1">
-          Keywords in the question pick the matching sections of the fact sheet, and earlier questions
-          break ties, so a follow-up lands in the right place. If nothing matches, the chat says it
-          does not know and the model is never called. The same goes for a question that names a
-          technology the fact sheet does not have, whatever else in it matches.
+          A question goes through the same steps in order. The rules and refusals come first: the guard,
+          the questions about me, and a technology the fact sheet does not have. Then the library's
+          ready answers, chosen by code. Then the live tools. Then, if the library has no ready answer,
+          the model gets short topic summaries. Then the fact sheet's lines, picked by keywords and
+          earlier questions. If nothing matches, the chat gives the fixed reply and the model is never
+          called.
         </p>
       </li>
       <li class="card">
@@ -287,9 +300,10 @@ bodyScripts:
       <li class="card">
         <h3 class="font-semibold text-brand-text">The cache</h3>
         <p class="hint mt-1">
-          A plain question the model answered is held in the API's memory for a short time, so the
-          same question costs no model time. An answer that used a tool, notes or earlier questions
-          never is, and a change to the facts or the prompt leaves the old answers unreachable.
+          Library answers aren't cached, because code wrote them. Only a model answer to a standalone
+          question is held in the API's memory for a short time, so the same question costs no model
+          time. That means no earlier questions, notes or tool, and for a signed-in account only with
+          Memory on. A change to the facts or the prompt leaves the old answers unreachable.
         </p>
       </li>
       <li class="card">
