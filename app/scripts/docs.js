@@ -87,7 +87,7 @@ function render(reference) {
     head.append(name, count, chevron);
 
     const blurb = document.createElement("p");
-    blurb.className = "hint mb-3 max-w-prose";
+    blurb.className = "hint mb-4 max-w-prose";
     blurb.textContent = group.note;
 
     const card = document.createElement("div");
@@ -120,7 +120,7 @@ function render(reference) {
 
 async function drawing(file, label) {
   const img = document.createElement("img");
-  img.className = "mt-3 w-full rounded-md bg-white";
+  img.className = "mt-4 w-full rounded-md bg-white";
   img.alt = label;
   const bytes = await apiBytes(`/admin/blueprint/${encodeURIComponent(file)}`);
   img.src = URL.createObjectURL(new Blob([bytes], { type: "image/svg+xml" }));
@@ -139,7 +139,7 @@ function ownerSection({ title, summary, points, diagram }, open) {
   blurb.className = "mt-2 text-sm text-brand-muted";
   blurb.textContent = summary;
   const list = document.createElement("ul");
-  list.className = "mt-2 list-disc space-y-1 pl-5 text-sm text-brand-text";
+  list.className = "mt-2 list-disc space-y-2 pl-6 text-sm text-brand-text";
   for (const point of points) {
     const li = document.createElement("li");
     li.textContent = point;

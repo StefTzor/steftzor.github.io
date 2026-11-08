@@ -13,6 +13,16 @@ module.exports = {
     extend: {
       // Plex reads heavier than Poppins at the same number, and 600 is the top weight self-hosted.
       fontWeight: { bold: '600' },
+      // Tinted, not black: --shadow-color is the page hue darkened (src/input.css). Blur is always
+      // twice the Y offset; `lg` is the reference card shadow, 8px / 16px / 8%.
+      boxShadow: {
+        sm: '0 2px 4px rgb(var(--shadow-color) / 0.06)',
+        DEFAULT: '0 4px 8px rgb(var(--shadow-color) / 0.08)',
+        md: '0 4px 8px rgb(var(--shadow-color) / 0.08)',
+        lg: '0 8px 16px rgb(var(--shadow-color) / 0.08)',
+        xl: '0 12px 24px rgb(var(--shadow-color) / 0.1)',
+        '2xl': '0 16px 32px rgb(var(--shadow-color) / 0.12)',
+      },
       colors: {
         brand: {
           bg: 'rgb(var(--color-bg) / <alpha-value>)',

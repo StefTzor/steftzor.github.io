@@ -70,30 +70,30 @@ sitemapPriority: "0.8"
     <ol class="max-w-4xl mx-auto space-y-8 mb-16">
         {% for p in phases %}
         <li class="bg-brand-surface rounded-xl shadow-sm border border-brand-border p-6 md:p-8">
-            <h2 class="text-2xl font-bold text-brand-text mb-5 flex items-center gap-4">
+            <h2 class="text-2xl font-bold text-brand-text mb-6 flex items-center gap-4">
                 <span class="w-10 h-10 rounded-full bg-brand-accent text-brand-bg flex items-center justify-center text-lg font-bold shrink-0" aria-hidden="true">{{ p.n }}</span>
                 <span><span class="sr-only">Phase {{ p.n }}: </span>{{ p.name }}</span>
             </h2>
-            <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm leading-relaxed">
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-base leading-relaxed">
                 <div>
-                    <dt class="font-semibold text-brand-text uppercase tracking-wider text-xs mb-1">What I own</dt>
+                    <dt class="font-semibold text-brand-text uppercase tracking-wider text-xs mb-2">What I own</dt>
                     <dd class="text-brand-muted">{{ p.own }}</dd>
                 </div>
                 <div>
-                    <dt class="font-semibold text-brand-text uppercase tracking-wider text-xs mb-1">Who I bring in</dt>
+                    <dt class="font-semibold text-brand-text uppercase tracking-wider text-xs mb-2">Who I bring in</dt>
                     <dd class="text-brand-muted">{{ p.with }}</dd>
                 </div>
                 <div class="md:col-span-2">
-                    <dt class="font-semibold text-brand-text uppercase tracking-wider text-xs mb-1">What it produces</dt>
+                    <dt class="font-semibold text-brand-text uppercase tracking-wider text-xs mb-2">What it produces</dt>
                     <dd class="text-brand-muted">{{ p.out }}</dd>
                 </div>
                 <div class="md:col-span-2 border-l-4 border-brand-accent pl-4">
-                    <dt class="font-semibold text-brand-text uppercase tracking-wider text-xs mb-1">What goes wrong, and how I catch it</dt>
+                    <dt class="font-semibold text-brand-text uppercase tracking-wider text-xs mb-2">What goes wrong, and how I catch it</dt>
                     <dd class="text-brand-muted">{{ p.risk }}</dd>
                 </div>
             </dl>
             {% if p.try %}
-            <p class="mt-5 text-sm"><a href="{{ p.try }}" class="text-brand-accent underline hover:no-underline">See this step worked through on three invented records</a></p>
+            <p class="mt-6 text-base"><a href="{{ p.try }}" class="text-brand-accent underline hover:no-underline">See this step worked through on three invented records</a></p>
             {% endif %}
         </li>
         {% endfor %}

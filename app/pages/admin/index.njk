@@ -50,7 +50,7 @@ bodyScripts:
   {# --- what is running ---------------------------------------------------
      Both of these are things this page can actually find out: the API answers /health with the
      time it started, and the app serves its own /build.txt. Nothing here is inferred. #}
-  <h2 class="text-xl font-bold text-brand-text mb-1">Services</h2>
+  <h2 class="text-xl font-bold text-brand-text mb-2">Services</h2>
   <p class="text-sm text-brand-muted mb-4">
     Checked when this page loaded.
     <a href="/admin/health/" class="text-brand-accent underline hover:no-underline">Deploy history</a>
@@ -59,20 +59,20 @@ bodyScripts:
 
   <ul class="grid gap-4 sm:grid-cols-2 mb-10">
     <li class="card">
-      <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center justify-between gap-4">
         <h3 class="font-semibold text-brand-text">API</h3>
         <span id="apiState" class="status-pill status-pill--unknown">Checking…</span>
       </div>
       <p class="hint">api.tzortzoglou.eu</p>
-      <p id="apiDetail" class="mt-3 text-sm text-brand-muted">&nbsp;</p>
+      <p id="apiDetail" class="mt-4 text-sm text-brand-muted">&nbsp;</p>
     </li>
     <li class="card">
-      <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center justify-between gap-4">
         <h3 class="font-semibold text-brand-text">App</h3>
         <span id="appState" class="status-pill status-pill--unknown">Checking…</span>
       </div>
       <p class="hint">app.tzortzoglou.eu</p>
-      <p id="appDetail" class="mt-3 text-sm text-brand-muted">&nbsp;</p>
+      <p id="appDetail" class="mt-4 text-sm text-brand-muted">&nbsp;</p>
     </li>
   </ul>
 
@@ -86,14 +86,14 @@ bodyScripts:
      window the reader chose, and a single count lifted out of that context here would be a
      statistic with its meaning left behind - which is the same reason an invented sparkline was
      refused before. #}
-  <h2 class="text-xl font-bold text-brand-text mb-1">Traffic</h2>
+  <h2 class="text-xl font-bold text-brand-text mb-2">Traffic</h2>
   <p class="text-sm text-brand-muted mb-4">Page views of both properties, counted by the API itself.</p>
 
   <a href="/admin/analytics/" class="card block hover:border-brand-accent/40 transition-colors duration-200">
     <div class="flex items-start justify-between gap-4">
       <div>
         <h3 class="font-semibold text-brand-text">Analytics</h3>
-        <p class="hint mt-1 max-w-prose">
+        <p class="hint mt-2 max-w-prose">
           Views per day, the busiest pages of each property and where visitors arrived from, over
           a window you choose. No third party is involved. A row carries a visitor number that one
           browser keeps for a day, so the panel can say how many browsers a day's views came from;

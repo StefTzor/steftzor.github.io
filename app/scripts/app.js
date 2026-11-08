@@ -197,12 +197,12 @@ function node(tag, cls, text) {
 
 /** label · value pairs, wrapping rather than scrolling on a narrow screen. */
 function stats(pairs) {
-  const dl = node("dl", "mt-5 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3");
+  const dl = node("dl", "mt-6 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-4");
   pairs.forEach(([label, value]) => {
     const wrap = node("div", "");
     wrap.append(
       node("dt", "text-xs uppercase tracking-wide text-brand-muted", label),
-      node("dd", "text-sm font-semibold text-brand-text mt-0.5 tabular-nums", value),
+      node("dd", "text-sm font-semibold text-brand-text mt-2 tabular-nums", value),
     );
     dl.appendChild(wrap);
   });
@@ -218,7 +218,7 @@ function hourStrip(hours) {
   hours.forEach((h) => {
     const li = node("li", "snap-start shrink-0 w-16 rounded-lg border border-brand-border p-2 text-center");
     li.appendChild(node("p", "text-xs text-brand-muted tabular-nums", clockOf(h.time)));
-    const g = icon(describe(h.code).icon, "mx-auto my-1 h-5 w-5 text-brand-accent");
+    const g = icon(describe(h.code).icon, "mx-auto my-2 h-5 w-5 text-brand-accent");
     li.appendChild(g);
     li.appendChild(node("p", "text-sm font-semibold text-brand-text tabular-nums", deg(h.temperature)));
     if (typeof h.precipitation === "number" && h.precipitation >= 20) {
@@ -235,9 +235,9 @@ function dayGrid(days) {
   wrap.appendChild(node("h3", "text-xs uppercase tracking-wide text-brand-muted mb-2", "Next days"));
   const list = node("ul", "grid grid-cols-3 sm:grid-cols-5 gap-2");
   days.forEach((d, i) => {
-    const item = node("li", "rounded-lg border border-brand-border p-3 text-center");
+    const item = node("li", "rounded-lg border border-brand-border p-4 text-center");
     item.appendChild(node("p", "text-xs font-semibold text-brand-text", dayName(d.date, i)));
-    item.appendChild(icon(describe(d.code).icon, "mx-auto my-1.5 h-6 w-6 text-brand-accent"));
+    item.appendChild(icon(describe(d.code).icon, "mx-auto my-2 h-6 w-6 text-brand-accent"));
     item.appendChild(node("p", "text-sm text-brand-text tabular-nums", `${deg(d.max)} / ${deg(d.min)}`));
     if (typeof d.precipitation === "number" && d.precipitation >= 20) {
       item.appendChild(node("p", "text-[11px] text-brand-accent tabular-nums", `${round(d.precipitation)}%`));
@@ -357,7 +357,7 @@ function renderWeather(data) {
   head.appendChild(icon(what.icon, "h-14 w-14 shrink-0 text-brand-accent"));
   const headText = node("div", "");
   headText.appendChild(node("p", "text-4xl font-bold text-brand-text leading-none tabular-nums", deg(now.temperature)));
-  headText.appendChild(node("p", "text-sm text-brand-muted mt-1", what.text));
+  headText.appendChild(node("p", "text-sm text-brand-muted mt-2", what.text));
   head.appendChild(headText);
   box.appendChild(head);
 
@@ -383,7 +383,7 @@ function renderWeather(data) {
   const left = daylight(today.sunrise, today.sunset);
   if (left) sun.push(left);
   if (sun.length) {
-    box.appendChild(node("p", "mt-5 text-xs text-brand-muted tabular-nums", sun.join(" · ")));
+    box.appendChild(node("p", "mt-6 text-xs text-brand-muted tabular-nums", sun.join(" · ")));
   }
 }
 

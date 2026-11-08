@@ -16,7 +16,7 @@ export const isFav = (favourites, g) => favourites.has(g.home.id) || favourites.
 /** One game: time (or date), the two teams, score or league, live and overtime marked in words. */
 export function gameRow(g, { favourites, leagueName, withDate = false }) {
   const fav = isFav(favourites, g);
-  const li = node("li", "dm-field items-center py-1.5");
+  const li = node("li", "dm-field items-center py-2");
   li.setAttribute("data-lit", fav ? "true" : "false");
   const d = new Date(g.start);
   li.appendChild(node("span", (withDate ? "w-28" : "w-12") + " shrink-0 text-sm tabular-nums text-brand-muted",
@@ -31,7 +31,7 @@ export function gameRow(g, { favourites, leagueName, withDate = false }) {
   li.appendChild(mid);
   const right = node("span", "shrink-0 text-right text-sm tabular-nums");
   if (g.homeScore !== null && g.awayScore !== null) right.appendChild(node("span", "font-semibold text-brand-text", g.homeScore + "–" + g.awayScore));
-  if (g.note) right.appendChild(node("span", "ml-1 text-xs text-brand-muted", g.note));
+  if (g.note) right.appendChild(node("span", "ml-2 text-xs text-brand-muted", g.note));
   if (g.state === "in") {
     const live = node("span", "st-word ml-2 text-xs font-semibold", "Live");
     live.setAttribute("data-state", "up");

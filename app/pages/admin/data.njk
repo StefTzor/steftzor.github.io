@@ -29,7 +29,7 @@ bodyScripts:
   <div id="tablePick" class="flex flex-wrap gap-2 mb-6" role="group" aria-label="Which table"></div>
 
   <div id="tableBody" class="hidden">
-    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-1">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 mb-2">
       <h2 id="tableName" class="text-xl font-bold text-brand-text"></h2>
       <p id="tableNote" class="text-sm text-brand-muted"></p>
     </div>
@@ -37,14 +37,14 @@ bodyScripts:
     {# Filtering. One column, one operator, one value - which covers "find the message from
        that address" and stops short of being a query builder. #}
     <form id="filterForm" method="get" class="card mb-4">
-      <div class="flex flex-wrap items-end gap-3">
+      <div class="flex flex-wrap items-end gap-4">
         <div>
           <label for="filterColumn" class="field-label text-sm">Column</label>
-          <select id="filterColumn" class="field w-auto py-1.5 text-sm"></select>
+          <select id="filterColumn" class="field w-auto py-2 text-sm"></select>
         </div>
         <div>
           <label for="filterOp" class="field-label text-sm">Match</label>
-          <select id="filterOp" class="field w-auto py-1.5 text-sm">
+          <select id="filterOp" class="field w-auto py-2 text-sm">
             <option value="contains">contains</option>
             <option value="equals">is exactly</option>
           </select>
@@ -52,7 +52,7 @@ bodyScripts:
         <div class="flex-1 min-w-[10rem]">
           <label for="filterValue" class="field-label text-sm">Value</label>
           <input type="text" id="filterValue" name="filterValue" autocomplete="off" maxlength="200"
-            class="field py-1.5 text-sm">
+            class="field py-2 text-sm">
         </div>
         <button type="submit" class="btn-primary text-sm">Filter</button>
         <button type="button" id="filterClear" class="btn-secondary text-sm">Clear</button>

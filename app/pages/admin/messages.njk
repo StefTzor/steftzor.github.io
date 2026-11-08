@@ -14,7 +14,7 @@ bodyScripts:
      message bodies are constrained individually when they open. #}
   {% include "chrome/admin-sections.njk" %}
 
-  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-2">
+  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 mb-2">
     <h1 class="text-3xl font-bold text-brand-text">Messages</h1>
     <p id="messageCount" class="text-sm text-brand-muted"></p>
   </div>
@@ -44,7 +44,7 @@ bodyScripts:
 
     <div class="flex items-center gap-2">
       <label for="pageSize" class="text-sm text-brand-muted">Per page</label>
-      <select id="pageSize" class="field w-auto py-1.5 text-sm">
+      <select id="pageSize" class="field w-auto py-2 text-sm">
         <option value="25">25</option>
         <option value="50">50</option>
         <option value="100">100</option>
@@ -56,7 +56,7 @@ bodyScripts:
      rather than appended to, so the page does not grow as the inbox does. #}
   <div id="messages">
     <p class="sr-only">Loading messages…</p>
-    <div class="space-y-3" aria-hidden="true"><span class="skel h-10"></span><span class="skel h-10"></span><span class="skel h-10"></span><span class="skel h-10"></span><span class="skel h-10"></span></div>
+    <div class="space-y-4" aria-hidden="true"><span class="skel h-10"></span><span class="skel h-10"></span><span class="skel h-10"></span><span class="skel h-10"></span><span class="skel h-10"></span></div>
   </div>
 
   <nav aria-label="Pages" class="mt-6 flex items-center justify-between gap-4">

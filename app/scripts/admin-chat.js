@@ -47,7 +47,7 @@ function renderSummary(s) {
     return;
   }
   s.outcomes.forEach((o) => {
-    const row = node("div", "flex justify-between gap-3");
+    const row = node("div", "flex justify-between gap-4");
     row.appendChild(node("dt", "text-brand-muted", outcome(o.outcome)));
     row.appendChild(node("dd", "font-semibold tabular-nums text-brand-text", o.count.toLocaleString()));
     list.appendChild(row);
@@ -59,7 +59,7 @@ function renderTraces(traces) {
   body.textContent = "";
   if (!traces.length) {
     const row = node("tr");
-    const cell = node("td", "px-3 py-3 text-brand-muted", "No traces yet.");
+    const cell = node("td", "px-4 py-4 text-brand-muted", "No traces yet.");
     cell.setAttribute("colspan", "8");
     row.appendChild(cell);
     body.appendChild(row);
@@ -67,15 +67,15 @@ function renderTraces(traces) {
   }
   traces.forEach((t) => {
     const row = node("tr");
-    row.appendChild(node("td", "px-3 py-2 whitespace-nowrap tabular-nums text-brand-muted", when(t.at)));
+    row.appendChild(node("td", "px-4 py-2 whitespace-nowrap tabular-nums text-brand-muted", when(t.at)));
     row.appendChild(t.question === null
-      ? node("td", "px-3 py-2 min-w-[16rem] text-brand-muted", "Not kept")
-      : node("td", "px-3 py-2 min-w-[16rem] break-words text-brand-text", t.question));
-    row.appendChild(node("td", "px-3 py-2 font-mono text-xs text-brand-muted", t.route || NONE));
-    row.appendChild(node("td", "px-3 py-2 whitespace-nowrap text-brand-text", outcome(t.outcome)));
-    row.appendChild(node("td", "px-3 py-2 font-mono text-xs text-brand-muted", t.tool || NONE));
+      ? node("td", "px-4 py-2 min-w-[16rem] text-brand-muted", "Not kept")
+      : node("td", "px-4 py-2 min-w-[16rem] break-words text-brand-text", t.question));
+    row.appendChild(node("td", "px-4 py-2 font-mono text-xs text-brand-muted", t.route || NONE));
+    row.appendChild(node("td", "px-4 py-2 whitespace-nowrap text-brand-text", outcome(t.outcome)));
+    row.appendChild(node("td", "px-4 py-2 font-mono text-xs text-brand-muted", t.tool || NONE));
     [t.msTotal, t.msEmbed, t.msModel].forEach((ms) => {
-      row.appendChild(node("td", "px-3 py-2 text-right whitespace-nowrap tabular-nums text-brand-muted", secs(ms)));
+      row.appendChild(node("td", "px-4 py-2 text-right whitespace-nowrap tabular-nums text-brand-muted", secs(ms)));
     });
     body.appendChild(row);
   });

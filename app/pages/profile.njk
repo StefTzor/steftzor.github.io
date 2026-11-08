@@ -27,7 +27,7 @@ signOut: true
   <!-- Name -->
   <section aria-labelledby="name-heading" class="card">
     <h2 id="name-heading" class="text-lg font-bold text-brand-text">Name</h2>
-    <p class="hint mt-1">Shown when you sign in, and to the administrator in the accounts list.</p>
+    <p class="hint mt-2">Shown when you sign in, and to the administrator in the accounts list.</p>
     <form id="nameForm" method="post" novalidate class="mt-4 grid gap-4 sm:grid-cols-2">
       <div>
         <label for="firstName" class="field-label">First name</label>
@@ -46,7 +46,7 @@ signOut: true
   <!-- Email -->
   <section aria-labelledby="email-heading" class="card mt-6">
     <h2 id="email-heading" class="text-lg font-bold text-brand-text">Email address</h2>
-    <p class="mt-1 text-sm text-brand-text">
+    <p class="mt-2 text-sm text-brand-text">
       You sign in with <span id="currentEmail" class="font-semibold"></span>
     </p>
 
@@ -56,7 +56,7 @@ signOut: true
     <button type="button" id="emailToggle" class="btn-secondary mt-4 text-sm"
       aria-expanded="false" aria-controls="emailForm">Change email…</button>
 
-    <form id="emailForm" method="post" novalidate class="mt-5 hidden grid gap-4">
+    <form id="emailForm" method="post" novalidate class="mt-6 hidden grid gap-4">
       <p class="hint">
         I will send a link to the new address. Nothing changes until you open it, and your
         current address keeps working until then.
@@ -69,7 +69,7 @@ signOut: true
         <label for="currentPassword" class="field-label">Your current password</label>
         <input id="currentPassword" name="currentPassword" type="password"
           autocomplete="current-password" class="field">
-        <p class="hint mt-1">Asked for because this change moves where sign-in mail goes.</p>
+        <p class="hint mt-2">Asked for because this change moves where sign-in mail goes.</p>
       </div>
       <div>
         <button type="submit" class="btn-primary">Send the confirmation link</button>
@@ -91,20 +91,20 @@ signOut: true
       </button>
     </div>
 
-    <div class="mt-6 border-t border-brand-border pt-5">
+    <div class="mt-6 border-t border-brand-border pt-6">
       <label for="placeSearch" class="field-label">Home location</label>
-      <p class="hint mt-1 mb-3">
+      <p class="hint mt-2 mb-4">
         The weather shows this wherever you are. Search for a town and pick it from the list —
         there are three Uppsalas and a Stockholm in Maine, so the region matters.
       </p>
 
-      <p id="homeCurrent" class="mb-3 text-sm text-brand-text"></p>
+      <p id="homeCurrent" class="mb-4 text-sm text-brand-text"></p>
 
       <input id="placeSearch" type="search" autocomplete="off" maxlength="80" class="field"
         placeholder="Start typing a town…" aria-describedby="placeHint"
         role="combobox" aria-expanded="false" aria-controls="placeResults" aria-autocomplete="list">
       <p id="placeHint" class="sr-only">Results appear below as you type.</p>
-      <ul id="placeResults" class="mt-2 space-y-1" role="listbox" aria-label="Matching places"></ul>
+      <ul id="placeResults" class="mt-2 space-y-2" role="listbox" aria-label="Matching places"></ul>
 
       <button type="button" id="clearHome" class="btn-secondary mt-4 text-sm hidden">
         Use the default location instead

@@ -29,7 +29,7 @@ function statusPill(status) {
   const tone = status === "approved" ? "bg-emerald-600/15 text-emerald-700 dark:text-emerald-300"
     : status === "pending" ? "bg-amber-600/15 text-amber-700 dark:text-amber-300"
     : "bg-red-600/15 text-red-700 dark:text-red-300";
-  span.className = "inline-block rounded-full px-2 py-0.5 text-xs font-semibold " + tone;
+  span.className = "inline-block rounded-full px-2 py-1 text-xs font-semibold " + tone;
   span.textContent = STATUS_LABEL[status] || status;
   return span;
 }
@@ -72,7 +72,7 @@ function controls(u) {
 
   const select = document.createElement("select");
   select.id = roleId;
-  select.className = "field w-auto text-sm py-1.5";
+  select.className = "field w-auto text-sm py-2";
   ROLES.forEach((r) => {
     const opt = document.createElement("option");
     opt.value = r;
@@ -86,7 +86,7 @@ function controls(u) {
   // and nothing is sent until Apply is pressed.
   const apply = document.createElement("button");
   apply.type = "button";
-  apply.className = "btn-primary text-sm px-3 py-1.5 hidden";
+  apply.className = "btn-primary text-sm px-4 py-2 hidden";
   apply.textContent = "Apply";
 
   const sync = () => {
@@ -107,7 +107,7 @@ function controls(u) {
   const action = (text, patch, className) => {
     const b = document.createElement("button");
     b.type = "button";
-    b.className = className + " text-sm px-3 py-1.5 rounded";
+    b.className = className + " text-sm px-4 py-2 rounded";
     b.textContent = text;
     b.addEventListener("click", () => change(u, patch, b));
     wrap.appendChild(b);
@@ -176,12 +176,12 @@ function render() {
 
   // --- cards, below sm ----------------------------------------------------
   const cards = document.createElement("ul");
-  cards.className = "sm:hidden space-y-3";
+  cards.className = "sm:hidden space-y-4";
   rows.forEach((u) => {
     const li = document.createElement("li");
     li.className = "rounded-lg border border-brand-border bg-brand-surface p-4";
     const top = document.createElement("div");
-    top.className = "flex items-start justify-between gap-3 mb-1";
+    top.className = "flex items-start justify-between gap-4 mb-2";
     const who = document.createElement("div");
     who.className = "min-w-0";
     const name = document.createElement("p");
@@ -216,7 +216,7 @@ function render() {
     tr.className = "border-b border-brand-border";
 
     const who = document.createElement("td");
-    who.className = "py-3 pr-4 align-top";
+    who.className = "py-4 pr-4 align-top";
     const name = document.createElement("p");
     name.appendChild(nameLink(u, "font-medium text-brand-text"));
     const mail = document.createElement("p");
@@ -225,11 +225,11 @@ function render() {
     who.append(name, mail);
 
     const st = document.createElement("td");
-    st.className = "py-3 pr-4 align-top";
+    st.className = "py-4 pr-4 align-top";
     st.appendChild(statusPill(u.status));
 
     const act = document.createElement("td");
-    act.className = "py-3 align-top";
+    act.className = "py-4 align-top";
     act.appendChild(controls(u));
 
     tr.append(who, st, act);

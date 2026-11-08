@@ -38,7 +38,7 @@ const CHORD = IS_MAC ? "⌘K" : "Ctrl K";
 function say(text, tone) {
   const box = el("paletteStatus");
   box.textContent = text || "";
-  box.className = "px-4 pb-3 text-sm " + (
+  box.className = "px-4 pb-4 text-sm " + (
     tone === "error" ? "text-red-700 dark:text-red-400"
     : tone === "ok" ? "text-emerald-700 dark:text-emerald-300"
     : "text-brand-muted");

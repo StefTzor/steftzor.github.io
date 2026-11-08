@@ -45,10 +45,10 @@ bodyScripts:
        Whatever goes here is a starting point the invitee can change when they set their
        password - which is what the hint says, because a name someone else chose for you
        appearing in your account without explanation is worse than no name. #}
-    <fieldset class="mt-5 border-t border-brand-border pt-5">
+    <fieldset class="mt-6 border-t border-brand-border pt-6">
       <legend class="sr-only">Their name</legend>
       <p class="text-sm font-medium text-brand-text">Their name <span class="font-normal text-brand-muted">(optional)</span></p>
-      <p class="hint mt-1 mb-3">
+      <p class="hint mt-2 mb-4">
         A starting point only. They can change it, or fill it in themselves, when they choose
         their password.
       </p>
@@ -77,12 +77,12 @@ bodyScripts:
   {# Every invitation sent, pending first (api GET /admin/invites). Pending means the invitee has
      never signed in; the link in the mail expires, so a pending one can be sent again. #}
   <section aria-labelledby="sentTitle" class="mt-10">
-    <h2 id="sentTitle" class="text-xl font-bold text-brand-text mb-1">Sent invitations</h2>
+    <h2 id="sentTitle" class="text-xl font-bold text-brand-text mb-2">Sent invitations</h2>
     <p class="hint mb-4">Pending until they sign in for the first time. The link in the email
       expires, so if they missed it, send it again.</p>
     <ul id="invList" class="card divide-y divide-brand-border min-h-[5rem]">
-      <li class="py-3"><span class="sr-only">Loading…</span><span class="skel h-10" aria-hidden="true"></span></li>
-      <li class="py-3" aria-hidden="true"><span class="skel h-10"></span></li>
+      <li class="py-4"><span class="sr-only">Loading…</span><span class="skel h-10" aria-hidden="true"></span></li>
+      <li class="py-4" aria-hidden="true"><span class="skel h-10"></span></li>
     </ul>
   </section>
 

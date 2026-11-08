@@ -47,7 +47,7 @@ function drawWeek() {
     head.appendChild(node("h3", "an-panel-title", dayLabel(date)));
     head.appendChild(node("span", "text-xs text-brand-muted", items.length + (items.length === 1 ? " game" : " games")));
     sec.appendChild(head);
-    const ul = node("ul", "mt-2 space-y-1");
+    const ul = node("ul", "mt-2 space-y-2");
     items.forEach((m) => ul.appendChild(gameRow(m, { favourites, leagueName: leagueName[m.league] })));
     sec.appendChild(ul);
     host.appendChild(sec);
@@ -82,7 +82,7 @@ function drawPicker() {
     const fs = node("fieldset");
     fs.appendChild(node("legend", "mb-2 text-xs font-semibold uppercase tracking-wide text-brand-muted", l.name));
     inLeague.forEach((t) => {
-      const label = node("label", "flex items-center gap-2 py-0.5 text-sm text-brand-text");
+      const label = node("label", "flex items-center gap-2 py-1 text-sm text-brand-text");
       const box = node("input", "h-4 w-4");
       box.type = "checkbox";
       box.value = t.id;

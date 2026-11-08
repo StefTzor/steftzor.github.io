@@ -69,7 +69,7 @@ async function loadApp() {
 /** One run, as a row. createElement throughout: commit messages are text from a repository. */
 function runRow(run) {
   const li = document.createElement("li");
-  li.className = "flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2 first:pt-0 last:pb-0";
+  li.className = "flex flex-wrap items-baseline gap-x-4 gap-y-2 py-2 first:pt-0 last:pb-0";
 
   const state = document.createElement("span");
   const running = run.status !== "completed";
@@ -115,7 +115,7 @@ function render(data) {
     const card = document.createElement("section");
     card.className = "card mb-4";
     const head = document.createElement("div");
-    head.className = "mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1";
+    head.className = "mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2";
     const name = document.createElement("h3");
     name.className = "font-semibold text-brand-text";
     name.textContent = p.workflow;
@@ -173,7 +173,7 @@ async function loadBoots() {
     list.className = "divide-y divide-brand-border";
     boots.forEach((b, i) => {
       const li = document.createElement("li");
-      li.className = "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2 first:pt-0 last:pb-0";
+      li.className = "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 py-2 first:pt-0 last:pb-0";
 
       const when = document.createElement("span");
       when.className = "text-sm text-brand-text";

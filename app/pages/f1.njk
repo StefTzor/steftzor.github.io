@@ -17,7 +17,7 @@ bodyScripts:
 <section class="app-page">
 
   <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
-    <h1 class="flex items-center gap-3 text-3xl font-bold text-brand-text">
+    <h1 class="flex items-center gap-4 text-3xl font-bold text-brand-text">
       {% icon "fa-solid-flag-checkered", "h-7 w-7 text-brand-accent" %}
       <span>Formula 1</span>
       <span id="f1Season" class="text-brand-muted font-normal"></span>
@@ -27,7 +27,7 @@ bodyScripts:
        year and the round's name arrive and wrap this down, moving the page 50px. #}
     <div class="flex items-center gap-2 max-sm:w-full">
       <label for="roundPick" class="text-sm text-brand-muted">Round</label>
-      <select id="roundPick" class="field w-auto py-1.5 text-sm">
+      <select id="roundPick" class="field w-auto py-2 text-sm">
         <option>Loading…</option>
       </select>
     </div>
@@ -52,7 +52,7 @@ bodyScripts:
      Sessions when it has not run, results when it has, and both mid-weekend - which is the
      state the round selector exists to make reachable. #}
   <section id="results" aria-labelledby="round-heading" class="mb-10 scroll-mt-24">
-    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-1">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 mb-2">
       <h2 id="round-heading" class="min-h-7 text-xl font-bold text-brand-text"></h2>
       <p id="roundWhere" class="min-h-5 text-sm text-brand-muted"></p>
     </div>
@@ -96,7 +96,7 @@ bodyScripts:
      It is also generous, and that is the point of a globe: a sphere loses its edges to a short
      box, and a circuit you have zoomed into needs room to be a circuit rather than a squiggle. #}
   <section id="map" aria-labelledby="map-heading" class="mb-10 scroll-mt-24">
-    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-3">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 mb-4">
       <h2 id="map-heading" class="text-xl font-bold text-brand-text">Where the season goes</h2>
       <p id="circuitName" class="text-sm text-brand-muted"></p>
     </div>
@@ -105,7 +105,7 @@ bodyScripts:
        text and it has to come along. At the card's ordinary auto height there is no free space to
        distribute, so the map keeps exactly the height its own classes give it; fullscreen makes the
        card viewport-tall and the one growing child takes everything the key and the note do not. #}
-    <div class="card flex flex-col p-3">
+    <div class="card flex flex-col p-4">
       <div id="f1Map" class="h-96 w-full grow overflow-hidden rounded-lg sm:h-[32rem]"></div>
 
       {# The key. The dots are drawn inside a canvas no screen reader can enter, so this is not a
@@ -113,7 +113,7 @@ bodyScripts:
          colours and the shapes do. Static markup rather than drawn by the script: it describes a
          scheme that is fixed, and a legend that only appears once a map has loaded is missing
          exactly when somebody is trying to work out why the map has not. #}
-      <ul class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 px-2 pb-1 text-xs text-brand-muted">
+      <ul class="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 px-2 pb-1 text-xs text-brand-muted">
         <li class="flex items-center gap-2">
           <span class="h-2.5 w-2.5 shrink-0 rounded-full bg-brand-map-now ring-2 ring-brand-surface"
             aria-hidden="true"></span>this round
@@ -138,13 +138,13 @@ bodyScripts:
         </li>
       </ul>
 
-      <p id="mapNote" class="hint mt-3 px-2 pb-1" hidden></p>
+      <p id="mapNote" class="hint mt-4 px-2 pb-1" hidden></p>
     </div>
   </section>
 
   {# --- championships ------------------------------------------------------ #}
   <section id="standings" aria-labelledby="standings-heading" class="scroll-mt-24">
-    <h2 id="standings-heading" class="text-xl font-bold text-brand-text mb-1">Championships</h2>
+    <h2 id="standings-heading" class="text-xl font-bold text-brand-text mb-2">Championships</h2>
     <p id="standingsAfter" class="text-sm text-brand-muted mb-4"></p>
     <div class="grid gap-6 lg:grid-cols-2">
       <div>

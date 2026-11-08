@@ -199,7 +199,7 @@
       (r.traced.length === 1 ? " field." : " fields.")));
     box.appendChild(head);
 
-    var list = node("ol", "mt-3 space-y-3");
+    var list = node("ol", "mt-4 space-y-4");
     r.traced.forEach(function (t) {
       var li = node("li", "dm-step");
       if (r.from && r.from !== t.src && r.conflict) li.setAttribute("data-lost", "true");
@@ -222,7 +222,7 @@
     var res = node("div", "dm-result mt-4");
     res.appendChild(node("p", "text-xs font-semibold uppercase tracking-wide text-brand-muted",
       r.conflict ? "Conflict, resolved" : "Resolution"));
-    res.appendChild(node("p", "mt-1 text-sm text-brand-text", r.why));
+    res.appendChild(node("p", "mt-2 text-sm text-brand-text", r.why));
     res.appendChild(node("p", "dm-val mt-2 font-semibold", r.target + " = " + show(r.value)));
     box.appendChild(res);
   }
@@ -235,7 +235,7 @@
       head.appendChild(node("h3", "an-panel-title", s.label));
       head.appendChild(node("span", "text-xs text-brand-muted tabular-nums", "updated " + s.updated));
       card.appendChild(head);
-      var ul = node("ul", "mt-2 space-y-1");
+      var ul = node("ul", "mt-2 space-y-2");
       Object.keys(s.fields).forEach(function (f) {
         var feeds = result.filter(function (r) {
           return r.traced.some(function (t) { return t.src === s.key && t.field === f; });
@@ -280,7 +280,7 @@
   function drawMatches() {
     var ul = document.getElementById("dmMatches");
     matches().forEach(function (m) {
-      var li = node("li", "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2");
+      var li = node("li", "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 py-2");
       li.appendChild(node("span", "font-medium text-brand-text",
         source(m.a).label + " ↔ " + source(m.b).label));
       var right = node("span", "text-sm text-brand-muted");

@@ -119,7 +119,7 @@ function showPending() {
   const wrap = document.createElement("main");
   wrap.className = "container mx-auto px-4 py-16 max-w-md text-center";
   const h = document.createElement("h1");
-  h.className = "text-2xl font-bold mb-3 text-brand-text";
+  h.className = "text-2xl font-bold mb-4 text-brand-text";
   h.textContent = "Waiting for approval";
   const p = document.createElement("p");
   p.className = "text-brand-muted";
@@ -142,7 +142,7 @@ function showUnreachable(status) {
   const wrap = document.createElement("div");
   wrap.className = "container mx-auto px-4 py-16 max-w-md text-center";
   const h = document.createElement("h1");
-  h.className = "text-2xl font-bold mb-3 text-brand-text";
+  h.className = "text-2xl font-bold mb-4 text-brand-text";
   h.textContent = status === 429 ? "Too many requests" : "Cannot reach the server";
   const p = document.createElement("p");
   p.className = "text-brand-muted";

@@ -25,7 +25,7 @@ bodyScripts:
    on a phone the table comes first and everything below would move when it arrived. #}
 <section class="app-page an-wrap" id="league" data-league="{{ league.slug }}" data-sport="{{ league.sport }}">
   <p class="mb-2 text-sm"><a href="/sports/" class="link-action text-brand-accent">← Sports</a></p>
-  <h1 class="mb-1 text-3xl font-bold text-brand-text">{{ league.name }}</h1>
+  <h1 class="mb-2 text-3xl font-bold text-brand-text">{{ league.name }}</h1>
   <p id="lgMeta" class="mb-6 min-h-5 text-sm text-brand-muted"></p>
 
   <div id="status" role="status" aria-live="polite" class="mb-4 text-sm"></div>
@@ -44,15 +44,15 @@ bodyScripts:
     <div class="space-y-4">
       <section id="lgLiveWrap" class="card an-panel hidden" aria-labelledby="lgLiveTitle">
         <h2 id="lgLiveTitle" class="an-panel-title">Live</h2>
-        <ul id="lgLive" class="mt-2 space-y-1"></ul>
+        <ul id="lgLive" class="mt-2 space-y-2"></ul>
       </section>
       <section class="card an-panel" aria-labelledby="lgNextTitle">
         <h2 id="lgNextTitle" class="an-panel-title">Next up</h2>
-        <ul id="lgNext" class="mt-2 min-h-[40rem] space-y-1 sm:min-h-[28rem]"></ul>
+        <ul id="lgNext" class="mt-2 min-h-[40rem] space-y-2 sm:min-h-[28rem]"></ul>
       </section>
       <section class="card an-panel" aria-labelledby="lgResultsTitle">
         <h2 id="lgResultsTitle" class="an-panel-title">Results</h2>
-        <ul id="lgResults" class="mt-2 min-h-[40rem] space-y-1 sm:min-h-[28rem]"></ul>
+        <ul id="lgResults" class="mt-2 min-h-[40rem] space-y-2 sm:min-h-[28rem]"></ul>
       </section>
       <section class="card an-panel" aria-labelledby="lgNewsTitle">
         <div class="an-panel-head">

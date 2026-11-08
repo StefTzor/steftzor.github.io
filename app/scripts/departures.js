@@ -46,7 +46,7 @@ function render(data) {
 
   next.forEach((d) => {
     const li = document.createElement("li");
-    li.className = "flex items-center gap-3 py-2 first:pt-0 last:pb-0";
+    li.className = "flex items-center gap-4 py-2 first:pt-0 last:pb-0";
 
     const line = document.createElement("span");
     line.className = "dep-line";
@@ -143,7 +143,7 @@ function renderResults(stops) {
     const li = document.createElement("li");
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "w-full rounded px-2 py-1.5 text-left text-sm text-brand-text hover:bg-brand-bg";
+    btn.className = "w-full rounded px-2 py-2 text-left text-sm text-brand-text hover:bg-brand-bg";
     btn.textContent = stop.name;
     btn.addEventListener("click", () => choose(stop));
     li.appendChild(btn);

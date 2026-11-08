@@ -21,7 +21,7 @@ bodyScripts:
   <header class="mb-6 flex flex-wrap items-end justify-between gap-4">
     <div>
       <h1 class="text-3xl font-bold text-brand-text">Analytics</h1>
-      <p class="mt-1 text-sm text-brand-muted">
+      <p class="mt-2 text-sm text-brand-muted">
         Both properties, counted on my own server. No cookie, no address, no User-Agent string.
       </p>
     </div>
@@ -31,7 +31,7 @@ bodyScripts:
        anything else on it. The property filter is a real parameter rather than a filter applied
        here: a visit that crossed from the site to the app is two visits in two properties, so a
        total filtered in the browser would be right for the lists and wrong for every rate. #}
-    <div class="flex flex-wrap items-center gap-3">
+    <div class="flex flex-wrap items-center gap-4">
       {# Right now: the last five minutes, whatever the window says. #}
       <span class="an-live" title="The last five minutes, whatever the window says.">
         <span class="an-live-dot" aria-hidden="true"></span>
@@ -40,14 +40,14 @@ bodyScripts:
         <span id="liveNote" class="sr-only">The last five minutes, whatever the window says.</span>
       </span>
       <label for="range" class="sr-only">Window</label>
-      <select id="range" class="field w-auto py-1.5 text-sm">
+      <select id="range" class="field w-auto py-2 text-sm">
         <option value="7">Last 7 days</option>
         <option value="30" selected>Last 30 days</option>
         <option value="90">Last 90 days</option>
         <option value="365">Last 365 days</option>
       </select>
       <label for="property" class="sr-only">Site</label>
-      <select id="property" class="field w-auto py-1.5 text-sm">
+      <select id="property" class="field w-auto py-2 text-sm">
         <option value="all" selected>Both sites</option>
         <option value="site">Public site</option>
         <option value="app">App</option>
@@ -113,7 +113,7 @@ bodyScripts:
         </p>
       </div>
       <p class="an-panel-hint">The host only; the rest of a referring URL is dropped before anything is written.</p>
-      <div id="referrers"><p class="sr-only">Loading…</p><div class="space-y-3 mt-3" aria-hidden="true"><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span></div></div>
+      <div id="referrers"><p class="sr-only">Loading…</p><div class="space-y-4 mt-4" aria-hidden="true"><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span></div></div>
     </section>
 
     <section class="card an-panel">
@@ -124,7 +124,7 @@ bodyScripts:
           <button type="button" role="tab" class="an-tab" aria-selected="false" aria-controls="journeys" id="tab-journeys" tabindex="-1">Entry &amp; exit</button>
         </div>
       </div>
-      <div id="paths" role="tabpanel" aria-labelledby="tab-paths"><p class="sr-only">Loading…</p><div class="space-y-3 mt-3" aria-hidden="true"><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span></div></div>
+      <div id="paths" role="tabpanel" aria-labelledby="tab-paths"><p class="sr-only">Loading…</p><div class="space-y-4 mt-4" aria-hidden="true"><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span></div></div>
       <div id="journeys" role="tabpanel" aria-labelledby="tab-journeys" hidden><p class="text-sm text-brand-muted">Loading…</p></div>
     </section>
 
@@ -133,14 +133,14 @@ bodyScripts:
         <h2 class="an-panel-title">Countries</h2>
       </div>
       <p class="an-panel-hint">Two letters looked up from the address, which is then discarded. Since 26 September 2026.</p>
-      <div id="countries"><p class="sr-only">Loading…</p><div class="space-y-3 mt-3" aria-hidden="true"><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span></div></div>
+      <div id="countries"><p class="sr-only">Loading…</p><div class="space-y-4 mt-4" aria-hidden="true"><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span></div></div>
     </section>
 
     <section class="card an-panel">
       <div class="an-panel-head">
         <h2 class="an-panel-title">Devices</h2>
       </div>
-      <div id="agents"><p class="sr-only">Loading…</p><div class="space-y-3 mt-3" aria-hidden="true"><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span></div></div>
+      <div id="agents"><p class="sr-only">Loading…</p><div class="space-y-4 mt-4" aria-hidden="true"><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span><span class="skel h-5"></span></div></div>
     </section>
   </div>
 
@@ -149,7 +149,7 @@ bodyScripts:
       <h2 class="an-panel-title">When it is read</h2>
       <p class="text-xs text-brand-muted">Day against hour, in UTC</p>
     </div>
-    <div id="heatmap" class="an-heat mt-3"><p class="sr-only">Loading…</p><span class="skel h-48" aria-hidden="true"></span></div>
+    <div id="heatmap" class="an-heat mt-4"><p class="sr-only">Loading…</p><span class="skel h-48" aria-hidden="true"></span></div>
   </section>
 
   <section class="card">
@@ -157,7 +157,7 @@ bodyScripts:
       <h2 class="an-panel-title">The last twenty visits</h2>
       <p class="text-xs text-brand-muted">No visitor number: what a visit read, not who</p>
     </div>
-    <div id="recent" class="mt-3"><p class="sr-only">Loading…</p><div class="space-y-3" aria-hidden="true"><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span></div></div>
+    <div id="recent" class="mt-4"><p class="sr-only">Loading…</p><div class="space-y-4" aria-hidden="true"><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span></div></div>
   </section>
 
   {# The five things about these numbers that are artefacts of how they are made rather than
@@ -168,7 +168,7 @@ bodyScripts:
     <summary class="cursor-pointer text-sm font-semibold text-brand-text">
       What these figures cannot tell you
     </summary>
-    <ul class="mt-3 space-y-2 text-sm text-brand-muted">
+    <ul class="mt-4 space-y-2 text-sm text-brand-muted">
       <li><strong class="text-brand-text">A bounce lasts zero seconds, by arithmetic.</strong>
         The clock runs between two page views, so the last page of every visit is untimed and a
         one-page visit is untimed entirely. Every bounce therefore averages in as nought, which is

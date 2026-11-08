@@ -90,7 +90,7 @@ function renderHead() {
   columns.forEach((c) => {
     const th = document.createElement("th");
     th.scope = "col";
-    th.className = "whitespace-nowrap px-3 py-2 text-left align-bottom";
+    th.className = "whitespace-nowrap px-4 py-2 text-left align-bottom";
     // aria-sort on the header is what a screen reader reads out; the arrow is for everyone else.
     if (c.name === sort) th.setAttribute("aria-sort", dir === "asc" ? "ascending" : "descending");
 
@@ -115,7 +115,7 @@ function renderHead() {
     });
 
     const type = document.createElement("span");
-    type.className = "mt-0.5 block text-[10px] font-normal text-brand-muted";
+    type.className = "mt-2 block text-[10px] font-normal text-brand-muted";
     type.textContent = c.type + (c.nullable ? "" : " · not null");
 
     th.append(btn, type);
@@ -131,7 +131,7 @@ function renderRows(rows) {
     const tr = document.createElement("tr");
     const td = document.createElement("td");
     td.colSpan = Math.max(columns.length, 1);
-    td.className = "px-3 py-6 text-center text-brand-muted";
+    td.className = "px-4 py-6 text-center text-brand-muted";
     td.textContent = filter.value ? "Nothing in this table matches that." : "This table is empty.";
     tr.appendChild(td);
     body.appendChild(tr);
@@ -142,7 +142,7 @@ function renderRows(rows) {
     const tr = document.createElement("tr");
     row.forEach((value, i) => {
       const td = document.createElement("td");
-      td.className = "px-3 py-2 align-top " + (value === null ? "text-brand-muted italic" : "text-brand-text");
+      td.className = "px-4 py-2 align-top " + (value === null ? "text-brand-muted italic" : "text-brand-text");
       // NULL is a value and "" is a different value; a grid that shows both as an empty cell is
       // lying about one of them.
       td.textContent = value === null ? "null" : value;
