@@ -22,7 +22,7 @@ bodyScripts:
        holds a non-breaking space until then so nothing below it moves when it arrives. #}
     <h1 id="who" class="mt-4 text-3xl font-bold text-brand-text">&nbsp;</h1>
     <p id="whoEmail" class="text-brand-muted"></p>
-    <div id="whoMeta" class="mt-3 flex flex-wrap items-center gap-2"></div>
+    <div id="whoMeta" class="mt-4 flex flex-wrap items-center gap-2"></div>
 
     <div id="status" role="status" aria-live="polite" class="mt-6 text-sm"></div>
 
@@ -31,7 +31,7 @@ bodyScripts:
       <!-- Name -->
       <section aria-labelledby="name-heading" class="card mt-8">
         <h2 id="name-heading" class="text-lg font-bold text-brand-text">Name</h2>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           Shown to them when they sign in, and to you in the accounts list. Clearing both leaves
           the account with no name, which is what it had before anyone typed one.
         </p>
@@ -53,7 +53,7 @@ bodyScripts:
       <!-- Password reset -->
       <section aria-labelledby="reset-heading" class="card mt-6">
         <h2 id="reset-heading" class="text-lg font-bold text-brand-text">Password</h2>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           Emails them a link to choose a new one. Their current password keeps working until they
           use it, and the link works once.
         </p>
@@ -67,7 +67,7 @@ bodyScripts:
             <p class="text-sm text-brand-text">
               Email a password reset link to <span id="resetTarget" class="font-semibold"></span>?
             </p>
-            <div class="mt-3 flex flex-wrap gap-3">
+            <div class="mt-4 flex flex-wrap gap-4">
               <button type="button" id="resetGo" class="btn-primary text-sm">Yes, send it</button>
               <button type="button" id="resetCancel" class="btn-secondary text-sm">Cancel</button>
             </div>
@@ -78,7 +78,7 @@ bodyScripts:
       <!-- Email address -->
       <section aria-labelledby="email-heading" class="card mt-6">
         <h2 id="email-heading" class="text-lg font-bold text-brand-text">Email address</h2>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           This is how they sign in. Nothing changes when you press send: a confirmation goes to
           the new address and the move happens only when somebody opens it. Their current address
           keeps working until then, and is told that you asked.
@@ -104,7 +104,7 @@ bodyScripts:
               If that address is wrong, whoever holds it can take the account by confirming. It
               is worth reading twice.
             </p>
-            <div class="mt-3 flex flex-wrap gap-3">
+            <div class="mt-4 flex flex-wrap gap-4">
               <button type="submit" class="btn-primary text-sm">Yes, send the confirmation</button>
               <button type="button" id="emailCancel" class="btn-secondary text-sm">Cancel</button>
             </div>

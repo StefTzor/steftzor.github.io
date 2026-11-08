@@ -25,14 +25,14 @@ const button = (text, onClick, kind = "text-brand-accent") => {
 
 const empty = (text) => {
   const li = document.createElement("li");
-  li.className = "py-3 text-sm text-brand-muted";
+  li.className = "py-4 text-sm text-brand-muted";
   li.textContent = text;
   return li;
 };
 
 const row = (main, ...actions) => {
   const li = document.createElement("li");
-  li.className = "flex items-baseline justify-between gap-4 py-3";
+  li.className = "flex items-baseline justify-between gap-4 py-4";
   const side = document.createElement("div");
   side.className = "flex shrink-0 gap-4";
   side.append(...actions);

@@ -70,7 +70,7 @@ function paintDates(dates) {
     const d = new Date(iso);
     const chip = document.createElement("time");
     chip.dateTime = iso;
-    chip.className = "rounded border border-brand-border px-2 py-0.5 text-xs text-brand-muted tabular-nums";
+    chip.className = "rounded border border-brand-border px-2 py-1 text-xs text-brand-muted tabular-nums";
     chip.textContent = Number.isNaN(d.getTime())
       ? iso
       : d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });

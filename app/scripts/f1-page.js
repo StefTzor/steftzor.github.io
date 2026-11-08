@@ -75,14 +75,14 @@ function sessionList(sessions) {
 function resultsTable(rows, caption, paged = true) {
   const wrap = document.createElement("div");
   wrap.className = "card";
-  wrap.appendChild(text("h3", "font-semibold text-brand-text mb-3", caption));
+  wrap.appendChild(text("h3", "font-semibold text-brand-text mb-4", caption));
 
   const list = document.createElement("ul");
   list.className = "divide-y divide-brand-border";
   const start = paged ? page * RESULTS_PER_PAGE : 0;
   (paged ? rows.slice(start, start + RESULTS_PER_PAGE) : rows).forEach((r) => {
     const li = document.createElement("li");
-    li.className = "flex items-center gap-3 py-2 first:pt-0";
+    li.className = "flex items-center gap-4 py-2 first:pt-0";
 
     // positionText, not position: a row that is not a finishing position still says what it is.
     li.appendChild(text("span", "w-6 shrink-0 text-sm font-semibold tabular-nums text-brand-muted",
@@ -155,7 +155,7 @@ function renderRound(data) {
   if (!blocks.length) {
     el("f1TocTables").textContent = "";
     body.appendChild(sessionList(race.sessions));
-    body.appendChild(text("p", "hint mt-3",
+    body.appendChild(text("p", "hint mt-4",
       data.over ? "This weekend has been and gone, but no results were published for it."
         : "No results yet. Times are in your timezone."));
     return;
@@ -205,12 +205,12 @@ const resultsTableWhole = (rows, caption) => resultsTable(rows, caption, false);
 function qualifyingTable(rows) {
   const wrap = document.createElement("div");
   wrap.className = "card";
-  wrap.appendChild(text("h3", "font-semibold text-brand-text mb-3", "Qualifying"));
+  wrap.appendChild(text("h3", "font-semibold text-brand-text mb-4", "Qualifying"));
   const list = document.createElement("ul");
   list.className = "divide-y divide-brand-border";
   rows.slice(0, 10).forEach((r) => {
     const li = document.createElement("li");
-    li.className = "flex items-center gap-3 py-2 first:pt-0";
+    li.className = "flex items-center gap-4 py-2 first:pt-0";
     li.appendChild(text("span", "w-6 shrink-0 text-sm font-semibold tabular-nums text-brand-muted",
       String(r.position)));
     li.appendChild(teamBar(r.constructor.id));
@@ -676,7 +676,7 @@ function renderStandings(data) {
   drivers.textContent = "";
   data.drivers.forEach((d) => {
     const li = document.createElement("li");
-    li.className = "flex items-center gap-3 py-2 first:pt-0 last:pb-0";
+    li.className = "flex items-center gap-4 py-2 first:pt-0 last:pb-0";
     li.appendChild(text("span", "w-6 shrink-0 text-sm font-semibold tabular-nums text-brand-muted",
       String(d.position)));
     li.appendChild(teamBar(d.constructor ? d.constructor.id : ""));
@@ -695,7 +695,7 @@ function renderStandings(data) {
   teams.textContent = "";
   data.constructors.forEach((c) => {
     const li = document.createElement("li");
-    li.className = "flex items-center gap-3 py-2 first:pt-0 last:pb-0";
+    li.className = "flex items-center gap-4 py-2 first:pt-0 last:pb-0";
     li.appendChild(text("span", "w-6 shrink-0 text-sm font-semibold tabular-nums text-brand-muted",
       String(c.position)));
     li.appendChild(teamBar(c.constructor.id));

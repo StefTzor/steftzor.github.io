@@ -23,49 +23,49 @@ bodyScripts:
   {# --- live -------------------------------------------------------------
      The same two checks the overview makes, because "is it up right now" is the first question
      and deploy history does not answer it. #}
-  <h2 class="text-xl font-bold text-brand-text mb-1">Right now</h2>
+  <h2 class="text-xl font-bold text-brand-text mb-2">Right now</h2>
   <p class="text-sm text-brand-muted mb-4">Checked when this page loaded.</p>
 
   <ul class="grid gap-4 sm:grid-cols-2 mb-10">
     <li class="card">
-      <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center justify-between gap-4">
         <h3 class="font-semibold text-brand-text">API</h3>
         <span id="apiState" class="status-pill status-pill--unknown">Checking…</span>
       </div>
       <p class="hint">api.tzortzoglou.eu</p>
-      <p id="apiDetail" class="mt-3 text-sm text-brand-muted">&nbsp;</p>
+      <p id="apiDetail" class="mt-4 text-sm text-brand-muted">&nbsp;</p>
     </li>
     <li class="card">
-      <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center justify-between gap-4">
         <h3 class="font-semibold text-brand-text">App</h3>
         <span id="appState" class="status-pill status-pill--unknown">Checking…</span>
       </div>
       <p class="hint">app.tzortzoglou.eu</p>
-      <p id="appDetail" class="mt-3 text-sm text-brand-muted">&nbsp;</p>
+      <p id="appDetail" class="mt-4 text-sm text-brand-muted">&nbsp;</p>
     </li>
   </ul>
 
   {# --- restarts ---------------------------------------------------------
      The one thing deploy history cannot answer. A deploy that succeeded and a container that has
      restarted eleven times since look identical in GitHub Actions. #}
-  <h2 class="text-xl font-bold text-brand-text mb-1">API restarts</h2>
+  <h2 class="text-xl font-bold text-brand-text mb-2">API restarts</h2>
   <p class="text-sm text-brand-muted mb-4 max-w-prose">
     Every time the API process started. A deploy shows here as one restart; several in a row
     without a deploy means something is falling over.
   </p>
   <div id="boots" class="card mb-10">
     <p class="sr-only">Loading…</p>
-    <div class="space-y-3" aria-hidden="true"><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span></div>
+    <div class="space-y-4" aria-hidden="true"><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span></div>
   </div>
 
   {# --- deploys ----------------------------------------------------------
      Rendered by admin-health.js: one block per workflow, newest first. A failed run names the
      step that failed, because that is the one thing worth knowing before opening the log. #}
-  <h2 class="text-xl font-bold text-brand-text mb-1">Deploys</h2>
+  <h2 class="text-xl font-bold text-brand-text mb-2">Deploys</h2>
   <p id="deployAge" class="text-sm text-brand-muted mb-4"></p>
   <div id="deploys">
     <p class="sr-only">Loading…</p>
-    <div class="space-y-3" aria-hidden="true"><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span></div>
+    <div class="space-y-4" aria-hidden="true"><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span></div>
   </div>
 
 </section>

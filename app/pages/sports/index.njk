@@ -20,10 +20,10 @@ bodyScripts:
 <section class="app-page an-wrap">
   <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
     <div>
-      <h1 class="flex items-center gap-3 text-3xl font-bold text-brand-text">
+      <h1 class="flex items-center gap-4 text-3xl font-bold text-brand-text">
         {% icon "fa-solid-futbol", "h-7 w-7 text-brand-accent" %}Sports
       </h1>
-      <p class="mt-1 text-sm text-brand-muted">Allsvenskan, SHL and HockeyAllsvenskan.</p>
+      <p class="mt-2 text-sm text-brand-muted">Allsvenskan, SHL and HockeyAllsvenskan.</p>
     </div>
     <nav aria-label="Leagues">
       <ul class="flex flex-wrap gap-2 text-sm">
@@ -42,7 +42,7 @@ bodyScripts:
   <div class="mb-6 grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
     <section class="card an-panel" aria-labelledby="spStoriesTitle">
       <h2 id="spStoriesTitle" class="an-panel-title">The big stories</h2>
-      <ul id="spStories" class="mt-2 min-h-[36rem] space-y-1 sm:min-h-[31rem]"></ul>
+      <ul id="spStories" class="mt-2 min-h-[36rem] space-y-2 sm:min-h-[31rem]"></ul>
     </section>
     <section class="card an-panel" aria-labelledby="spNewsTitle">
       <div class="an-panel-head">
@@ -61,7 +61,7 @@ bodyScripts:
         <button type="button" role="tab" class="an-tab" data-sport="football" aria-selected="false" tabindex="-1">Football</button>
         <button type="button" role="tab" class="an-tab" data-sport="hockey" aria-selected="false" tabindex="-1">Hockey</button>
       </div>
-      <button type="button" id="spFavOnly" class="btn-secondary px-3 py-1 text-xs" aria-pressed="false">Favourites only</button>
+      <button type="button" id="spFavOnly" class="btn-secondary px-4 py-1 text-xs" aria-pressed="false">Favourites only</button>
     </div>
   </div>
   <p id="spNote" class="mb-2 min-h-[1.25rem] text-xs text-brand-muted"></p>
@@ -74,7 +74,7 @@ bodyScripts:
     </summary>
     <p class="mt-2 text-sm text-brand-muted">Their games and stories come first and are highlighted, and "Favourites only" shows nothing else. Saved to your account.</p>
     <div id="spTeams" class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
-    <div class="mt-4 flex items-center gap-3">
+    <div class="mt-4 flex items-center gap-4">
       <button type="button" id="spSave" class="btn-primary px-4 py-2 text-sm">Save favourites</button>
       <span id="spSaveNote" class="text-sm text-brand-muted" aria-live="polite"></span>
     </div>

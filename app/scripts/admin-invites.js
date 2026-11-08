@@ -29,18 +29,18 @@ async function loadSent() {
       return;
     }
     invites.forEach((i) => {
-      const li = node("li", "flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-3");
+      const li = node("li", "flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-4");
       const who = node("div", "min-w-0");
       const name = [i.firstName, i.lastName].filter(Boolean).join(" ");
       who.appendChild(node("p", "truncate font-medium text-brand-text", name || i.email));
       who.appendChild(node("p", "truncate text-xs text-brand-muted",
         [name ? i.email : "", i.role, "sent " + day(i.invitedAt), i.resentAt ? "resent " + day(i.resentAt) : ""].filter(Boolean).join(" · ")));
       li.appendChild(who);
-      const right = node("div", "flex shrink-0 items-center gap-3");
+      const right = node("div", "flex shrink-0 items-center gap-4");
       right.appendChild(node("span", "status-pill status-pill--" + (i.state === "accepted" ? "up" : "unknown"),
         i.state === "accepted" ? "Accepted " + day(i.acceptedAt) : "Pending"));
       if (i.state === "pending") {
-        const b = node("button", "btn-secondary px-3 py-1 text-xs", "Resend");
+        const b = node("button", "btn-secondary px-4 py-1 text-xs", "Resend");
         b.type = "button";
         b.setAttribute("aria-label", "Resend the invitation to " + i.email);
         b.addEventListener("click", () => resend(i, b));

@@ -110,7 +110,7 @@
         {# The palette's only visible affordance. A keyboard shortcut nobody is told about is a
            feature nobody has, and this is the app-only rail rather than the shared bar - the
            public site has no palette and must not grow a button for one. #}
-        <div class="p-3 pb-0">
+        <div class="p-4 pb-0">
           <button type="button" id="paletteOpen" class="palette-opener">
             {% icon "fa-solid-terminal", "h-3.5 w-3.5 shrink-0 text-brand-muted" %}
             <span class="flex-1 text-left">Search</span>
@@ -118,8 +118,8 @@
           </button>
         </div>
 
-        <nav aria-label="Application" class="flex flex-1 flex-col min-h-0 p-3">
-          <ul class="space-y-1">
+        <nav aria-label="Application" class="flex flex-1 flex-col min-h-0 p-4">
+          <ul class="space-y-2">
             {%- for item in appNav %}{%- if not item.minRole and not item.foot %}
             <li>
               <a href="{{ item.href }}" data-nav="{{ item.navKey }}" class="side-link">
@@ -131,7 +131,7 @@
 
           {# Pushed to the bottom rather than spaced apart, so the gap grows with the viewport
              instead of the items drifting down it. #}
-          <ul class="mt-auto space-y-1 pt-6">
+          <ul class="mt-auto space-y-2 pt-6">
             {#- The foot group: reference first, then whatever the role opens. Admin is a
                 disclosure rather than a link and is written out below.
 
@@ -161,7 +161,7 @@
                   <span class="flex-1">Admin</span>
                   {% icon "fa-solid-chevron-down", "h-3 w-3 shrink-0 text-brand-muted transition-transform duration-150 group-open:rotate-180" %}
                 </summary>
-                <ul class="mt-1 ml-4 space-y-1 border-l border-brand-border pl-2">
+                <ul class="mt-2 ml-4 space-y-2 border-l border-brand-border pl-2">
                   {%- for s in adminSections %}
                   <li>
                     <a href="{{ s.href }}" data-nav="{{ s.navKey }}" class="side-link">
@@ -182,7 +182,7 @@
            at exactly the height of the real thing and hides the real thing rather than removing
            it, so nothing in the rail moves when the answer lands. The three fields used to be
            empty elements: the block was blank for about a second, then grew as it filled. #}
-        <div class="border-t border-brand-border p-3">
+        <div class="border-t border-brand-border p-4">
           <a href="/profile/" data-nav="profile" class="side-link min-h-[73px] items-start" data-profile="loading">
             {% icon "fa-solid-user-gear", "side-icon" %}
             <span class="min-w-0 flex-1">
@@ -193,7 +193,7 @@
                    "email · Role" on one truncated line, which made the role the first thing to
                    be clipped - the one part of that line short enough to always fit. #}
                 <span id="whoamiRole"
-                  class="mt-1 hidden w-fit rounded-full bg-brand-accent/10 px-2 py-0.5 text-[11px] font-semibold text-brand-accent"></span>
+                  class="mt-2 hidden w-fit rounded-full bg-brand-accent/10 px-2 py-1 text-[11px] font-semibold text-brand-accent"></span>
               </span>
               {# In the flow, not positioned over it. Absolute bars contribute no height, and the
                  three real fields are empty until /me answers - so the block measured 32px while
@@ -269,7 +269,7 @@
      panel shifted the button 269px to the left, away from the pointer that had just pressed it.
      A control must not move because of what it opened. #}
   <div class="fixed bottom-4 right-4 z-40 flex flex-col items-end print:hidden">
-    <div id="cwPanel" class="hidden mb-3 w-[min(26rem,calc(100vw-2rem))] rounded-xl border border-brand-border bg-brand-surface p-5 shadow-xl"
+    <div id="cwPanel" class="hidden mb-4 w-[min(26rem,calc(100vw-2rem))] rounded-xl border border-brand-border bg-brand-surface p-6 shadow-xl"
       role="dialog" aria-modal="false" aria-labelledby="cw-title">
       <div class="flex items-start justify-between gap-4">
         <h2 id="cw-title" class="text-base font-bold text-brand-text">Send me a message</h2>
@@ -278,7 +278,7 @@
         </button>
       </div>
 
-      <p class="hint mt-1">
+      <p class="hint mt-2">
         From <span id="cwName" class="font-semibold text-brand-text"></span>
         (<span id="cwEmail"></span>) — I reply to that address.
       </p>
@@ -287,12 +287,12 @@
         <label for="cwMessage" class="field-label">Message</label>
         <textarea id="cwMessage" name="message" rows="4" maxlength="5000" class="field"></textarea>
 
-        <label class="mt-3 flex items-start gap-2 text-sm text-brand-muted">
-          <input type="checkbox" id="cwConsent" name="consent" class="mt-1 shrink-0">
+        <label class="mt-4 flex items-start gap-2 text-sm text-brand-muted">
+          <input type="checkbox" id="cwConsent" name="consent" class="mt-2 shrink-0">
           <span>I am happy for this message and my address to be emailed to Stefanos and stored.</span>
         </label>
 
-        <div class="mt-4 flex items-center gap-3">
+        <div class="mt-4 flex items-center gap-4">
           <button type="submit" class="btn-primary text-sm">Send</button>
           <p id="cwStatus" class="text-sm text-brand-muted" role="status" aria-live="polite"></p>
         </div>
@@ -314,7 +314,7 @@
      gated by the API on its own, so the list is a courtesy rather than a boundary. #}
   <dialog id="palette" class="palette" aria-label="Command palette">
     <div class="palette-panel">
-      <div class="flex items-center gap-3 border-b border-brand-border px-4 py-3
+      <div class="flex items-center gap-4 border-b border-brand-border px-4 py-4
         focus-within:ring-2 focus-within:ring-inset focus-within:ring-brand-accent">
         {% icon "fa-solid-terminal", "h-4 w-4 shrink-0 text-brand-muted" %}
         {# The combobox pattern: focus stays in the text box and the highlighted row is named by
@@ -325,7 +325,7 @@
           class="w-full bg-transparent text-brand-text placeholder:text-brand-muted focus:outline-none">
       </div>
       <ul id="paletteList" role="listbox" aria-label="Commands" class="max-h-80 overflow-y-auto overscroll-contain py-2"></ul>
-      <p id="paletteStatus" role="status" aria-live="polite" class="px-4 pb-3 text-sm text-brand-muted"></p>
+      <p id="paletteStatus" role="status" aria-live="polite" class="px-4 pb-4 text-sm text-brand-muted"></p>
     </div>
   </dialog>
 

@@ -22,7 +22,7 @@ bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
          320px about 110px - narrow enough that a long surname scrolls inside its own box while
          the row beside it sits half empty. Every other grid in the app already starts at one
          column; this was the only one that did not. #}
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <div>
           <label for="firstName" class="field-label">First name</label>
           <input type="text" id="firstName" name="firstName" required autocomplete="given-name" maxlength="60"
@@ -60,9 +60,9 @@ bodyClass: "bg-brand-bg text-brand-text antialiased min-h-screen flex flex-col"
       </div>
 
       <!-- GDPR Art. 6(1)(a) / Art. 7: consent must be a specific, informed, unticked opt-in. -->
-      <div class="mb-6 flex items-start gap-3">
+      <div class="mb-6 flex items-start gap-4">
         <input type="checkbox" id="privacyConsent" name="privacyConsent" required
-          class="mt-0.5 h-6 w-6 shrink-0 accent-brand-accent">
+          class="mt-2 h-6 w-6 shrink-0 accent-brand-accent">
         <label for="privacyConsent" class="text-sm text-brand-muted leading-relaxed">
           I agree that my name, email address and account status may be stored so that this account can be created and
           manually approved, as described in the

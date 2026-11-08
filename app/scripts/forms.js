@@ -23,7 +23,7 @@ function slotFor(input) {
   if (!slot) {
     slot = document.createElement("p");
     slot.id = id;
-    slot.className = "mt-1 text-sm text-red-700 dark:text-red-400";
+    slot.className = "mt-2 text-sm text-red-700 dark:text-red-400";
     // role="alert" so a problem is announced when it appears. The field-level message is the
     // one worth interrupting for: it names what to do next.
     slot.setAttribute("role", "alert");

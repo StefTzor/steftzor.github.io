@@ -27,7 +27,7 @@ bodyScripts:
      way they did: the badge has space to appear there without wrapping anything, so the stability
      costs nothing and the composition is worth keeping. #}
   <div class="mb-2 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
-    <h1 class="flex items-center gap-3 text-3xl font-bold text-brand-text">
+    <h1 class="flex items-center gap-4 text-3xl font-bold text-brand-text">
       {% icon "fa-solid-bus", "h-7 w-7 text-brand-accent" %}
       <span>Transit</span>
     </h1>
@@ -35,7 +35,7 @@ bodyScripts:
     {# Departures and arrivals are two boards for one stop, so they are one control with two
        states rather than two links. aria-pressed rather than a radio group: these are buttons
        that change what is below them, not a value being submitted anywhere. #}
-    <div class="mt-3 sm:mt-0 inline-flex rounded-lg bg-brand-bg p-1" role="group" aria-label="Which board">
+    <div class="mt-4 sm:mt-0 inline-flex rounded-lg bg-brand-bg p-1" role="group" aria-label="Which board">
       <button type="button" id="trDep" class="seg" aria-pressed="true">Departures</button>
       <button type="button" id="trArr" class="seg" aria-pressed="false">Arrivals</button>
     </div>
@@ -49,7 +49,7 @@ bodyScripts:
   {# Stacked on a phone from first paint. Side by side, the empty heading left room for the
      operator line beside it, and the stop's name arriving pushed that line onto a second row and
      the board down with it (0.155 on every phone run). #}
-  <div class="flex flex-col gap-y-1 mb-1 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-4">
+  <div class="flex flex-col gap-y-2 mb-2 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-x-4">
     <h2 id="board-heading" class="text-xl font-bold text-brand-text">&nbsp;</h2>
     {# The operator sits with the stop, not in the heading. It is a fact the board reports - it
        changes when you point this at a stop in Skane - so it belongs where the other facts about
@@ -65,9 +65,9 @@ bodyScripts:
        to both surfaces is what produced the orphan separator bug. #}
     <div class="text-sm text-brand-muted sm:flex sm:items-end sm:gap-x-2">
       <p class="min-h-5"><span id="trOperator"></span><span id="trAge" class="tabular-nums"></span></p>
-      <p class="-ml-1.5 sm:ml-0">
+      <p class="-ml-2 sm:ml-0">
         <button type="button" id="trChange" class="link-action">Change stop</button>
-        <button type="button" id="trRefresh" class="link-action ml-1">Refresh</button>
+        <button type="button" id="trRefresh" class="link-action ml-2">Refresh</button>
       </p>
     </div>
   </div>
@@ -89,11 +89,11 @@ bodyScripts:
           placeholder="Portalgatan" class="field flex-1 min-w-[12rem]">
         <button type="submit" class="btn-primary text-sm">Search</button>
         <button type="button" id="trNear" class="btn-secondary text-sm">
-          {% icon "fa-solid-location-dot", "h-3.5 w-3.5" %}<span class="ml-1.5">Near me</span>
+          {% icon "fa-solid-location-dot", "h-3.5 w-3.5" %}<span class="ml-2">Near me</span>
         </button>
         <button type="button" id="trCancel" class="btn-secondary text-sm">Cancel</button>
       </div>
-      <ul id="trResults" class="mt-3 space-y-1"></ul>
+      <ul id="trResults" class="mt-4 space-y-2"></ul>
       <p id="trPickNote" role="status" aria-live="polite" class="hint mt-2"></p>
     </form>
 
@@ -123,7 +123,7 @@ bodyScripts:
      version of that - what has actually turned up in the next hour, rather than a timetable
      this does not have. The heading says as much. #}
   <section aria-labelledby="lines-heading" class="mt-10">
-    <h2 id="lines-heading" class="text-xl font-bold text-brand-text mb-1">Lines on this board</h2>
+    <h2 id="lines-heading" class="text-xl font-bold text-brand-text mb-2">Lines on this board</h2>
     {# The wording flips with the board: on arrivals these are the places buses are coming from,
        and a heading that says "headed" over a list of origins is worse than no heading. #}
     <p id="trLinesNote" class="text-sm text-brand-muted mb-4">
@@ -133,10 +133,10 @@ bodyScripts:
        that line goes. Two because a stop is usually served by two lines - this one is - and a
        list whose length depends on the timetable cannot be reserved exactly. Reserving the
        typical count is the whole of what is available here; see the note on the board above. #}
-    <ul id="trLines" aria-busy="true" class="grid gap-3 sm:grid-cols-2">
+    <ul id="trLines" aria-busy="true" class="grid gap-4 sm:grid-cols-2">
       {%- for i in range(0, 2) %}
-      <li class="card flex items-start gap-3 py-3" aria-hidden="true">
-        <span class="skel dep-line mt-0.5 w-7"></span>
+      <li class="card flex items-start gap-4 py-4" aria-hidden="true">
+        <span class="skel dep-line mt-2 w-7"></span>
         <span class="skel h-8 min-w-0 flex-1"></span>
       </li>
       {%- endfor %}
@@ -161,7 +161,7 @@ bodyScripts:
      does not have - in a picture any more than in a sentence. "Lines on this board" above answers
      "where does this line go" without drawing anything, and stays exactly as it is. #}
   <section aria-labelledby="around-heading" class="mt-10">
-    <h2 id="around-heading" class="text-xl font-bold text-brand-text mb-1">Around this stop</h2>
+    <h2 id="around-heading" class="text-xl font-bold text-brand-text mb-2">Around this stop</h2>
     {# Worded for both boards rather than for the departures one. The stops a row carries are the
        ones on the far side of this stop, and which side that is turns round with the board: ahead
        of the bus on departures, behind it on arrivals. The note under the map names the direction
@@ -185,7 +185,7 @@ bodyScripts:
        when the map is built, the same moment the map itself appears), and hidden again for good if
        the API answers 503 not_configured. aria-pressed for the same reason as the board switch at
        the top: buttons that change what is below them. #}
-    <div id="trBusMode" class="hidden mb-3 inline-flex rounded-lg bg-brand-bg p-1" role="group" aria-label="Which buses">
+    <div id="trBusMode" class="hidden mb-4 inline-flex rounded-lg bg-brand-bg p-1" role="group" aria-label="Which buses">
       <button type="button" id="trBusMine" class="seg" aria-pressed="true">Your lines</button>
       <button type="button" id="trBusAll" class="seg" aria-pressed="false">All of Uppsala</button>
     </div>
@@ -213,12 +213,12 @@ bodyScripts:
        empty "Stops near you" on a page that has never been given one is a section that exists
        to be disappointed by. #}
     <div id="trNearby" class="hidden mt-6">
-      <h3 class="text-lg font-bold text-brand-text mb-1">Stops near you</h3>
+      <h3 class="text-lg font-bold text-brand-text mb-2">Stops near you</h3>
       <p class="text-sm text-brand-muted mb-4">
         Straight-line distance, as ResRobot measures it. Choosing one makes it your stop
         everywhere, including the card on the home view.
       </p>
-      <ul id="trNearList" class="grid gap-3 sm:grid-cols-2"></ul>
+      <ul id="trNearList" class="grid gap-4 sm:grid-cols-2"></ul>
     </div>
   </section>
 

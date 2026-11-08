@@ -192,7 +192,7 @@ function srTable(caption, rows, headers) {
  * big one", and against a total the small ones become invisible lines.
  */
 function barList(rows, unit) {
-  const ul = node("ul", "mt-3 space-y-1");
+  const ul = node("ul", "mt-4 space-y-2");
   const max = Math.max(...rows.map((r) => r[1]), 1);
   rows.forEach(([name, value, tag, filter]) => {
     const li = node("li", "relative overflow-hidden rounded");
@@ -201,7 +201,7 @@ function barList(rows, unit) {
     fill.setAttribute("aria-hidden", "true");
     // A row with a filter is a button that narrows the whole page to it.
     const line = node(filter ? "button" : "div",
-      "relative flex w-full items-baseline justify-between gap-4 px-2 py-1.5 text-left"
+      "relative flex w-full items-baseline justify-between gap-4 px-2 py-2 text-left"
       + (filter ? " an-pick" : ""));
     if (filter) {
       line.setAttribute("type", "button");
@@ -280,19 +280,19 @@ function chart(daily) {
 
   const values = daily.map((d) => Number(d[shown]) || 0);
   if (!daily.length) {
-    only(host, head, node("p", "mt-3 text-sm text-brand-muted", "Nothing counted in this window yet."));
+    only(host, head, node("p", "mt-4 text-sm text-brand-muted", "Nothing counted in this window yet."));
     return;
   }
   const max = Math.max(...values);
   if (!max) {
-    only(host, head, node("p", "mt-3 text-sm text-brand-muted",
+    only(host, head, node("p", "mt-4 text-sm text-brand-muted",
       "Nothing counted in this window yet. Every day in the range is empty."));
     return;
   }
   // One day is a number, not a shape. A single point would read as a trend, and the only trend a
   // one-day window contains is the one the reader invents.
   if (daily.length < 2) {
-    only(host, head, node("p", "mt-3 text-sm text-brand-muted",
+    only(host, head, node("p", "mt-4 text-sm text-brand-muted",
       `${count(values[0])} ${noun} on ${dayLabel(daily[0].day)}.`));
     return;
   }
@@ -421,7 +421,7 @@ function chart(daily) {
 
   const peak = values.reduce((a, v, i) => (v > values[a] ? i : a), 0);
   const figure = node("figure");
-  const caption = node("figcaption", "mt-3 text-xs text-brand-muted",
+  const caption = node("figcaption", "mt-4 text-xs text-brand-muted",
     `${dayLabel(daily[0].day)} to ${dayLabel(daily[daily.length - 1].day)}. `
     + `Busiest day ${dayLabel(daily[peak].day)}, ${count(values[peak])} ${noun}.`);
   figure.append(plot, axis, caption,
@@ -477,7 +477,7 @@ function heatmap(hours) {
   // hours are busier than which, and nothing on the page said darker meant more until this line.
   // Both ends are labelled rather than every step - the exact bin boundaries are arithmetic
   // nobody needs, and the busiest cell's own count is in the caption below.
-  const key = node("div", "mt-3 flex items-center gap-2 text-xs text-brand-muted");
+  const key = node("div", "mt-4 flex items-center gap-2 text-xs text-brand-muted");
   const ramp = node("div", "flex gap-[2px]");
   [0, 1, 2, 3, 4].forEach((level) => {
     const swatch = node("div", "contrib-day h-3 w-3");
@@ -488,7 +488,7 @@ function heatmap(hours) {
     node("span", "", `Busier (${count(max)} views)`));
 
   const busiest = hours.reduce((a, b) => (b.views > a.views ? b : a));
-  const caption = node("figcaption", "mt-3 text-sm text-brand-muted",
+  const caption = node("figcaption", "mt-4 text-sm text-brand-muted",
     `Busiest hour: ${DOW[busiest.dow]} at ${String(busiest.hour).padStart(2, "0")}:00 UTC, `
     + `${count(busiest.views)} views. Hours run 00 to 23 left to right.`);
 
@@ -531,14 +531,14 @@ function dimension(list, title, key) {
 
   const total = list.reduce((n, r) => n + r.views, 0);
   if (!total) {
-    card.appendChild(node("p", "hint mt-1", "Nothing counted in this window yet."));
+    card.appendChild(node("p", "hint mt-2", "Nothing counted in this window yet."));
     return card;
   }
 
   const named = (r) => (title === "Window width" ? label(SCREEN, r.value) : r.value);
   const top1 = list[0];
   card.append(
-    node("p", "hint mt-1", `${named(top1)} leads, ${pct(top1.views / total)} of ${count(total)} views.`),
+    node("p", "hint mt-2", `${named(top1)} leads, ${pct(top1.views / total)} of ${count(total)} views.`),
     barList(list.map((r) => [named(r), r.views, "", { [key]: r.value }])),
     srTable(title, list.map((r) => [named(r), `${count(r.views)} views`,
       pct(r.views / total)]), [title, "Views", "Share"]),
@@ -622,7 +622,7 @@ function journeys(entryPages, exitPages) {
   const grid = node("div", "grid gap-4 sm:grid-cols-2");
   [["Entry pages", entryPages], ["Exit pages", exitPages]].forEach(([title, list]) => {
     const col = node("div", "");
-    col.appendChild(node("h3", "mt-3 text-xs font-semibold uppercase tracking-wide text-brand-muted", title));
+    col.appendChild(node("h3", "mt-4 text-xs font-semibold uppercase tracking-wide text-brand-muted", title));
     if (!list.length) {
       col.appendChild(node("p", "mt-2 text-sm text-brand-muted", "Nothing counted in this window yet."));
     } else {

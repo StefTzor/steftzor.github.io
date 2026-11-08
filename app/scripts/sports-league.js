@@ -41,11 +41,11 @@ function table(rows, sport, favourites) {
   rows.forEach((r) => {
     const fav = favourites.has(r.team.id);
     const tr = node("tr", fav ? "lg-fav font-semibold" : "");
-    tr.appendChild(node("td", "py-1.5 pr-2 text-brand-muted", String(r.rank)));
-    tr.appendChild(node("td", "py-1.5 text-brand-text", r.team.name));
+    tr.appendChild(node("td", "py-2 pr-2 text-brand-muted", String(r.rank)));
+    tr.appendChild(node("td", "py-2 text-brand-text", r.team.name));
     cols.forEach(([k]) => {
       const v = r[k];
-      tr.appendChild(node("td", "py-1.5 pl-2 text-right " + (k === "points" ? "font-semibold text-brand-text" : "text-brand-muted") + (NARROW.has(k) ? "" : " hidden sm:table-cell"),
+      tr.appendChild(node("td", "py-2 pl-2 text-right " + (k === "points" ? "font-semibold text-brand-text" : "text-brand-muted") + (NARROW.has(k) ? "" : " hidden sm:table-cell"),
         v === null || v === undefined ? "—" : (k === "gd" && v > 0 ? "+" + v : String(v))));
     });
     body.appendChild(tr);

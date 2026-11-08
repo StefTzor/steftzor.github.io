@@ -36,8 +36,8 @@
 
   /** One component: state, name, what it is, the 24-hour strip, uptime and speed. */
   function row(c) {
-    var li = node("li", "py-3");
-    var top = node("div", "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1");
+    var li = node("li", "py-4");
+    var top = node("div", "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2");
     var left = node("div", "flex min-w-0 items-baseline gap-2");
     var dot = node("span", "st-dot shrink-0");
     dot.setAttribute("data-state", c.status);
@@ -45,7 +45,7 @@
     left.appendChild(dot);
     left.appendChild(node("span", "font-medium text-brand-text", c.name));
     left.appendChild(node("span", "truncate text-xs text-brand-muted", c.what));
-    var right = node("div", "flex items-baseline gap-3 text-xs text-brand-muted tabular-nums");
+    var right = node("div", "flex items-baseline gap-4 text-xs text-brand-muted tabular-nums");
     var word = node("span", "st-word font-semibold", WORD[c.status] || c.status);
     word.setAttribute("data-state", c.status);
     right.appendChild(word);
@@ -107,7 +107,7 @@
       + "served from GitHub Pages, and it is fine.");
     ["stStack", "stUpstream"].forEach(function (id) {
       el(id).textContent = "";
-      el(id).appendChild(node("li", "py-3 text-sm text-brand-muted",
+      el(id).appendChild(node("li", "py-4 text-sm text-brand-muted",
         "Unavailable while the API is not answering."));
     });
   }
@@ -146,7 +146,7 @@
 
   function deployRow(d) {
     var r = RESULT[d.result] || ["unknown", d.result === "in_progress" || d.result === "queued" ? "In progress" : d.result];
-    var li = node("li", "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3");
+    var li = node("li", "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 py-4");
     var left = node("div", "flex min-w-0 items-baseline gap-2");
     var dot = node("span", "st-dot shrink-0");
     dot.setAttribute("data-state", r[0]);
@@ -162,7 +162,7 @@
     } else if (!d.message) {
       left.appendChild(node("span", "truncate text-xs text-brand-muted", "private repository"));
     }
-    var right = node("div", "flex flex-wrap items-baseline gap-x-3 text-xs text-brand-muted tabular-nums");
+    var right = node("div", "flex flex-wrap items-baseline gap-x-4 text-xs text-brand-muted tabular-nums");
     var word = node("span", "st-word font-semibold", r[1]);
     word.setAttribute("data-state", r[0]);
     right.appendChild(word);
@@ -189,17 +189,17 @@
         if (!data || !Array.isArray(data.deploys)) throw new Error("shape");
         list.textContent = "";
         if (!data.deploys.length) {
-          list.appendChild(node("li", "py-3 text-sm text-brand-muted", "No deploys in the recent history."));
+          list.appendChild(node("li", "py-4 text-sm text-brand-muted", "No deploys in the recent history."));
         }
         data.deploys.forEach(function (d) { list.appendChild(deployRow(d)); });
         if (data.unreachable && data.unreachable.length) {
-          list.appendChild(node("li", "py-3 text-sm text-brand-muted",
+          list.appendChild(node("li", "py-4 text-sm text-brand-muted",
             "Could not read the history of: " + data.unreachable.join(", ") + "."));
         }
       })
       .catch(function () {
         list.textContent = "";
-        list.appendChild(node("li", "py-3 text-sm text-brand-muted", "Deploy history is unavailable right now."));
+        list.appendChild(node("li", "py-4 text-sm text-brand-muted", "Deploy history is unavailable right now."));
       });
   }
 
@@ -219,13 +219,13 @@
         changes.textContent = "";
         var ids = Object.keys(data.sources);
         if (!ids.length) {
-          sources.appendChild(node("li", "py-3 text-sm text-brand-muted", "Nothing observed yet."));
+          sources.appendChild(node("li", "py-4 text-sm text-brand-muted", "Nothing observed yet."));
         }
         ids.forEach(function (id) {
           var s = data.sources[id];
-          var li = node("li", "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2");
+          var li = node("li", "flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 py-2");
           li.appendChild(node("span", "font-medium text-brand-text", SOURCE[id] || id));
-          var right = node("span", "flex flex-wrap gap-x-3 text-xs text-brand-muted tabular-nums");
+          var right = node("span", "flex flex-wrap gap-x-4 text-xs text-brand-muted tabular-nums");
           right.appendChild(node("span", "whitespace-nowrap", s.fields + " fields"));
           right.appendChild(node("span", "whitespace-nowrap", s.endpoints + (s.endpoints === 1 ? " endpoint" : " endpoints")));
           if (s.lastSeen) right.appendChild(node("span", "whitespace-nowrap", "seen " + ago(s.lastSeen)));
@@ -250,7 +250,7 @@
       .catch(function () {
         sources.textContent = "";
         changes.textContent = "";
-        sources.appendChild(node("li", "py-3 text-sm text-brand-muted", "Drift history is unavailable right now."));
+        sources.appendChild(node("li", "py-4 text-sm text-brand-muted", "Drift history is unavailable right now."));
       });
   }
 

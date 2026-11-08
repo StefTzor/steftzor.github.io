@@ -94,7 +94,7 @@ function renderBoard(data) {
     // text without moving a single column.
     const row = document.createElement("button");
     row.type = "button";
-    row.className = "col-span-3 -mx-2 grid grid-cols-[auto_1fr_auto] items-center gap-x-3 " +
+    row.className = "col-span-3 -mx-2 grid grid-cols-[auto_1fr_auto] items-center gap-x-4 " +
       "rounded px-2 text-left hover:bg-brand-bg aria-[pressed=true]:bg-brand-accent/10";
     row.setAttribute("aria-pressed", "false");
     row.addEventListener("click", () => pick(row, d));
@@ -192,10 +192,10 @@ function renderLines(rows) {
     .sort((a, b) => (Number(a[0]) || Infinity) - (Number(b[0]) || Infinity) || a[0].localeCompare(b[0]))
     .forEach(([line, wheres]) => {
       const li = document.createElement("li");
-      li.className = "card flex items-start gap-3 py-3";
+      li.className = "card flex items-start gap-4 py-4";
 
       const badge = document.createElement("span");
-      badge.className = "dep-line mt-0.5";
+      badge.className = "dep-line mt-2";
       badge.textContent = line;
 
       const text = document.createElement("span");
@@ -789,7 +789,7 @@ function pickNote(text) { el("trPickNote").textContent = text || ""; }
 function stopButton(stop, onPick) {
   const btn = document.createElement("button");
   btn.type = "button";
-  btn.className = "flex w-full items-center justify-between gap-3 rounded px-2 py-1.5 text-left text-sm text-brand-text hover:bg-brand-bg";
+  btn.className = "flex w-full items-center justify-between gap-4 rounded px-2 py-2 text-left text-sm text-brand-text hover:bg-brand-bg";
   const name = document.createElement("span");
   name.className = "min-w-0 truncate";
   name.textContent = shortStop(stop.name);

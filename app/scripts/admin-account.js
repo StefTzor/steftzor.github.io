@@ -21,7 +21,7 @@ let account = null;
 /** A status pill, same vocabulary as the accounts list. */
 function pill(text, tone) {
   const span = document.createElement("span");
-  span.className = "inline-block rounded-full px-2 py-0.5 text-xs font-semibold " + tone;
+  span.className = "inline-block rounded-full px-2 py-1 text-xs font-semibold " + tone;
   span.textContent = text;
   return span;
 }

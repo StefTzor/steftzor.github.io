@@ -53,6 +53,9 @@
     /* A boundary, not text, so the 4.5:1 rule does not apply: enough to read as an edge, not so
        much that every card looks boxed in. */
     --color-border: 194 196 180;  /* #c2c4b4 — 1.4:1 on bg, 1.7:1 on surface */
+    /* Shadow ink: the page hue, darkened, used at low alpha. A black shadow at 25% reads as grey
+       mud on sage; this one reads as the card's own shade. Feeds the boxShadow scale in tailwind.config.js. */
+    --shadow-color: 20 50 38;     /* #143226 */
     /* Hero route map, as ink rather than colour tokens: strokes at these alphas sit behind text. */
     --route-1: rgb(31 92 70 / 50%);
     --route-2: rgb(150 110 30 / 55%);
@@ -141,6 +144,7 @@
     --color-onaccent: 24 41 31;   /* #18291f on accent — 9.1:1 */
     --color-brass: 232 195 110;   /* #e8c36e — 6.7:1 on surface */
     --color-border: 79 111 94;    /* #4f6f5e — 2.7:1 on bg */
+    --shadow-color: 6 14 10;      /* near-black pine: dark mode lifts with borders, the shadow only grounds */
     --route-1: rgb(127 181 150 / 55%); /* sage */
     --route-2: rgb(232 195 110 / 55%);
     --route-3: rgb(195 198 193 / 30%);
@@ -300,7 +304,7 @@
   }
   .case {
     position: relative; display: grid; grid-template-columns: 18rem 1fr; gap: 0 3.5rem;
-    padding: 0 0 4.5rem 3.25rem;
+    padding: 0 0 4.5rem 3rem;
   }
   .case:last-child { padding-bottom: 0; }
   .case::before {
@@ -310,46 +314,46 @@
     box-shadow: 0 0 0 4px rgb(var(--color-bg));
   }
   /* Home page: the same line across the page, or down it on a phone. */
-  .stops { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; padding-top: 2.75rem; }
+  .stops { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; padding-top: 3rem; }
   .stops::before {
     content: ""; position: absolute; left: 0; right: 0; top: 11px; height: 3px;
     border-radius: 2px; background: var(--route-1);
   }
   .stops-item { position: relative; display: flex; flex-direction: column; }
   .stops-item::before {
-    content: ""; position: absolute; left: 0; top: calc(-2.75rem); width: 25px; height: 25px; border-radius: 50%;
+    content: ""; position: absolute; left: 0; top: -3rem; width: 25px; height: 25px; border-radius: 50%;
     border: 3px solid rgb(var(--color-accent));
     background: radial-gradient(rgb(var(--color-accent)) 0 5px, rgb(var(--color-bg)) 6px);
     box-shadow: 0 0 0 4px rgb(var(--color-bg));
   }
-  .stops-item h3 { @apply mb-3 text-xl font-bold leading-tight text-brand-text; text-wrap: balance; }
-  .stops-text { @apply mb-4 flex-grow text-sm leading-relaxed text-brand-muted; }
-  .stops-link { @apply mt-5 inline-flex items-center gap-2 self-start text-sm font-semibold text-brand-accent underline-offset-4 hover:underline; }
+  .stops-item h3 { @apply mb-4 text-xl font-bold leading-tight text-brand-text; text-wrap: balance; }
+  .stops-text { @apply mb-4 flex-grow text-base leading-relaxed text-brand-muted; }
+  .stops-link { @apply mt-6 inline-flex items-center gap-2 self-start text-sm font-semibold text-brand-accent underline-offset-4 hover:underline; }
   @media (max-width: 767px) {
-    .stops { grid-template-columns: 1fr; gap: 3rem; padding-top: 0; padding-left: 2.4rem; }
+    .stops { grid-template-columns: 1fr; gap: 3rem; padding-top: 0; padding-left: 2.5rem; }
     .stops::before { left: 11px; right: auto; top: 14px; bottom: 0; width: 3px; height: auto; }
-    .stops-item::before { left: -2.4rem; top: 4px; }
+    .stops-item::before { left: -2.5rem; top: 4px; }
     .stops .case-tags li { display: inline; }
     .stops .case-tags li:not(:last-child)::after { content: " · "; }
   }
 
   .case-number { @apply font-mono text-xs text-brand-muted; }
-  .case-kind { @apply mb-3 mt-0.5 text-xs font-semibold uppercase tracking-wider text-brand-brass; }
+  .case-kind { @apply mb-4 mt-2 text-xs font-semibold uppercase tracking-wider text-brand-brass; }
   .case h2 { @apply mb-4 text-2xl font-bold leading-tight text-brand-text; text-wrap: balance; }
   .case-tags { @apply font-mono text-xs leading-relaxed text-brand-muted; }
-  .case-body { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem 2.5rem; }
+  .case-body { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 2.5rem; }
   .case-label { @apply mb-2 font-mono text-xs font-medium uppercase tracking-wide text-brand-muted; }
   .case-body p { @apply leading-relaxed text-brand-muted; }
   .case-outcome {
-    grid-column: 1 / -1; padding: 1.1rem 1.4rem; border-radius: 0.625rem;
+    grid-column: 1 / -1; padding: 1rem 1.5rem; border-radius: 0.625rem;
     @apply border border-brand-border bg-brand-surface;
   }
   .case-figure { grid-column: 1 / -1; max-width: 28rem; }
   .case-outcome .case-label { @apply text-brand-accent; }
   .case-outcome p { @apply font-medium text-brand-text; }
   @media (max-width: 767px) {
-    .case { grid-template-columns: 1fr; padding: 0 0 3rem 2.4rem; }
-    .case-meta { margin-bottom: 1.25rem; }
+    .case { grid-template-columns: 1fr; padding: 0 0 3rem 2.5rem; }
+    .case-meta { margin-bottom: 1.5rem; }
     .case-body { grid-template-columns: 1fr; }
     .case-tags li { display: inline; }
     .case-tags li:not(:last-child)::after { content: " · "; }
@@ -375,7 +379,7 @@
   }
 
   .nav-link-mobile {
-    @apply block py-3 px-4 rounded-lg text-brand-text font-medium
+    @apply block py-4 px-4 rounded-lg text-brand-text font-medium
            hover:bg-brand-surface hover:text-brand-accent;
   }
 
@@ -389,20 +393,20 @@
      another item in the list, without shouting like a filled primary button would. */
   .nav-cta {
     @apply inline-flex items-center gap-2 rounded-full border border-brand-accent/40
-           px-4 py-1.5 text-sm font-semibold text-brand-accent
+           px-4 py-2 text-sm font-semibold text-brand-accent
            hover:bg-brand-accent hover:text-brand-onaccent hover:border-brand-accent
            transition-colors duration-200;
   }
 
   .nav-cta-mobile {
     @apply flex items-center justify-center gap-2 rounded-full border border-brand-accent/40
-           px-4 py-3 font-semibold text-brand-accent
+           px-4 py-4 font-semibold text-brand-accent
            hover:bg-brand-accent hover:text-brand-onaccent transition-colors duration-200;
   }
 
   /* /f1/'s "On this page" bar: small pills that read as links, not as the round selector. */
   .toc-link {
-    @apply inline-flex items-center rounded-full border border-brand-border bg-brand-surface px-3 py-1
+    @apply inline-flex items-center rounded-full border border-brand-border bg-brand-surface px-4 py-1
            text-brand-muted transition-colors hover:text-brand-text focus-visible:outline-none
            focus-visible:ring-2 focus-visible:ring-brand-accent;
   }
@@ -410,7 +414,7 @@
      the difference between them should be what they do, not how many utility classes each
      happened to be given. */
   .side-link {
-    @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-brand-text
+    @apply flex items-center gap-4 rounded-lg px-4 py-2 text-sm text-brand-text
            hover:bg-brand-bg transition-colors duration-150
            aria-[current=page]:bg-brand-bg aria-[current=page]:font-semibold
            aria-[current=page]:text-brand-accent;
@@ -454,33 +458,33 @@
   .world-map .maplibregl-canvas.world-hot { cursor: pointer; }
   .world-street { @apply absolute inset-0 z-20 bg-brand-bg; }
   .world-pano { @apply block h-full w-full cursor-grab touch-none active:cursor-grabbing; }
-  .world-street-bar { @apply absolute left-3 top-3 flex gap-1.5; }
+  .world-street-bar { @apply absolute left-3 top-3 flex gap-1; }
   .world-chip:disabled { @apply cursor-default opacity-50; }
   .world-street-credit { @apply absolute bottom-3 left-3 max-w-[calc(100%-1.5rem)] rounded-md px-2 py-1 text-xs text-brand-muted; }
   .world-float { @apply absolute z-10 rounded-xl border border-brand-border shadow-lg; }
   .world-search { @apply left-3 top-3 w-[min(19rem,calc(100%-4.5rem))] p-2; }
-  .world-nav { @apply absolute z-10 flex gap-1.5 overflow-x-auto; left: .75rem; right: 4.5rem; top: 4.75rem; scrollbar-width: none; }
+  .world-nav { @apply absolute z-10 flex gap-1 overflow-x-auto; left: .75rem; right: 4.5rem; top: 4.75rem; scrollbar-width: none; }
   .world-nav .world-chip { @apply shrink-0; }
-  .world-results { @apply mt-1 max-h-72 overflow-y-auto text-sm; }
+  .world-results { @apply mt-2 max-h-72 overflow-y-auto text-sm; }
   .world-group { @apply px-1 pt-2 text-[0.6875rem] uppercase tracking-wide text-brand-muted; }
   .world-dot { @apply mr-2 inline-block h-2 w-2 shrink-0 rounded-full; }
   .world-dot[data-severity="high"] { background: #d9534f; }
   .world-dot[data-severity="warn"] { background: rgb(var(--color-brass)); }
   .world-dot[data-severity="info"] { background: rgb(var(--color-muted)); }
-  .world-layers { @apply absolute z-10 flex flex-wrap gap-1.5; left: .75rem; bottom: 2.25rem; right: 4.5rem; }
+  .world-layers { @apply absolute z-10 flex flex-wrap gap-1; left: .75rem; bottom: 2.25rem; right: 4.5rem; }
   .world-chip {
-    @apply material rounded-full border border-brand-border px-3 py-1.5 text-xs font-semibold text-brand-muted tabular-nums
+    @apply material rounded-full border border-brand-border px-4 py-2 text-xs font-semibold text-brand-muted tabular-nums
       transition-colors duration-200 active:scale-[0.97] active:duration-100;
   }
   .world-chip[aria-pressed="true"] { @apply border-brand-accent text-brand-accent; }
   .world-panel {
-    @apply inset-x-3 bottom-3 max-h-[34%] overflow-y-auto p-3 pb-12 text-sm;
+    @apply inset-x-3 bottom-3 max-h-[34%] overflow-y-auto p-4 pb-12 text-sm;
   }
   .world:has(.world-panel) .world-layers { bottom: calc(34% + 1.25rem); }
   /* The credits are a licence condition, so they sit clear of the panel. */
   .world-map .maplibregl-ctrl-bottom-right { bottom: calc(34% + 1rem); }
   .world-row {
-    @apply flex w-full items-baseline justify-between gap-3 rounded-md px-1 py-1.5 text-left
+    @apply flex w-full items-baseline justify-between gap-4 rounded-md px-1 py-2 text-left
       transition-colors duration-200 hover:bg-brand-text/5 active:scale-[0.99] active:duration-100;
   }
   @media (min-width: 1024px) {
@@ -1007,7 +1011,7 @@
   /* One upstream, documented: what we call, how often, and how their field names become ours. */
   .map-row {
     @apply grid grid-cols-[1fr_auto_1fr] items-baseline gap-x-2 border-b border-brand-border
-           py-1.5 text-xs last:border-0;
+           py-2 text-xs last:border-0;
   }
   .map-from { @apply truncate font-mono text-brand-muted; }
   .map-to { @apply truncate font-mono text-brand-text; }
@@ -1015,11 +1019,11 @@
   /* A row of the endpoint and upstream tables. Grid rather than <table> so it can collapse to
      stacked rows on a phone without a horizontal scrollbar. */
   .doc-row {
-    @apply grid gap-x-4 gap-y-1 border-b border-brand-border py-2.5 last:border-0
+    @apply grid gap-x-4 gap-y-2 border-b border-brand-border py-2 last:border-0
            sm:grid-cols-[auto_1fr_auto] sm:items-baseline;
   }
   .doc-method {
-    @apply inline-flex h-5 shrink-0 items-center rounded px-1.5 text-[10px] font-bold uppercase
+    @apply inline-flex h-5 shrink-0 items-center rounded px-2 text-[10px] font-bold uppercase
            tracking-wide bg-brand-accent/10 text-brand-accent;
   }
   .doc-role {
@@ -1033,7 +1037,7 @@
      (WCAG 2.2 AA, 2.5.8) and awkward to hit on a phone besides. The negative margin keeps the
      visual position unchanged while the box around it grows. */
   .link-action {
-    @apply inline-flex min-h-[32px] items-center rounded px-1.5 -mx-0.5 underline
+    @apply inline-flex min-h-[32px] items-center rounded px-2 -mx-2 underline
            hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2
            focus-visible:ring-brand-accent;
   }
@@ -1046,13 +1050,13 @@
   /* A row of the full board on /transit/. Grid, so the clock times line up down the page and
      the destination is the only column that flexes. */
   .board-row {
-    @apply grid grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-1 py-2.5
+    @apply grid grid-cols-[auto_1fr_auto] items-center gap-x-4 gap-y-2 py-2
            first:pt-0 last:pb-0;
   }
 
   .dep-line {
     @apply inline-flex h-6 min-w-[1.75rem] shrink-0 items-center justify-center rounded
-           bg-brand-accent/10 px-1.5 text-xs font-bold tabular-nums text-brand-accent;
+           bg-brand-accent/10 px-2 text-xs font-bold tabular-nums text-brand-accent;
   }
 
   /* The command palette.
@@ -1078,7 +1082,7 @@
 
   .palette-item {
     scroll-margin-top: 0;
-    @apply flex cursor-pointer items-baseline justify-between gap-4 px-4 py-2.5 text-sm;
+    @apply flex cursor-pointer items-baseline justify-between gap-4 px-4 py-2 text-sm;
   }
 
   /* Highlighted from aria-selected, so what is announced and what is drawn cannot disagree. */
@@ -1092,20 +1096,20 @@
 
   /* The opener in the rail. Quiet - it is a hint that a shortcut exists, not a primary action. */
   .palette-opener {
-    @apply flex w-full items-center gap-2 rounded-lg border border-brand-border px-3 py-2
+    @apply flex w-full items-center gap-2 rounded-lg border border-brand-border px-4 py-2
            text-sm text-brand-muted transition-colors duration-150
            hover:border-brand-accent/40 hover:text-brand-text;
   }
 
   .palette-chord {
-    @apply shrink-0 rounded border border-brand-border px-1.5 py-0.5 text-[11px]
+    @apply shrink-0 rounded border border-brand-border px-2 py-1 text-[11px]
            font-sans text-brand-muted;
   }
 
   /* A segmented control. aria-pressed carries the state; the styling follows it rather than a
      class, so the two cannot disagree about which segment is active. */
   .seg {
-    @apply rounded-md px-3 py-1.5 text-sm font-medium text-brand-muted transition-colors duration-150
+    @apply rounded-md px-4 py-2 text-sm font-medium text-brand-muted transition-colors duration-150
            hover:text-brand-text
            aria-[pressed=true]:bg-brand-accent/10 aria-[pressed=true]:text-brand-accent
            aria-[pressed=true]:font-semibold;
@@ -1121,7 +1125,7 @@
   }
 
   .msg-row {
-    @apply grid cursor-pointer list-none items-baseline gap-x-3 gap-y-0.5 px-2 py-3
+    @apply grid cursor-pointer list-none items-baseline gap-x-4 gap-y-2 px-2 py-4
            transition-colors duration-150 hover:bg-brand-surface
            focus-visible:outline-none focus-visible:bg-brand-surface
            focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-accent
@@ -1145,7 +1149,7 @@
   /* Unread is weight plus a dot, never the dot alone - a single coloured dot is exactly the
      kind of meaning that disappears for anyone who cannot distinguish it. */
   .msg-dot {
-    @apply mt-1.5 h-2 w-2 shrink-0 rounded-full bg-transparent;
+    @apply mt-2 h-2 w-2 shrink-0 rounded-full bg-transparent;
   }
 
   .msg[data-read="false"] .msg-dot {
@@ -1174,7 +1178,7 @@
 
   /* A shortcut, with its own count when it has one. */
   .tile {
-    @apply flex h-full flex-col gap-1 rounded-lg border border-brand-border bg-brand-surface p-5
+    @apply flex h-full flex-col gap-1 rounded-lg border border-brand-border bg-brand-surface p-6
            transition-colors duration-200
            hover:border-brand-accent/40 focus-visible:border-brand-accent/40;
   }
@@ -1213,7 +1217,7 @@
      so the card was mostly a hole. With fewer than two visible tiles it becomes one line, icon and
      label side by side, and the placeholder goes. */
   .tiles:not(:has(> li:not(.hidden) ~ li:not(.hidden))) .tile {
-    @apply flex-row items-center gap-3 py-3;
+    @apply flex-row items-center gap-4 py-4;
   }
   .tiles:not(:has(> li:not(.hidden) ~ li:not(.hidden))) .tile-count--none {
     display: none;
@@ -1292,8 +1296,8 @@
   .dark .an-wrap, .chrome-dark .an-wrap { --chart: 214 178 96; }  /* #d6b260 */
 
   .an-live {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-brand-border
-           bg-brand-surface px-3 py-1 text-sm font-medium text-brand-text tabular-nums;
+    @apply inline-flex items-center gap-1 rounded-full border border-brand-border
+           bg-brand-surface px-4 py-1 text-sm font-medium text-brand-text tabular-nums;
   }
   .an-live-dot {
     @apply h-2 w-2 rounded-full;
@@ -1329,11 +1333,11 @@
   .an-panel { @apply flex flex-col; }
   .an-panel-head { @apply flex flex-wrap items-center justify-between gap-2; }
   .an-panel-title { @apply text-base font-semibold text-brand-text; }
-  .an-panel-hint { @apply mt-1 text-xs text-brand-muted; }
+  .an-panel-hint { @apply mt-2 text-xs text-brand-muted; }
 
   /* The drill-down's active filters: a click on the chip drops it. */
   .an-chip {
-    @apply inline-flex items-center gap-1.5 rounded-full bg-brand-accent/15 px-3 py-1 text-xs
+    @apply inline-flex items-center gap-1 rounded-full bg-brand-accent/15 px-4 py-1 text-xs
            font-medium text-brand-text transition-[background-color,transform] duration-100
            ease-out hover:bg-brand-accent/25
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent;
@@ -1360,9 +1364,9 @@
     .an-chip:active, .an-pick:active { transform: none; }
   }
 
-  .an-tabs { @apply flex gap-1 rounded-lg bg-brand-bg p-0.5; }
+  .an-tabs { @apply flex gap-1 rounded-lg bg-brand-bg p-1; }
   .an-tab {
-    @apply rounded-md px-2.5 py-1 text-xs font-medium text-brand-muted transition-colors
+    @apply rounded-md px-2 py-1 text-xs font-medium text-brand-muted transition-colors
            hover:text-brand-text focus-visible:outline-none focus-visible:ring-2
            focus-visible:ring-brand-accent;
   }
@@ -1389,7 +1393,7 @@
   }
   .an-tip {
     @apply pointer-events-none absolute z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border
-           border-brand-border bg-brand-surface px-3 py-2 text-xs shadow-lg;
+           border-brand-border bg-brand-surface px-4 py-2 text-xs shadow-lg;
   }
   @media (prefers-reduced-motion: reduce) { .an-live-dot { animation: none; } }
 
@@ -1397,7 +1401,7 @@
      A field is a row: name left, value right, monospace so a stray space is visible. A source
      field that feeds the selected profile field is lit in chart ink, the way a selected KPI is. */
   .dm-field {
-    @apply flex w-full items-baseline justify-between gap-3 rounded-md px-2 py-1 text-left text-sm;
+    @apply flex w-full items-baseline justify-between gap-4 rounded-md px-2 py-1 text-left text-sm;
   }
   button.dm-field { @apply transition-colors hover:bg-brand-bg/60; }
   button.dm-field:focus-visible { @apply outline-none ring-2 ring-inset ring-brand-accent; }
@@ -1409,19 +1413,19 @@
   .dm-name { @apply shrink-0 font-mono text-xs text-brand-muted; }
   .dm-val { @apply break-all font-mono text-xs text-brand-text; }
   .dm-op { @apply font-sans text-brand-muted; }
-  .dm-step { @apply space-y-0.5 rounded-md border border-brand-border p-2; }
+  .dm-step { @apply space-y-2 rounded-md border border-brand-border p-2; }
   .dm-step[data-won="true"] { border-color: rgb(var(--chart)); }
   .dm-step[data-lost="true"] .dm-final .dm-v { @apply line-through; }
   .dm-tag { @apply text-xs font-semibold text-brand-muted; }
   .dm-step[data-won="true"] .dm-tag { color: rgb(var(--chart)); }
-  .dm-result { @apply rounded-md bg-brand-bg p-3; }
+  .dm-result { @apply rounded-md bg-brand-bg p-4; }
   /* A favourite's row in a league table, lit in chart ink like a favourite's game. */
   .lg-fav { background: rgb(var(--chart) / 10%); }
 
   /* ---- /status/ ------------------------------------------------------------------------
      Status colours are reserved for state and always sit beside a word ("Up", "Down"). Green is
      the validated chart ink; amber and rose are the Tailwind 500/600 steps. */
-  .st-banner { @apply flex items-center gap-3 px-5 py-4; }
+  .st-banner { @apply flex items-center gap-4 px-6 py-4; }
   .st-dot { @apply inline-block h-2.5 w-2.5 rounded-full bg-brand-muted/50; }
   .st-dot[data-state="up"], .st-banner[data-state="up"] .st-dot { background: #059669; }
   .st-dot[data-state="down"], .st-banner[data-state="down"] .st-dot { background: #e11d48; }
@@ -1439,8 +1443,8 @@
 
   /* The footer badge. The footer is chrome-dark in both themes, so these are the dark steps. */
   .st-badge {
-    @apply mt-8 inline-flex items-center gap-3 rounded-full border border-brand-border
-           bg-brand-surface/60 py-2 pl-4 pr-5 transition-colors duration-200 hover:border-brand-accent;
+    @apply mt-8 inline-flex items-center gap-4 rounded-full border border-brand-border
+           bg-brand-surface/60 py-2 pl-4 pr-6 transition-colors duration-200 hover:border-brand-accent;
   }
   .st-pulse { @apply relative inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-brand-muted/60; }
   .st-badge[data-state="up"] .st-pulse { background: #34d399; }
@@ -1469,7 +1473,7 @@
   }
 
   .stat-card {
-    @apply grid gap-1 rounded-lg border border-brand-border bg-brand-surface p-5
+    @apply grid gap-1 rounded-lg border border-brand-border bg-brand-surface p-6
            transition-colors duration-200
            hover:border-brand-accent/40 focus-visible:border-brand-accent/40;
   }
@@ -1513,7 +1517,7 @@
   /* Service state. Three tones and a word - never the colour alone, which says nothing to
      anyone who cannot distinguish it and nothing at all when the page is printed. */
   .status-pill {
-    @apply inline-block shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+    @apply inline-block shrink-0 rounded-full px-2 py-1 text-xs font-semibold;
   }
 
   .status-pill--up {
@@ -1529,7 +1533,7 @@
   }
 
   .side-pref {
-    @apply flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-brand-text
+    @apply flex w-full items-center gap-4 rounded-lg px-4 py-2 text-sm text-brand-text
            hover:bg-brand-bg transition-colors duration-150;
   }
 
@@ -1563,7 +1567,7 @@
      board rows 55px. The reserved box has to be the box that gets filled, or this trades one
      shift for a smaller one. */
   .skel-row {
-    @apply flex items-center gap-3 py-2 first:pt-0 last:pb-0;
+    @apply flex items-center gap-4 py-2 first:pt-0 last:pb-0;
   }
 
   /* The profile block at the foot of the rail.
@@ -1610,8 +1614,8 @@
      only exists once opened has to be laid out at the moment it appears, which is when the
      flicker would be most obvious. */
   .wx-chip {
-    @apply inline-flex items-center gap-3 rounded-xl border border-brand-border bg-brand-surface
-           px-3 py-2 text-left transition-colors duration-200
+    @apply inline-flex items-center gap-4 rounded-xl border border-brand-border bg-brand-surface
+           px-4 py-2 text-left transition-colors duration-200
            hover:border-brand-accent/40 hover:bg-brand-surface;
   }
 
@@ -1620,7 +1624,7 @@
   .wx-panel {
     @apply invisible opacity-0 absolute right-0 z-30 mt-2 w-[min(28rem,calc(100vw-2rem))]
            max-h-[min(70vh,34rem)] overflow-y-auto
-           rounded-xl border border-brand-border bg-brand-surface p-5 shadow-xl
+           rounded-xl border border-brand-border bg-brand-surface p-6 shadow-xl
            transition-opacity duration-150;
   }
 
@@ -1699,25 +1703,25 @@
   .chat-log:focus-visible { outline-offset: -2px; }
   .chat-hint { @apply text-sm text-brand-muted; }
 
-  .chat-turn { @apply flex flex-col gap-1.5; }
+  .chat-turn { @apply flex flex-col gap-1; }
   .chat-ask {
     @apply ml-auto max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-md
-           bg-brand-accent px-3 py-2 text-sm text-brand-onaccent;
+           bg-brand-accent px-4 py-2 text-sm text-brand-onaccent;
   }
   .chat-reply {
     @apply mr-auto max-w-[92%] break-words rounded-2xl rounded-bl-md border border-brand-border
-           bg-brand-surface px-3 py-2 text-sm leading-relaxed;
+           bg-brand-surface px-4 py-2 text-sm leading-relaxed;
   }
   .chat-words:empty, .chat-state:empty, .chat-meta:empty, .chat-count:empty { display: none; }
-  .chat-words + .chat-state:not(:empty) { @apply mt-1; }
+  .chat-words + .chat-state:not(:empty) { @apply mt-2; }
   .chat-sentence { animation: chat-arrive 240ms ease-out; }
   .chat-state { @apply tabular-nums text-brand-muted; }
   .is-waiting .chat-state { animation: chat-breathe 1.6s ease-in-out infinite; }
   .chat-meta { @apply mr-auto px-1 text-xs text-brand-muted; }
-  .chat-suggest { @apply mr-auto flex max-w-[92%] flex-wrap gap-1.5 px-1; }
+  .chat-suggest { @apply mr-auto flex max-w-[92%] flex-wrap gap-1 px-1; }
   .chat-suggest:empty { display: none; }
   .chat-pill {
-    @apply rounded-full border border-brand-border bg-brand-surface px-3 py-1.5 text-left text-xs
+    @apply rounded-full border border-brand-border bg-brand-surface px-4 py-2 text-left text-xs
            text-brand-text transition duration-200 hover:border-brand-accent hover:text-brand-accent
            active:scale-[0.97] active:duration-100;
     animation: chat-arrive 240ms ease-out;
@@ -1726,16 +1730,16 @@
   .chat-suggest-old:not(:last-child)::after { content: " \00b7  "; }
   .chat-link { @apply text-brand-accent underline underline-offset-2 hover:no-underline; }
 
-  .chat-foot { @apply shrink-0 space-y-1.5 border-t border-brand-border bg-brand-surface p-3; }
+  .chat-foot { @apply shrink-0 space-y-2 border-t border-brand-border bg-brand-surface p-4; }
   .chat-form {
-    @apply flex items-end gap-2 rounded-2xl border border-brand-border bg-brand-bg p-1.5
+    @apply flex items-end gap-2 rounded-2xl border border-brand-border bg-brand-bg p-2
            transition-colors duration-200 focus-within:border-brand-accent focus-within:ring-1
            focus-within:ring-brand-accent;
   }
   /* 1rem on a phone: iOS zooms the page into any field below that. The field grows with what is
      typed where the browser can (field-sizing) and scrolls in a fixed row where it cannot. */
   .chat-input {
-    @apply max-h-28 min-h-[2.25rem] w-full resize-none bg-transparent px-2 py-1.5 text-base
+    @apply max-h-28 min-h-[2.25rem] w-full resize-none bg-transparent px-2 py-2 text-base
            text-brand-text placeholder:text-brand-muted focus:outline-none read-only:opacity-60 sm:text-sm;
     field-sizing: content;
   }
@@ -1803,7 +1807,7 @@
   }
 
   .field-label {
-    @apply block mb-1 font-medium text-brand-text;
+    @apply block mb-2 font-medium text-brand-text;
   }
 
   .field {
@@ -1821,16 +1825,16 @@
      the surrounding prose rather than higher. An identifier is the part of a sentence a reader
      is scanning for. */
   code {
-    @apply rounded bg-brand-muted/10 px-1 py-0.5 text-[0.9em] text-brand-text;
+    @apply rounded bg-brand-muted/10 px-1 py-1 text-[0.9em] text-brand-text;
   }
 
   .hint {
-    @apply mt-1 text-xs text-brand-muted;
+    @apply mt-2 text-xs text-brand-muted;
   }
 
   /* Long-form legal prose: readable measure, clear hierarchy, tokenised colours. */
   .legal h2 { @apply text-2xl font-bold text-brand-text mt-12 mb-4; }
-  .legal h3 { @apply text-lg font-bold text-brand-text mt-8 mb-3; }
+  .legal h3 { @apply text-lg font-bold text-brand-text mt-8 mb-4; }
   .legal p  { @apply text-brand-muted leading-relaxed mb-4; }
   .legal li { @apply text-brand-muted leading-relaxed; }
   .legal ul { @apply list-disc pl-6 mb-4 space-y-2; }
@@ -1838,8 +1842,8 @@
   .legal a  { @apply text-brand-accent underline hover:no-underline; }
   .legal strong { @apply text-brand-text font-semibold; }
   .legal table  { @apply w-full text-left text-sm border-collapse mb-6; }
-  .legal th { @apply text-brand-text font-semibold p-3 border-b-2 border-brand-border align-top; }
-  .legal td { @apply text-brand-muted p-3 border-b border-brand-border align-top; }
+  .legal th { @apply text-brand-text font-semibold p-4 border-b-2 border-brand-border align-top; }
+  .legal td { @apply text-brand-muted p-4 border-b border-brand-border align-top; }
 
   /* Keyboard-only "skip to content" link (WCAG 2.4.1) */
   .skip-link {
@@ -1881,12 +1885,12 @@
      .shadow-glow` would miss the `hover:shadow-glow` variant, which Tailwind emits as its own
      class and which eight of the eleven uses are. */
   .shadow-glow {
-    box-shadow: 0 10px 15px -3px rgb(var(--color-accent) / 0.2);
+    box-shadow: 0 8px 16px rgb(var(--color-accent) / 0.2);
     transition: box-shadow 0.3s ease;
   }
 
   .shadow-glow:hover {
-      box-shadow: 0 20px 25px -5px rgb(var(--color-accent) / 0.4);
+      box-shadow: 0 16px 32px rgb(var(--color-accent) / 0.4);
   }
 }
 
@@ -1894,7 +1898,7 @@
    the card surface with the page's text colour, and drops the tip, which would need re-inking
    for each of its four anchors. */
 .bus-popup .maplibregl-popup-content {
-  @apply rounded-lg bg-brand-surface px-3 py-2 text-sm text-brand-text shadow-lg;
+  @apply rounded-lg bg-brand-surface px-4 py-2 text-sm text-brand-text shadow-lg;
 }
 .bus-popup .maplibregl-popup-tip {
   @apply hidden;

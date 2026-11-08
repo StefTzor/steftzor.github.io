@@ -127,7 +127,7 @@ function messageRow(m) {
   meta.className = "msg-when flex items-center gap-2";
   if (!m.notified) {
     const warn = document.createElement("span");
-    warn.className = "rounded-full bg-amber-600/15 px-2 py-0.5 text-[11px] font-semibold " +
+    warn.className = "rounded-full bg-amber-600/15 px-2 py-1 text-[11px] font-semibold " +
       "text-amber-700 dark:text-amber-300";
     // Stored but never mailed: the only sign that a message arrived and the notification did not.
     warn.textContent = "not emailed";
@@ -165,7 +165,7 @@ function messageRow(m) {
 
   const text = document.createElement("p");
   // A measure, not the width of the page: this is prose somebody wrote.
-  text.className = "mt-3 max-w-prose whitespace-pre-wrap break-words text-sm text-brand-text";
+  text.className = "mt-4 max-w-prose whitespace-pre-wrap break-words text-sm text-brand-text";
   text.textContent = m.message;
 
   const actions = document.createElement("div");
@@ -247,7 +247,7 @@ function messageRow(m) {
     : "This deletes the stored message, and cannot be undone. Nothing was emailed for this one.";
 
   const confirmActions = document.createElement("div");
-  confirmActions.className = "mt-3 flex flex-wrap gap-3";
+  confirmActions.className = "mt-4 flex flex-wrap gap-4";
   const go = document.createElement("button");
   go.type = "button";
   go.className = "btn-primary text-sm";

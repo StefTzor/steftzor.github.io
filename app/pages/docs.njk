@@ -16,7 +16,7 @@ bodyScripts:
 ---
 <section class="app-page">
 
-  <h1 class="flex items-center gap-3 text-3xl font-bold text-brand-text">
+  <h1 class="flex items-center gap-4 text-3xl font-bold text-brand-text">
     {% icon "fa-solid-network-wired", "h-7 w-7 text-brand-accent" %}
     <span>How this is built</span>
   </h1>
@@ -28,17 +28,17 @@ bodyScripts:
   {# Only ever filled for an Admin, from the API: this page is public HTML, so nothing about how
      the machine is arranged can be written into it. Empty and hidden for everybody else. #}
   <section id="owner" aria-labelledby="owner-heading" class="mt-10" hidden>
-    <h2 id="owner-heading" class="text-xl font-bold text-brand-text mb-1">Owner's notes</h2>
+    <h2 id="owner-heading" class="text-xl font-bold text-brand-text mb-2">Owner's notes</h2>
     <p class="hint">Only you see this part. It comes from the private API.</p>
-    <div id="ownerSections" class="mt-4 space-y-3"></div>
+    <div id="ownerSections" class="mt-4 space-y-4"></div>
   </section>
 
   {# --- the flow -----------------------------------------------------------
      Drawn rather than described because the one thing people get wrong about this setup is which
      box talks to which, and a list of hostnames does not answer that. #}
   <section aria-labelledby="flow-heading" class="mt-10">
-    <h2 id="flow-heading" class="text-xl font-bold text-brand-text mb-1">Where a request goes</h2>
-    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+    <h2 id="flow-heading" class="text-xl font-bold text-brand-text mb-2">Where a request goes</h2>
+    <p class="text-base text-brand-muted mb-4 max-w-prose">
       The two sites are static files. Everything that needs a key, a database or a verified identity
       goes through the API.
     </p>
@@ -52,7 +52,7 @@ bodyScripts:
        that states its own rules has to change them in the same commit as the code, so here is the
        narrower claim that is still true, and the exception said out loud rather than hidden by a
        word like "generally". #}
-    <p class="hint mt-3 max-w-prose">
+    <p class="hint mt-4 max-w-prose">
       Everything that needs a key, a database or an identity goes through the API: six of the
       upstreams need a credential, and a key in a page is a key anyone can read with View Source.
       The one thing that does not is the basemap. Map tiles are fetched one per square as you pan,
@@ -67,8 +67,8 @@ bodyScripts:
 
   {# --- the deployables ---------------------------------------------------- #}
   <section aria-labelledby="deploy-heading" class="mt-10">
-    <h2 id="deploy-heading" class="text-xl font-bold text-brand-text mb-1">The three deployables</h2>
-    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+    <h2 id="deploy-heading" class="text-xl font-bold text-brand-text mb-2">The three deployables</h2>
+    <p class="text-base text-brand-muted mb-4 max-w-prose">
       Two of them are built from the same repository by two Eleventy configurations that share one
       set of includes and one stylesheet, so both draw their chrome from the same implementation.
     </p>
@@ -105,8 +105,8 @@ bodyScripts:
      The section this page mostly exists for. "The database" sounds like one thing and is four,
      and three of the four are not the one people mean. #}
   <section aria-labelledby="data-heading" class="mt-10">
-    <h2 id="data-heading" class="text-xl font-bold text-brand-text mb-1">Where data lives</h2>
-    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+    <h2 id="data-heading" class="text-xl font-bold text-brand-text mb-2">Where data lives</h2>
+    <p class="text-base text-brand-muted mb-4 max-w-prose">
       Four places, and they hold very different things. The weather, the departures and the
       Formula 1 data are not stored anywhere.
     </p>
@@ -114,7 +114,7 @@ bodyScripts:
     <ul class="grid gap-4 sm:grid-cols-2">
       <li class="card">
         <h3 class="font-semibold text-brand-text">Firebase Authentication</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           Email addresses and password hashes. The browser trades a password for a signed token, and
           the API only ever sees the token. Deleting an account here is what actually stops somebody
           signing in; everything else is a record about them.
@@ -122,7 +122,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Firestore</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           One document per account: name, role, approval state, home location, home stop, favourite
           teams. The role
           is read from here on <em>every single request</em>. It is a separate store from the one
@@ -131,7 +131,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Postgres</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           Seventeen tables. Contact submissions, a row per process start, which migrations have run, and
           the one-row table holding the secret behind the visitor number below. Four hold the chat,
           for signed-in users only: conversations, messages, notes and the Memory switch. One holds a
@@ -160,7 +160,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Memory</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           Every upstream answer is cached in the API process for between 15 seconds and a day,
           and lost on restart, except the sports data and the bus timetable, which are also saved to Postgres. A bus or a
           race lives in memory and nowhere else, so there is no history of either to browse.
@@ -172,7 +172,7 @@ bodyScripts:
        nothing could take anything out of, and a page called "where data lives" that cannot say
        how data leaves is only half a map. The last two sentences are the ones that matter: the
        emailed copy is real, it is outside all four stores, and no endpoint here reaches it. #}
-    <p class="text-sm text-brand-muted mt-4 max-w-prose">
+    <p class="text-base text-brand-muted mt-4 max-w-prose">
       Until recently nothing in this system could take a person out of any of them. It can now:
       erasure takes one email address and removes that address's contact messages and its
       account's chat rows from Postgres, its account document from Firestore and its sign-in from Firebase Authentication, then
@@ -180,7 +180,7 @@ bodyScripts:
       action across three stores, because that is how far a person is spread: deleting from one
       leaves the other two still holding them.
     </p>
-    <p class="text-sm text-brand-muted mt-3 max-w-prose">
+    <p class="text-base text-brand-muted mt-4 max-w-prose">
       There is a fifth place, and it is the honest part of this page. A message sent through the
       contact form is stored <em>and</em> emailed, so a copy sits in a mailbox and in the mail
       provider's delivery log. Neither is a store this code owns, and nothing in the endpoint list
@@ -191,12 +191,12 @@ bodyScripts:
     {# The two properties count differently, and a reader who noticed the banner on one site and
        not on the other deserves the reason rather than the appearance of an oversight. #}
     <h3 class="mt-8 font-semibold text-brand-text">Why the two sites count differently</h3>
-    <p class="text-sm text-brand-muted mt-2 max-w-prose">
+    <p class="text-base text-brand-muted mt-2 max-w-prose">
       The public site counts only after you say yes. The banner is opt-in, declining means nothing
       is counted at all, and that has not changed. What changed is only where the count goes: to the
       API above, not to a third party.
     </p>
-    <p class="text-sm text-brand-muted mt-3 max-w-prose">
+    <p class="text-base text-brand-muted mt-4 max-w-prose">
       This app counts every page load, with no banner. It is behind a login, everyone here is an
       approved account holder, and counting loads of your own service for the running of that
       service is operational telemetry, not audience measurement. A row here carries the same
@@ -207,7 +207,7 @@ bodyScripts:
         class="text-brand-accent underline hover:no-underline">the privacy notice</a> are for; a
       count nobody is told about would be the same count with the honesty taken out.
     </p>
-    <p class="text-sm text-brand-muted mt-3 max-w-prose">
+    <p class="text-base text-brand-muted mt-4 max-w-prose">
       "Everyone here is a known account holder" has to be true of the code, not only of the intent,
       and for a while it was not: these pages are static files that anyone can fetch, and the
       sign-in is a redirect JavaScript performs once one has loaded, so a stranger opening
@@ -215,7 +215,7 @@ bodyScripts:
       <code>shell.js</code> only after <code>/me</code> has confirmed the session, which is the
       earliest moment that sentence means anything. Not signed in, not counted.
     </p>
-    <p class="text-sm text-brand-muted mt-3 max-w-prose">
+    <p class="text-base text-brand-muted mt-4 max-w-prose">
       Erasure does not reach this table, and an email address is not a handle it could be pointed
       at. A view row carries no account and no address. It does carry the number, which groups one
       browser's page loads inside a single day and stops there, because the next day's secret is a
@@ -228,8 +228,8 @@ bodyScripts:
      Describes the design, and leaves out every number an abuser could plan around: the limits, the
      queue length and the cap live in the Owner's notes. So does where the model runs. #}
   <section aria-labelledby="chat-heading" class="mt-10">
-    <h2 id="chat-heading" class="text-xl font-bold text-brand-text mb-1">The chat</h2>
-    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+    <h2 id="chat-heading" class="text-xl font-bold text-brand-text mb-2">The chat</h2>
+    <p class="text-base text-brand-muted mb-4 max-w-prose">
       The panel behind the corner button answers questions about this site, the app and how they are
       built. It runs an open model, Gemma 4 through llama.cpp, on a second server of mine. Questions go
       to no AI company. Only the API talks to the model, and the model has no tools and sees only what
@@ -240,7 +240,7 @@ bodyScripts:
     <ul class="grid gap-4 sm:grid-cols-2">
       <li class="card">
         <h3 class="font-semibold text-brand-text">The library</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           Most questions are answered from a library of ready answers, written from this site's own
           pages. Each sentence is checked against a quote from the page it came from. Answers about me
           are given word for word by code. When the library has no ready answer, the model gets short
@@ -251,7 +251,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Routing</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           A question goes through the same steps in order. The rules and refusals come first: the guard,
           the questions about me, and a technology the fact sheet does not have. Then the library's
           ready answers, chosen by code. Then the live tools. Then, if the library has no ready answer,
@@ -262,7 +262,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">The fact sheet</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           The model reads short lines written by hand, not the whole site. Every line carries a quote
           that must appear in the public page it cites, and a check over the built pages fails if a
           quote has gone, as does one over the live pages when the API deploys. The sources under an answer come from the routed sections, never from the
@@ -271,7 +271,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Finding the facts</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           Each technical line of the fact sheet is held in the API as an embedding, a list of numbers
           for its meaning. A second small model on the same server does the same to the question, and
           the closest lines go to the chat model beside the keyword hits, in place of whole sections.
@@ -281,7 +281,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Live tools</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           The weather, the next race, the standings, departures, results and site status come from
           read-only tools. Code picks the tool from keywords and code writes the sentences from its
           result, so the model is not involved. Departures need a sign-in, and the account comes from
@@ -290,7 +290,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Guardrails</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           A question that tries to steer the model gets the fixed reply before routing, and an earlier
           question, a note or a stored turn that does the same is dropped. Email addresses, phone
           numbers, card-like numbers and long digit runs are masked in the model's sentences before
@@ -299,7 +299,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">The cache</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           Library answers aren't cached, because code wrote them. Only a model answer to a standalone
           question is held in the API's memory for a short time, so the same question costs no model
           time. That means no earlier questions, notes or tool, and for a signed-in account only with
@@ -308,7 +308,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Traces</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           Questions are kept for 30 days, masked, with no IP address or account. Each one leaves a row
           with the route, the lines picked and their scores, the tool, how it ended and the timings.
           It holds no answer, and with Memory off no question text either. An admin page reads them,
@@ -317,7 +317,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">The eval gate</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           A set of test questions runs against the real model by hand, because CI cannot reach it. A
           full pass records a hash of the prompt, facts, retrieval, checks, tools and questions, and
           the API's test suite fails if any of them changes without a new pass.
@@ -325,7 +325,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">The sentence check</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           The API holds each sentence until it ends, checks it, and only then sends it. A sentence
           fails if it has a technology, number, employer or qualification the check can tell is not
           in the fact sheet, opens with yes or no, has no word from the fact sheet, or names me, because
@@ -339,7 +339,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Answers about me</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           Lines about me never reach the model. A question that lands only on a section about me
           never does either: code returns the matching lines of the fact sheet word for word, so
           nothing can be invented. A question that also touches the site gets the model's sentences
@@ -348,7 +348,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">The queue</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           Questions take turns on the model. Others wait in a short queue and the panel shows
           their place; past that comes a plain busy reply. Closing the panel cancels the answer and
           frees the model. If the model is down the panel says it is resting and the rest of the
@@ -357,7 +357,7 @@ bodyScripts:
       </li>
       <li class="card">
         <h3 class="font-semibold text-brand-text">Memory</h3>
-        <p class="hint mt-1">
+        <p class="hint mt-2">
           For signed-in users only, and every query a user can reach filters on the signed-in account. Conversations are
           stored as they happened. Once one goes quiet, a background job turns the user's questions into
           short notes, when nobody is waiting for the model, and code throws away any note that
@@ -376,8 +376,8 @@ bodyScripts:
 
   {# --- endpoints ----------------------------------------------------------- #}
   <section aria-labelledby="api-heading" class="mt-10">
-    <h2 id="api-heading" class="text-xl font-bold text-brand-text mb-1">The endpoints</h2>
-    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+    <h2 id="api-heading" class="text-xl font-bold text-brand-text mb-2">The endpoints</h2>
+    <p class="text-base text-brand-muted mb-4 max-w-prose">
       Every route the API serves, and the lowest role that may call it, grouped and folded away
       on a narrow screen. Each one re-reads your role
       and approval from Firestore before doing anything, because a token proves who signed in, not
@@ -404,8 +404,8 @@ bodyScripts:
      anything interesting in. "We call an API" describes nothing; which endpoint, how often it
      may be called, and whose field became which of ours is where the work actually is. #}
   <section aria-labelledby="up-heading" class="mt-10">
-    <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-1">The upstreams, in detail</h2>
-    <p class="text-sm text-brand-muted mb-6 max-w-prose">
+    <h2 id="up-heading" class="text-xl font-bold text-brand-text mb-2">The upstreams, in detail</h2>
+    <p class="text-base text-brand-muted mb-6 max-w-prose">
       Twenty-four of the twenty-five are called by the server. Six of those need a credential, which has to
       stay on the server; the rest so that one call serves every reader, and for the three sports
       sources, so a page reads a saved copy rather than three unofficial sites. The twenty-fifth is the
@@ -414,7 +414,7 @@ bodyScripts:
       entry below, because they do one job, and so do the two papers. Each one below lists what is called, how long an answer
       is held, and how their field names become ours.
     </p>
-    <p class="text-sm text-brand-muted mb-6 max-w-prose">
+    <p class="text-base text-brand-muted mb-6 max-w-prose">
       In the mapping tables, theirs is on the left and ours on the right. A row marked
       <em>derived</em> is something nobody sent: it is worked out here, and those rows are the
       decisions, not the transport.
@@ -422,7 +422,7 @@ bodyScripts:
 
     {%- for up in upstreams %}
     <details class="group card mb-4" {% if loop.first %}open{% endif %}>
-      <summary class="flex cursor-pointer select-none flex-wrap items-center gap-x-3 gap-y-1
+      <summary class="flex cursor-pointer select-none flex-wrap items-center gap-x-4 gap-y-2
         list-none [&::-webkit-details-marker]:hidden focus-visible:outline-none
         focus-visible:ring-2 focus-visible:ring-brand-accent rounded">
         <span class="text-base font-bold text-brand-text">{{ up.name }}</span>
@@ -433,7 +433,7 @@ bodyScripts:
 
       <p class="hint mt-2 max-w-prose">{{ up.what }}</p>
 
-      <h3 class="mt-5 text-xs font-semibold uppercase tracking-wide text-brand-muted">What is called</h3>
+      <h3 class="mt-6 text-xs font-semibold uppercase tracking-wide text-brand-muted">What is called</h3>
       <div class="mt-2">
         {%- for call in up.calls %}
         <div class="doc-row">
@@ -443,7 +443,7 @@ bodyScripts:
         {%- endfor %}
       </div>
 
-      <h3 class="mt-5 text-xs font-semibold uppercase tracking-wide text-brand-muted">
+      <h3 class="mt-6 text-xs font-semibold uppercase tracking-wide text-brand-muted">
         How it is mapped
       </h3>
       <div class="mt-2">
@@ -462,11 +462,11 @@ bodyScripts:
         {%- endfor %}
       </div>
 
-      <h3 class="mt-5 text-xs font-semibold uppercase tracking-wide text-brand-muted">Worth knowing</h3>
-      <p class="hint mt-1 max-w-prose">{{ up.why }}</p>
+      <h3 class="mt-6 text-xs font-semibold uppercase tracking-wide text-brand-muted">Worth knowing</h3>
+      <p class="hint mt-2 max-w-prose">{{ up.why }}</p>
       <ul class="mt-2 space-y-2">
         {%- for note in up.notes %}
-        <li class="text-sm text-brand-muted max-w-prose">{{ note }}</li>
+        <li class="text-base text-brand-muted max-w-prose">{{ note }}</li>
         {%- endfor %}
       </ul>
     </details>
@@ -481,11 +481,11 @@ bodyScripts:
 
   {# --- conventions ---------------------------------------------------------- #}
   <section aria-labelledby="rules-heading" class="mt-10">
-    <h2 id="rules-heading" class="text-xl font-bold text-brand-text mb-1">Rules the code follows</h2>
-    <p class="text-sm text-brand-muted mb-4 max-w-prose">
+    <h2 id="rules-heading" class="text-xl font-bold text-brand-text mb-2">Rules the code follows</h2>
+    <p class="text-base text-brand-muted mb-4 max-w-prose">
       Each of these is here because breaking it caused a real bug in this codebase.
     </p>
-    <ul class="card space-y-3 text-sm text-brand-text">
+    <ul class="card space-y-4 text-base text-brand-text">
       <li>
         <strong>Check the type before coercing a number.</strong> <code>Number(null)</code> is
         <code>0</code>, <code>Number([])</code> is <code>0</code>, and a query string can produce an
