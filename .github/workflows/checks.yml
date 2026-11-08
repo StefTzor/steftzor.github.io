@@ -21,3 +21,4 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm run build:app
+      - run: node scripts/check-chat-quotes.js _site _app # a page edit must not drop a sentence the chat quotes
