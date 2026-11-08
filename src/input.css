@@ -1718,6 +1718,16 @@
   .chat-state { @apply tabular-nums text-brand-muted; }
   .is-waiting .chat-state { animation: chat-breathe 1.6s ease-in-out infinite; }
   .chat-meta { @apply mr-auto px-1 text-xs text-brand-muted; }
+  .chat-suggest { @apply mr-auto flex max-w-[92%] flex-wrap gap-1 px-1; }
+  .chat-suggest:empty { display: none; }
+  .chat-pill {
+    @apply rounded-full border border-brand-border bg-brand-surface px-4 py-2 text-left text-xs
+           text-brand-text transition duration-200 hover:border-brand-accent hover:text-brand-accent
+           active:scale-[0.97] active:duration-100;
+    animation: chat-arrive 240ms ease-out;
+  }
+  .chat-suggest-old { @apply text-xs text-brand-muted; }
+  .chat-suggest-old:not(:last-child)::after { content: " \00b7  "; }
   .chat-link { @apply text-brand-accent underline underline-offset-2 hover:no-underline; }
 
   .chat-foot { @apply shrink-0 space-y-2 border-t border-brand-border bg-brand-surface p-4; }
@@ -1764,7 +1774,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .chat-panel { --chat-closed: none; transition: opacity 150ms ease-out; }
-    .chat-sentence, .is-waiting .chat-state { animation: none; }
+    .chat-sentence, .chat-pill, .is-waiting .chat-state { animation: none; }
+    .chat-pill:active { transform: none; }
   }
 
   /* On/off, on the native checkbox: label, keyboard and role="switch" all come free. */
