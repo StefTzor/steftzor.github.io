@@ -49,10 +49,10 @@ class FakeEl {
 }
 
 const SRC = read('app/scripts/chat.js').replace(/^import .*$/gm, '').replace(/^export /gm, '');
-const NAMES = ['mount', 'createParser', 'readEvents', 'newTurn', 'reduce', 'stateLine', 'sourceView', 'pickSuggestions', 'turnView', 'turnsFrom', 'LINES'];
+const NAMES = ['mount', 'createParser', 'readEvents', 'newTurn', 'reduce', 'stateLine', 'sourceView', 'pickSuggestions', 'explainLines', 'turnView', 'turnsFrom', 'LINES'];
 const chat = { document: { createElement: (t) => new FakeEl(t) }, TextDecoder, AbortController, window: {}, API_BASE: 'https://api.test' };
 vm.runInNewContext(`${SRC}\n${NAMES.map((n) => `this.${n} = ${n};`).join('\n')}`, chat);
-const { mount, createParser, readEvents, newTurn, reduce, stateLine, sourceView, pickSuggestions, turnView, turnsFrom, LINES } = chat;
+const { mount, createParser, readEvents, newTurn, reduce, stateLine, sourceView, pickSuggestions, explainLines, turnView, turnsFrom, LINES } = chat;
 const plain = (v) => JSON.parse(JSON.stringify(v));
 const play = (turn, events) => events.reduce(reduce, turn);
 
@@ -258,6 +258,44 @@ async function streamChecks() {
   g.paint(play(newTurn('What is X?'), [{ type: 'sentence', text: 'X is a term.' }, { type: 'sources', sources: ['/about/'] }, { type: 'done' }]), false);
   assert.ok(g.root.textContent.includes('X is a term.'), 'a glossary or kit answer is plain sentence events and renders as any sentence');
   ok('glossary and kit answers render as ordinary sentences');
+}
+
+// --- how this was answered ------------------------------------------------------------------
+
+{
+  const model = { type: 'explain', kind: 'model', ms: { total: 7100, embed: 310, model: 6800 }, model: 'gemma-4-E2B-it-Q4_K_M', rejected: 1,
+    facts: [{ source: '/docs/', score: 0.812 }, { source: '/docs/', score: 0.79 }, { source: '/docs/' }, { source: '/code/' }] };
+  assert.deepStrictEqual(plain(explainLines(model)), ['Found 3 facts on /docs/, best match 0.81', 'Found 1 fact on /code/',
+    '1 sentence blocked by the fact check', '6.8 s on the model, Gemma 4 E2B', '7.1 s in all, 0.3 s matching']);
+  assert.deepStrictEqual(plain(explainLines({ kind: 'library', entry: 'who', sources: ['/about/'], ms: { total: 40 } })),
+    ['Ready answer from /about/', '0.0 s in all']);
+  assert.deepStrictEqual(plain(explainLines({ kind: 'owner', sources: ['/about/', '/code/'], ms: { total: 12 } }))[0], 'Fixed lines from /about/, /code/');
+  assert.deepStrictEqual(plain(explainLines({ kind: 'cache', sources: ['/docs/'], ms: { total: 3 } }))[0], 'From the cache');
+  assert.deepStrictEqual(plain(explainLines({ kind: 'tool', tool: 'weather', ms: { total: 300 } }))[0], 'Live tool: weather');
+  assert.deepStrictEqual(plain(explainLines({ kind: 'model', facts: [], rejected: 0, ms: { total: 900, model: 800 } })), ['0.8 s on the model', '0.9 s in all']);
+  assert.deepStrictEqual(plain(explainLines({ kind: 'miss', ms: { total: 5 } })), ['Nothing matched, so the fixed reply', '0.0 s in all']);
+  assert.deepStrictEqual(plain(explainLines(null)), []);
+  assert.deepStrictEqual(plain(explainLines({ kind: 'model', facts: 'x', ms: 'y', tool: 5, model: {} })), []);
+  ok('explain: plain lines for each kind, and nothing from malformed fields');
+
+  const ev = { type: 'explain', kind: 'tool', tool: '<img src=x onerror=alert(1)>', ms: { total: 300 } };
+  const t = play(newTurn('Hi'), [{ type: 'sentence', text: 'Hot.' }, { type: 'done' }, ev]);
+  assert.strictEqual(t.explain.kind, 'tool', 'kept though it comes after done');
+  assert.strictEqual(play(newTurn('Hi'), [ev]).explain, null, 'ignored before done');
+  assert.strictEqual(play(newTurn('Hi'), [{ type: 'busy' }, ev]).explain, null, 'and after a busy');
+
+  const v = turnView('Hi', () => {});
+  v.paint(t, true);
+  const box = v.root.all().find((e) => e.tag === 'details');
+  assert.ok(box && box.className === 'chat-explain', 'a disclosure in the app');
+  assert.strictEqual(box.all().find((e) => e.tag === 'summary').textContent, 'How this was answered');
+  assert.ok(box.textContent.includes('Live tool: <img src=x onerror=alert(1)>'), 'hostile text stays text');
+  v.paint(t, true);
+  assert.strictEqual(v.root.all().filter((e) => e.tag === 'details').length, 1, 'painting again adds none');
+  const pub = turnView('Hi', () => {});
+  pub.paint(t, false);
+  assert.ok(!pub.root.all().some((e) => e.tag === 'details'), 'never on the public panel');
+  ok('explain: a quiet disclosure under the answer in the app only, textContent only');
 }
 
 // --- the panel itself -----------------------------------------------------------------------

@@ -1729,6 +1729,10 @@
   .chat-suggest-old { @apply text-xs text-brand-muted; }
   .chat-suggest-old:not(:last-child)::after { content: " \00b7  "; }
   .chat-link { @apply text-brand-accent underline underline-offset-2 hover:no-underline; }
+  /* How this was answered: the app only, quiet until opened. */
+  .chat-explain { @apply mr-auto px-1 text-xs text-brand-muted; }
+  .chat-explain-head { @apply cursor-pointer select-none rounded transition-colors duration-200 hover:text-brand-text; }
+  .chat-explain-list { @apply mt-1 space-y-0.5 border-l border-brand-border pl-2 tabular-nums; }
 
   .chat-foot { @apply shrink-0 space-y-2 border-t border-brand-border bg-brand-surface p-4; }
   .chat-form {
