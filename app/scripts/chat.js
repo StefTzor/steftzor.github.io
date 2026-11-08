@@ -74,7 +74,7 @@ export async function readEvents(response, onEvent) {
 // --- one question and its answer ------------------------------------------------------------
 
 export const newTurn = (question) => ({
-  question, phase: "reading", position: 0, sentences: [], sources: [], suggestions: [], notes: 0, conversation: null,
+  question, phase: "reading", position: 0, sentences: [], sources: [], suggestions: [], notes: 0, conversation: null, explain: null,
 });
 
 const OPEN = new Set(["reading", "queued", "answering"]);
@@ -88,6 +88,7 @@ export const pickSuggestions = (list) => (Array.isArray(list) ? list : [])
 
 /** Server events, plus three of ours: `limited` (a 429), `stopped` and `end` (the stream closed). */
 export function reduce(turn, event) {
+  if (event.type === "explain") return turn.phase === "done" ? { ...turn, explain: event } : turn; // it follows done
   if (!OPEN.has(turn.phase)) return turn;
   switch (event.type) {
     case "queued": return { ...turn, phase: "queued", position: event.position };
@@ -101,6 +102,43 @@ export function reduce(turn, event) {
     case "end": return { ...turn, phase: "resting" }; // closed without saying done: it did not finish
     default: return turn;
   }
+}
+
+const secs = (ms) => `${(ms / 1000).toFixed(1)} s`;
+const num = (n) => typeof n === "number" && Number.isFinite(n);
+const str = (v) => typeof v === "string" && v !== "";
+const pages = (list) => (Array.isArray(list) ? list.filter(str).join(", ") : "");
+// "gemma-4-E2B-it-Q4_K_M" reads as "Gemma 4 E2B".
+const modelLabel = (name) => {
+  const words = name.replace(/-it\b.*$/i, "").split("-");
+  return [words[0].charAt(0).toUpperCase() + words[0].slice(1), ...words.slice(1)].join(" ");
+};
+
+/** The app's "How this was answered" lines, from an explain event. Every field is checked for its type. */
+export function explainLines(e) {
+  if (!e || typeof e !== "object") return [];
+  const lines = [];
+  const ms = e.ms && typeof e.ms === "object" ? e.ms : {};
+  if (e.kind === "library" && pages(e.sources)) lines.push(`Ready answer from ${pages(e.sources)}`);
+  if (e.kind === "owner" && pages(e.sources)) lines.push(`Fixed lines from ${pages(e.sources)}`);
+  if (e.kind === "cache") lines.push("From the cache");
+  if (e.kind === "miss") lines.push("Nothing matched, so the fixed reply");
+  if (str(e.tool)) lines.push(`Live tool: ${e.tool}`);
+  const bySource = new Map();
+  for (const f of Array.isArray(e.facts) ? e.facts : []) {
+    if (!f || !str(f.source)) continue;
+    const got = bySource.get(f.source) || { n: 0, best: null };
+    got.n += 1;
+    if (num(f.score) && (got.best === null || f.score > got.best)) got.best = f.score;
+    bySource.set(f.source, got);
+  }
+  for (const [source, { n, best }] of bySource) {
+    lines.push(`Found ${n} fact${n === 1 ? "" : "s"} on ${source}${best === null ? "" : `, best match ${best.toFixed(2)}`}`);
+  }
+  if (num(e.rejected) && e.rejected > 0) lines.push(`${e.rejected} sentence${e.rejected === 1 ? "" : "s"} blocked by the fact check`);
+  if (num(ms.model)) lines.push(`${secs(ms.model)} on the model${str(e.model) ? `, ${modelLabel(e.model)}` : ""}`);
+  if (num(ms.total)) lines.push(`${secs(ms.total)} in all${num(ms.embed) ? `, ${secs(ms.embed)} matching` : ""}`);
+  return lines;
 }
 
 export function stateLine(turn) {
@@ -165,6 +203,7 @@ export function turnView(question, onPick) {
   let shown = 0;
   let metaKey = "";
   let offered = false;
+  let explained = false;
   return {
     root,
     /** Once a newer question is sent the pills stop being buttons and stay as plain text. */
@@ -197,6 +236,16 @@ export function turnView(question, onPick) {
           b.addEventListener("click", () => onPick(q));
           next.append(b);
         }
+      }
+      // The app only: the public panel never shows how an answer was made.
+      const lines = app && !explained ? explainLines(turn.explain) : [];
+      if (lines.length) {
+        explained = true;
+        const box = make("details", "chat-explain");
+        const list = make("ul", "chat-explain-list");
+        list.append(...lines.map((l) => make("li", "", l)));
+        box.append(make("summary", "chat-explain-head", "How this was answered"), list);
+        root.append(box);
       }
     },
   };
