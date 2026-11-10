@@ -44,8 +44,8 @@ sitemapPriority: "0.8"
     <div class="text-center max-w-3xl mx-auto mb-16">
         <h1 class="text-4xl md:text-5xl font-bold mb-6">The Code Behind the Commercial</h1>
         <p class="text-lg text-brand-muted leading-relaxed">
-            My day job is revenue retention and enterprise implementation. This page is the other half: the
-            stack I work in, the tools I reach for, and what I have been committing.
+            My day job is enterprise onboarding and retention. This page is the technical side: my stack, my
+            tools and what I've been committing.
         </p>
     </div>
 
@@ -53,7 +53,7 @@ sitemapPriority: "0.8"
 
         <div class="bg-brand-surface p-8 rounded-2xl border border-brand-border">
             <h2 class="text-2xl font-bold mb-6 flex items-center gap-4">
-                {% icon "fa-solid-terminal", "text-brand-accent" %} Philosophy & Stack
+                {% icon "fa-solid-terminal", "text-brand-accent" %} Stack
             </h2>
 
             <div class="prose dark:prose-invert text-brand-muted leading-relaxed mb-8">
@@ -61,25 +61,21 @@ sitemapPriority: "0.8"
                     <strong>I run Linux and prefer open-source tools</strong>, because I can see what they do.
                 </p>
                 <p class="mb-4">
-                    I map CRM/ERP systems in raw <strong>SQL</strong> rather than through GUI tools, design the
-                    identity resolution that merges each customer's sources into single profiles, and configure the
-                    per-customer <strong>Snowflake</strong> tables myself. In the early days, while the platform's
-                    email editor caught up, I also hand-wrote the HTML behind client email templates.
+                    I map CRM/ERP data in raw <strong>SQL</strong>, design the identity resolution that merges each
+                    customer's sources into one profile, and set up their <strong>Snowflake</strong> tables myself.
                 </p>
                 <p class="mb-4">
-                    I debug <strong>API integrations</strong> in Swagger, OpenAPI and Bruno, and find payload errors
-                    before they need an engineer.
+                    I debug <strong>APIs</strong> in Swagger, OpenAPI and Bruno, and catch payload errors before they
+                    reach an engineer.
                 </p>
                 <p class="mb-4">
-                    I use <strong>AI</strong> where it removes the repetitive part of the work. At Data Talks I built
-                    a toolkit, backed by a knowledge library of the platform's configuration, that migrates customer
-                    accounts and builds dashboards through the platform's API. Here, AI is a daily pair programmer on
-                    this site and the API behind it.
+                    I use <strong>AI</strong> for the repetitive parts. At Data Talks I built a toolkit that migrates
+                    customer accounts and builds dashboards through the platform's API. AI is also my pair programmer
+                    on this site.
                 </p>
                 <p>
-                    I build this site with 11ty, Nunjucks and Tailwind CSS, and GitHub Actions deploys it. The
-                    signed-in app has its own section further down. For backend utilities and data formatting, I default
-                    to JavaScript and Python.
+                    This site is 11ty, Nunjucks and Tailwind, deployed by GitHub Actions. For scripts and data work I
+                    use JavaScript and Python.
                 </p>
             </div>
 
@@ -151,14 +147,14 @@ sitemapPriority: "0.8"
        app's own /docs/ page rather than copied. #}
     <div class="mt-16 max-w-6xl mx-auto w-full">
         <h3 class="text-xl font-bold mb-6 flex items-center gap-2 text-brand-text">
-            {% icon "fa-solid-network-wired", "text-brand-accent" %} A system I run end to end
+            {% icon "fa-solid-network-wired", "text-brand-accent" %} The app behind this site
         </h3>
 
         <div class="bg-brand-surface border border-brand-border p-6 sm:p-8 rounded-xl">
             <p class="text-brand-muted leading-relaxed max-w-3xl">
-                The signed-in app on this domain authenticates people, proxies twenty-four third-party sources,
-                writes to Postgres and deploys itself. I designed it, built it and keep it running. That is the same work as onboarding a customer onto a platform: making
-                systems that were never built for each other agree on what a field means.
+                app.tzortzoglou.eu signs people in, pulls from 24 outside services and stores data in Postgres. I
+                built it and run it. It's the same job as a customer onboarding: getting systems that weren't built
+                for each other to agree on what a field means.
             </p>
 
             <div class="mt-8 overflow-x-auto">
@@ -170,50 +166,43 @@ sitemapPriority: "0.8"
 
             <div class="mt-10 grid gap-6 md:grid-cols-2">
                 <div>
-                    <h4 class="font-bold text-brand-text">Twenty-four sources mapped into one shape</h4>
+                    <h4 class="font-bold text-brand-text">24 sources, one format</h4>
                     <p class="mt-2 text-base text-brand-muted leading-relaxed">
-                        Weather, Swedish timetables, live bus positions, Formula 1, GitHub Actions, three sports leagues' own sites
-                        and two newspapers each answer in their own vocabulary. I map thirty-six fields into one
-                        internal shape, and label the calculated
-                        ones (a delay in minutes, a position gained, which step of a build failed) as
-                        calculated, so nobody reads a derivation as a measurement.
+                        Weather, Swedish timetables, bus positions, Formula 1, GitHub, sports leagues and newspapers
+                        all describe things differently. I map 36 fields into one format and mark calculated values,
+                        like a delay in minutes, so nobody mistakes them for measurements.
                     </p>
                 </div>
 
                 <div>
-                    <h4 class="font-bold text-brand-text">A two-hour error that was not the vendor's fault</h4>
+                    <h4 class="font-bold text-brand-text">A two-hour bug that wasn't the vendor's</h4>
                     <p class="mt-2 text-base text-brand-muted leading-relaxed">
-                        Every bus departure showed two hours out. The transit feed sends Swedish
-                        wall-clock time with no offset and the container runs in UTC, so the times
-                        parsed as the wrong instant. The API now resolves them against Europe/Stockholm,
-                        with tests across both daylight-saving changeovers.
+                        Every bus showed two hours late. The timetable feed sends Swedish local time with no time zone,
+                        and the server runs in UTC. The API now reads those times as Stockholm time, with tests for
+                        both daylight-saving switches.
                     </p>
                 </div>
 
                 <div>
-                    <h4 class="font-bold text-brand-text">Authorisation that does not trust its own token</h4>
+                    <h4 class="font-bold text-brand-text">Access is checked on every request</h4>
                     <p class="mt-2 text-base text-brand-muted leading-relaxed">
-                        A signed token proves who signed in. It does not prove what they may do now, so
-                        every request re-reads the role and approval state from the database before
-                        anything happens. Withdrawing someone's access takes effect on their next
-                        request rather than whenever their token happens to expire.
+                        A login token proves who you are, not what you're allowed to do right now. So each request
+                        checks your role in the database first. If I remove someone's access, it stops on their next
+                        click, not when their token expires.
                     </p>
                 </div>
 
                 <div>
-                    <h4 class="font-bold text-brand-text">A database browser with no query box</h4>
+                    <h4 class="font-bold text-brand-text">A database viewer with no query box</h4>
                     <p class="mt-2 text-base text-brand-muted leading-relaxed">
-                        Administrators can read the tables. There is nowhere to type SQL, the readable
-                        tables are an allowlist rather than whatever the catalogue reports, and the
-                        columns holding a sender's IP address are never selected at all. Someone who steals a session
-                        on this screen can read tables and cannot run a query.
+                        Admins can read an approved list of tables. There's nowhere to type SQL, and IP address
+                        columns are never loaded. A stolen admin session can read tables but can't run queries.
                     </p>
                 </div>
             </div>
 
             <p class="mt-8 text-base text-brand-muted">
-                The full reference lives inside the app: every endpoint, every field mapping, and why
-                each cache window is the length it is. It is at
+                Every endpoint, field mapping and cache rule is documented in the app at
                 <a href="https://app.tzortzoglou.eu/docs/" class="text-brand-accent underline hover:no-underline">app.tzortzoglou.eu/docs</a>.
             </p>
         </div>

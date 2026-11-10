@@ -8,7 +8,7 @@
     The lanes group by what a thing is FOR rather than by which file it lives in, which is the
     question somebody looking at an architecture picture is actually asking. -#}
       <svg viewBox="0 0 700 518" class="w-full min-w-[560px]" role="img"
-        aria-label="Four layers. You, in a browser. Two static sites that hold no secrets. One API that verifies the token, re-reads the role and holds every key. Below it Firebase for identity, Postgres for messages, checks and saved answers, the chat model on a second server of mine, and twenty-four upstream services, six of which need a credential. The app’s map tiles are the one thing the browser fetches itself.">
+        aria-label="Four layers. You, in a browser. Two static sites with no secrets. One API that checks who you are and what you can do on every request, and holds every key. Below it Firebase for identity, Postgres for messages and caches, the chat model on my second server, and 24 outside services, 6 of which need a key. Your browser never calls these, except for the app’s map tiles.">
         <defs>
           <marker id="flow-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
             <path d="M0,0 L8,4 L0,8 z" class="dg-arrow"/>
@@ -18,16 +18,16 @@
         {# Lanes first, so every box sits on top of its band. #}
         <g>
           <rect x="6" y="6" width="688" height="70" rx="10" class="dg-lane"/>
-          <text x="18" y="24" class="dg-lane-label">In your hands</text>
+          <text x="18" y="24" class="dg-lane-label">You</text>
 
           <rect x="6" y="92" width="688" height="92" rx="10" class="dg-lane"/>
-          <text x="18" y="110" class="dg-lane-label">Served as files · no secret is in them</text>
+          <text x="18" y="110" class="dg-lane-label">Static sites · no secrets</text>
 
           <rect x="6" y="200" width="688" height="100" rx="10" class="dg-lane"/>
-          <text x="18" y="218" class="dg-lane-label">The only thing that decides</text>
+          <text x="18" y="218" class="dg-lane-label">API · checks every request</text>
 
           <rect x="6" y="316" width="688" height="196" rx="10" class="dg-lane"/>
-          <text x="18" y="334" class="dg-lane-label">What it asks, on your behalf</text>
+          <text x="18" y="334" class="dg-lane-label">What the API calls</text>
 
           {# A band inside the band: everything in it is one of the twenty-four. #}
           <rect x="22" y="342" width="436" height="158" rx="8" class="dg-lane"/>
@@ -51,21 +51,21 @@
 
           <rect x="106" y="120" width="224" height="50" rx="8" class="dg-box"/>
           <text x="218" y="141" text-anchor="middle" class="dg-label">tzortzoglou.eu</text>
-          <text x="218" y="157" text-anchor="middle" class="dg-sub">the portfolio · one call: the contact form</text>
+          <text x="218" y="157" text-anchor="middle" class="dg-sub">portfolio · contact form calls the API</text>
 
           <rect x="370" y="120" width="224" height="50" rx="8" class="dg-box"/>
           <text x="482" y="141" text-anchor="middle" class="dg-label">app.tzortzoglou.eu</text>
-          <text x="482" y="157" text-anchor="middle" class="dg-sub">signed in · pages only</text>
+          <text x="482" y="157" text-anchor="middle" class="dg-sub">the app · sign-in required</text>
 
           {#- The one accent in the drawing: this box is what the picture is about. -#}
           <rect x="60" y="226" width="580" height="62" rx="8" class="dg-box-accent"/>
           <text x="350" y="247" text-anchor="middle" class="dg-label">api.tzortzoglou.eu</text>
-          <text x="350" y="263" text-anchor="middle" class="dg-sub">checks the token · re-reads your role · holds every key</text>
-          <text x="350" y="278" text-anchor="middle" class="dg-sub">nothing below this line is reachable without it</text>
+          <text x="350" y="263" text-anchor="middle" class="dg-sub">checks who you are and what you can do · holds every key</text>
+          <text x="350" y="278" text-anchor="middle" class="dg-sub">everything below is reached only through the API</text>
 
           <rect x="32" y="352" width="416" height="42" rx="8" class="dg-box-key"/>
-          <text x="240" y="369" text-anchor="middle" class="dg-label">Twenty-four upstreams</text>
-          <text x="240" y="384" text-anchor="middle" class="dg-sub">six need a key</text>
+          <text x="240" y="369" text-anchor="middle" class="dg-label">24 outside services</text>
+          <text x="240" y="384" text-anchor="middle" class="dg-sub">6 need a key</text>
 
           {#- By what each is for. The four boxes add up to the twenty-four: the names printed are
               the ones this drawing has always printed, and Live map is the remainder, so a new
@@ -84,7 +84,7 @@
 
           <rect x="312" y="450" width="136" height="40" rx="8" class="dg-box"/>
           <text x="380" y="466" text-anchor="middle" class="dg-label">Live map</text>
-          <text x="380" y="481" text-anchor="middle" class="dg-sub">the rest of the twenty-four</text>
+          <text x="380" y="481" text-anchor="middle" class="dg-sub">the rest of the 24</text>
 
           <rect x="470" y="352" width="100" height="46" rx="8" class="dg-box"/>
           <text x="520" y="371" text-anchor="middle" class="dg-label">Firebase</text>
@@ -108,14 +108,12 @@
           <circle cx="666" cy="364" r="4.5" class="dg-live" data-live="database"/>
           <circle cx="436" cy="364" r="4.5" class="dg-live" data-live="upstreams"/>
 
-          <text x="472" y="462" class="dg-sub">none of these twenty-four is ever</text>
-          <text x="472" y="475" class="dg-sub">called from your browser</text>
+          <text x="472" y="462" class="dg-sub">your browser never calls these,</text>
+          <text x="472" y="475" class="dg-sub">except for the app’s map tiles</text>
           {#- The exception, named rather than left off. The app's map tiles are fetched by the
               browser itself, because a tile is asked for one square at a time as you pan and
               standing in front of a few hundred of those would mean running a tile server. It is
               not drawn as a box because it hangs off the browser at the top, not off the API at
               the bottom, and an arrow that long would cross every layer to say one thing. -#}
-          <text x="472" y="490" class="dg-sub">the app’s map tiles are the one exception,</text>
-          <text x="472" y="503" class="dg-sub">fetched by your browser itself</text>
         </g>
       </svg>
