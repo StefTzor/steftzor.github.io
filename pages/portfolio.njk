@@ -132,11 +132,38 @@ sitemapPriority: "0.8"
                     </div>
                     <div class="case-outcome">
                         <h3 class="case-label">The Outcome</h3>
-                        <p>A migration now needs only a planning phase; the toolkit does the rebuild. The same toolkit now builds dashboards and analytics tables from a customer's raw data sources.</p>
+                        <p>A migration now needs only a planning phase, and the toolkit does the rebuild, including for a national federation, large hockey and football clubs, and a large travel company. The same toolkit now builds dashboards and analytics tables from a customer's raw data sources.</p>
                     </div>
                     <figure class="case-figure">
                         {% include "chrome/case-segmentation.njk" %}
                     </figure>
+            </div>
+        </li>
+        <li class="case">
+            <div class="case-meta">
+                <p class="case-number">05</p>
+                <p class="case-kind">Troubleshooting</p>
+                <h2>When the Data Was Quietly Wrong</h2>
+                <ul class="case-tags">
+                    <li>SQL</li>
+                    <li>Snowflake</li>
+                    <li>Data Quality</li>
+                </ul>
+            </div>
+            <div class="case-body">
+                    <div>
+                        <h3 class="case-label">The Challenge</h3>
+                        <p>A membership organisation's dashboard showed only a fraction of its members visiting the website in a month, and the customer didn't believe it. Nothing had errored. The tables refreshed on time and every tile showed a number. Most of the problems I troubleshoot involve data that loads without complaint and is still wrong.</p>
+                    </div>
+                    <div>
+                        <h3 class="case-label">My Solution</h3>
+                        <p>I traced the tile back to its table, then to the SQL that built it, then to the raw page-view events. From the first of the month, the field linking a visit to a member had started carrying membership numbers as well as profile ids. The SQL matched only profile ids, so those visits dropped out without a warning. I rewrote the match to accept either identifier, saved a rollback first, and checked the result against a segment count built a different way.</p>
+                        <p>I trace the other quiet failures the same way, from the number on screen back to its source: data-source relationships that stop joining, two people merged into one profile, segment rules that run correctly but don't match what the business meant, mismatched data types, stale data from a stuck Kafka stream or an ingestion that stopped arriving, Snowflake tasks that never ran, and dynamic tables failing upstream or downstream.</p>
+                    </div>
+                    <div class="case-outcome">
+                        <h3 class="case-label">The Outcome</h3>
+                        <p>Members active on the website roughly quadrupled once their visits counted, and the job board and learning portal counts rose with them. The same trace showed a login tile inflated by an overnight system process, which a proper login event stream can replace.</p>
+                    </div>
             </div>
         </li>
     </ol>
