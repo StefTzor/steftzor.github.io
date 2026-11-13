@@ -53,6 +53,10 @@ for (const url of sitemapUrls) {
   assert.ok(desc !== undefined, `${url} has no meta description`);
   const len = desc.replace(/&(#39|quot|amp|lt|gt);/g, '_').length;
   assert.ok(len >= 25 && len <= 160, `${url} meta description is ${len} chars, keep it 25-160`);
+  // Bing also flags titles over 70 characters.
+  const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || '';
+  const tlen = title.replace(/&(#39|quot|amp|lt|gt);/g, '_').length;
+  assert.ok(tlen > 0 && tlen <= 70, `${url} title is ${tlen} chars, keep it 1-70`);
 }
 
 // And every indexable page that was built must be listed - the failure that matters is a new
