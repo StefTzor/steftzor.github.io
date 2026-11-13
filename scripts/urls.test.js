@@ -43,10 +43,16 @@ for (const url of sitemapUrls) {
   const rel = url.replace('https://tzortzoglou.eu', '');
   const file = path.join(SITE, rel === '/' ? 'index.html' : path.join(rel, 'index.html'));
   assert.ok(fs.existsSync(file), `${url} is listed but was not built`);
+  const html = fs.readFileSync(file, 'utf8');
   assert.ok(
-    !/<meta name="robots"[^>]*noindex/.test(fs.readFileSync(file, 'utf8')),
+    !/<meta name="robots"[^>]*noindex/.test(html),
     `${url} is noindex but appears in the sitemap`
   );
+  // Bing Webmaster flags descriptions outside 25-160 characters; 8 of 12 pages were over it.
+  const desc = (html.match(/<meta name="description" content="([^"]*)"/) || [])[1];
+  assert.ok(desc !== undefined, `${url} has no meta description`);
+  const len = desc.replace(/&(#39|quot|amp|lt|gt);/g, '_').length;
+  assert.ok(len >= 25 && len <= 160, `${url} meta description is ${len} chars, keep it 25-160`);
 }
 
 // And every indexable page that was built must be listed - the failure that matters is a new
