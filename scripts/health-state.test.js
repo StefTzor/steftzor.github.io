@@ -25,7 +25,7 @@ const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
 
 const NOW = Date.parse('2026-11-20T17:00:00Z');
 const machine = (over = {}) => ({
-  name: 'minipc', label: 'Mini PC', status: 'up', updatedAt: '2026-11-20T16:59:30Z',
+  name: 'box-a', label: 'Box A', status: 'up', updatedAt: '2026-11-20T16:59:30Z',
   cpu: 1, mem: { pct: 13 }, disk: { pct: 10 }, tempC: 38, ...over,
 });
 
@@ -92,7 +92,7 @@ const machine = (over = {}) => ({
 }
 
 {
-  const fine = { machines: [machine(), machine({ name: 'ops' }), machine({ name: 'vps' })], apiUp: true, appUp: true, latestDeploys: ['success', 'success'], restarts: [] };
+  const fine = { machines: [machine(), machine({ name: 'box-b' }), machine({ name: 'box-c' })], apiUp: true, appUp: true, latestDeploys: ['success', 'success'], restarts: [] };
   const s = summary(fine, NOW);
   assert.strictEqual(s.systems.word, 'All 5 systems healthy');
   assert.strictEqual(s.systems.state, 'ok');
@@ -112,6 +112,10 @@ const machine = (over = {}) => ({
   assert.strictEqual(off.systems.word, 'Machines unavailable');
   assert.strictEqual(off.systems.state, 'warn');
 
+  // The likeliest real outage - the API down - also takes the machines with it. It must still be said.
+  const apiDown = summary({ ...fine, machines: null, apiUp: false }, NOW);
+  assert.strictEqual(apiDown.systems.word, '1 needs attention · machines unavailable');
+  assert.strictEqual(apiDown.systems.state, 'bad');
   assert.deepStrictEqual([...summary({ ...fine, latestDeploys: ['success', 'failure'] }, NOW).chips], ['Last deploy failed']);
   const recent = [{ startedAt: new Date(NOW - 3 * 3600000).toISOString(), kind: 'unexpected' }];
   assert.deepStrictEqual([...summary({ ...fine, restarts: recent }, NOW).chips], ['Unexpected restart today']);

@@ -77,7 +77,7 @@ function load({ api = async () => { throw new Error('no network'); }, fetchImpl 
 const NOW = Date.now();
 const fresh = new Date(NOW - 20000).toISOString();
 const mini = (over = {}) => ({
-  id: 'a', name: 'minipc', label: 'Mini PC', role: 'Home · Proxmox', status: 'up', updatedAt: fresh,
+  id: 'a', name: 'box-a', label: 'Box A', role: 'Role A', status: 'up', updatedAt: fresh,
   cores: 4, uptimeSec: 10205, load1: 0.05, cpu: 0.55,
   mem: { pct: 13.5, usedGb: 1.56, totalGb: 11.57 }, swap: { usedGb: 0.01, totalGb: 8 },
   disk: { pct: 9.9, usedGb: 6.34, totalGb: 67.6 }, tempC: 38,
@@ -85,13 +85,13 @@ const mini = (over = {}) => ({
   coresPct: [1, 0, 2, 1], services: { total: 72, failed: 0 }, containers: 0,
   history: [{ t: 'x', cpu: 1, mem: 13 }, { t: 'y', cpu: 2, mem: 14 }], ...over,
 });
-const ops = (over = {}) => mini({ name: 'ops', label: 'ops', role: 'Oracle', tempC: null, temps: [], netKBs: { down: 5.1, up: 2 }, containers: 5, ...over });
+const boxB = (over = {}) => mini({ name: 'box-b', label: 'Box B', role: 'Role B', tempC: null, temps: [], netKBs: { down: 5.1, up: 2 }, containers: 5, ...over });
 
 (async () => {
   // --- machines -----------------------------------------------------------------------------
   {
     const h = load();
-    const card = h.machineCard(ops({ mem: { pct: 87, usedGb: 10.4, totalGb: 12 } }), Date.now(), null);
+    const card = h.machineCard(boxB({ mem: { pct: 87, usedGb: 10.4, totalGb: 12 } }), Date.now(), null);
     assert(card.className.includes('hc-edge--warn'), card.className);
     assert(card.textContent.includes('Memory high'));
     ok('a machine card names its state in words and colours its edge');
@@ -103,7 +103,7 @@ const ops = (over = {}) => mini({ name: 'ops', label: 'ops', role: 'Oracle', tem
     const values = find(card, (n) => n.tag === 'text').map((t) => t.textContent);
     assert.strictEqual(values[0], '1%', 'the CPU ring carries its value in the centre');
     assert(values.includes('38°'), 'the temperature tile reads 38°');
-    const opsCard = h.machineCard(ops(), Date.now(), null);
+    const opsCard = h.machineCard(boxB(), Date.now(), null);
     const tiles = byClass(opsCard, 'hc-tile');
     const net = tiles[3];
     assert(net.textContent.includes('Network'));

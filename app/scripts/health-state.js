@@ -107,7 +107,10 @@ export function summary({ machines, apiUp, appUp, latestDeploys, restarts }, now
   let state = states.includes("bad") ? "bad" : states.includes("warn") ? "warn" : "ok";
   let word;
   if (!machines) {
-    word = "Machines unavailable";
+    // An API outage takes the machines with it; the outage is the news, so it leads.
+    word = attention
+      ? `${attention} ${attention === 1 ? "needs" : "need"} attention · machines unavailable`
+      : "Machines unavailable";
     if (state === "ok") state = "warn";
   } else if (attention === 0) {
     word = "All 5 systems healthy";
