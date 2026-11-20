@@ -14,18 +14,30 @@ bodyScripts:
   {% include "chrome/admin-sections.njk" %}
 
   <h1 class="text-3xl font-bold text-brand-text mb-2">Health</h1>
-  <p class="text-brand-muted mb-8 max-w-prose">
-    What is running now, and how the last few deploys of each pipeline went.
+  <p class="text-brand-muted mb-4 max-w-prose">
+    Everything that keeps tzortzoglou.eu running, at a glance. Open any section for the detail.
   </p>
+
+  {# The answer to "does anything need me?" before any detail. Redrawn as each section lands. #}
+  <div id="summary" class="hc-summary mb-8" role="status" aria-live="polite"><span class="hc-chip">Checking…</span></div>
 
   <div id="status" role="status" aria-live="polite" class="mb-6 text-sm"></div>
 
-  {# --- live -------------------------------------------------------------
-     The same two checks the overview makes, because "is it up right now" is the first question
-     and deploy history does not answer it. #}
-  <h2 class="text-xl font-bold text-brand-text mb-2">Right now</h2>
-  <p class="text-sm text-brand-muted mb-4">Checked when this page loaded.</p>
+  {# --- machines ----------------------------------------------------------
+     From Beszel, through /admin/machines. A card each, its edge coloured by its
+     worst reading, which the pill names in words. #}
+  <h2 class="text-xl font-bold text-brand-text mb-2">Machines</h2>
+  <p id="machinesAge" class="text-sm text-brand-muted mb-4">From Beszel, refreshed every minute.</p>
+  <div id="machines" class="grid gap-4 lg:grid-cols-3 mb-10">
+    <p class="sr-only">Loading…</p>
+    <div class="card" aria-hidden="true"><span class="skel h-40"></span></div>
+    <div class="card" aria-hidden="true"><span class="skel h-40"></span></div>
+    <div class="card" aria-hidden="true"><span class="skel h-40"></span></div>
+  </div>
 
+  {# --- services ---------------------------------------------------------- #}
+  <h2 class="text-xl font-bold text-brand-text mb-2">Services</h2>
+  <p class="text-sm text-brand-muted mb-4">Checked when this page loaded.</p>
   <ul class="grid gap-4 sm:grid-cols-2 mb-10">
     <li class="card">
       <div class="flex items-center justify-between gap-4">
@@ -33,7 +45,8 @@ bodyScripts:
         <span id="apiState" class="status-pill status-pill--unknown">Checking…</span>
       </div>
       <p class="hint">api.tzortzoglou.eu</p>
-      <p id="apiDetail" class="mt-4 text-sm text-brand-muted">&nbsp;</p>
+      <p id="apiTime" class="hc-big mt-4">&nbsp;</p>
+      <p id="apiDetail" class="text-sm text-brand-muted">&nbsp;</p>
     </li>
     <li class="card">
       <div class="flex items-center justify-between gap-4">
@@ -45,25 +58,25 @@ bodyScripts:
     </li>
   </ul>
 
-  {# --- restarts ---------------------------------------------------------
+  {# --- restarts ----------------------------------------------------------
      The one thing deploy history cannot answer. A deploy that succeeded and a container that has
      restarted eleven times since look identical in GitHub Actions. #}
   <h2 class="text-xl font-bold text-brand-text mb-2">API restarts</h2>
   <p class="text-sm text-brand-muted mb-4 max-w-prose">
-    Every time the API process started. A deploy shows here as one restart; several in a row
-    without a deploy means something is falling over.
+    Last 30 days, one square a day. A restart with a new build is a deploy; one with the same build
+    means something fell over. Press a square for that day.
   </p>
   <div id="boots" class="card mb-10">
     <p class="sr-only">Loading…</p>
-    <div class="space-y-4" aria-hidden="true"><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span></div>
+    <div class="space-y-4" aria-hidden="true"><span class="skel h-6"></span></div>
   </div>
 
-  {# --- deploys ----------------------------------------------------------
-     Rendered by admin-health.js: one block per workflow, newest first. A failed run names the
-     step that failed, because that is the one thing worth knowing before opening the log. #}
+  {# --- deploys -----------------------------------------------------------
+     One strip per pipeline. A failed run names the step that failed, because that is the one
+     thing worth knowing before opening the log. #}
   <h2 class="text-xl font-bold text-brand-text mb-2">Deploys</h2>
   <p id="deployAge" class="text-sm text-brand-muted mb-4"></p>
-  <div id="deploys">
+  <div id="deploys" class="card">
     <p class="sr-only">Loading…</p>
     <div class="space-y-4" aria-hidden="true"><span class="skel h-6"></span><span class="skel h-6"></span><span class="skel h-6"></span></div>
   </div>

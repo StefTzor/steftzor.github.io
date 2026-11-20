@@ -1532,6 +1532,109 @@
     @apply bg-brand-muted/15 text-brand-muted;
   }
 
+  .status-pill--warn {
+    @apply bg-amber-500/15 text-amber-800 dark:text-amber-300;
+  }
+
+  /* --- the health page (app/scripts/admin-health.js) ------------------------------------------
+     Four tones and a word, as with the pills: ok, warn, bad, unknown. Brass marks a deploy, which
+     is expected rather than good or bad. Colour never stands alone; every state is also named. */
+  .hc-ok { @apply text-emerald-600 dark:text-emerald-300; }
+  .hc-warn { @apply text-amber-500 dark:text-amber-300; }
+  .hc-bad { @apply text-red-600 dark:text-red-300; }
+  .hc-unknown { @apply text-brand-muted; }
+  .hc-text-ok { fill: rgb(var(--color-text)); }
+  .hc-text-unknown { fill: rgb(var(--color-text)); }
+  .hc-text-warn { @apply fill-amber-600 dark:fill-amber-300 text-amber-700 dark:text-amber-300; }
+  .hc-text-bad { @apply fill-red-700 dark:fill-red-300 text-red-700 dark:text-red-300; }
+  .hc-text-deploy { @apply text-brand-brass; }
+  .hc-text-muted { @apply text-brand-muted; }
+  .hc-bg-ok { @apply bg-emerald-600 dark:bg-emerald-300; }
+  .hc-bg-warn { @apply bg-amber-500 dark:bg-amber-300; }
+  .hc-bg-bad { @apply bg-red-600 dark:bg-red-300; }
+  .hc-bg-unknown { @apply bg-brand-muted; }
+
+  .hc-summary { @apply flex flex-wrap gap-2; }
+  .hc-chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-brand-border bg-brand-surface px-4 py-1 text-sm text-brand-text;
+  }
+  .hc-dot { @apply h-2 w-2 rounded-full; }
+
+  .hc-card { @apply flex flex-col; }
+  .hc-edge--ok { box-shadow: inset 4px 0 0 theme('colors.emerald.500'); }
+  .hc-edge--warn { box-shadow: inset 4px 0 0 theme('colors.amber.400'); }
+  .hc-edge--bad { box-shadow: inset 4px 0 0 theme('colors.red.500'); }
+  .hc-edge--unknown { box-shadow: inset 4px 0 0 rgb(var(--color-border)); }
+  .hc-card__head { @apply mb-4 flex items-start justify-between gap-2; }
+
+  .hc-tiles { @apply grid grid-cols-4 gap-2; }
+  .hc-tile { @apply flex flex-col items-center rounded-xl bg-brand-bg p-2 text-center; }
+  .hc-ring { @apply h-16 w-16; }
+  .hc-ring__track { fill: none; stroke: rgb(var(--color-border)); stroke-width: 7; }
+  .hc-ring__fill { fill: none; stroke: currentColor; stroke-width: 7; stroke-linecap: round; }
+  .hc-ring__value { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .hc-tile__label { @apply text-xs uppercase tracking-wider text-brand-muted; }
+  .hc-tile__detail { @apply mt-1 text-xs text-brand-muted tabular-nums; }
+  .hc-spark { @apply mt-1 h-4 w-16; }
+  .hc-spark__line { fill: none; stroke: currentColor; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .hc-tile .hc-spark { @apply text-emerald-600 dark:text-emerald-300; }
+
+  .hc-foot { @apply mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-brand-muted tabular-nums; }
+  .hc-foot b { @apply font-semibold text-brand-text; }
+
+  .hc-exp > summary {
+    @apply mt-4 flex cursor-pointer select-none list-none items-center gap-2 border-t border-brand-border pt-4 text-sm font-semibold text-brand-accent;
+  }
+  .hc-exp > summary::-webkit-details-marker { display: none; }
+  .hc-chev { @apply inline-block transition-transform duration-150; }
+  .hc-exp[open] > summary .hc-chev { transform: rotate(90deg); }
+
+  .hc-details { @apply mt-4 grid grid-cols-2 gap-4 text-xs; }
+  .hc-wide { grid-column: 1 / -1; }
+  .hc-h4 { @apply mb-2 mt-2 text-xs uppercase tracking-wider text-brand-muted first:mt-0; }
+  .hc-bar__row { @apply flex justify-between text-brand-text; }
+  .hc-bar__track { @apply mb-2 mt-1 h-2 overflow-hidden rounded bg-brand-border; }
+  .hc-bar__fill { @apply block h-full rounded; }
+  .hc-hour { @apply relative h-11; }
+  .hc-hour svg { @apply absolute inset-0 h-full w-full; }
+  .hc-hour__cpu { @apply text-emerald-600 dark:text-emerald-300; }
+  .hc-hour__mem { @apply text-brand-brass; }
+  .hc-hour polyline { fill: none; stroke: currentColor; stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .hc-note { @apply mt-2 text-xs text-brand-muted; }
+
+  .hc-big { @apply text-3xl font-bold text-brand-text tabular-nums; }
+
+  .hc-strip { @apply flex flex-wrap gap-1; }
+  .hc-sq { @apply h-4 w-4 rounded; }
+  button.hc-sq { @apply cursor-pointer transition-transform duration-100 active:scale-90; }
+  button.hc-sq[aria-pressed="true"] { @apply outline outline-2 outline-offset-1 outline-brand-text; }
+  .hc-sq--ok { @apply bg-emerald-600 dark:bg-emerald-300; }
+  .hc-sq--warn { @apply bg-amber-500 dark:bg-amber-300; }
+  .hc-sq--bad { @apply bg-red-600 dark:bg-red-300; }
+  .hc-sq--deploy { @apply bg-brand-brass; }
+  .hc-sq--unknown, .hc-sq--run { @apply bg-brand-muted; }
+  .hc-sq--none { @apply bg-brand-border; }
+  .hc-legend { @apply mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-brand-muted; }
+  .hc-key::before { content: ""; @apply mr-1 inline-block h-2 w-2 rounded-sm align-middle; }
+  .hc-key--ok::before, .hc-key--cpu::before { @apply bg-emerald-600 dark:bg-emerald-300; }
+  .hc-key--warn::before { @apply bg-amber-500 dark:bg-amber-300; }
+  .hc-key--bad::before { @apply bg-red-600 dark:bg-red-300; }
+  .hc-key--deploy::before, .hc-key--mem::before { @apply bg-brand-brass; }
+  .hc-key--unknown::before, .hc-key--run::before { @apply bg-brand-muted; }
+  .hc-key--none::before { @apply bg-brand-border; }
+  .hc-peek { @apply mt-2 rounded-lg bg-brand-bg px-4 py-2 text-sm text-brand-text; }
+  .hc-peek__link { @apply text-brand-accent hover:underline; }
+  .hc-pipe { @apply mb-2 flex flex-wrap items-center gap-x-4 gap-y-1; }
+  .hc-pipe__name { @apply w-48 shrink-0 text-sm text-brand-text; }
+  .hc-list { @apply mt-2 divide-y divide-brand-border; }
+  .hc-row { @apply flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2; }
+  .hc-run { @apply justify-start; }
+  .hc-filter { @apply mt-2 inline-flex items-center gap-2 text-sm text-brand-text; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hc-chev, button.hc-sq { transition: none; }
+  }
+
   .side-pref {
     @apply flex w-full items-center gap-4 rounded-lg px-4 py-2 text-sm text-brand-text
            hover:bg-brand-bg transition-colors duration-150;
