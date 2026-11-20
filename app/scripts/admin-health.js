@@ -18,7 +18,16 @@ const SVG = "http://www.w3.org/2000/svg";
 const RING_R = 26;
 const RING_C = 2 * Math.PI * RING_R;
 const REFRESH_MS = 60 * 1000;
-const PILL = { ok: "up", warn: "warn", bad: "down", unknown: "unknown" };
+
+// Every class name written out in full. Tailwind keeps only the classes it can find spelled out in
+// the source, so a name assembled at run time (`hc-${state}`) would be missing from the CSS.
+const PILL = { ok: "status-pill--up", warn: "status-pill--warn", bad: "status-pill--down", unknown: "status-pill--unknown" };
+const FG = { ok: "hc-ok", warn: "hc-warn", bad: "hc-bad", unknown: "hc-unknown" };
+const TEXT = { ok: "hc-text-ok", warn: "hc-text-warn", bad: "hc-text-bad", unknown: "hc-text-unknown", deploy: "hc-text-deploy", muted: "hc-text-muted" };
+const BG = { ok: "hc-bg-ok", warn: "hc-bg-warn", bad: "hc-bg-bad", unknown: "hc-bg-unknown" };
+const EDGE = { ok: "hc-edge--ok", warn: "hc-edge--warn", bad: "hc-edge--bad", unknown: "hc-edge--unknown" };
+const SQ = { ok: "hc-sq--ok", warn: "hc-sq--warn", bad: "hc-sq--bad", deploy: "hc-sq--deploy", unknown: "hc-sq--unknown", run: "hc-sq--run", none: "hc-sq--none" };
+const KEY = { ok: "hc-key--ok", warn: "hc-key--warn", bad: "hc-key--bad", deploy: "hc-key--deploy", unknown: "hc-key--unknown", run: "hc-key--run", none: "hc-key--none", cpu: "hc-key--cpu", mem: "hc-key--mem" };
 
 // What the summary is built from. `machines` stays undefined until the first answer, so the line
 // at the top says "Checking" rather than "unavailable" while the page is still loading.
@@ -48,6 +57,8 @@ function took(ms) {
 const isNum = (v) => typeof v === "number" && Number.isFinite(v);
 const pct = (v) => (isNum(v) ? `${Math.round(v)}%` : "—");
 const gb = (used, total) => (isNum(used) && isNum(total) ? `${used.toFixed(1)} / ${total.toFixed(1)} GB` : "");
+/** "of 12 GB" - short enough to sit under a ring without wrapping; the exact figures are in Details. */
+const of = (total) => (isNum(total) ? `of ${total < 10 ? total.toFixed(1) : Math.round(total)} GB` : "");
 
 function rate(kbs) {
   if (!isNum(kbs)) return "—";
@@ -80,7 +91,7 @@ function svgNode(tag, attrs) {
 }
 
 function pill(state, word) {
-  return node("span", `status-pill status-pill--${PILL[state] || "unknown"}`, word);
+  return node("span", `status-pill ${PILL[state] || PILL.unknown}`, word);
 }
 
 /** A disclosure with one chevron. The browser's own marker is hidden in CSS. */
@@ -110,11 +121,11 @@ function ring(value, state, label, centre, detail) {
   if (isNum(value)) {
     const len = Math.max(0, Math.min(100, value)) / 100 * RING_C;
     svg.appendChild(svgNode("circle", {
-      cx: 32, cy: 32, r: RING_R, class: `hc-ring__fill hc-${state}`,
+      cx: 32, cy: 32, r: RING_R, class: `hc-ring__fill ${FG[state]}`,
       "stroke-dasharray": `${len.toFixed(1)} ${RING_C.toFixed(1)}`, transform: "rotate(-90 32 32)",
     }));
   }
-  const text = svgNode("text", { x: 32, y: 37, "text-anchor": "middle", class: `hc-ring__value hc-text-${state}` });
+  const text = svgNode("text", { x: 32, y: 37, "text-anchor": "middle", class: `hc-ring__value ${TEXT[state]}` });
   text.textContent = centre;
   svg.appendChild(text);
   tile.append(svg, node("p", "hc-tile__label", label));
@@ -141,7 +152,7 @@ function bar(label, value, shown, state) {
   const row = node("div", "hc-bar__row");
   row.append(node("span", "", label), node("span", "tabular-nums", shown));
   const track = node("div", "hc-bar__track");
-  const fill = node("i", `hc-bar__fill hc-bg-${state}`);
+  const fill = node("i", `hc-bar__fill ${BG[state]}`);
   fill.style.width = `${Math.max(0, Math.min(100, isNum(value) ? value : 0))}%`;
   track.appendChild(fill);
   wrap.append(row, track);
@@ -159,12 +170,12 @@ function strip(squares, peek, label) {
   const buttons = [];
   for (const sq of squares) {
     if (!sq.detail) {
-      const s = node("span", `hc-sq hc-sq--${sq.kind}`);
+      const s = node("span", `hc-sq ${SQ[sq.kind]}`);
       s.setAttribute("aria-hidden", "true");
       row.appendChild(s);
       continue;
     }
-    const b = node("button", `hc-sq hc-sq--${sq.kind}`);
+    const b = node("button", `hc-sq ${SQ[sq.kind]}`);
     b.type = "button";
     b.setAttribute("aria-pressed", "false");
     b.setAttribute("aria-label", sq.label);
@@ -205,12 +216,12 @@ function renderSummary() {
   if (page.machines === undefined) {
     host.appendChild(node("span", "hc-chip", "Checking…"));
   } else {
-    const main = node("span", `hc-chip hc-chip--${s.systems.state}`);
-    main.append(node("span", `hc-dot hc-bg-${s.systems.state}`), node("span", "", s.systems.word));
+    const main = node("span", "hc-chip");
+    main.append(node("span", `hc-dot ${BG[s.systems.state]}`), node("span", "", s.systems.word));
     host.appendChild(main);
   }
   s.chips.forEach((c) => {
-    const chip = node("span", "hc-chip hc-chip--warn");
+    const chip = node("span", "hc-chip");
     chip.append(node("span", "hc-dot hc-bg-warn"), node("span", "", c));
     host.appendChild(chip);
   });
@@ -220,7 +231,7 @@ function renderSummary() {
 
 function machineCard(m, nowMs, beszelUrl) {
   const { state, word } = machineState(m, nowMs);
-  const card = node("article", `card hc-card hc-edge--${state}`);
+  const card = node("article", `card hc-card ${EDGE[state]}`);
 
   const head = node("div", "hc-card__head");
   const names = node("div");
@@ -235,10 +246,10 @@ function machineCard(m, nowMs, beszelUrl) {
   const cpu = ring(m.cpu, cpuState, "CPU", pct(m.cpu));
   cpu.appendChild(sparkline((m.history || []).map((p) => p.cpu), 64, 16));
   tiles.appendChild(cpu);
-  tiles.appendChild(ring(m.mem && m.mem.pct, readingState("mem", m.mem && m.mem.pct), "RAM", pct(m.mem && m.mem.pct), gb(m.mem && m.mem.usedGb, m.mem && m.mem.totalGb)));
-  tiles.appendChild(ring(m.disk && m.disk.pct, readingState("disk", m.disk && m.disk.pct), "Disk", pct(m.disk && m.disk.pct), gb(m.disk && m.disk.usedGb, m.disk && m.disk.totalGb)));
+  tiles.appendChild(ring(m.mem && m.mem.pct, readingState("mem", m.mem && m.mem.pct), "RAM", pct(m.mem && m.mem.pct), of(m.mem && m.mem.totalGb)));
+  tiles.appendChild(ring(m.disk && m.disk.pct, readingState("disk", m.disk && m.disk.pct), "Disk", pct(m.disk && m.disk.pct), of(m.disk && m.disk.totalGb)));
   if (isNum(m.tempC)) {
-    tiles.appendChild(ring(m.tempC, readingState("temp", m.tempC), "Temp", `${Math.round(m.tempC)}°`, "alert at 80°"));
+    tiles.appendChild(ring(m.tempC, readingState("temp", m.tempC), "Temp", `${Math.round(m.tempC)}°`, "limit 80°"));
   } else {
     tiles.appendChild(ring(null, "unknown", "Network", m.netKBs ? `↓${rate(m.netKBs.down).split(" ")[0]}` : "—",
       m.netKBs ? rate(m.netKBs.down).split(" ")[1] + " in" : "no temp sensor"));
@@ -273,6 +284,7 @@ function machineDetails(m, beszelUrl) {
   }
   side.appendChild(node("h4", "hc-h4", "Memory"));
   side.appendChild(bar("RAM", m.mem && m.mem.pct, gb(m.mem && m.mem.usedGb, m.mem && m.mem.totalGb) || pct(m.mem && m.mem.pct), readingState("mem", m.mem && m.mem.pct)));
+  side.appendChild(bar("Disk", m.disk && m.disk.pct, gb(m.disk && m.disk.usedGb, m.disk && m.disk.totalGb) || pct(m.disk && m.disk.pct), readingState("disk", m.disk && m.disk.pct)));
   if (m.swap && isNum(m.swap.totalGb) && m.swap.totalGb > 0) {
     side.appendChild(bar("Swap", (m.swap.usedGb / m.swap.totalGb) * 100, gb(m.swap.usedGb, m.swap.totalGb), "ok"));
   }
@@ -288,7 +300,7 @@ function machineDetails(m, beszelUrl) {
   );
   hour.appendChild(chart);
   const legend = node("p", "hc-legend");
-  legend.append(node("span", "hc-key hc-key--cpu", "CPU"), node("span", "hc-key hc-key--mem", "RAM"));
+  legend.append(node("span", `hc-key ${KEY.cpu}`, "CPU"), node("span", `hc-key ${KEY.mem}`, "RAM"));
   hour.appendChild(legend);
   body.appendChild(hour);
 
@@ -423,7 +435,7 @@ async function loadBoots() {
     restarts.forEach((r, i) => {
       const li = node("li", "hc-row");
       li.append(node("span", "text-sm text-brand-text", when(r.startedAt)));
-      const meta = node("span", `text-xs tabular-nums hc-text-${r.kind === "unexpected" ? "bad" : r.kind === "deploy" ? "deploy" : "muted"}`);
+      const meta = node("span", `text-xs tabular-nums ${TEXT[r.kind === "unexpected" ? "bad" : r.kind === "deploy" ? "deploy" : "muted"]}`);
       const before = restarts[i + 1];
       meta.textContent = [RESTART_WORD[r.kind], r.version, before ? gap(before.startedAt, r.startedAt) : ""].filter(Boolean).join(" · ");
       li.append(meta);
@@ -447,7 +459,7 @@ function dayOf(iso) {
 
 function legend(items) {
   const p = node("p", "hc-legend");
-  items.forEach(([kind, word]) => p.appendChild(node("span", `hc-key hc-key--${kind}`, word)));
+  items.forEach(([kind, word]) => p.appendChild(node("span", `hc-key ${KEY[kind]}`, word)));
   return p;
 }
 
