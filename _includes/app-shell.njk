@@ -118,7 +118,9 @@
           </button>
         </div>
 
-        <nav aria-label="Application" class="flex flex-1 flex-col min-h-0 p-4">
+        {# `overflow-y-auto` because the rail is a fixed height: open Admin and its ten sections
+           would otherwise spill out of this box and paint over the profile block below. #}
+        <nav aria-label="Application" class="flex flex-1 flex-col min-h-0 overflow-y-auto overscroll-contain p-4">
           <ul class="space-y-2">
             {%- for item in appNav %}{%- if not item.minRole and not item.foot %}
             <li>
