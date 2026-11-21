@@ -18,7 +18,7 @@ const SRC = fs.readFileSync(path.join(__dirname, '../app/scripts/health-state.js
 const ctx = {};
 vm.createContext(ctx);
 vm.runInContext(SRC.replace(/^export /gm, ''), ctx);
-const { readingState, isStale, machineState, classifyRestarts, dayBuckets, summary } = ctx;
+const { readingState, isStale, machineState, classifyRestarts, dayBuckets, summary, isFailure } = ctx;
 
 let passed = 0;
 const ok = (what) => { passed += 1; console.log('  pass  ' + what); };
@@ -122,6 +122,52 @@ const machine = (over = {}) => ({
   const old = [{ startedAt: new Date(NOW - 30 * 3600000).toISOString(), kind: 'unexpected' }];
   assert.deepStrictEqual([...summary({ ...fine, restarts: old }, NOW).chips], []);
   ok('the summary counts five live systems and adds chips for a failed deploy or a restart today');
+}
+
+{
+  // Beszel's other two statuses. Paused is the owner's choice and pending is a box that has not
+  // reported yet: neither is down, and calling them "Down" paints a red card for nothing.
+  assert.deepStrictEqual({ ...machineState(machine({ status: 'paused' }), NOW) }, { state: 'unknown', word: 'Paused' });
+  assert.deepStrictEqual({ ...machineState(machine({ status: 'pending' }), NOW) }, { state: 'unknown', word: 'No data yet' });
+  ok('a paused or pending machine is not called down');
+}
+
+{
+  const fine = { machines: [machine(), machine({ name: 'box-b' })], apiUp: true, appUp: true, latestDeploys: [], restarts: [] };
+  const two = summary(fine, NOW);
+  assert.strictEqual(two.systems.total, 4, 'the count follows the machines Beszel reports');
+  assert.strictEqual(two.systems.word, 'All 4 systems healthy');
+
+  const blank = summary({ ...fine, machines: [machine(), machine({ cpu: null, mem: null, disk: null, tempC: null })] }, NOW);
+  assert.strictEqual(blank.systems.word, '3 of 4 healthy', 'a machine with no data is not counted as healthy');
+  assert.strictEqual(blank.systems.state, 'unknown');
+
+  const loading = summary({ ...fine, appUp: null }, NOW);
+  assert.strictEqual(loading.systems.word, '3 of 4 healthy', 'a check still running is not counted as healthy');
+  ok('the summary counts what is there and only calls healthy what was measured');
+}
+
+{
+  assert.strictEqual(isFailure('failure'), true);
+  assert.strictEqual(isFailure('timed_out'), true);
+  assert.strictEqual(isFailure('startup_failure'), true);
+  assert.strictEqual(isFailure('cancelled'), false);
+  assert.strictEqual(isFailure('success'), false);
+  assert.deepStrictEqual([...summary({ machines: [], apiUp: true, appUp: true, latestDeploys: ['timed_out'], restarts: [] }, NOW).chips],
+    ['Last deploy failed']);
+  ok('a run that timed out or never started is a failed deploy');
+}
+
+{
+  // The spring clock change: the day after it, "now minus 24 h" lands two calendar days back,
+  // so the strip skipped 29 March and showed another day twice.
+  process.env.TZ = 'Europe/Stockholm';
+  const after = Date.parse('2026-03-29T22:30:00Z'); // 00:30 on 30 March, local summer time
+  const days = dayBuckets([], 30, after).map((d) => d.day);
+  assert.strictEqual(new Set(days).size, 30, 'thirty different days');
+  assert.strictEqual(days[29], '2026-03-30');
+  assert.strictEqual(days[28], '2026-03-29');
+  ok('the 30-day strip keeps every day across a clock change');
 }
 
 console.log(`health-state: ${passed} passed`);

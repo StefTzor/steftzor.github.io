@@ -40,6 +40,9 @@ export function isStale(updatedAt, nowMs) {
  * disk, memory, temperature, CPU: a full disk stops things, a busy CPU usually passes.
  */
 export function machineState(m, nowMs) {
+  // Beszel's other statuses: paused is a choice and pending has not reported yet. Neither is down.
+  if (m.status === "paused") return { state: "unknown", word: "Paused" };
+  if (m.status === "pending") return { state: "unknown", word: "No data yet" };
   if (m.status !== "up" || isStale(m.updatedAt, nowMs)) return { state: "bad", word: "Down" };
   const readings = [
     ["disk", m.disk && m.disk.pct, "Disk almost full"],
@@ -71,7 +74,10 @@ export function classifyRestarts(boots) {
 
 /** "2026-11-20" in the viewer's own calendar, which is the day they think of it as. */
 function localDay(ms) {
-  const d = new Date(ms);
+  return dayOf(new Date(ms));
+}
+
+function dayOf(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
@@ -80,7 +86,11 @@ export function dayBuckets(items, days, nowMs) {
   const out = [];
   const index = new Map();
   for (let i = days - 1; i >= 0; i -= 1) {
-    const day = localDay(nowMs - i * 86400000);
+    // Step back by calendar day, not by 24 hours: a clock change makes one day 23 or 25 hours.
+    const d = new Date(nowMs);
+    d.setHours(12, 0, 0, 0);
+    d.setDate(d.getDate() - i);
+    const day = dayOf(d);
     index.set(day, out.length);
     out.push({ day, kinds: [] });
   }
@@ -93,18 +103,26 @@ export function dayBuckets(items, days, nowMs) {
   return out;
 }
 
+/** A run that ended badly. GitHub has more ways to fail than "failure". */
+export function isFailure(conclusion) {
+  return conclusion === "failure" || conclusion === "timed_out" || conclusion === "startup_failure";
+}
+
 /**
- * The top of the page: how many of the five live systems (three machines, the API, the app) need
+ * The top of the page: how many of the live systems (three machines, the API, the app) need
  * attention, plus a chip for a failed latest deploy or a restart nobody asked for in the last day.
  */
 export function summary({ machines, apiUp, appUp, latestDeploys, restarts }, nowMs) {
   const states = [];
   if (machines) for (const m of machines) states.push(machineState(m, nowMs).state);
-  if (apiUp !== null && apiUp !== undefined) states.push(apiUp ? "ok" : "bad");
-  if (appUp !== null && appUp !== undefined) states.push(appUp ? "ok" : "bad");
+  // A check still running is unknown, not healthy, and still counts towards the total.
+  states.push(apiUp === null || apiUp === undefined ? "unknown" : apiUp ? "ok" : "bad");
+  states.push(appUp === null || appUp === undefined ? "unknown" : appUp ? "ok" : "bad");
 
+  const total = states.length;
   const attention = states.filter((s) => s === "warn" || s === "bad").length;
-  let state = states.includes("bad") ? "bad" : states.includes("warn") ? "warn" : "ok";
+  const healthy = states.filter((s) => s === "ok").length;
+  let state = states.includes("bad") ? "bad" : states.includes("warn") ? "warn" : healthy < total ? "unknown" : "ok";
   let word;
   if (!machines) {
     // An API outage takes the machines with it; the outage is the news, so it leads.
@@ -113,17 +131,17 @@ export function summary({ machines, apiUp, appUp, latestDeploys, restarts }, now
       : "Machines unavailable";
     if (state === "ok") state = "warn";
   } else if (attention === 0) {
-    word = "All 5 systems healthy";
+    word = healthy === total ? `All ${total} systems healthy` : `${healthy} of ${total} healthy`;
   } else {
     word = `${attention} ${attention === 1 ? "needs" : "need"} attention`;
   }
 
   const chips = [];
-  if ((latestDeploys || []).includes("failure")) chips.push("Last deploy failed");
+  if ((latestDeploys || []).some(isFailure)) chips.push("Last deploy failed");
   const dayAgo = nowMs - 24 * 3600 * 1000;
   if ((restarts || []).some((r) => r.kind === "unexpected" && Date.parse(r.startedAt) >= dayAgo)) {
     chips.push("Unexpected restart today");
   }
 
-  return { systems: { attention, total: 5, word, state }, chips };
+  return { systems: { attention, total, word, state }, chips };
 }
