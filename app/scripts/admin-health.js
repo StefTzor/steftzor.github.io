@@ -1,6 +1,6 @@
 import { api, profile, API_BASE } from "./shell.js";
 import { el, say } from "./admin-status.js";
-import { machineState, readingState, summary, classifyRestarts, dayBuckets } from "./health-state.js";
+import { machineState, readingState, summary, classifyRestarts, dayBuckets, isFailure } from "./health-state.js";
 
 /**
  * Admin -> Health: the whole system at a glance, then the detail one click down.
@@ -225,6 +225,9 @@ function renderSummary() {
     chip.append(node("span", "hc-dot hc-bg-warn"), node("span", "", c));
     host.appendChild(chip);
   });
+  // When the line was last redrawn, so a tab left open does not pass off old news as current.
+  host.appendChild(node("span", "hc-text-muted text-xs",
+    `Updated ${new Date().toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}`));
 }
 
 // --- machines -------------------------------------------------------------------------------
@@ -334,7 +337,9 @@ async function loadMachines() {
     page.machines = null;
     message(host, err.code === "machines_unconfigured"
       ? "Not configured: the API has no Beszel login yet. Nothing is broken."
-      : "Unavailable: Beszel could not be reached. The rest of this page is unaffected.");
+      : err.code === "machines_auth_failed"
+        ? "Beszel refused the API's login. Check the read-only user and its password in the API's settings."
+        : "Unavailable: Beszel could not be reached. The rest of this page is unaffected.");
   }
   renderSummary();
 }
@@ -469,12 +474,13 @@ function runWord(run) {
   if (run.status !== "completed") return "Running";
   if (run.conclusion === "success") return "Passed";
   if (run.conclusion === "failure") return "Failed";
+  if (run.conclusion === "timed_out") return "Timed out";
   return run.conclusion ? run.conclusion[0].toUpperCase() + run.conclusion.slice(1) : "Unknown";
 }
 
 function runKind(run) {
   if (run.status !== "completed") return "run";
-  return run.conclusion === "success" ? "ok" : run.conclusion === "failure" ? "bad" : run.conclusion === "cancelled" ? "warn" : "unknown";
+  return run.conclusion === "success" ? "ok" : isFailure(run.conclusion) ? "bad" : run.conclusion === "cancelled" ? "warn" : "unknown";
 }
 
 /** One run, as a row. Commit messages are text from a repository. */
@@ -571,4 +577,15 @@ profile.then(() => {
   loadDeploys();
   // Machines move minute to minute; the rest is read once. Only while the tab is being looked at.
   setInterval(() => { if (document.visibilityState === "visible") loadMachines(); }, REFRESH_MS);
+  // Coming back to a tab left open re-reads everything, at most once a minute.
+  let loadedAt = Date.now();
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible" || Date.now() - loadedAt < REFRESH_MS) return;
+    loadedAt = Date.now();
+    loadMachines();
+    loadApi();
+    loadApp();
+    loadBoots();
+    loadDeploys();
+  });
 });
