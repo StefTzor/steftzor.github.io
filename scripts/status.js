@@ -257,7 +257,23 @@
   load();
   loadDeploys();
   loadDrift();
-  // A page left open keeps itself current, at the pace the checks themselves run.
-  setInterval(load, 60000);
-  setInterval(loadDeploys, 120000);
+  // A page left open keeps itself current, at the pace the checks themselves run - but only while
+  // it is being looked at. Both reads count against the API's shared 100 per 15 minutes, and a
+  // forgotten tab spent about 22 of them every 15 minutes, starving the app in the same browser.
+  // Coming back reads again, but no sooner than a minute after the last read, so flicking between
+  // tabs is not a new way to spend them.
+  var lastRead = Date.now();
+  var ticks = 0;
+  setInterval(function () {
+    if (document.visibilityState === "hidden") return;
+    ticks += 1;
+    lastRead = Date.now();
+    load();
+    if (ticks % 2 === 0) loadDeploys();
+  }, 60000);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState !== "visible" || Date.now() - lastRead < 60000) return;
+    lastRead = Date.now();
+    load();
+  });
 })();
